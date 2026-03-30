@@ -1,68 +1,68 @@
-# Token Spec — M3 三層命名規則
+# Token Spec — M3 Three-Tier Naming Rules
 
-> 本文件供 `figma-m3-variables` skill 使用。定義命名規則、各元件 token 清單與 scope 對照表。
+> This document is used by the `figma-m3-variables` skill. It defines naming conventions, component token lists, and the scope reference table.
 
 ---
 
-## 1. 命名結構
+## 1. Naming Structure
 
-### 三層繼承
+### Three-Tier Inheritance
 
 ```
-{prefix}/ref/{category}/{name}        ← Ref（原始值）
-{prefix}/sys/{category}/{name}        ← Sys（語意，別名 Ref）
-{prefix}/comp/{component}/{property}  ← Comp（元件，別名 Sys）
+{prefix}/ref/{category}/{name}        ← Ref (raw values)
+{prefix}/sys/{category}/{name}        ← Sys (semantic, aliases Ref)
+{prefix}/comp/{component}/{property}  ← Comp (component, aliases Sys)
 ```
 
-**前綴範例**：`md`、`dd`、`bd`（由使用者在工作流 B 步驟 1 確認）
+**Prefix examples**: `md`, `dd`, `bd` (confirmed by the user in Workflow B Step 1)
 
-### Collection 命名規則
+### Collection Naming Rules
 
-| 結構選擇 | Collection 名稱 |
-|---------|----------------|
-| 分三層 | `{Prefix} · Reference` / `{Prefix} · System` / `{Prefix} · Component · {ElementName}` |
-| 單一 Collection | `{Prefix} · Design Tokens` |
+| Structure Option | Collection Name |
+|-----------------|----------------|
+| Three separate collections | `{Prefix} · Reference` / `{Prefix} · System` / `{Prefix} · Component · {ElementName}` |
+| Single collection | `{Prefix} · Design Tokens` |
 
-### Mode 命名規則
+### Mode Naming Rules
 
-| Collection 類型 | Mode 名稱 |
+| Collection Type | Mode Name |
 |----------------|-----------|
-| Ref（原始值）| `Default` |
-| Sys（可支援 Light/Dark）| `Default`（單模式）或 `Light` + `Dark`（雙模式） |
+| Ref (raw values) | `Default` |
+| Sys (can support Light/Dark) | `Default` (single mode) or `Light` + `Dark` (dual mode) |
 | Comp | `Default` |
 
 ---
 
-## 2. WEB Code Syntax 格式
+## 2. WEB Code Syntax Format
 
 ```
 var(--{prefix}-{layer}-{category}-{name})
 ```
 
-範例：
+Examples:
 ```
 var(--md-ref-palette-primary40)
 var(--md-sys-color-primary)
 var(--md-comp-filled-button-container-background-color)
 ```
 
-規則：層級之間用 `-` 分隔（非 `/`），全部小寫，空格改 `-`。
+Rule: Layers are separated by `-` (not `/`), all lowercase, spaces replaced with `-`.
 
 ---
 
-## 3. Variable Scope 對照表
+## 3. Variable Scope Reference Table
 
-| Token 角色 | Figma Scope |
+| Token Role | Figma Scope |
 |-----------|------------|
-| Ref 層（所有 token） | `[]`（空陣列，不出現在 picker）|
-| 背景 / 容器填色（Sys / Comp） | `["FRAME_FILL", "SHAPE_FILL"]` |
-| 文字顏色（Sys / Comp） | `["TEXT_FILL"]` |
-| 圖形 / 通用填色（Sys / Comp） | `["ALL_FILLS"]` |
-| 邊框顏色 | `["STROKE_COLOR"]` |
-| 圓角 | `["CORNER_RADIUS"]` |
-| padding / gap（間距） | `["GAP"]` |
-| 寬 / 高 | `["WIDTH_HEIGHT"]` |
-| 透明度 | `["OPACITY"]` |
+| Ref layer (all tokens) | `[]` (empty array, hidden from picker) |
+| Background / container fill (Sys / Comp) | `["FRAME_FILL", "SHAPE_FILL"]` |
+| Text color (Sys / Comp) | `["TEXT_FILL"]` |
+| Graphic / general fill (Sys / Comp) | `["ALL_FILLS"]` |
+| Border color | `["STROKE_COLOR"]` |
+| Corner radius | `["CORNER_RADIUS"]` |
+| Padding / gap (spacing) | `["GAP"]` |
+| Width / height | `["WIDTH_HEIGHT"]` |
+| Opacity | `["OPACITY"]` |
 | Font Family | `["FONT_FAMILY"]` |
 | Font Size | `["FONT_SIZE"]` |
 | Font Weight | `["FONT_WEIGHT"]` |
@@ -71,29 +71,29 @@ var(--md-comp-filled-button-container-background-color)
 
 ---
 
-## 4. Filled Button — Token 清單
+## 4. Filled Button — Token List
 
-### 4-1 Ref 層（原始值）
+### 4-1 Ref Layer (raw values)
 
-| Token 名稱 | 類型 | 範例值 | scope |
-|-----------|------|--------|-------|
+| Token Name | Type | Example Value | Scope |
+|-----------|------|--------------|-------|
 | `{p}/ref/palette/primary/40` | COLOR | `#FF0101` | `[]` |
 | `{p}/ref/palette/neutral/100` | COLOR | `#FFFFFF` | `[]` |
 | `{p}/ref/palette/neutral/0` | COLOR | `#000000` | `[]` |
 | `{p}/ref/palette/error/40` | COLOR | `#B3261E` | `[]` |
-| `{p}/ref/shape/corner/full` | FLOAT | `12`（或設計稿實際值）| `[]` |
+| `{p}/ref/shape/corner/full` | FLOAT | `12` (or actual design value) | `[]` |
 | `{p}/ref/spacing/button/padding-h` | FLOAT | `16` | `[]` |
 | `{p}/ref/spacing/button/padding-v` | FLOAT | `12` | `[]` |
 | `{p}/ref/spacing/button/icon-gap` | FLOAT | `8` | `[]` |
 | `{p}/ref/typeface/label/size` | FLOAT | `14` | `[]` |
 | `{p}/ref/typeface/label/weight` | FLOAT | `500` | `[]` |
 
-> `{p}` = 使用者確認的前綴，例如 `md`
+> `{p}` = prefix confirmed by the user, e.g. `md`
 
-### 4-2 Sys 層（語意，別名 Ref）
+### 4-2 Sys Layer (semantic, aliases Ref)
 
-| Token 名稱 | 類型 | 別名目標（Ref） | scope |
-|-----------|------|----------------|-------|
+| Token Name | Type | Alias Target (Ref) | Scope |
+|-----------|------|-------------------|-------|
 | `{p}/sys/color/primary` | COLOR | `…/ref/palette/primary/40` | `["FRAME_FILL", "SHAPE_FILL"]` |
 | `{p}/sys/color/on-primary` | COLOR | `…/ref/palette/neutral/100` | `["TEXT_FILL"]` |
 | `{p}/sys/color/error` | COLOR | `…/ref/palette/error/40` | `["FRAME_FILL", "SHAPE_FILL"]` |
@@ -103,10 +103,10 @@ var(--md-comp-filled-button-container-background-color)
 | `{p}/sys/spacing/button-padding-v` | FLOAT | `…/ref/spacing/button/padding-v` | `["GAP"]` |
 | `{p}/sys/spacing/button-icon-gap` | FLOAT | `…/ref/spacing/button/icon-gap` | `["GAP"]` |
 
-### 4-3 Comp 層（元件，別名 Sys）
+### 4-3 Comp Layer (component, aliases Sys)
 
-| Token 名稱 | 類型 | 別名目標（Sys） | scope |
-|-----------|------|----------------|-------|
+| Token Name | Type | Alias Target (Sys) | Scope |
+|-----------|------|-------------------|-------|
 | `{p}/comp/filled-button/container/background-color` | COLOR | `…/sys/color/primary` | `["FRAME_FILL", "SHAPE_FILL"]` |
 | `{p}/comp/filled-button/container/shape` | FLOAT | `…/sys/shape/corner-full` | `["CORNER_RADIUS"]` |
 | `{p}/comp/filled-button/container/padding-horizontal` | FLOAT | `…/sys/spacing/button-padding-h` | `["GAP"]` |
@@ -114,25 +114,25 @@ var(--md-comp-filled-button-container-background-color)
 | `{p}/comp/filled-button/label-text/color` | COLOR | `…/sys/color/on-primary` | `["TEXT_FILL"]` |
 | `{p}/comp/filled-button/with-icon/icon-label-gap` | FLOAT | `…/sys/spacing/button-icon-gap` | `["GAP"]` |
 
-### 4-4 節點綁定對照（Filled Button）
+### 4-4 Node Binding Reference (Filled Button)
 
-| 節點屬性 | 綁定的 Comp token |
-|---------|-----------------|
-| 容器 `fills` | `…/container/background-color` |
-| 容器 `topLeftRadius` + 其他 3 角 | `…/container/shape` |
-| 容器 `paddingLeft` / `paddingRight` | `…/container/padding-horizontal` |
-| 容器 `paddingTop` / `paddingBottom` | `…/container/padding-vertical` |
-| 文字節點 `fills` | `…/label-text/color` |
-| icon 與 label 之間的 `itemSpacing` | `…/with-icon/icon-label-gap` |
+| Node Property | Bound Comp Token |
+|--------------|-----------------|
+| Container `fills` | `…/container/background-color` |
+| Container `topLeftRadius` + other 3 corners | `…/container/shape` |
+| Container `paddingLeft` / `paddingRight` | `…/container/padding-horizontal` |
+| Container `paddingTop` / `paddingBottom` | `…/container/padding-vertical` |
+| Text node `fills` | `…/label-text/color` |
+| `itemSpacing` between icon and label | `…/with-icon/icon-label-gap` |
 
 ---
 
-## 5. 其他元件（預留擴充）
+## 5. Other Components (reserved for extension)
 
-下列元件可依相同三層結構擴充，token 命名遵照 Section 1 的規則：
+The following components can be extended using the same three-tier structure. Token naming follows the rules in Section 1:
 
-| 元件 | Comp token prefix |
-|------|------------------|
+| Component | Comp Token Prefix |
+|-----------|------------------|
 | Outlined Button | `{p}/comp/outlined-button/...` |
 | Text Button | `{p}/comp/text-button/...` |
 | Elevated Button | `{p}/comp/elevated-button/...` |
@@ -144,18 +144,18 @@ var(--md-comp-filled-button-container-background-color)
 | Navigation Bar | `{p}/comp/navigation-bar/...` |
 | Top App Bar | `{p}/comp/top-app-bar/...` |
 
-擴充時的流程：
-1. 確認設計稿節點的視覺屬性（顏色、圓角、間距）
-2. 新增對應的 Ref token（若現有 Ref 值已涵蓋則直接別名）
-3. 新增 Sys token（若現有 Sys 語意已涵蓋則直接重用）
-4. 新增 Comp token 並別名到 Sys
-5. 執行工作流 A 步驟 4 綁定到元件節點
+Extension process:
+1. Identify the visual properties of the design node (color, corner radius, spacing)
+2. Add corresponding Ref tokens (if an existing Ref value covers it, alias directly)
+3. Add Sys tokens (if an existing Sys semantic covers it, reuse directly)
+4. Add Comp tokens aliasing to Sys
+5. Run Workflow A Step 4 to bind to component nodes
 
 ---
 
-## 6. Light / Dark 雙模式擴充
+## 6. Light / Dark Dual-Mode Extension
 
-Sys 層 Collection 可加入第二個 mode（`Dark`），只需對每個 Sys color token 的 Dark mode 設定不同的 `VARIABLE_ALIAS` 指向另一個 Ref palette token：
+The Sys layer Collection can add a second mode (`Dark`). For each Sys color token, simply set the Dark mode value to a `VARIABLE_ALIAS` pointing to a different Ref palette token:
 
 ```js
 // Light mode
@@ -164,4 +164,86 @@ sysPrimary.setValueForMode(lightModeId, { type: 'VARIABLE_ALIAS', id: refPrimary
 sysPrimary.setValueForMode(darkModeId,  { type: 'VARIABLE_ALIAS', id: refPrimary80.id });
 ```
 
-Comp 層與節點綁定不需要任何修改，切換 Sys Collection 的 mode 即可全站換色。
+No changes are needed for the Comp layer or node bindings. Switching the Sys Collection's mode applies the theme change globally.
+
+---
+
+## 7. Variants & Interaction States
+
+### 7-1 State Token Naming Convention
+
+State-specific tokens are added as sub-properties under the relevant Comp token path:
+
+```
+{p}/comp/{component}/{property}              ← Default state (no suffix)
+{p}/comp/{component}/{property}/hovered
+{p}/comp/{component}/{property}/focused
+{p}/comp/{component}/{property}/pressed
+{p}/comp/{component}/{property}/disabled
+{p}/comp/{component}/{property}/error
+{p}/comp/{component}/{property}/success
+```
+
+Example (Filled Button container background):
+```
+md/comp/filled-button/container/background-color           → sys/color/primary
+md/comp/filled-button/container/background-color/hovered   → sys/color/primary  (+ state layer overlay at 8% opacity applied in node)
+md/comp/filled-button/container/background-color/disabled  → sys/color/on-surface  (opacity 0.12)
+md/comp/filled-button/container/background-color/error     → sys/color/error
+```
+
+> For `hovered`, `focused`, and `pressed` states, M3 applies a **state layer** (a semi-transparent overlay on top of the base color) rather than a separate token in most cases. Only add dedicated tokens when the base color itself changes (e.g. `error`, `success`, `disabled`).
+
+### 7-2 State Layer Opacity Values (M3 Standard)
+
+| State | Overlay Opacity |
+|-------|----------------|
+| Hovered | 8% |
+| Focused | 12% |
+| Pressed | 12% |
+| Dragged | 16% |
+
+The state layer color is always `on-{container}` — for example, a primary-colored container uses `sys/color/on-primary` as the state layer color.
+
+### 7-3 Component Variants Reference
+
+| Component | Typical Variant Dimensions | Typical States |
+|-----------|--------------------------|----------------|
+| Filled Button | Size (SM / MD / LG), Leading Icon (Yes / No) | Default, Hovered, Focused, Pressed, Disabled |
+| Outlined Button | Size, Leading Icon | Default, Hovered, Focused, Pressed, Disabled |
+| Text Button | Size, Leading Icon | Default, Hovered, Focused, Pressed, Disabled |
+| Icon Button | Style (Standard / Filled / Tonal / Outlined), Toggle (Yes / No) | Default, Hovered, Focused, Pressed, Disabled, Selected |
+| Card | Style (Elevated / Filled / Outlined), Clickable (Yes / No) | Default, Hovered, Focused, Pressed, Dragged |
+| Text Field | Style (Filled / Outlined) | Default, Hovered, Focused, Error, Disabled |
+| Chip | Type (Assist / Filter / Input / Suggestion), Selected (Yes / No) | Default, Hovered, Focused, Pressed, Disabled |
+| Dialog | — | Default (only) |
+| Navigation Bar | — | Default, Active (selected item) |
+| Top App Bar | Scroll behavior (Flat / Compressed / Medium / Large) | Default, Scrolled |
+| FAB | Size (SM / MD / LG / Extended), Color (Primary / Surface / Secondary / Tertiary) | Default, Hovered, Focused, Pressed |
+| Switch | Selected (Yes / No) | Default, Hovered, Focused, Pressed, Disabled |
+| Checkbox | Selected (Yes / No / Indeterminate) | Default, Hovered, Focused, Pressed, Disabled, Error |
+| Radio | Selected (Yes / No) | Default, Hovered, Focused, Pressed, Disabled, Error |
+
+### 7-4 Disabled State Token Rules
+
+Disabled states in M3 use specific color/opacity overrides rather than aliasing the Default token. Always create dedicated disabled tokens:
+
+| Property | Disabled Token Target | Opacity |
+|----------|----------------------|---------|
+| Container fill | `sys/color/on-surface` | 12% |
+| Label / icon color | `sys/color/on-surface` | 38% |
+| Outline (outlined variants) | `sys/color/on-surface` | 12% |
+
+In Figma, apply opacity either via the node's `opacity` property or by setting a separate `OPACITY` variable — do not bake opacity into the color token value.
+
+### 7-5 Error / Success State Token Rules
+
+Error and Success states replace the primary color group with semantic alternatives:
+
+| Default Token | Error Override | Success Override |
+|--------------|---------------|-----------------|
+| `sys/color/primary` | `sys/color/error` | `sys/color/success` (custom, if defined) |
+| `sys/color/on-primary` | `sys/color/on-error` | `sys/color/on-success` |
+| `sys/color/primary-container` | `sys/color/error-container` | `sys/color/success-container` |
+
+> `success` is not a standard M3 Sys token. If the project requires it, add `{p}/ref/palette/success/*` and `{p}/sys/color/success` / `on-success` following the same Ref → Sys → Comp chain.

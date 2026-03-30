@@ -1,27 +1,27 @@
-# Audit Rules — Variables 稽核規則
+# Audit Rules — Variable Audit Guidelines
 
-> 本文件供 `figma-m3-variables` skill 工作流 C 使用。定義 6 種違規類型及對應修正腳本模板。
-
----
-
-## 稽核流程
-
-1. 執行 inspect 腳本取得完整 variable 資料（名稱、resolvedType、scopes、codeSyntax、valuesByMode）
-2. 逐條套用以下 6 種規則，記錄所有命中的 variable
-3. 將問題彙整成表格回報使用者
-4. 詢問使用者是否自動修正（每種違規類型可個別選擇）
-5. 執行修正腳本後再次 inspect 確認違規歸零
+> This document is used by Workflow C in the `figma-m3-variables` skill. It defines 6 violation types and the corresponding fix script templates.
 
 ---
 
-## 違規類型 1：跨層直連（Comp → Ref，跳過 Sys）
+## Audit Process
 
-**定義**：Comp 層變數的 value 直接別名到 Ref 層變數，沒有經過 Sys 層。
+1. Run the inspect script to retrieve complete variable data (name, resolvedType, scopes, codeSyntax, valuesByMode)
+2. Apply each of the 6 rules below, recording all matching variables
+3. Compile all issues into a table and report to the user
+4. Ask the user whether to auto-fix (each violation type can be selected individually)
+5. Run fix scripts and inspect again to confirm zero violations remain
 
-**偵測方式**：
+---
+
+## Violation Type 1: Cross-Layer Direct Alias (Comp → Ref, skipping Sys)
+
+**Definition**: A Comp layer variable's value aliases directly to a Ref layer variable, bypassing the Sys layer.
+
+**Detection**:
 ```js
-// 取得所有 Comp 層 variable（名稱含 "/comp/"）
-// 檢查其 valuesByMode[modeId].id 是否指向名稱含 "/ref/" 的 variable
+// Get all Comp layer variables (name contains "/comp/")
+// Check if their valuesByMode[modeId].id points to a variable whose name contains "/ref/"
 const allVars = await figma.variables.getLocalVariablesAsync();
 const varById = Object.fromEntries(allVars.map(v => [v.id, v]));
 const violations = [];
@@ -39,62 +39,62 @@ for (const v of allVars) {
 return violations;
 ```
 
-**修正方式**：
-- 建立缺少的 Sys 層 token，令 Comp → Sys → Ref
-- 若 Sys token 已存在但 Comp 指向錯誤，更新 Comp 的 `setValueForMode` 指向正確 Sys token
+**Fix**:
+- Create the missing Sys layer token so the chain becomes Comp → Sys → Ref
+- If the Sys token already exists but Comp points to the wrong target, update Comp's `setValueForMode` to point to the correct Sys token
 
 ---
 
-## 違規類型 2：scope 使用 ALL_SCOPES
+## Violation Type 2: Scope Uses ALL_SCOPES
 
-**定義**：任何 variable 的 `scopes` 陣列包含 `"ALL_SCOPES"` 或為空（等同 ALL_SCOPES），導致變數出現在所有 picker 中造成噪音。
+**Definition**: Any variable's `scopes` array contains `"ALL_SCOPES"` or is empty (equivalent to ALL_SCOPES), causing the variable to appear in all pickers and creating noise.
 
-**偵測方式**：
+**Detection**:
 ```js
 const allVars = await figma.variables.getLocalVariablesAsync();
 const violations = allVars.filter(v =>
   v.scopes.includes('ALL_SCOPES') ||
   (v.scopes.length === 0 && !v.name.includes('/ref/'))
-  // Ref 層允許空 scope（隱藏），非 Ref 層的空 scope 視為違規
+  // Ref layer is allowed to have empty scope (hidden); non-Ref empty scope is a violation
 );
 return violations.map(v => ({ name: v.name, scopes: v.scopes }));
 ```
 
-**修正方式**：依 [token-spec.md scope 對照表](token-spec.md) 為每個 variable 設定正確的明確 scope：
+**Fix**: Set the correct explicit scope for each variable according to the [token-spec.md scope table](token-spec.md):
 ```js
 const variable = await figma.variables.getVariableByIdAsync(variableId);
-variable.scopes = ["FRAME_FILL", "SHAPE_FILL"]; // 依角色替換
+variable.scopes = ["FRAME_FILL", "SHAPE_FILL"]; // Replace with the appropriate scope
 ```
 
 ---
 
-## 違規類型 3：未設定 WEB code syntax
+## Violation Type 3: Missing WEB Code Syntax
 
-**定義**：variable 的 `codeSyntax.WEB` 為空字串或不存在。
+**Definition**: A variable's `codeSyntax.WEB` is an empty string or does not exist.
 
-**偵測方式**：
+**Detection**:
 ```js
 const allVars = await figma.variables.getLocalVariablesAsync();
 const violations = allVars.filter(v => !v.codeSyntax?.WEB);
 return violations.map(v => ({ name: v.name, codeSyntax: v.codeSyntax }));
 ```
 
-**修正方式**：從 variable 名稱自動推導 WEB syntax：
+**Fix**: Auto-derive the WEB syntax from the variable name:
 ```js
-// 將 "/" 與空格轉為 "-"，加上 var() 包裹
+// Convert "/" and spaces to "-", wrap in var()
 const cssName = v.name.replace(/[\s\/]+/g, '-').toLowerCase();
 v.setVariableCodeSyntax('WEB', `var(--${cssName})`);
 ```
 
-> 若名稱含多個 `/`（如 `md/sys/color/primary`），產出 `var(--md-sys-color-primary)`，符合 M3 慣例。
+> If the name contains multiple `/` (e.g. `md/sys/color/primary`), the output is `var(--md-sys-color-primary)`, which follows M3 conventions.
 
 ---
 
-## 違規類型 4：前綴不一致
+## Violation Type 4: Inconsistent Prefix
 
-**定義**：同一個 Figma 檔案中，Variables 使用了兩種以上的前綴（例如 `md/...` 與 `bd/...` 混用），違反整個 session 使用同一前綴的規則。
+**Definition**: Variables in the same Figma file use two or more different prefixes (e.g. `md/...` mixed with `bd/...`), violating the rule of using a single prefix throughout the session.
 
-**偵測方式**：
+**Detection**:
 ```js
 const allVars = await figma.variables.getLocalVariablesAsync();
 const prefixes = new Set(allVars.map(v => v.name.split('/')[0]));
@@ -105,21 +105,21 @@ return {
 };
 ```
 
-**修正方式**：
-- 確認正確的前綴（詢問使用者）
-- 批次重命名違規 variable：`variable.name = variable.name.replace(/^old-prefix\//, 'new-prefix/')`
-- 同步更新 `codeSyntax.WEB` 中的前綴
+**Fix**:
+- Confirm the correct prefix (ask the user)
+- Batch-rename violating variables: `variable.name = variable.name.replace(/^old-prefix\//, 'new-prefix/')`
+- Sync-update the prefix in `codeSyntax.WEB` as well
 
 ---
 
-## 違規類型 5：Ref 層變數直接綁定到節點
+## Violation Type 5: Ref Layer Variable Bound Directly to a Node
 
-**定義**：節點的視覺屬性（fills、strokes、radius 等）直接綁定了 Ref 層 variable，而非 Sys 或 Comp 層。Ref 層應只做原始值儲存，不應直接出現在設計組件上。
+**Definition**: A node's visual properties (fills, strokes, radius, etc.) are directly bound to a Ref layer variable rather than a Sys or Comp layer variable. The Ref layer is for storing raw values only and should never appear directly on design components.
 
-**偵測方式**：
-需巡覽設計稿節點，檢查 `boundVariables`，比對其指向的 variable 名稱是否包含 `/ref/`：
+**Detection**:
+Traverse the design nodes, check `boundVariables`, and compare the target variable name for `/ref/`:
 ```js
-// 在指定頁面掃描所有節點的 boundVariables
+// Scan all nodes on the current page for boundVariables
 await figma.setCurrentPageAsync(figma.currentPage);
 const violations = [];
 figma.currentPage.findAll(node => {
@@ -129,14 +129,13 @@ figma.currentPage.findAll(node => {
     const refs = Array.isArray(binding) ? binding : [binding];
     for (const b of refs) {
       if (b?.id) {
-        // 記錄下來，稍後對比 variable 名稱
         violations.push({ nodeId: node.id, nodeName: node.name, prop, variableId: b.id });
       }
     }
   }
   return false;
 });
-// 再查 variable 名稱
+// Look up variable names
 const result = [];
 for (const item of violations) {
   const v = await figma.variables.getVariableByIdAsync(item.variableId);
@@ -147,53 +146,53 @@ for (const item of violations) {
 return result;
 ```
 
-**修正方式**：
-- 確認對應的 Sys 或 Comp token 是否存在
-- 若存在：重新綁定節點到正確層級的 token
-- 若不存在：先建立 Sys / Comp token 再綁定
+**Fix**:
+- Check whether the corresponding Sys or Comp token exists
+- If it exists: rebind the node to the correct layer's token
+- If it does not exist: create the Sys / Comp token first, then bind
 
 ---
 
-## 違規類型 6：空 Collection（有集合但無 Variables）
+## Violation Type 6: Empty Collection (collection exists but has no variables)
 
-**定義**：File 中存在 variable collection，但 `variableIds` 陣列為空，是廢棄或誤建的集合。
+**Definition**: The file contains a variable collection whose `variableIds` array is empty — an abandoned or accidentally created collection.
 
-**偵測方式**：
+**Detection**:
 ```js
 const cols = await figma.variables.getLocalVariableCollectionsAsync();
 const empty = cols.filter(c => c.variableIds.length === 0);
 return empty.map(c => ({ name: c.name, id: c.id }));
 ```
 
-**修正方式**：詢問使用者是否要刪除空 collection：
+**Fix**: Ask the user whether to delete the empty collection:
 ```js
-// 刪除前請使用者確認 collection 名稱
+// Ask the user to confirm the collection name before deleting
 const col = await figma.variables.getVariableCollectionByIdAsync(collectionId);
 col.remove();
 ```
 
 ---
 
-## 稽核回報格式
+## Audit Report Format
 
-回報時以此格式呈現：
-
-```
-## Variables 稽核結果
-
-### 發現 {N} 個問題
-
-| # | 違規類型 | 變數 / 節點 | 說明 |
-|---|---------|------------|------|
-| 1 | 跨層直連 | md/comp/filled-button/label-text/color | Comp 直接別名 Ref，跳過 Sys |
-| 2 | 未設 WEB syntax | md/sys/color/primary | codeSyntax.WEB 為空 |
-| 3 | ALL_SCOPES | md/comp/filled-button/container/shape | scope 未明確設定 |
-
-是否要自動修正以上 3 個問題？
-```
-
-若無違規，回報：
+Present findings in this format:
 
 ```
-✓ 所有 Variables 符合 M3 三層繼承規範，無違規。
+## Variables Audit Results
+
+### Found {N} issue(s)
+
+| # | Violation Type | Variable / Node | Description |
+|---|---------------|----------------|-------------|
+| 1 | Cross-layer direct alias | md/comp/filled-button/label-text/color | Comp aliases Ref directly, skipping Sys |
+| 2 | Missing WEB syntax | md/sys/color/primary | codeSyntax.WEB is empty |
+| 3 | ALL_SCOPES | md/comp/filled-button/container/shape | Scope not explicitly set |
+
+Do you want to automatically fix the above 3 issues?
+```
+
+If no violations are found, report:
+
+```
+✓ All Variables comply with the M3 three-tier inheritance specification. No violations found.
 ```

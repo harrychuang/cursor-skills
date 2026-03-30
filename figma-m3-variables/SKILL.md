@@ -1,41 +1,44 @@
 ---
 name: figma-m3-variables
 description: >-
-  在 Figma 設計稿中以 Google Material Design 三層 token 繼承方式（Ref → Sys → Comp）建立、套用、稽核與理解 Variables。
-  使用時機：使用者要為元件或界面建立 Variables、套用現有 Variables 到節點、稽核 token 命名與結構是否符合規範、
-  或希望 AI 讀懂現有 Variables 後反推設計元件。
-  觸發詞：建立 Variables、套用 Variables、Figma variables、M3 token、design token、token 繼承、
-  token 稽核、audit variables、從 variables 設計元件、三層 token。
+  Create, apply, audit, and understand Variables in Figma using Google Material Design's
+  three-tier token inheritance (Ref → Sys → Comp).
+  Use when: creating Variables for components or screens, applying existing Variables to nodes,
+  auditing token naming and structure for compliance, or having AI read existing Variables
+  to reverse-engineer design components.
+  Triggers: create Variables, apply Variables, Figma variables, M3 token, design token,
+  token inheritance, token audit, audit variables, design component from variables, three-tier token.
 ---
 
 # Figma M3 Variables
 
-以 Google Material Design 3 三層繼承（Ref → Sys → Comp）在 Figma 中管理 Variables 的完整流程。
+Complete workflow for managing Variables in Figma using Google Material Design 3
+three-tier inheritance (Ref → Sys → Comp).
 
-**MANDATORY prerequisite**: 任何 `use_figma` 呼叫前都必須先讀取 `figma-use` skill。
-**Always pass** `skillNames: "figma-m3-variables"` 給每一個 `use_figma` 呼叫。
-
----
-
-## 0. 通用規則（每條工作流都適用）
-
-1. **Inspect 先於 Write** — 每次操作前先執行 read-only `use_figma` 確認現有狀態，再執行寫入。
-2. **ALL_SCOPES 禁止使用** — 依 token 角色設定明確 scope（見 [token-spec.md](references/token-spec.md)）。
-3. **必設 WEB code syntax** — 格式固定為 `var(--{prefix}-{layer}-{name})`，例如 `var(--md-sys-color-primary)`。
-4. **return 所有 ID** — 每個建立或修改的腳本都必須 `return` 所有受影響的 variable ID 與 node ID。
-5. **token 前綴一旦確認就固定** — 整個 session 使用同一前綴，不允許混用。
-6. **`use_figma` 呼叫嚴格循序** — 絕不並行執行兩個 `use_figma`。
-7. 遇到錯誤先停下來讀錯誤訊息，修正後再重試，絕不盲目 retry。
+**MANDATORY prerequisite**: Read the `figma-use` skill before any `use_figma` call.
+**Always pass** `skillNames: "figma-m3-variables"` to every `use_figma` call.
 
 ---
 
-## 工作流 A：套用現有 Variables 到元件
+## 0. General Rules (apply to every workflow)
 
-**觸發**：使用者提供 Figma URL + node-id，要求套用 Variables。
+1. **Inspect before Write** — Before each operation, run a read-only `use_figma` to confirm current state, then proceed with writes.
+2. **ALL_SCOPES is forbidden** — Set explicit scopes based on token role (see [token-spec.md](references/token-spec.md)).
+3. **Always set WEB code syntax** — Format is fixed: `var(--{prefix}-{layer}-{name})`, e.g. `var(--md-sys-color-primary)`.
+4. **Return all IDs** — Every create/modify script must `return` all affected variable IDs and node IDs.
+5. **Token prefix is fixed once confirmed** — Use the same prefix throughout the entire session; mixing prefixes is not allowed.
+6. **`use_figma` calls are strictly sequential** — Never run two `use_figma` calls in parallel.
+7. On error, stop and read the error message, fix it, then retry — never retry blindly.
 
-### 步驟
+---
 
-1. **Inspect** — 列出 file 中所有 variable collections 與 variables：
+## Workflow A: Apply Existing Variables to a Component
+
+**Trigger**: User provides a Figma URL + node-id and requests Variables to be applied.
+
+### Steps
+
+1. **Inspect** — List all variable collections and variables in the file:
    ```js
    const cols = await figma.variables.getLocalVariableCollectionsAsync();
    const result = [];
@@ -50,106 +53,184 @@ description: >-
    return result;
    ```
 
-2. **判斷**：
-   - Variables 存在且命名符合 M3 三層結構 → 執行步驟 3
-   - Variables 不存在或不完整 → 轉入**工作流 B**
+2. **Evaluate**:
+   - Variables exist and naming follows M3 three-tier structure → proceed to Step 3
+   - Variables are missing or incomplete → switch to **Workflow B**
 
-3. **比對元件需求** — 根據元件類型（Button、Card 等）從 Comp 層找到對應 token，列出擬綁定清單後呈現給使用者確認。
+3. **Match component requirements** — Based on the component type (Button, Card, etc.), find the corresponding tokens from the Comp layer, list the proposed bindings, and present them to the user for confirmation.
 
-4. **綁定** — 執行：
-   - 背景色 / 前景色：`figma.variables.setBoundVariableForPaint(paint, "color", variable)` → 接回新 paint 再指派
-   - 圓角：`node.setBoundVariable("topLeftRadius", variable)` × 4 個角
-   - padding：`node.setBoundVariable("paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom", variable)`
-   - gap：`node.setBoundVariable("itemSpacing", variable)`
-   - 文字顏色同上（`setBoundVariableForPaint` 到 text node 的 fills）
+4. **Bind** — Execute:
+   - Background / foreground color: `figma.variables.setBoundVariableForPaint(paint, "color", variable)` → assign the resulting paint back to the node
+   - Corner radius: `node.setBoundVariable("topLeftRadius", variable)` × all 4 corners
+   - Padding: `node.setBoundVariable("paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom", variable)`
+   - Gap: `node.setBoundVariable("itemSpacing", variable)`
+   - Text color: same as above (`setBoundVariableForPaint` on the text node's fills)
 
-5. **Validate** — 呼叫 `get_screenshot` 確認視覺正確。
-
----
-
-## 工作流 B：建立 Variables（檔案中尚未建立）
-
-**觸發**：檔案中找不到符合 M3 三層結構的 Variables，或使用者明確要求建立。
-
-### 步驟
-
-1. **詢問前綴** — 使用 AskQuestion 請使用者選擇（例如 `md`、`dd`、`bd` 或自訂）。
-
-2. **詢問 Collection 結構** — 使用 AskQuestion：
-   - **分三層**（推薦）：三個 collection：`{Prefix} · Reference`、`{Prefix} · System`、`{Prefix} · Component · {ElementName}`
-   - **單一 Collection**：一個 collection，用 group prefix 區分三層
-
-3. **Inspect** — 確認目前 file 無重複 collection 名稱。
-
-4. **建立 Variables** — 依 [token-spec.md](references/token-spec.md) 的 token 清單：
-   - **Ref 層**：存放原始數值（色碼、數字），scope 設 `[]`（隱藏，不出現在 picker）
-   - **Sys 層**：別名（`VARIABLE_ALIAS`）指向 Ref，scope 依角色設定
-   - **Comp 層**：別名指向 Sys，scope 依角色設定
-
-5. **綁定** — 確認 Variables 建立完畢後，執行工作流 A 步驟 4 綁定到目標節點。
-
-6. **Validate** — `get_screenshot` 確認視覺正確，並回報三層 collection 的 variable 數量。
-
-### Ref 層 scope 規則
-
-Ref 層 variables 不應出現在設計師的 picker 中，scope 必須設為 `[]`（空陣列）。
+5. **Validate** — Call `get_screenshot` to confirm visual correctness.
 
 ---
 
-## 工作流 C：稽核現有 Variables
+## Workflow B: Create Variables (none exist in the file)
 
-**觸發**：使用者要求檢查、稽核、audit variables 或詢問「命名有沒有問題」。
+**Trigger**: No M3 three-tier Variables found in the file, or user explicitly requests creation.
 
-### 步驟
+### Steps
 
-1. **Inspect** — 讀取所有 collections、variables、scopes、code syntax、valuesByMode。
+1. **Discover design guidelines** — Run the same discovery check as Workflow D Step 1.
+   - **Guidelines found** → summarize and confirm with the user before deriving token values.
+   - **No guidelines found** → run the same AskQuestion flow as Workflow D Step 1 Path B to gather visual style preferences. Use the answers to inform Ref token values (palette colors, shape radius, spacing scale) in Step 4.
 
-2. **依 [audit-rules.md](references/audit-rules.md) 檢查** — 逐條套用 6 種違規類型，彙整問題清單。
+2. **Ask for prefix** — Use AskQuestion to let the user choose (e.g. `md`, `dd`, `bd`, or custom).
 
-3. **回報** — 以表格或清單呈現：
-   - 違規變數名稱
-   - 違規類型
-   - 建議修正方式
+3. **Ask for Collection structure** — Use AskQuestion:
+   - **Three separate collections** (recommended): `{Prefix} · Reference`, `{Prefix} · System`, `{Prefix} · Component · {ElementName}`
+   - **Single collection**: one collection using group prefixes to distinguish the three layers
 
-4. **詢問是否修正** — 呈現問題後使用 AskQuestion 詢問：「是否要自動修正以上問題？」若使用者同意，逐項執行修正腳本。
+4. **Inspect** — Confirm there are no duplicate collection names in the current file.
 
-5. **修正後 Validate** — 再次 inspect 確認違規歸零。
+5. **Create Variables** — Follow the token list in [token-spec.md](references/token-spec.md), using values informed by the design guidelines gathered in Step 1:
+   - **Ref layer**: stores raw values (hex colors, numbers); scope set to `[]` (hidden, not shown in picker)
+   - **Sys layer**: aliases (`VARIABLE_ALIAS`) pointing to Ref; scope set by role
+   - **Comp layer**: aliases pointing to Sys; scope set by role
 
----
+6. **Bind** — Once Variables are created, run Workflow A Step 4 to bind them to target nodes.
 
-## 工作流 D：從現有 Variables 設計元件
+7. **Validate** — Call `get_screenshot` to confirm visual correctness, and report the variable counts for each of the three-tier collections.
 
-**觸發**：使用者希望 AI 理解現有 token 並用它們建立或更新元件。
+### Ref Layer Scope Rule
 
-### 步驟
-
-1. **Inspect** — 列出所有 variables，分析三層結構與 token 語意（`primary`、`on-primary`、`container-shape` 等）。
-
-2. **理解語意對應**：
-   - `**/color/primary` 或 `**/container/background-color` → 元件背景
-   - `**/color/on-primary` 或 `**/label-text/color` → 元件前景文字
-   - `**/shape/**` 或 `**/container/shape` → 圓角
-   - `**/padding-horizontal` / `**/padding-vertical` → 內距
-   - `**/spacing/**` 或 `**/gap` → gap
-
-3. **建立元件** — 根據理解到的 token 對應建立 Frame / Component，並用工作流 A 步驟 4 的方式綁定 variables。若要建立完整的 Component Set（含 variants），先參考 `figma-generate-library` skill 的 Phase 3 規則。
-
-4. **Validate** — `get_screenshot` 確認元件視覺正確，token 顏色解析無誤。
+Ref layer variables must not appear in the designer's picker. Their scope must be set to `[]` (empty array).
 
 ---
 
-## 與現有 Skill 的分工
+## Workflow C: Audit Existing Variables
 
-| Skill | 負責範圍 |
-|-------|---------|
-| `figma-use` | Plugin API 底層規則（顏色 0–1、return、page 切換等）**必須先讀取** |
-| `figma-m3-variables`（本 Skill） | Figma 端 M3 Variables 的建立、套用、稽核、反推設計 |
-| `design-system-governance` | 程式碼端 token 治理（CSS/SCSS tokens），與本 Skill 互補 |
-| `figma-generate-library` | 完整 design system 多階段建構；工作流 D 遇元件建立時可參考其 Phase 3 |
+**Trigger**: User requests a check, audit, or asks "is the naming correct?".
+
+### Steps
+
+1. **Inspect** — Read all collections, variables, scopes, code syntax, and valuesByMode.
+
+2. **Apply [audit-rules.md](references/audit-rules.md)** — Check each of the 6 violation types and compile a list of issues.
+
+3. **Report** — Present as a table or list:
+   - Violating variable names
+   - Violation type
+   - Suggested fix
+
+4. **Ask whether to fix** — After presenting the issues, use AskQuestion: "Do you want to automatically fix the above issues?" If the user agrees, execute fix scripts for each item.
+
+5. **Validate after fix** — Inspect again to confirm zero violations remain.
 
 ---
 
-## 參考文件
+## Workflow D: Design Components from Existing Variables
 
-- [token-spec.md](references/token-spec.md) — M3 三層命名規則、各元件 token 清單、scope 對照表
-- [audit-rules.md](references/audit-rules.md) — 稽核違規類型定義與修正指引
+**Trigger**: User wants the AI to understand existing tokens and use them to create or update components.
+
+### Steps
+
+1. **Discover design guidelines** — Before doing anything else, inspect the file for an existing design system or style guide. Run the following script:
+
+   ```js
+   const pages = figma.root.children.map(p => p.name);
+   const paintStyles  = await figma.getLocalPaintStylesAsync();
+   const textStyles   = await figma.getLocalTextStylesAsync();
+   const effectStyles = await figma.getLocalEffectStylesAsync();
+   const components   = figma.root.findAllWithCriteria({ types: ['COMPONENT', 'COMPONENT_SET'] });
+   return {
+     pages,
+     paintStyleCount:  paintStyles.length,
+     textStyleCount:   textStyles.length,
+     effectStyleCount: effectStyles.length,
+     componentCount:   components.length,
+     paintStyles:  paintStyles.map(s  => ({ name: s.name, description: s.description })),
+     textStyles:   textStyles.map(s   => ({ name: s.name, fontSize: s.fontSize, fontName: s.fontName })),
+   };
+   ```
+
+   **Evaluate the result and branch:**
+
+   **Path A — Design guidelines exist** (paint styles ≥ 3 OR text styles ≥ 2 OR components ≥ 5, OR a page name contains "guideline / style / brand / design system / foundation / principle"):
+   - Scan those pages and existing components for visual patterns
+   - Summarize findings to the user before proceeding:
+     - **Color palette**: primary, secondary, neutral, semantic (error/success) hues
+     - **Shape language**: fully rounded / slightly rounded / sharp corners (infer from component radii)
+     - **Typography scale**: heading sizes, body sizes, font families
+     - **Spacing rhythm**: common padding/gap values
+     - **Visual tone**: minimal / expressive / corporate / playful (infer from density and color saturation)
+   - Ask the user: "I found the following design guidelines. Does this match your intent before I start building?" — present the summary and wait for confirmation or corrections.
+
+   **Path B — No design guidelines found** (counts are all low and no guideline page exists):
+   - Inform the user: "I couldn't find any design guidelines in this file."
+   - Use AskQuestion to gather the following (may be split into multiple questions):
+     1. **Product type** — What kind of product is this? (e.g. consumer app, enterprise tool, e-commerce, dashboard, marketing site)
+     2. **Visual style** — Which direction best describes the desired aesthetic?
+        - Minimal & clean (lots of whitespace, subtle shadows, neutral palette)
+        - Bold & expressive (strong colors, large typography, dynamic shapes)
+        - Corporate & trustworthy (conservative palette, structured layout, formal typography)
+        - Playful & friendly (rounded shapes, vibrant colors, casual typography)
+        - Custom — user describes in their own words
+     3. **Shape preference** — Fully rounded (pill) / Slightly rounded / Sharp / Follow M3 defaults
+     4. **Color preference** — Any brand colors or preferred palette? (hex codes or descriptions)
+     5. **Reference products / brands** — Any existing apps or websites to reference?
+   - Summarize the collected preferences and confirm with the user before proceeding.
+
+2. **Inspect variables** — List all variables, analyze the three-tier structure and token semantics (`primary`, `on-primary`, `container-shape`, etc.).
+
+3. **Understand semantic mapping**:
+   - `**/color/primary` or `**/container/background-color` → component background
+   - `**/color/on-primary` or `**/label-text/color` → component foreground text
+   - `**/shape/**` or `**/container/shape` → corner radius
+   - `**/padding-horizontal` / `**/padding-vertical` → padding
+   - `**/spacing/**` or `**/gap` → gap
+   - Cross-reference these mappings against the design guidelines confirmed in Step 1 — if the token values conflict with the guidelines, flag it to the user.
+
+4. **Identify variants and states** — Before building, analyze the component type and propose which variants and interaction states are applicable. Use AskQuestion (multi-select) to let the user choose:
+
+   **Variants** (structural differences — become Component Set properties):
+   - Refer to the component's typical variant dimensions in [token-spec.md § 7](references/token-spec.md)
+   - Examples: `Size` (Small / Medium / Large), `Style` (Filled / Outlined / Text), `Leading icon` (True / False)
+
+   **Interaction states** (visual overrides — become additional Component Set properties or separate frames):
+   - Always include: `Default`
+   - Suggest based on component type (see [token-spec.md § 7](references/token-spec.md)):
+     - `Hovered` — container color lightens/darkens by state layer opacity
+     - `Focused` — typically adds a focus ring or outline
+     - `Pressed` — deeper state layer overlay
+     - `Disabled` — reduced opacity or dedicated disabled tokens
+     - `Error` — replaces primary color tokens with error tokens
+     - `Success` — replaces primary color tokens with success/positive tokens
+
+   Present the proposed list and ask: "Which variants and states would you like to include?"
+
+5. **Plan state tokens** — For each selected state, determine whether existing Comp tokens cover it or new state-specific tokens are needed:
+   - If the file already has tokens like `…/container/background-color/hovered` → reuse them
+   - If not → add them following the naming convention in [token-spec.md § 7](references/token-spec.md) before proceeding
+   - Disabled state: always needs a dedicated token (opacity or color override); do not reuse Default tokens
+
+6. **Build the component** — Based on the token mappings, confirmed design guidelines, and selected variants/states:
+   - If only `Default` state (no variants) → create a single Frame / Component and bind variables using Workflow A Step 4
+   - If variants or multiple states are selected → create a **Component Set**: one Component node per variant × state combination, each with appropriate token bindings; refer to the Phase 3 rules in the `figma-generate-library` skill for Component Set structure
+   - Name each variant frame descriptively, e.g. `State=Hovered, Size=Medium`
+   - Ensure visual decisions (radius, spacing, color) are consistent with the design guidelines from Step 1
+
+7. **Validate** — Call `get_screenshot` to confirm the component looks correct, token colors resolve properly, and all selected states are visually distinct.
+
+---
+
+## Division of Responsibility with Other Skills
+
+| Skill | Responsibility |
+|-------|----------------|
+| `figma-use` | Underlying Plugin API rules (colors 0–1, return, page switching, etc.) — **must be read first** |
+| `figma-m3-variables` (this skill) | Creating, applying, auditing, and reverse-engineering M3 Variables in Figma |
+| `design-system-governance` | Code-side token governance (CSS/SCSS tokens) — complements this skill |
+| `figma-generate-library` | Full multi-phase design system build; refer to its Phase 3 when Workflow D involves component creation |
+
+---
+
+## Reference Documents
+
+- [token-spec.md](references/token-spec.md) — M3 three-tier naming rules, component token lists, and scope reference table
+- [audit-rules.md](references/audit-rules.md) — Audit violation type definitions and fix guidelines

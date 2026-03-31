@@ -11,7 +11,7 @@ Before any implementation, scan the project to establish:
 
 | Convention | Where to look | What to find |
 |---|---|---|
-| **Token naming** | `src/styles/`, `*.css`, `*.scss`, `tokens/` | prefix for ref / sys / comp layers (e.g. `sd-ref-`, `--color-`) |
+| **Token naming** | `src/styles/`, `*.css`, `*.scss`, `tokens/` | prefix for ref / sys / comp layers (e.g. `md-ref-`, `sd-sys-`); verify names follow **Token Layer Rules** (ref = primitives only; sys = shared semantics; comp = component/region slots) |
 | **Token layer structure** | Token files | Are there 3 layers (ref → sys → comp) or 2 (primitive → semantic)? |
 | **Grid / layout system** | CSS, HTML templates | Class prefix for page grid, cell spans, color variants |
 | **Animation keyframes** | CSS files | Keyframe name prefix, motion token names |
@@ -91,13 +91,31 @@ Apply all ten when writing or reviewing UI:
 
 ## Token Layer Rules
 
-Apply using discovered project prefixes:
+Apply using discovered project prefixes. **Each layer has distinct naming responsibility:** ref names describe *raw values or scale steps*; sys names describe *shared, reusable semantics*; comp names describe *component- or region-specific slots*.
 
-| Layer | Role | Required naming pattern |
+| Layer | Role | Naming pattern (required) |
 |---|---|---|
-| **ref** | Raw values only (palette, spacing, radius, type scale, elevation) | project's ref prefix |
-| **sys** | Semantic roles mapped from ref (color roles, shape roles, motion roles) | project's sys prefix |
-| **comp** | Component-facing slots referencing sys only | project's comp prefix |
+| **ref** | Raw values only (palette, spacing scale, radius, type scale, elevation) | **Primitive / intuitive only.** Names must read as the value or palette step (e.g. `*-ref-size-12` → 12px, `*-ref-color-red-50` → a red step). **Must not** encode component names, layout regions, or one-off UI chrome. |
+| **sys** | Semantic roles mapped from ref (color roles, spacing roles, motion roles) | **Shared, product-wide semantics.** Role-based names any component might use. **Must not** name a specific component structure (no `button`, `input`, `card`, `bottom-bar`, etc.). |
+| **comp** | Component-facing slots referencing sys only | **Component vocabulary allowed** (`button`, `input`, `card`, `bottom-bar`, …). This is the only layer for names tied to a particular component or composite. |
+
+### Reference layer — intuitive primitives
+
+- **Purpose:** A reader should infer the stored value from the name alone (size, color step, spacing step, radius step).
+- **Do:** `*-ref-size-12`, `*-ref-color-red-50`, `*-ref-space-4`, `*-ref-radius-sm` (adapt prefix to the project).
+- **Don't:** Names that describe *where* or *what UI* they belong to — e.g. `*-ref-spacing-bottom-bar-padding`, `*-ref-color-header-icon`. Those concerns belong in **sys** (shared semantic) and/or **comp** (component slot), not ref.
+
+### System layer — shared semantics, not components
+
+- **Purpose:** Map ref primitives to reusable roles (surface / on-surface / border / focus / inline spacing roles, etc.) that many components consume.
+- **Do:** Names that could apply across multiple components: e.g. `*-sys-color-surface`, `*-sys-space-inline-md`, `*-sys-color-action-primary` (if “action primary” is a global semantic role).
+- **Don't:** Token names scoped to one component’s internal structure (e.g. `*-sys-button-padding-y`, `*-sys-card-header-gap`). Push those to **comp**; keep sys vocabulary generic.
+
+### Component layer — component- and region-specific slots
+
+- **Purpose:** Bind a specific component or composite (button, input, card, bottom bar, …) to sys (and thus ref) without polluting lower layers.
+- **Do:** `*-comp-button-padding-y`, `*-comp-bottom-bar-padding`, `*-comp-card-gap` — names may reference the component or layout region.
+- **Inheritance:** Comp references **sys** only (never ref directly), per constraints above.
 
 ---
 

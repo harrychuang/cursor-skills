@@ -1,13 +1,13 @@
 # Audit Rules — Variable Audit Guidelines
 
-> This document is used by Workflow C in the `figma-m3-variables` skill. It defines 6 violation types and the corresponding fix script templates.
+> This document is used by Workflow C in the `figma-m3-variables` skill. It defines violation types and the corresponding fix script templates.
 
 ---
 
 ## Audit Process
 
 1. Run the inspect script to retrieve complete variable data (name, resolvedType, scopes, codeSyntax, valuesByMode)
-2. Apply each of the 6 rules below, recording all matching variables
+2. Apply each of the rules below (including layer naming heuristics), recording all matching variables
 3. Compile all issues into a table and report to the user
 4. Ask the user whether to auto-fix (each violation type can be selected individually)
 5. Run fix scripts and inspect again to confirm zero violations remain
@@ -170,6 +170,35 @@ return empty.map(c => ({ name: c.name, id: c.id }));
 const col = await figma.variables.getVariableCollectionByIdAsync(collectionId);
 col.remove();
 ```
+
+---
+
+## Violation Type 7: Ref or Sys uses component- or region-specific naming
+
+**Definition**: A **Ref** or **Sys** variable name includes vocabulary that belongs only in **Comp** — component types, screen regions, or single-component anatomy (see [token-spec.md §1](token-spec.md) “Responsibility by layer”).
+
+**Detection (heuristic)** — flag `v.name` when:
+
+- The path includes `/ref/` or `/sys/`, **and**
+- Any segment (split on `/`) matches case-insensitive substrings such as:
+  - **Components / patterns**: `button`, `text-field`, `textfield`, `filled-button`, `outlined-button`, `chip`, `dialog`, `card`, `fab`, `switch`, `checkbox`, `radio`, `input`, `top-app-bar`, `bottom-bar`, `navigation-bar`, `app-bar`, `sheet`, `snackbar`, `banner`, `list-item`, `tab-bar`
+  - **Component-specific spacing roles** (in Sys only): `button-padding`, `button-icon`, `bar-padding`, `field-padding` (Ref should use numeric spacing; Sys should use generic `inset-*`, `gap-*`)
+
+Adjust the list per project vocabulary; false positives are possible — use human judgment.
+
+**Examples of violations**:
+
+| Name | Issue |
+|------|--------|
+| `md/ref/spacing/button/padding-h` | Ref must not name `button` |
+| `md/sys/spacing/button-padding-h` | Sys must use generic semantics; Comp maps “button horizontal padding” to Sys |
+| `md/sys/color/top-app-bar-surface` | Region-specific; prefer `sys/color/surface-container` + Comp for top app bar |
+
+**Fix**:
+
+- **Ref**: Rename to a primitive path (e.g. `ref/spacing/16`) and keep the numeric value.
+- **Sys**: Rename to a shared semantic (e.g. `sys/spacing/inset-horizontal-md`) and point to the Ref above.
+- **Comp**: Add or reuse `comp/{component}/...` tokens that alias the corrected Sys tokens; update bindings.
 
 ---
 

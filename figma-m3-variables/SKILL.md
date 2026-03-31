@@ -30,6 +30,43 @@ three-tier inheritance (Ref → Sys → Comp).
 6. **`use_figma` calls are strictly sequential** — Never run two `use_figma` calls in parallel.
 7. On error, stop and read the error message, fix it, then retry — never retry blindly.
 
+### Layer naming philosophy (Ref / Sys / Comp)
+
+Three layers have **different naming jobs**. When creating, applying, or auditing Variables, enforce this split:
+
+| Layer | Role | Naming rule |
+|-------|------|-------------|
+| **Reference (`ref`)** | Raw values only (hex, px, weight). | **Primitive, scale, or value** — a name must read as “what number or swatch is this?” with **no** component, screen, or layout region. |
+| **System (`sys`)** | Product-wide semantics shared by many components. | **Shared, semantic** — roles like primary, error, inset, gap — **no** names tied to one component’s structure or anatomy. |
+| **Component (`comp`)** | Bind real UI to Sys. | **Component and structure** — `button`, `input`, `card`, `bottom-bar`, `container/padding-horizontal`, etc. |
+
+**Reference — intuitive value naming (good)**
+
+- Colors: palette steps or hue steps, e.g. `ref/color/red/50`, `ref/palette/primary/40` — the name reflects **the color scale**, not where it is used.
+- Sizes / spacing: **the value is in the name**, e.g. `ref/size/12` → 12px, `ref/spacing/16` → 16 — not roles like “bottom bar” or “button”.
+- Radius, type: `ref/radius/12`, `ref/type/size/14` — still primitive.
+
+**Reference — forbidden**
+
+- Any segment that names a **component** or **pattern** (e.g. `button`, `input`, `card`, `fab`, `chip`, `dialog`).
+- Any segment that names a **layout region** or **screen part** (e.g. `bottom-bar`, `top-app-bar`, `navigation-bar`, `sheet`).
+- Spacing that encodes **where** it is used instead of **how much** it is, e.g. `ref/spacing/bottom-bar/padding` or `ref/spacing/button/padding-h` — those belong in **Comp** (and may alias Sys generic spacing).
+
+**System — good**
+
+- Semantics reused across the product: `sys/color/primary`, `sys/color/on-primary`, `sys/spacing/inset-horizontal-md`, `sys/spacing/gap-inline-sm`, `sys/shape/corner-full`.
+- Names describe **role**, not a specific component’s internal layout.
+
+**System — forbidden**
+
+- Component-specific or anatomy tied to one component: e.g. `sys/spacing/button-padding-h`, `sys/color/top-app-bar-surface`, `sys/size/navigation-bar-height` — push the component name to **Comp**; keep Sys generic (e.g. `inset-horizontal-md`, `surface-container`).
+
+**Component — where structure lives**
+
+- Only here: `comp/filled-button/...`, `comp/text-field/...`, `comp/navigation-bar/...`, `container/padding-horizontal`, `with-icon/icon-label-gap`, etc. Comp tokens **alias Sys** (and Sys aliases Ref).
+
+Detailed naming patterns, WEB examples, and the Filled Button walkthrough with corrected Ref/Sys names are in [references/token-spec.md](references/token-spec.md) §1 and §4.
+
 ---
 
 ## Workflow A: Apply Existing Variables to a Component
@@ -111,7 +148,7 @@ Ref layer variables must not appear in the designer's picker. Their scope must b
 
 1. **Inspect** — Read all collections, variables, scopes, code syntax, and valuesByMode.
 
-2. **Apply [audit-rules.md](references/audit-rules.md)** — Check each of the 6 violation types and compile a list of issues.
+2. **Apply [audit-rules.md](references/audit-rules.md)** — Check each violation type (including Ref/Sys naming in §7) and compile a list of issues.
 
 3. **Report** — Present as a table or list:
    - Violating variable names

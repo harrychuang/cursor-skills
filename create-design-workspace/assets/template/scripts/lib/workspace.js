@@ -94,18 +94,24 @@ export function buildScreenManifest(config, screenNames, figmaConfigured) {
   }
 }
 
-export function buildTasksMarkdown(screenManifest, figmaConfigured) {
+export function buildTasksMarkdown(screenManifest, figmaConfigured, figmaAutomationReady) {
   const screenTasks = screenManifest.screens.length > 0
     ? screenManifest.screens.map(screen => `- [ ] Build \`${screen.route}\` from \`${screen.reference}\` as \`${screen.component}\``)
     : ['- [ ] Add one or more screenshots to `reference/` before screen implementation']
 
-  const figmaLines = figmaConfigured
+  const figmaLines = figmaConfigured && figmaAutomationReady
     ? [
       '- [ ] Run `skills/figma-m3-variables/SKILL.md` as Phase 0 before Phase A',
       '- [ ] Create or audit Figma variables in Ref -> Sys -> Comp order',
       '- [ ] Bind the agreed Figma variables to the key source components before code work',
       '- [ ] Use Figma as the source of truth during compare/parity work'
     ]
+    : figmaConfigured
+      ? [
+        '- [ ] Add `FIGMA_PAT` to `.env.local` before Figma-first automation or Phase 0',
+        '- [ ] Run `npm run workspace:sync` after updating `.env.local`',
+        '- [ ] Run `npm run workspace:check` to confirm Figma automation readiness'
+      ]
     : ['- [ ] Configure `.env.local` if you want Figma-first workflows and Phase 0 token binding']
 
   return [

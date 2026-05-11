@@ -76,7 +76,12 @@ npm run workspace:check
 ## Figma handling
 
 - If the user provides a Figma URL, pass `--figma-url`.
-- If the file is private or Phase 0 requires MCP access, also collect `FIGMA_PAT` and pass `--figma-pat`.
+- If the user intends to continue with Figma-first automation, require `FIGMA_PAT` before proceeding beyond bootstrap. Ask the user to add it to `.env.local` or provide it so bootstrap can pass `--figma-pat`.
+- If a Figma URL is present but `FIGMA_PAT` is missing, treat the workspace as only partially configured:
+  - bootstrap is allowed
+  - `workspace:sync` and `workspace:check` may still pass
+  - do not start Phase 0 or automated Figma-driven implementation yet
+  - explicitly tell the user to set `FIGMA_PAT` in `.env.local`, then re-run `npm run workspace:sync` and `npm run workspace:check`
 - After bootstrap, treat Figma mode as a gated workflow:
   - run `skills/figma-m3-variables/SKILL.md` as Phase 0
   - create or audit `Ref -> Sys -> Comp` variables

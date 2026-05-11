@@ -26,6 +26,8 @@ This repository is an AI-operable product workspace. It starts empty on purpose:
 
 ### Figma mode
 
+If `.env.local` contains `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but `FIGMA_PAT` is missing, stop and ask the user to set `FIGMA_PAT` in `.env.local`. Do not continue with automated Figma-driven work until it is present.
+
 If `.env.local` contains `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and `FIGMA_PAT`, run a Figma-first phase before implementation:
 
 1. Read `.env.local`.

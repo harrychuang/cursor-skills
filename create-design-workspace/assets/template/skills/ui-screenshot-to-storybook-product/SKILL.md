@@ -15,7 +15,9 @@ Use this workflow when the workspace is driven by screenshots in `reference/`, o
 
 ## Figma-first mode
 
-If `.env.local` contains Figma values:
+If `.env.local` contains `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but `FIGMA_PAT` is missing, stop and ask the user to set `FIGMA_PAT` in `.env.local` before continuing with Figma-first automation.
+
+If `.env.local` contains all three Figma values:
 
 1. Read Figma design context.
 2. Read Figma variables.

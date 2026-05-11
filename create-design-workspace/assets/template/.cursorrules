@@ -1,0 +1,21 @@
+# Design Workspace Starter
+
+Read these files before implementation:
+
+- `CLAUDE.md`
+- `start-here/BUILD_PLAN.md`
+- `start-here/TASKS.md`
+- `product/SCREEN_MANIFEST.json`
+- `skills/design-system-governance/SKILL.md`
+- `skills/ui-screenshot-to-storybook-product/SKILL.md`
+- `skills/ui-visual-parity/SKILL.md`
+- `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
+
+Rules:
+
+1. Storybook first for reusable UI.
+2. Tokens first for colors, spacing, radius, elevation, motion.
+3. Reuse existing components before inventing new ones.
+4. In Figma mode, run Phase 0 token creation or audit plus binding before code implementation.
+5. Support both `reference/` mode and Figma mode from `.env.local`.
+6. In compare work, treat Figma as source-of-truth when configured.

@@ -1,0 +1,11 @@
+---
+description: Design-system governance for this workspace
+alwaysApply: true
+---
+
+- Read `CLAUDE.md`, `start-here/BUILD_PLAN.md`, and `start-here/TASKS.md` before implementation.
+- Read `skills/design-system-governance/SKILL.md` before component or token work.
+- When `.env.local` is configured, run `skills/figma-m3-variables/SKILL.md` as Phase 0 before screen code.
+- No hardcoded design values when a token owner should exist.
+- Build reusable components and stories before screen composition.
+- Support both `reference/` screenshot inputs and optional Figma inputs from `.env.local`.

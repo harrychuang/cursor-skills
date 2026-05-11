@@ -1,7 +1,7 @@
 interface:
   display_name: "Create Design Workspace"
-  short_description: "Scaffold a UI-to-app workspace"
-  default_prompt: "Use $create-design-workspace to bootstrap a workspace from screenshots or a Figma URL and carry it through implementation."
+  short_description: "Start a UI-to-code project in an empty folder"
+  default_prompt: "Use $create-design-workspace to bootstrap a new UI-to-code workspace in this empty folder from screenshots or a Figma URL and carry it through implementation."
 
 policy:
   allow_implicit_invocation: true

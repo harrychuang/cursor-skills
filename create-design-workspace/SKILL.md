@@ -42,6 +42,7 @@ This skill is for starting a new design-driven project. It is not intended to be
 - Screenshot images attached in chat
 - A Figma design URL
 - Optional `FIGMA_PAT`
+- Optional `FIGMA_AUTH_MODE=connector`
 - Optional target directory and project name
 
 ## Bootstrap workflow
@@ -52,7 +53,7 @@ This skill is for starting a new design-driven project. It is not intended to be
 2. Run the bootstrap script:
 
 ```bash
-node /Users/HarryChuang/.cursor/skills/create-design-workspace/scripts/bootstrap-design-workspace.mjs --target "<target-dir>" [--project-name "<name>"] [--figma-url "<url>"] [--figma-pat "<pat>"] [--screenshot "<path>"]
+node /Users/HarryChuang/.cursor/skills/create-design-workspace/scripts/bootstrap-design-workspace.mjs --target "<target-dir>" [--project-name "<name>"] [--figma-url "<url>"] [--figma-pat "<pat>"] [--figma-auth-mode "connector"] [--screenshot "<path>"]
 ```
 
 3. After scaffolding, install the managed skills:
@@ -76,18 +77,27 @@ npm run workspace:check
 ## Figma handling
 
 - If the user provides a Figma URL, pass `--figma-url`.
-- If the user intends to continue with Figma-first automation, require `FIGMA_PAT` before proceeding beyond bootstrap. Ask the user to add it to `.env.local` or provide it so bootstrap can pass `--figma-pat`.
-- If a Figma URL is present but `FIGMA_PAT` is missing, treat the workspace as invalid for Figma-first automation:
+- If the user intends to continue with Figma-first automation, require one of these before proceeding beyond bootstrap:
+  - `FIGMA_PAT`
+  - `FIGMA_AUTH_MODE=connector` when Cursor, Claude Code, or Codex already has authenticated Figma MCP/connector access
+- If a Figma URL is present but neither `FIGMA_PAT` nor connector auth mode is configured, treat the workspace as invalid for Figma-first automation:
   - bootstrap is allowed
   - `workspace:sync` may still pass so tasks can be regenerated
-  - `workspace:check` must fail until `FIGMA_PAT` is set
+  - `workspace:check` must fail until `FIGMA_PAT` is set or `FIGMA_AUTH_MODE=connector` is declared
   - do not start Phase 0 or automated Figma-driven implementation yet
-  - explicitly tell the user to set `FIGMA_PAT` in `.env.local`, then re-run `npm run workspace:sync` and `npm run workspace:check`
+  - explicitly tell the user to set `FIGMA_PAT` in `.env.local`, or declare `FIGMA_AUTH_MODE=connector`, then re-run `npm run workspace:sync` and `npm run workspace:check`
 - After bootstrap, treat Figma mode as a gated workflow:
   - run `skills/figma-m3-variables/SKILL.md` as Phase 0
   - create or audit `Ref -> Sys -> Comp` variables
   - bind the agreed variables to the key source components
   - only then continue to code implementation
+
+## Storybook requirements
+
+- Use the latest stable Storybook 10 for shared component work.
+- Prefer the official setup flow for new projects and the official upgrade flow for existing projects.
+- Every reusable Storybook component must have Autodocs enabled.
+- Every reusable Storybook component must include a component description in its docs output.
 
 ## Full development workflow
 

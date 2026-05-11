@@ -23,11 +23,13 @@ This repository is a standalone design workspace starter.
 
 1. Do not bypass tokens with hardcoded values.
 2. Do not implement screens before establishing reusable component stories.
-3. If `.env.local` has a Figma URL and node ID but no `FIGMA_PAT`, stop and ask the user to set `FIGMA_PAT` before Figma-first automation.
-4. In Figma mode, run Phase 0 token creation or audit plus binding before code implementation.
-5. Use Figma as the source of truth when `.env.local` is fully configured with `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and `FIGMA_PAT`.
-6. Use `reference/` screenshots as the acceptance target in screenshot mode.
-7. Run the compare workflow after major UI changes.
+3. Use the latest stable Storybook 10 for shared component work.
+4. Reusable Storybook components must enable Autodocs and include component descriptions in the docs output.
+5. If `.env.local` has a Figma URL and node ID but has neither `FIGMA_PAT` nor `FIGMA_AUTH_MODE=connector`, stop and ask the user to set one of them before Figma-first automation.
+6. In Figma mode, run Phase 0 token creation or audit plus binding before code implementation.
+7. Use Figma as the source of truth when `.env.local` is fully configured with `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`.
+8. Use `reference/` screenshots as the acceptance target in screenshot mode.
+9. Run the compare workflow after major UI changes.
 
 ## How to invoke workflows
 
@@ -45,6 +47,7 @@ This repository is a standalone design workspace starter.
 If the tool does not support slash commands or `@file` image syntax, explicitly instruct it to read files by path, for example:
 
 - `Read reference/home.png and follow skills/ui-screenshot-to-storybook-product/SKILL.md`
-- `Read .env.local; if FIGMA_PAT is missing, ask the user to set it before Figma-first automation`
+- `Use Storybook 10 and ensure reusable component stories generate Autodocs with component descriptions`
+- `Read .env.local; if both FIGMA_PAT and FIGMA_AUTH_MODE=connector are missing, ask the user to set one before Figma-first automation`
 - `Read .env.local and run Phase 0 with skills/figma-m3-variables/SKILL.md before code work`
 - `Read .env.local and follow skills/ui-visual-parity/SKILL.md in Figma mode`

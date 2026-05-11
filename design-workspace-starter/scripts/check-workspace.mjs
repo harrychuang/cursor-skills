@@ -2,7 +2,10 @@ import { access, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { constants } from 'node:fs'
 import {
+  getFigmaAuthMode,
   getRequiredSkillPaths,
+  isFigmaAutomationReady,
+  isFigmaConfigured,
   loadWorkspaceConfig,
   parseEnvText,
   scanReferenceScreens
@@ -46,7 +49,9 @@ try {
   env = {}
 }
 
-const figmaConfigured = Boolean(env.FIGMA_FILE_URL && env.FIGMA_NODE_ID)
+const figmaConfigured = isFigmaConfigured(env)
+const figmaAutomationReady = isFigmaAutomationReady(env)
+const figmaAuthMode = getFigmaAuthMode(env)
 
 if (missing.length > 0) {
   console.error('Workspace check failed. Missing paths:')
@@ -60,6 +65,15 @@ if (screens.length === 0 && !figmaConfigured) {
   process.exit(1)
 }
 
+if (figmaConfigured && !figmaAutomationReady) {
+  console.error('Workspace check failed. Figma automation requires either FIGMA_PAT or FIGMA_AUTH_MODE=connector in .env.local.')
+  console.error('If Cursor, Claude Code, or Codex already has authenticated Figma MCP/connector access, set FIGMA_AUTH_MODE=connector. Otherwise add FIGMA_PAT.')
+  console.error('Then re-run `npm run workspace:sync` and `npm run workspace:check`.')
+  process.exit(1)
+}
+
 console.log('Workspace check passed.')
 console.log(`- reference screens: ${screens.length}`)
 console.log(`- figma configured: ${figmaConfigured}`)
+console.log(`- figma automation ready: ${figmaAutomationReady}`)
+console.log(`- figma auth mode: ${figmaAuthMode || 'none'}`)

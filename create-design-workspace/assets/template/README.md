@@ -11,7 +11,7 @@ This folder is the independent version of the generated ZIP workspace. It is mea
 - reference UI demos under `reference/`
 - Figma source in `.env.local` when Figma mode is needed
 - product requirements under `product/`
-- app code, Storybook, and design-system code created by your coding agent
+- app code, Storybook 10, and design-system code created by your coding agent
 
 It does not require `ui-explorer` to run.
 
@@ -37,7 +37,7 @@ The repository includes:
 
 1. Open this project in Cursor.
 2. Run `npm run workspace:init`.
-3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` before continuing.
+3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` or `FIGMA_AUTH_MODE=connector` before continuing.
 4. Run `npm run workspace:check`.
 5. Open `start-here/KICKSTART.md` and paste the Cursor prompt.
 
@@ -45,7 +45,7 @@ The repository includes:
 
 1. Open this project in Claude Code.
 2. Run `npm run workspace:init`.
-3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` before continuing.
+3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` or `FIGMA_AUTH_MODE=connector` before continuing.
 4. Run `npm run workspace:check`.
 5. Run `/build`.
 
@@ -53,7 +53,7 @@ The repository includes:
 
 1. Open this project in Codex.
 2. Run `npm run workspace:init`.
-3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` before continuing.
+3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` or `FIGMA_AUTH_MODE=connector` before continuing.
 4. Run `npm run workspace:check`.
 5. Open `start-here/KICKSTART.md` and paste the Codex prompt.
 
@@ -61,7 +61,7 @@ The repository includes:
 
 1. Accepts two design inputs:
    - `reference/*.png|jpg|webp`
-   - `FIGMA_FILE_URL` + `FIGMA_NODE_ID` + `FIGMA_PAT`
+   - `FIGMA_FILE_URL` + `FIGMA_NODE_ID` + (`FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`)
 2. Maintains the same AI workflow shape as the old ZIP:
    - design-system governance
    - screenshot/Figma to Storybook workflow
@@ -86,7 +86,7 @@ npm run workspace:init
 npm run figma:configure -- --url "https://www.figma.com/design/FILE/NAME?node-id=10-42" --pat "figd_..."
 ```
 
-If you start with a Figma URL but no PAT yet, add `FIGMA_PAT` to `.env.local` before Phase 0 or any automated Figma-driven implementation.
+If you start with a Figma URL but no PAT yet, add `FIGMA_PAT` to `.env.local`, or set `FIGMA_AUTH_MODE=connector` when your tool already has authenticated Figma MCP/connector access, before Phase 0 or any automated Figma-driven implementation.
 
 3. Sync the workspace metadata:
 
@@ -135,9 +135,9 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
   - validates required folders
   - validates local and managed skill entrypoints
   - checks whether screenshot or Figma inputs exist
-  - fails when a Figma URL is configured without `FIGMA_PAT`
+  - fails when a Figma URL is configured without either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`
   - reports whether Figma automation is ready
-- `npm run figma:configure -- --url <figma-url> [--pat <figma-pat>]`
+- `npm run figma:configure -- --url <figma-url> [--pat <figma-pat>] [--auth-mode connector]`
   - parses a Figma design URL
   - writes `.env.local`
 
@@ -163,7 +163,10 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 
 - `reference/` is primary for screenshot-driven work.
 - `.env.local` is primary for Figma-driven work.
-- If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but no `FIGMA_PAT`, `npm run workspace:check` should fail until you add `FIGMA_PAT`.
+- If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but has neither `FIGMA_PAT` nor `FIGMA_AUTH_MODE=connector`, `npm run workspace:check` should fail until you add one of them.
+- Use the latest stable Storybook 10 for shared component work. For new setups, use `npm create storybook@latest`; for upgrades, use `npx storybook@latest upgrade`.
+- Storybook 10 requires Node 20.19+ or 22.12+.
+- Reusable Storybook components should enable Autodocs and include component descriptions in their docs pages.
 - In Figma mode, run Phase 0 with `skills/figma-m3-variables/SKILL.md` before Phase A so the source file has agreed tokens and bindings before code implementation.
 - Figma-aware visual parity is supported at the workflow level: the compare flow can treat Figma as source-of-truth and screenshots as secondary validation.
 - This starter intentionally ships with placeholder manifests and tokens. It is a workspace skeleton, not a finished app.

@@ -4,6 +4,9 @@ import {
   buildReferenceInventoryMarkdown,
   buildScreenManifest,
   buildTasksMarkdown,
+  getFigmaAuthMode,
+  isFigmaAutomationReady,
+  isFigmaConfigured,
   loadWorkspaceConfig,
   parseEnvText,
   scanReferenceScreens
@@ -21,7 +24,9 @@ try {
 }
 
 const env = parseEnvText(envText)
-const figmaConfigured = Boolean(env.FIGMA_FILE_URL && env.FIGMA_NODE_ID)
+const figmaConfigured = isFigmaConfigured(env)
+const figmaAutomationReady = isFigmaAutomationReady(env)
+const figmaAuthMode = getFigmaAuthMode(env)
 const screenManifest = buildScreenManifest(config, screens, figmaConfigured)
 
 await writeFile(
@@ -32,7 +37,7 @@ await writeFile(
 
 await writeFile(
   path.join(rootDir, 'start-here/TASKS.md'),
-  buildTasksMarkdown(screenManifest, figmaConfigured) + '\n',
+  buildTasksMarkdown(screenManifest, figmaConfigured, figmaAutomationReady) + '\n',
   'utf8'
 )
 
@@ -42,4 +47,4 @@ await writeFile(
   'utf8'
 )
 
-console.log(`Synced workspace: ${screens.length} reference screen(s), figmaConfigured=${figmaConfigured}`)
+console.log(`Synced workspace: ${screens.length} reference screen(s), figmaConfigured=${figmaConfigured}, figmaAutomationReady=${figmaAutomationReady}, figmaAuthMode=${figmaAuthMode || 'none'}`)

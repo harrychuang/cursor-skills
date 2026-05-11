@@ -1,0 +1,9 @@
+---
+description: Load when comparing built UI against screenshots or Figma design sources.
+alwaysApply: false
+---
+
+- Read `skills/ui-visual-parity/SKILL.md`.
+- Use screenshot mode when only `reference/` assets exist.
+- Use Figma mode when `.env.local` contains Figma configuration.
+- Fix visual issues in this order: token, shared primitive, component variant, composition, page-only styling.

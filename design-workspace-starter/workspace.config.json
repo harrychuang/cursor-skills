@@ -1,0 +1,31 @@
+{
+  "projectName": "Design Workspace Starter",
+  "platform": "responsive",
+  "appSourceDir": "src",
+  "storybookDir": "src/components",
+  "routesDir": "src/pages",
+  "managedSkills": [
+    {
+      "name": "design-system-governance",
+      "repo": "harrychuang/cursor-skills",
+      "ref": "master",
+      "path": "design-system-governance"
+    },
+    {
+      "name": "figma-m3-variables",
+      "repo": "harrychuang/cursor-skills",
+      "ref": "master",
+      "path": "figma-m3-variables"
+    },
+    {
+      "name": "ui-visual-parity",
+      "repo": "harrychuang/cursor-skills",
+      "ref": "master",
+      "path": "ui-visual-parity"
+    }
+  ],
+  "sourceModes": [
+    "reference",
+    "figma"
+  ]
+}

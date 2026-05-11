@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "status": "placeholder",
+  "productName": "Design Workspace Starter",
+  "targetUsers": [],
+  "goals": [],
+  "nonGoals": [],
+  "coreJobs": [],
+  "domainEntities": [],
+  "businessRules": [],
+  "nonFunctionalRequirements": [],
+  "successMetrics": [],
+  "openQuestions": [
+    "Replace product/PRD.md with real requirements and sync this file."
+  ]
+}

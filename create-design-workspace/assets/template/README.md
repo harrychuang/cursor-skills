@@ -135,6 +135,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
   - validates required folders
   - validates local and managed skill entrypoints
   - checks whether screenshot or Figma inputs exist
+  - fails when a Figma URL is configured without `FIGMA_PAT`
   - reports whether Figma automation is ready
 - `npm run figma:configure -- --url <figma-url> [--pat <figma-pat>]`
   - parses a Figma design URL
@@ -162,7 +163,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 
 - `reference/` is primary for screenshot-driven work.
 - `.env.local` is primary for Figma-driven work.
-- If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but no `FIGMA_PAT`, stop and add `FIGMA_PAT` before Figma-first automation.
+- If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but no `FIGMA_PAT`, `npm run workspace:check` should fail until you add `FIGMA_PAT`.
 - In Figma mode, run Phase 0 with `skills/figma-m3-variables/SKILL.md` before Phase A so the source file has agreed tokens and bindings before code implementation.
 - Figma-aware visual parity is supported at the workflow level: the compare flow can treat Figma as source-of-truth and screenshots as secondary validation.
 - This starter intentionally ships with placeholder manifests and tokens. It is a workspace skeleton, not a finished app.

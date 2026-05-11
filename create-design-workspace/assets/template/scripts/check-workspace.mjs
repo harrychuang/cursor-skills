@@ -61,10 +61,13 @@ if (screens.length === 0 && !figmaConfigured) {
   process.exit(1)
 }
 
+if (figmaConfigured && !figmaAutomationReady) {
+  console.error('Workspace check failed. FIGMA_PAT is required when Figma is configured in .env.local.')
+  console.error('Add FIGMA_PAT to .env.local, then re-run `npm run workspace:sync` and `npm run workspace:check`.')
+  process.exit(1)
+}
+
 console.log('Workspace check passed.')
 console.log(`- reference screens: ${screens.length}`)
 console.log(`- figma configured: ${figmaConfigured}`)
 console.log(`- figma automation ready: ${figmaAutomationReady}`)
-if (figmaConfigured && !figmaAutomationReady) {
-  console.log('- warning: add FIGMA_PAT to .env.local before Figma-first automation or Phase 0')
-}

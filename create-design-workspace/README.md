@@ -168,7 +168,7 @@ Then continue from:
 
 If the design input was screenshots, place them under `reference/`.
 
-If the design input was Figma, make sure `.env.local` contains the Figma configuration before continuing. For automated Figma-driven development, `FIGMA_PAT` must be set before Phase 0 or implementation starts.
+If the design input was Figma, make sure `.env.local` contains the Figma configuration before continuing. For automated Figma-driven development, `FIGMA_PAT` must be set before Phase 0 or implementation starts, and `npm run workspace:check` should fail until it is present.
 
 ## Agent handoff after bootstrap
 

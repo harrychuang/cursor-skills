@@ -16,6 +16,20 @@ This skill has two jobs:
 1. Scaffold a standalone workspace from the bundled template.
 2. Drive the full build workflow after the workspace is ready.
 
+## Cross-tool target
+
+The generated workspace must remain usable in all of these environments:
+
+- Cursor
+- Claude Code
+- Codex
+
+When bootstrapping or updating the template, preserve these entrypoints:
+
+- `CLAUDE.md` and `.claude/commands/*`
+- `.cursorrules` and `.cursor/rules/*`
+- `AGENTS.md`
+
 ## Required starting condition
 
 Use this skill in an empty project directory, or in a brand-new directory created specifically for the new UI-to-code workspace.
@@ -84,6 +98,12 @@ Once the workspace exists:
    - build reusable Storybook components before screens
    - compose screens from reusable components
    - run visual parity and fix drift at the correct ownership layer
+
+When handing off to a specific tool:
+
+- Cursor: use the Cursor prompt in `start-here/KICKSTART.md`
+- Claude Code: run `/build`
+- Codex: use the Codex prompt in `start-here/KICKSTART.md`
 
 Do not stop after scaffolding unless the user explicitly asks only for setup.
 

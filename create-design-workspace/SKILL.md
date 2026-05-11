@@ -16,6 +16,12 @@ This skill has two jobs:
 1. Scaffold a standalone workspace from the bundled template.
 2. Drive the full build workflow after the workspace is ready.
 
+## Required starting condition
+
+Use this skill in an empty project directory, or in a brand-new directory created specifically for the new UI-to-code workspace.
+
+This skill is for starting a new design-driven project. It is not intended to be dropped directly into the root of an existing application with unrelated code.
+
 ## Inputs
 
 - Screenshot files already on disk
@@ -27,8 +33,8 @@ This skill has two jobs:
 ## Bootstrap workflow
 
 1. Choose the target directory.
-   - If the current directory is empty or clearly intended for the new project, scaffold in place.
-   - If the current directory already contains unrelated app code, scaffold into a subdirectory such as `design-workspace/` unless the user explicitly wants an in-place merge.
+   - Prefer an empty directory.
+   - If the current directory already contains unrelated app code, stop and use a new empty directory instead.
 2. Run the bootstrap script:
 
 ```bash
@@ -83,6 +89,7 @@ Do not stop after scaffolding unless the user explicitly asks only for setup.
 
 ## Safety rules
 
+- Do not use this skill in the root of an existing non-empty app unless the user explicitly wants to replace it.
 - Do not overwrite a non-empty target directory unless the user explicitly approves or the target is clearly disposable.
 - Do not force Figma mode when the user only wants screenshot-driven work.
 - Do not skip `workspace:init`; the template intentionally keeps managed skills out of versioned starter files.

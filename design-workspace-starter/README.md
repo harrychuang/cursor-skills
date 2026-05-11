@@ -103,6 +103,7 @@ npm run workspace:check
 5. Open this folder in Claude Code, Cursor, or Codex and start with:
    - `start-here/KICKSTART.md`
    - `start-here/BUILD_PLAN.md`
+   - `start-here/STORYBOOK_10_AUTODOCS.md`
    - `start-here/TASKS.md`
 
 ## Agent handoff

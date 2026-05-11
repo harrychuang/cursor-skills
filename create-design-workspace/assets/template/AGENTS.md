@@ -12,12 +12,13 @@ This repository is a standalone design workspace starter.
 
 1. `CLAUDE.md`
 2. `start-here/BUILD_PLAN.md`
-3. `start-here/TASKS.md`
-4. `product/SCREEN_MANIFEST.json`
-5. `skills/design-system-governance/SKILL.md`
-6. `skills/ui-screenshot-to-storybook-product/SKILL.md`
-7. `skills/ui-visual-parity/SKILL.md`
-8. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
+3. `start-here/STORYBOOK_10_AUTODOCS.md`
+4. `start-here/TASKS.md`
+5. `product/SCREEN_MANIFEST.json`
+6. `skills/design-system-governance/SKILL.md`
+7. `skills/ui-screenshot-to-storybook-product/SKILL.md`
+8. `skills/ui-visual-parity/SKILL.md`
+9. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
 
 ## Rules
 

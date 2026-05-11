@@ -1,0 +1,9 @@
+---
+description: Load when implementing screens from screenshots or Figma exports into Storybook and app code.
+alwaysApply: false
+---
+
+- Read `skills/ui-screenshot-to-storybook-product/SKILL.md`.
+- Produce a visual inventory before code changes.
+- Do not implement final screens before reusable Storybook stories exist.
+- If Figma is configured, run `skills/figma-m3-variables/SKILL.md` as Phase 0 before Phase A.

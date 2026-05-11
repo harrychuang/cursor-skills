@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "status": "placeholder",
+  "meta": {
+    "appName": "Design Workspace Starter",
+    "source": "replace-with-reference-or-figma"
+  },
+  "color": {},
+  "colorLight": {},
+  "typography": {},
+  "shape": {},
+  "spacing": {},
+  "elevation": {},
+  "motion": {},
+  "components": {},
+  "layout": {}
+}

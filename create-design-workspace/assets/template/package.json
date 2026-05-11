@@ -1,0 +1,17 @@
+{
+  "name": "design-workspace-starter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone AI-operable design workspace starter for screenshot- and Figma-driven product implementation.",
+  "scripts": {
+    "workspace:init": "node scripts/init-workspace.mjs",
+    "workspace:sync": "node scripts/sync-workspace.mjs",
+    "workspace:check": "node scripts/check-workspace.mjs",
+    "figma:configure": "node scripts/configure-figma.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

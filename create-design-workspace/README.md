@@ -2,12 +2,24 @@
 
 Bootstrap a standalone frontend delivery workspace from screenshots, a Figma URL, or both.
 
+Use it from an empty project directory, or create a new empty directory first and scaffold into that location.
+
 This skill is intended for workflows where you want to:
 
 - start a new project from UI references
 - generate a reusable workspace skeleton
 - run Figma-first token preparation before code work
 - carry the work through Storybook-first implementation and visual parity
+
+## Starting condition
+
+This skill is meant for a new UI-to-code project.
+
+- Recommended: start in an empty directory
+- Also acceptable: create a new empty target directory and scaffold there
+- Not recommended: run it in the root of an existing app with unrelated code
+
+The generated workspace is a full project skeleton, not a patch you apply into an established repository.
 
 ## What it creates
 
@@ -32,6 +44,7 @@ Use the skill when a user says something like:
 - "Build a project from these UI screenshots."
 - "Use this Figma URL to create the app."
 - "Start a new frontend workspace from this design."
+- "Create a new UI-to-code project in this empty folder."
 
 ## Manual bootstrap
 

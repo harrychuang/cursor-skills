@@ -31,11 +31,21 @@ test('buildScreenManifest creates stable routes', () => {
 test('buildTasksMarkdown includes figma tasks when configured', () => {
   const tasks = buildTasksMarkdown({
     screens: [{ route: '/', reference: 'reference/home.png', component: 'HomeScreen' }]
-  }, true)
+  }, true, true)
 
   assert.match(tasks, /skills\/figma-m3-variables\/SKILL\.md/)
   assert.match(tasks, /Ref -> Sys -> Comp/)
   assert.match(tasks, /Build `\/` from `reference\/home\.png` as `HomeScreen`/)
+})
+
+test('buildTasksMarkdown asks for figma pat when figma is only partially configured', () => {
+  const tasks = buildTasksMarkdown({
+    screens: [{ route: '/', reference: 'reference/home.png', component: 'HomeScreen' }]
+  }, true, false)
+
+  assert.match(tasks, /Add `FIGMA_PAT` to `.env.local` before Figma-first automation or Phase 0/)
+  assert.match(tasks, /Run `npm run workspace:check` to confirm Figma automation readiness/)
+  assert.doesNotMatch(tasks, /skills\/figma-m3-variables\/SKILL\.md/)
 })
 
 test('getRequiredSkillPaths includes local and managed skills', () => {

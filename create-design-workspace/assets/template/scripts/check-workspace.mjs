@@ -47,6 +47,7 @@ try {
 }
 
 const figmaConfigured = Boolean(env.FIGMA_FILE_URL && env.FIGMA_NODE_ID)
+const figmaAutomationReady = Boolean(figmaConfigured && env.FIGMA_PAT)
 
 if (missing.length > 0) {
   console.error('Workspace check failed. Missing paths:')
@@ -63,3 +64,7 @@ if (screens.length === 0 && !figmaConfigured) {
 console.log('Workspace check passed.')
 console.log(`- reference screens: ${screens.length}`)
 console.log(`- figma configured: ${figmaConfigured}`)
+console.log(`- figma automation ready: ${figmaAutomationReady}`)
+if (figmaConfigured && !figmaAutomationReady) {
+  console.log('- warning: add FIGMA_PAT to .env.local before Figma-first automation or Phase 0')
+}

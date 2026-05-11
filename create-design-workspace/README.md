@@ -39,10 +39,11 @@ The generated workspace will guide the rest of the build:
 
 1. A developer creates a new empty folder for a new project.
 2. They invoke this skill and provide screenshot files or a Figma URL.
-3. The skill scaffolds a full starter workspace into that folder.
-4. The workspace installs its managed workflow skills.
-5. The agent continues with token-first, Storybook-first development.
-6. The developer keeps working in Cursor, Claude Code, or Codex using the generated project entrypoints.
+3. If they want Figma-first automation, the skill makes sure `FIGMA_PAT` is set in `.env.local` before implementation continues.
+4. The skill scaffolds a full starter workspace into that folder.
+5. The workspace installs its managed workflow skills.
+6. The agent continues with token-first, Storybook-first development.
+7. The developer keeps working in Cursor, Claude Code, or Codex using the generated project entrypoints.
 
 This skill is intended for workflows where you want to:
 
@@ -145,7 +146,7 @@ node /Users/HarryChuang/.cursor/skills/create-design-workspace/scripts/bootstrap
 
 Optional flags:
 
-- `--figma-pat "<token>"`
+- `--figma-pat "<token>"` for Figma-first automation and private-file access
 - `--screenshot "/path/to/screen-1.png"`
 - repeat `--screenshot` for multiple files
 - `--force` to allow writing into a non-empty target directory
@@ -167,7 +168,7 @@ Then continue from:
 
 If the design input was screenshots, place them under `reference/`.
 
-If the design input was Figma, make sure `.env.local` contains the Figma configuration before continuing.
+If the design input was Figma, make sure `.env.local` contains the Figma configuration before continuing. For automated Figma-driven development, `FIGMA_PAT` must be set before Phase 0 or implementation starts.
 
 ## Agent handoff after bootstrap
 
@@ -192,10 +193,12 @@ All three paths point to the same underlying workflow and generated project stru
 
 When a Figma URL is configured, the workspace expects a Phase 0 gate before implementation:
 
-1. Run `skills/figma-m3-variables/SKILL.md`
-2. Create or audit `Ref -> Sys -> Comp` variables
-3. Bind those variables to the key source components
-4. Only then continue into screen implementation
+1. If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but no `FIGMA_PAT`, stop and ask the user to add `FIGMA_PAT` before continuing with automation.
+2. Re-run `npm run workspace:sync` and `npm run workspace:check` after updating `.env.local`.
+3. Run `skills/figma-m3-variables/SKILL.md`
+4. Create or audit `Ref -> Sys -> Comp` variables
+5. Bind those variables to the key source components
+6. Only then continue into screen implementation
 
 ## Files
 

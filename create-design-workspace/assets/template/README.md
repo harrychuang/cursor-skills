@@ -9,7 +9,7 @@ Put screenshots or a Figma URL into this starter, then continue the same token-f
 This folder is the independent version of the generated ZIP workspace. It is meant to be downloaded as its own project, then filled with:
 
 - reference UI demos under `reference/`
-- optional Figma source in `.env.local`
+- Figma source in `.env.local` when Figma mode is needed
 - product requirements under `product/`
 - app code, Storybook, and design-system code created by your coding agent
 
@@ -37,7 +37,7 @@ The repository includes:
 
 1. Open this project in Cursor.
 2. Run `npm run workspace:init`.
-3. Add screenshots to `reference/` or configure Figma.
+3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` before continuing.
 4. Run `npm run workspace:check`.
 5. Open `start-here/KICKSTART.md` and paste the Cursor prompt.
 
@@ -45,7 +45,7 @@ The repository includes:
 
 1. Open this project in Claude Code.
 2. Run `npm run workspace:init`.
-3. Add screenshots to `reference/` or configure Figma.
+3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` before continuing.
 4. Run `npm run workspace:check`.
 5. Run `/build`.
 
@@ -53,7 +53,7 @@ The repository includes:
 
 1. Open this project in Codex.
 2. Run `npm run workspace:init`.
-3. Add screenshots to `reference/` or configure Figma.
+3. Add screenshots to `reference/` or configure Figma. If you plan to automate against Figma, set `FIGMA_PAT` in `.env.local` before continuing.
 4. Run `npm run workspace:check`.
 5. Open `start-here/KICKSTART.md` and paste the Codex prompt.
 
@@ -85,6 +85,8 @@ npm run workspace:init
 ```bash
 npm run figma:configure -- --url "https://www.figma.com/design/FILE/NAME?node-id=10-42" --pat "figd_..."
 ```
+
+If you start with a Figma URL but no PAT yet, add `FIGMA_PAT` to `.env.local` before Phase 0 or any automated Figma-driven implementation.
 
 3. Sync the workspace metadata:
 
@@ -133,7 +135,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
   - validates required folders
   - validates local and managed skill entrypoints
   - checks whether screenshot or Figma inputs exist
-  - reports readiness for agents
+  - reports whether Figma automation is ready
 - `npm run figma:configure -- --url <figma-url> [--pat <figma-pat>]`
   - parses a Figma design URL
   - writes `.env.local`
@@ -160,6 +162,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 
 - `reference/` is primary for screenshot-driven work.
 - `.env.local` is primary for Figma-driven work.
+- If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but no `FIGMA_PAT`, stop and add `FIGMA_PAT` before Figma-first automation.
 - In Figma mode, run Phase 0 with `skills/figma-m3-variables/SKILL.md` before Phase A so the source file has agreed tokens and bindings before code implementation.
 - Figma-aware visual parity is supported at the workflow level: the compare flow can treat Figma as source-of-truth and screenshots as secondary validation.
 - This starter intentionally ships with placeholder manifests and tokens. It is a workspace skeleton, not a finished app.

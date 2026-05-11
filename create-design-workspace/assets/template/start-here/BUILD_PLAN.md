@@ -9,7 +9,8 @@
 ## Phases
 
 0. Figma token preparation
-   - if `.env.local` is configured, run `skills/figma-m3-variables/SKILL.md`
+   - if `.env.local` has a Figma URL and node ID but no `FIGMA_PAT`, stop and ask for `FIGMA_PAT` before automation
+   - if `.env.local` is fully configured, run `skills/figma-m3-variables/SKILL.md`
    - inspect variables before edits
    - create or audit Ref -> Sys -> Comp variables
    - bind agreed variables to key source components before code work
@@ -29,6 +30,7 @@
 - `product/SCREEN_MANIFEST.json` reflects current source screens
 - reusable UI has stories
 - tokens are not placeholder values
+- Figma mode has `FIGMA_PAT` configured before automation starts
 - Figma mode has completed Phase 0 token audit or binding for the active source components
 - compare workflow can operate in the chosen source mode
 - app implementation matches design source with evidence-based fixes

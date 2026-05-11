@@ -2,6 +2,10 @@
 
 Standalone starter workspace for screenshot-driven or Figma-driven product implementation.
 
+## In one sentence
+
+Put screenshots or a Figma URL into this starter, then continue the same token-first, Storybook-first workflow in Cursor, Claude Code, or Codex.
+
 This folder is the independent version of the generated ZIP workspace. It is meant to be downloaded as its own project, then filled with:
 
 - reference UI demos under `reference/`
@@ -12,6 +16,46 @@ This folder is the independent version of the generated ZIP workspace. It is mea
 It does not require `ui-explorer` to run.
 
 Managed skills are installed during workspace bootstrap so the starter can stay lightweight while still pulling the latest workflow definitions from GitHub.
+
+## Tool compatibility
+
+This starter is prepared for all three agent environments:
+
+- Cursor
+- Claude Code
+- Codex
+
+The repository includes:
+
+- `CLAUDE.md` and `.claude/commands/*` for Claude Code
+- `.cursorrules` and `.cursor/rules/*` for Cursor
+- `AGENTS.md` for Codex and other AGENTS-aware tools
+
+## 30-second start
+
+### Cursor
+
+1. Open this project in Cursor.
+2. Run `npm run workspace:init`.
+3. Add screenshots to `reference/` or configure Figma.
+4. Run `npm run workspace:check`.
+5. Open `start-here/KICKSTART.md` and paste the Cursor prompt.
+
+### Claude Code
+
+1. Open this project in Claude Code.
+2. Run `npm run workspace:init`.
+3. Add screenshots to `reference/` or configure Figma.
+4. Run `npm run workspace:check`.
+5. Run `/build`.
+
+### Codex
+
+1. Open this project in Codex.
+2. Run `npm run workspace:init`.
+3. Add screenshots to `reference/` or configure Figma.
+4. Run `npm run workspace:check`.
+5. Open `start-here/KICKSTART.md` and paste the Codex prompt.
 
 ## What this starter does
 
@@ -58,6 +102,22 @@ npm run workspace:check
    - `start-here/KICKSTART.md`
    - `start-here/BUILD_PLAN.md`
    - `start-here/TASKS.md`
+
+## Agent handoff
+
+Once the workspace is initialized, each tool continues from the same project state:
+
+- Cursor:
+  - read `start-here/KICKSTART.md`
+  - use the Cursor prompt from that file
+- Claude Code:
+  - run `/build`
+  - use `.claude/commands/*` when needed
+- Codex:
+  - read `start-here/KICKSTART.md`
+  - use the Codex prompt from that file
+
+All three tools share the same `product/`, `start-here/`, `skills/`, and parity workflow.
 
 ## Local scripts
 

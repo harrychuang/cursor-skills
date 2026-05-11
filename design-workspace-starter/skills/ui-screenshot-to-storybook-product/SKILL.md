@@ -15,7 +15,9 @@ Use this workflow when the workspace is driven by screenshots in `reference/`, o
 
 ## Figma-first mode
 
-If `.env.local` contains Figma values:
+If `.env.local` contains `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but has neither `FIGMA_PAT` nor `FIGMA_AUTH_MODE=connector`, stop and ask the user to set `FIGMA_PAT` in `.env.local`, or set `FIGMA_AUTH_MODE=connector` when the tool already has authenticated Figma MCP/connector access, before continuing with Figma-first automation.
+
+If `.env.local` contains the Figma URL and node plus either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`:
 
 1. Read Figma design context.
 2. Read Figma variables.
@@ -47,8 +49,11 @@ Output:
 
 Create or update shared UI before screen files:
 
+- install or upgrade to the latest stable Storybook 10 when Storybook is not ready yet
 - component
 - co-located story
+- Autodocs-enabled story metadata
+- component descriptions in Storybook docs output
 - representative states and variants
 - foundations pages when token work changes
 
@@ -65,3 +70,4 @@ Run the compare workflow before calling the screen done.
 - No token bypass.
 - No one-off page styling when a shared owner exists.
 - No final screen implementation before reusable story coverage.
+- No reusable component story without Autodocs and a component description.

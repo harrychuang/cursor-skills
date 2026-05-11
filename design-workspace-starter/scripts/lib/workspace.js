@@ -2,6 +2,7 @@ import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif'])
+const FIGMA_CONNECTOR_AUTH_MODES = new Set(['connector', 'mcp'])
 
 export async function loadWorkspaceConfig(rootDir) {
   const file = path.join(rootDir, 'workspace.config.json')
@@ -49,6 +50,22 @@ export function parseEnvText(text) {
   return env
 }
 
+export function getFigmaAuthMode(env) {
+  const raw = String(env?.FIGMA_AUTH_MODE ?? '').trim().toLowerCase()
+  if (raw === 'pat') return 'pat'
+  if (FIGMA_CONNECTOR_AUTH_MODES.has(raw)) return 'connector'
+  return ''
+}
+
+export function isFigmaConfigured(env) {
+  return Boolean(env?.FIGMA_FILE_URL && env?.FIGMA_NODE_ID)
+}
+
+export function isFigmaAutomationReady(env) {
+  if (!isFigmaConfigured(env)) return false
+  return Boolean(env.FIGMA_PAT || getFigmaAuthMode(env) === 'connector')
+}
+
 export function parseFigmaUrl(input) {
   const url = new URL(input)
   if (url.hostname !== 'www.figma.com') {
@@ -94,18 +111,25 @@ export function buildScreenManifest(config, screenNames, figmaConfigured) {
   }
 }
 
-export function buildTasksMarkdown(screenManifest, figmaConfigured) {
+export function buildTasksMarkdown(screenManifest, figmaConfigured, figmaAutomationReady) {
   const screenTasks = screenManifest.screens.length > 0
     ? screenManifest.screens.map(screen => `- [ ] Build \`${screen.route}\` from \`${screen.reference}\` as \`${screen.component}\``)
     : ['- [ ] Add one or more screenshots to `reference/` before screen implementation']
 
-  const figmaLines = figmaConfigured
+  const figmaLines = figmaConfigured && figmaAutomationReady
     ? [
       '- [ ] Run `skills/figma-m3-variables/SKILL.md` as Phase 0 before Phase A',
+      '- [ ] Use authenticated Figma connector/MCP access or `FIGMA_PAT` for Figma-first automation',
       '- [ ] Create or audit Figma variables in Ref -> Sys -> Comp order',
       '- [ ] Bind the agreed Figma variables to the key source components before code work',
       '- [ ] Use Figma as the source of truth during compare/parity work'
     ]
+    : figmaConfigured
+      ? [
+        '- [ ] Add `FIGMA_PAT` to `.env.local`, or set `FIGMA_AUTH_MODE=connector` when your tool already has authenticated Figma MCP/connector access',
+        '- [ ] Run `npm run workspace:sync` after updating `.env.local`',
+        '- [ ] Run `npm run workspace:check` to confirm Figma automation readiness'
+      ]
     : ['- [ ] Configure `.env.local` if you want Figma-first workflows and Phase 0 token binding']
 
   return [
@@ -114,10 +138,12 @@ export function buildTasksMarkdown(screenManifest, figmaConfigured) {
     '- [ ] Update `product/PRD.md` with the real product requirements',
     '- [ ] Run `npm run workspace:init` to install managed skills before agent work',
     '- [ ] Run `npm run workspace:sync` after changing input sources',
+    '- [ ] Install or upgrade to the latest stable Storybook 10 before shared component work',
     ...figmaLines,
     '- [ ] Run Phase A visual inventory after Phase 0 is complete',
     '- [ ] Run Phase B component reuse gate',
-    '- [ ] Build or extend Storybook components',
+    '- [ ] Build or extend Storybook components with Autodocs enabled',
+    '- [ ] Add component descriptions to Storybook docs for each reusable component',
     '- [ ] Compose product screens',
     '- [ ] Run visual parity',
     '- [ ] Replace placeholder tokens and manifests',

@@ -30,7 +30,9 @@ The generated workspace will guide the rest of the build:
 
 - understand the UI structure
 - identify reusable components
+- install or upgrade Storybook 10 before shared UI work
 - decide what should exist in Storybook first
+- generate Autodocs and component descriptions for reusable Storybook entries
 - create or align design tokens
 - implement screens from reusable components
 - run visual parity against screenshots or Figma
@@ -141,12 +143,14 @@ You can run the bootstrap script directly:
 node /Users/HarryChuang/.cursor/skills/create-design-workspace/scripts/bootstrap-design-workspace.mjs \
   --target "/path/to/project" \
   --project-name "My Product" \
-  --figma-url "https://www.figma.com/design/FILE/NAME?node-id=10-42"
+  --figma-url "https://www.figma.com/design/FILE/NAME?node-id=10-42" \
+  --figma-auth-mode "connector"
 ```
 
 Optional flags:
 
 - `--figma-pat "<token>"` for Figma-first automation and private-file access
+- `--figma-auth-mode "connector"` when Cursor, Claude Code, or Codex already has authenticated Figma MCP/connector access
 - `--screenshot "/path/to/screen-1.png"`
 - repeat `--screenshot` for multiple files
 - `--force` to allow writing into a non-empty target directory
@@ -168,7 +172,7 @@ Then continue from:
 
 If the design input was screenshots, place them under `reference/`.
 
-If the design input was Figma, make sure `.env.local` contains the Figma configuration before continuing. For automated Figma-driven development, `FIGMA_PAT` must be set before Phase 0 or implementation starts, and `npm run workspace:check` should fail until it is present.
+If the design input was Figma, make sure `.env.local` contains the Figma configuration before continuing. For automated Figma-driven development, configure either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector` before Phase 0 or implementation starts, and `npm run workspace:check` should fail until one of them is present.
 
 ## Agent handoff after bootstrap
 
@@ -193,12 +197,18 @@ All three paths point to the same underlying workflow and generated project stru
 
 When a Figma URL is configured, the workspace expects a Phase 0 gate before implementation:
 
-1. If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but no `FIGMA_PAT`, stop and ask the user to add `FIGMA_PAT` before continuing with automation.
+1. If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but has neither `FIGMA_PAT` nor `FIGMA_AUTH_MODE=connector`, stop and ask the user to add one of them before continuing with automation.
 2. Re-run `npm run workspace:sync` and `npm run workspace:check` after updating `.env.local`.
 3. Run `skills/figma-m3-variables/SKILL.md`
 4. Create or audit `Ref -> Sys -> Comp` variables
 5. Bind those variables to the key source components
 6. Only then continue into screen implementation
+
+## Storybook
+
+Use the latest stable Storybook 10 for shared component work. For new projects, follow the official `npm create storybook@latest` flow. For existing projects, use `npx storybook@latest upgrade`. Storybook 10 is ESM-only and requires Node 20.19+ or 22.12+.
+
+All reusable components should ship with Autodocs enabled and with component descriptions in the generated docs output.
 
 ## Files
 

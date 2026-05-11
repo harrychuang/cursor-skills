@@ -26,7 +26,9 @@ This repository is an AI-operable product workspace. It starts empty on purpose:
 
 ### Figma mode
 
-If `.env.local` contains `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and `FIGMA_PAT`, run a Figma-first phase before implementation:
+If `.env.local` contains `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but has neither `FIGMA_PAT` nor `FIGMA_AUTH_MODE=connector`, stop and ask the user to set `FIGMA_PAT` in `.env.local`, or set `FIGMA_AUTH_MODE=connector` when the tool already has authenticated Figma MCP/connector access. Do not continue with automated Figma-driven work until one of them is present.
+
+If `.env.local` contains `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`, run a Figma-first phase before implementation:
 
 1. Read `.env.local`.
 2. Run Phase 0 with `skills/figma-m3-variables/SKILL.md`:
@@ -46,9 +48,10 @@ If `.env.local` contains `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and `FIGMA_PAT`, run
 
 1. No hardcoded color, spacing, radius, or duration values when a token layer can own them.
 2. Reuse before inventing new components.
-3. Storybook is the component hub. Reusable blocks need stories before screen composition.
+3. Storybook 10 is the component hub. Reusable blocks need stories before screen composition.
 4. In Figma mode, do not start screen implementation until Phase 0 token binding is complete for the relevant source components.
-5. Visual parity fixes must follow this order:
+5. Reusable Storybook components must enable Autodocs and include component descriptions in the docs output.
+6. Visual parity fixes must follow this order:
    - token/theme
    - primitive/shared component
    - component variant/props
@@ -59,7 +62,7 @@ If `.env.local` contains `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and `FIGMA_PAT`, run
 ## Expected outputs
 
 - `src/` application code
-- `.storybook/` setup and component stories
+- `.storybook/` setup and Storybook 10 component stories with Autodocs
 - `design/extracted-design-tokens/design-tokens.json` updated from placeholder
 - `product/*` manifests updated from placeholder
 - parity-ready compare workflow using screenshot and/or Figma evidence

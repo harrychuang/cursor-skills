@@ -6,15 +6,16 @@ This repository is an AI-operable product workspace. It starts empty on purpose:
 
 1. `start-here/BUILD_PLAN.md`
 2. `start-here/TASKS.md`
-3. `start-here/REFERENCE_INVENTORY.md`
-4. `product/PRD.md`
-5. `product/PRODUCT_SPEC.json`
-6. `product/FEATURE_MANIFEST.json`
-7. `product/SCREEN_MANIFEST.json`
-8. `skills/design-system-governance/SKILL.md`
-9. `skills/ui-screenshot-to-storybook-product/SKILL.md`
-10. `skills/ui-visual-parity/SKILL.md`
-11. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
+3. `start-here/STORYBOOK_10_AUTODOCS.md`
+4. `start-here/REFERENCE_INVENTORY.md`
+5. `product/PRD.md`
+6. `product/PRODUCT_SPEC.json`
+7. `product/FEATURE_MANIFEST.json`
+8. `product/SCREEN_MANIFEST.json`
+9. `skills/design-system-governance/SKILL.md`
+10. `skills/ui-screenshot-to-storybook-product/SKILL.md`
+11. `skills/ui-visual-parity/SKILL.md`
+12. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
 
 ## Source modes
 

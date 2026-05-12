@@ -48,6 +48,8 @@ test('buildTasksMarkdown includes figma tasks when configured', () => {
   assert.match(tasks, /skills\/figma-m3-variables\/SKILL\.md/)
   assert.match(tasks, /Storybook 10/)
   assert.match(tasks, /Ref -> Sys -> Comp/)
+  assert.match(tasks, /ACCURACY_CONTRACT\.md/)
+  assert.match(tasks, /single-image/)
   assert.match(tasks, /Build `\/` from `reference\/home\.png` as `HomeScreen`/)
 })
 

@@ -13,13 +13,14 @@ This repository is a standalone design workspace starter.
 1. `CLAUDE.md`
 2. `start-here/BUILD_PLAN.md`
 3. `start-here/STORYBOOK_10_AUTODOCS.md`
-4. `start-here/TASKS.md`
-5. `design/foundations/README.md`
-6. `product/SCREEN_MANIFEST.json`
-7. `skills/design-system-governance/SKILL.md`
-8. `skills/ui-screenshot-to-storybook-product/SKILL.md`
-9. `skills/ui-visual-parity/SKILL.md`
-10. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
+4. `start-here/ACCURACY_CONTRACT.md`
+5. `start-here/TASKS.md`
+6. `design/foundations/README.md`
+7. `product/SCREEN_MANIFEST.json`
+8. `skills/design-system-governance/SKILL.md`
+9. `skills/ui-screenshot-to-storybook-product/SKILL.md`
+10. `skills/ui-visual-parity/SKILL.md`
+11. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
 
 ## Rules
 
@@ -31,12 +32,14 @@ This repository is a standalone design workspace starter.
 6. In Figma mode, run Phase 0 token creation or audit plus binding before code implementation.
 7. Use Figma as the source of truth when `.env.local` is fully configured with `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`.
 8. Use `reference/` screenshots as the acceptance target in screenshot mode.
-9. Run the compare workflow after major UI changes.
-10. Before reusable component work, analyze the design source for recurring signals in color proportion, spacing feel, corner size, and typography weight.
-11. Turn that analysis into 5-7 evidence-backed design principles plus concrete design elements for color, typography, corner, and spacing.
-12. Use fixed markdown tables for `Signal Summary`, `Design Principles`, `Design Elements`, and `Observed vs Inferred` when reporting that analysis.
-13. Keep `design/foundations/*.md` current, and update Storybook foundations pages with a designed bento-style layout when token work changes.
-14. Every reusable component story must document important props through `argTypes`; verify with `npm run storybook:check-docs`.
+9. Read `start-here/ACCURACY_CONTRACT.md` and classify source accuracy before implementation.
+10. In image-only mode, record observed facts, inferred decisions, missing context, and open questions before coding.
+11. Run the compare workflow after major UI changes.
+12. Before reusable component work, analyze the design source for recurring signals in color proportion, spacing feel, corner size, and typography weight.
+13. Turn that analysis into 5-7 evidence-backed design principles plus concrete design elements for color, typography, corner, and spacing.
+14. Use fixed markdown tables for `Signal Summary`, `Design Principles`, `Design Elements`, and `Observed vs Inferred` when reporting that analysis.
+15. Keep `design/foundations/*.md` current, and update Storybook foundations pages with a designed bento-style layout when token work changes.
+16. Every reusable component story must document important props through `argTypes`; verify with `npm run storybook:check-docs`.
 
 ## How to invoke workflows
 
@@ -59,3 +62,4 @@ If the tool does not support slash commands or `@file` image syntax, explicitly 
 - `Read .env.local; if both FIGMA_PAT and FIGMA_AUTH_MODE=connector are missing, ask the user to set one before Figma-first automation`
 - `Read .env.local and run Phase 0 with skills/figma-m3-variables/SKILL.md before code work`
 - `Read .env.local and follow skills/ui-visual-parity/SKILL.md in Figma mode`
+- `Read start-here/ACCURACY_CONTRACT.md and record observed/inferred/missing context before implementing from a single image`

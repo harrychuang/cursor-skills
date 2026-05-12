@@ -12,6 +12,17 @@ Use this workflow when the workspace is driven by screenshots in `reference/`, o
 - One or more screenshots in `reference/`
 - Optional Figma configuration in `.env.local`
 - Product requirements in `product/`
+- Accuracy contract in `start-here/ACCURACY_CONTRACT.md`
+
+## Accuracy contract
+
+Before implementation, classify the source mode:
+
+- `Figma-first`: highest-fidelity path because the workflow can use structured layout, variables, components, and selected frame context.
+- `Multi-reference screenshot`: good visual reconstruction when repeated patterns and breakpoints are visible, but component boundaries and hidden states still need confirmation.
+- `Single-image`: first-pass approximation only. Record observed facts, inferred decisions, missing context, and open questions before coding.
+
+Do not present a single image as a complete product specification. If only one image is available, ask for or record the target viewport, product purpose, key states, real data assumptions, responsive behavior, brand assets, and acceptance threshold.
 
 ## Figma-first mode
 
@@ -29,6 +40,8 @@ If `.env.local` contains the Figma URL and node plus either `FIGMA_PAT` or `FIGM
 
 Before code, produce:
 
+- source mode classification from `start-here/ACCURACY_CONTRACT.md`
+- image-only assumption log when Figma context is unavailable
 - An evidence log covering recurring signals in:
   - color proportion and saturation placement
   - spacing feel and density
@@ -137,6 +150,13 @@ Assemble screens from documented exports only.
 
 Run the compare workflow before calling the screen done.
 
+The parity loop must:
+
+1. Capture or identify the source baseline.
+2. Compare generated output against the source viewport.
+3. Fix drift in ownership order: token/theme, primitive/shared component, component variant/props, composition/layout, page-only styling.
+4. Record remaining variance as accepted, deferred, or blocked by missing context.
+
 ## Constraints
 
 - No token bypass.
@@ -146,3 +166,5 @@ Run the compare workflow before calling the screen done.
 - No reusable component story without Autodocs and a component description.
 - No reusable component story without documented consumer-facing props in `argTypes`.
 - No token-system change without updating the related foundation guide or foundations page.
+- No image-only implementation without an observed / inferred / missing context log.
+- No sign-off claim of exact parity when remaining variance has not been recorded.

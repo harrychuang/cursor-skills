@@ -3,6 +3,8 @@
 - [ ] Update `product/PRD.md` with the real product requirements
 - [ ] Run `npm run workspace:init` to install managed skills before agent work
 - [ ] Run `npm run workspace:sync` after changing input sources
+- [ ] Read `start-here/ACCURACY_CONTRACT.md` and classify the source mode as Figma-first, multi-reference screenshot, or single-image
+- [ ] For image-only work, record observed, inferred, and missing context before implementation
 - [ ] Analyze screenshot and/or Figma references for shared signals in color proportion, spacing feel, corner size, and typography weight
 - [ ] Summarize 5-7 evidence-backed design principles before component implementation
 - [ ] Define design elements for color, typography, corner, and spacing, then map them into tokens
@@ -22,7 +24,7 @@
 - [ ] Run `npm run storybook:check-docs` before sign-off once reusable components exist
 - [ ] Add component descriptions to Storybook docs for each reusable component
 - [ ] Compose product screens
-- [ ] Run visual parity
+- [ ] Run visual parity and record accepted, deferred, or blocked variance
 - [ ] Replace placeholder tokens and manifests
 
 ## Screen Tasks

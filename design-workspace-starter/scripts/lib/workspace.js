@@ -199,7 +199,18 @@ export function getRequiredFoundationPaths() {
     'design/foundations/storybook-docs/spacing.mdx',
     'design/foundations/storybook-docs/corner.mdx',
     'design/foundations/storybook-docs/design-token-usage.mdx',
-    'design/foundations/storybook-docs/component-story-template.tsx.txt'
+    'design/foundations/storybook-docs/component-story-template.tsx.txt',
+    'src',
+    'src/stories',
+    'src/stories/foundations',
+    'src/stories/foundations/README.md',
+    'src/stories/foundations/overview.mdx',
+    'src/stories/foundations/guides.mdx',
+    'src/stories/foundations/color.mdx',
+    'src/stories/foundations/typography.mdx',
+    'src/stories/foundations/spacing.mdx',
+    'src/stories/foundations/corner.mdx',
+    'src/stories/foundations/design-token-usage.mdx'
   ]
 }
 
@@ -646,6 +657,7 @@ function buildStorybookDocsReadme() {
     '# Storybook Docs Templates',
     '',
     'Use these templates when wiring the design foundations into Storybook.',
+    'The discoverable copies that Storybook can load with its default `src/**/*.mdx` glob live under `src/stories/foundations/`.',
     '',
     '## Included Files',
     '',
@@ -663,12 +675,37 @@ function buildStorybookDocsReadme() {
     '1. Start with `guides.mdx` to define the documentation site map and the standard component page sections before writing component detail pages.',
     '2. Use `overview.mdx` as the front door for the foundations cluster.',
     '3. Replace placeholder copy with rules from `design/foundations/*.md`.',
-    '4. Keep the card-based or bento-like presentation instead of flattening everything into tables.',
-    '5. Use the component story template for every reusable component, then tailor `args` and `argTypes` to the real props.',
+    '4. Keep the discoverable `src/stories/foundations/*.mdx` pages aligned with this folder so a default Storybook install actually shows the guides.',
+    '5. Keep the card-based or bento-like presentation instead of flattening everything into tables.',
+    '6. Use the component story template for every reusable component, then tailor `args` and `argTypes` to the real props.',
     '',
     '## Validation',
     '',
     'Run `npm run storybook:check-docs` after adding reusable components. The check expects each component under `src/components` to have a companion story with Autodocs, a component description, and `argTypes`.'
+  ].join('\n')
+}
+
+function buildStorybookFoundationsReadme() {
+  return [
+    '# Storybook Foundations Pages',
+    '',
+    'These files live under `src/stories/foundations/` so a default Storybook setup can discover the foundation guides without extra `stories` glob changes.',
+    '',
+    '## Source Of Truth',
+    '',
+    '- Treat `design/foundations/storybook-docs/` as the template source for these pages.',
+    '- Keep the docs titles and IA consistent with the design guides under `design/foundations/*.md`.',
+    '- When the token layer or usage rules change, update the visible Storybook pages here as part of the same change.',
+    '',
+    '## Included Pages',
+    '',
+    '- `overview.mdx`',
+    '- `guides.mdx`',
+    '- `color.mdx`',
+    '- `typography.mdx`',
+    '- `spacing.mdx`',
+    '- `corner.mdx`',
+    '- `design-token-usage.mdx`'
   ].join('\n')
 }
 
@@ -1049,6 +1086,38 @@ export function getFoundationGuideEntries(config) {
     {
       relativePath: 'design/foundations/storybook-docs/component-story-template.tsx.txt',
       content: buildComponentStoryTemplate()
+    },
+    {
+      relativePath: 'src/stories/foundations/README.md',
+      content: buildStorybookFoundationsReadme()
+    },
+    {
+      relativePath: 'src/stories/foundations/overview.mdx',
+      content: buildFoundationsOverviewMdx()
+    },
+    {
+      relativePath: 'src/stories/foundations/guides.mdx',
+      content: buildGuidesMdx()
+    },
+    {
+      relativePath: 'src/stories/foundations/color.mdx',
+      content: buildColorMdx()
+    },
+    {
+      relativePath: 'src/stories/foundations/typography.mdx',
+      content: buildTypographyMdx()
+    },
+    {
+      relativePath: 'src/stories/foundations/spacing.mdx',
+      content: buildSpacingMdx()
+    },
+    {
+      relativePath: 'src/stories/foundations/corner.mdx',
+      content: buildCornerMdx()
+    },
+    {
+      relativePath: 'src/stories/foundations/design-token-usage.mdx',
+      content: buildDesignTokenUsageMdx()
     }
   ]
 }

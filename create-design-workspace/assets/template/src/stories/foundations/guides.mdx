@@ -1,0 +1,26 @@
+import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+
+<Meta title="Foundations/Guides" parameters={{ layout: 'fullscreen' }} />
+
+<Title>Documentation Guides</Title>
+<Subtitle>Plan the design-system site map and page contract before detailing components.</Subtitle>
+<Description>Use this page as the documentation architecture brief for the Storybook site. Foundations explain shared logic; component pages explain concrete implementation and states.</Description>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
+  <section style={{ gridColumn: 'span 7', padding: 28, borderRadius: 28, background: '#111827', color: '#f9fafb' }}>
+    <h2 style={{ marginTop: 0 }}>Default Navigation Map</h2>
+    <p style={{ marginBottom: 0 }}>Use `Foundations`, `Styles`, and `Components` as the primary navigation. Add `Patterns`, `Templates`, or `Resources` only when the system genuinely needs them.</p>
+  </section>
+  <section style={{ gridColumn: 'span 5', padding: 24, borderRadius: 28, background: '#fef3c7', border: '1px solid #f59e0b' }}>
+    <h2 style={{ marginTop: 0 }}>Optional Layers</h2>
+    <p style={{ margin: 0 }}>Patterns cover multi-component flows, templates cover page blueprints, and resources cover contribution references.</p>
+  </section>
+  <section style={{ gridColumn: 'span 8', padding: 24, borderRadius: 28, background: '#eff6ff', border: '1px solid #93c5fd' }}>
+    <h2 style={{ marginTop: 0 }}>Standard Component Page</h2>
+    <p style={{ margin: 0 }}>The default section order is `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`. Add more only when the component contract expands.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 24, borderRadius: 28, background: '#ecfccb', border: '1px solid #84cc16' }}>
+    <h2 style={{ marginTop: 0 }}>Writing Rule</h2>
+    <p style={{ margin: 0 }}>Do not force component pages to re-explain foundation logic. Teach the shared rule once, then reference it.</p>
+  </section>
+</div>

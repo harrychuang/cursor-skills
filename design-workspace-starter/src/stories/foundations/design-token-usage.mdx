@@ -1,0 +1,34 @@
+import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+
+<Meta title="Foundations/Design Token Usage" parameters={{ layout: 'fullscreen' }} />
+
+<Title>Design Token Usage</Title>
+<Subtitle>From extracted values to semantic roles to component implementation.</Subtitle>
+<Description>Pair this page with `design/foundations/design-token-usage.md` so designers and engineers see the same source of truth.</Description>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
+  <section style={{ gridColumn: 'span 3', padding: 20, borderRadius: 24, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h3 style={{ marginTop: 0 }}>Extract</h3>
+    <p>Capture the current source values without overfitting component names.</p>
+  </section>
+  <section style={{ gridColumn: 'span 3', padding: 20, borderRadius: 24, background: '#eef2ff', border: '1px solid #a5b4fc' }}>
+    <h3 style={{ marginTop: 0 }}>Normalize</h3>
+    <p>Map raw values into semantic roles that can survive redesigns.</p>
+  </section>
+  <section style={{ gridColumn: 'span 3', padding: 20, borderRadius: 24, background: '#f0fdf4', border: '1px solid #86efac' }}>
+    <h3 style={{ marginTop: 0 }}>Apply</h3>
+    <p>Consume semantic tokens in components, layouts, and stories.</p>
+  </section>
+  <section style={{ gridColumn: 'span 3', padding: 20, borderRadius: 24, background: '#fff7ed', border: '1px solid #fdba74' }}>
+    <h3 style={{ marginTop: 0 }}>Explain</h3>
+    <p>Document naming rules, exceptions, and migration notes here.</p>
+  </section>
+  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#111827', color: '#f9fafb' }}>
+    <h2 style={{ marginTop: 0 }}>Code Contract</h2>
+    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`:root {
+  --sys-color-surface: #ffffff;
+  --sys-space-md: 16px;
+  --sys-radius-md: 12px;
+}`}</pre>
+  </section>
+</div>

@@ -12,6 +12,7 @@ This folder is the independent version of the generated ZIP workspace. It is mea
 - optional Figma source in `.env.local`
 - product requirements under `product/`
 - foundation guides under `design/foundations/`
+- Storybook-discoverable foundation docs under `src/stories/foundations/`
 - app code, Storybook 10, and design-system code created by your coding agent
 
 It does not require `ui-explorer` to run.
@@ -136,7 +137,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
   - regenerates `product/SCREEN_MANIFEST.json`
   - regenerates `start-here/TASKS.md`
   - regenerates `start-here/REFERENCE_INVENTORY.md`
-  - creates `design/foundations/*.md` when missing
+  - creates `design/foundations/*.md` and `src/stories/foundations/*.mdx` when missing
 - `npm run workspace:check`
   - validates required folders
   - validates local and managed skill entrypoints
@@ -165,6 +166,8 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 ├── design/
 │   ├── foundations/
 │   └── extracted-design-tokens/
+├── src/
+│   └── stories/foundations/
 ├── reference/
 ├── scripts/
 └── workspace.config.json
@@ -181,7 +184,8 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 - Reusable Storybook components should enable Autodocs and include component descriptions in their docs pages.
 - `design/foundations/` should be maintained as the human-readable design system guide, and matching Storybook foundations pages should use a more designed layout such as bento modules instead of plain token tables.
 - Before component docs expand, define the documentation IA with `Foundations`, `Styles`, and `Components` as the default navigation and establish `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens` as the standard component page sections.
-- `design/foundations/storybook-docs/` includes starter templates for those Storybook docs pages plus a reusable component story template with Autodocs and prop docs wiring.
+- `design/foundations/storybook-docs/` includes the template source for those Storybook docs pages plus a reusable component story template with Autodocs and prop docs wiring.
+- `src/stories/foundations/` contains the MDX pages that a default Storybook setup will actually discover, so the foundation guides appear without extra `stories` glob changes.
 - In Figma mode, run Phase 0 with `skills/figma-m3-variables/SKILL.md` before Phase A so the source file has agreed tokens and bindings before code implementation.
 - Figma-aware visual parity is supported at the workflow level: the compare flow can treat Figma as source-of-truth and screenshots as secondary validation.
 - Screenshot-only parity must run as an iteration loop and record remaining variance as accepted, deferred, or blocked.

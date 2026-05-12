@@ -7,16 +7,17 @@ This repository is an AI-operable product workspace. It starts empty on purpose:
 1. `start-here/BUILD_PLAN.md`
 2. `start-here/TASKS.md`
 3. `start-here/STORYBOOK_10_AUTODOCS.md`
-4. `start-here/REFERENCE_INVENTORY.md`
-5. `design/foundations/README.md`
-6. `product/PRD.md`
-7. `product/PRODUCT_SPEC.json`
-8. `product/FEATURE_MANIFEST.json`
-9. `product/SCREEN_MANIFEST.json`
-10. `skills/design-system-governance/SKILL.md`
-11. `skills/ui-screenshot-to-storybook-product/SKILL.md`
-12. `skills/ui-visual-parity/SKILL.md`
-13. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
+4. `start-here/ACCURACY_CONTRACT.md`
+5. `start-here/REFERENCE_INVENTORY.md`
+6. `design/foundations/README.md`
+7. `product/PRD.md`
+8. `product/PRODUCT_SPEC.json`
+9. `product/FEATURE_MANIFEST.json`
+10. `product/SCREEN_MANIFEST.json`
+11. `skills/design-system-governance/SKILL.md`
+12. `skills/ui-screenshot-to-storybook-product/SKILL.md`
+13. `skills/ui-visual-parity/SKILL.md`
+14. `skills/figma-m3-variables/SKILL.md` when `.env.local` is configured
 
 ## Source modes
 
@@ -52,32 +53,36 @@ If `.env.local` contains `FIGMA_FILE_URL`, `FIGMA_NODE_ID`, and either `FIGMA_PA
 1. No hardcoded color, spacing, radius, or duration values when a token layer can own them.
 2. Reuse before inventing new components.
 3. Storybook 10 is the component hub. Reusable blocks need stories before screen composition.
-4. Before reusable component work, analyze recurring signals in color proportion, spacing feel, corner size, and typography weight.
-5. Turn that analysis into 5-7 evidence-backed design principles plus concrete design elements for color, typography, corner, and spacing.
-6. Output that analysis using fixed markdown tables for `Signal Summary`, `Design Principles`, `Design Elements`, and `Observed vs Inferred`.
-7. Define the documentation IA before detailed component docs. Default to `Foundations`, `Styles`, and `Components`, then lock the standard component page sections: `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`.
-8. In Figma mode, do not start screen implementation until Phase 0 token binding is complete for the relevant source components.
-9. Reusable Storybook components must enable Autodocs and include component descriptions in the docs output.
-10. Maintain `design/foundations/*.md` as required documentation for design principles, design specs, and token usage.
-11. When token work changes, update Storybook foundations pages with a designed layout such as bento modules rather than plain token tables.
-12. Visual parity fixes must follow this order:
+4. Read `start-here/ACCURACY_CONTRACT.md` and classify the source mode before implementation.
+5. In image-only mode, record observed facts, inferred decisions, missing context, and open questions before coding.
+6. Before reusable component work, analyze recurring signals in color proportion, spacing feel, corner size, and typography weight.
+7. Turn that analysis into 5-7 evidence-backed design principles plus concrete design elements for color, typography, corner, and spacing.
+8. Output that analysis using fixed markdown tables for `Signal Summary`, `Design Principles`, `Design Elements`, and `Observed vs Inferred`.
+9. Define the documentation IA before detailed component docs. Default to `Foundations`, `Styles`, and `Components`, then lock the standard component page sections: `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`.
+10. In Figma mode, do not start screen implementation until Phase 0 token binding is complete for the relevant source components.
+11. Reusable Storybook components must enable Autodocs and include component descriptions in the docs output.
+12. Maintain `design/foundations/*.md` as required documentation for design principles, design specs, and token usage.
+13. When token work changes, update Storybook foundations pages with a designed layout such as bento modules rather than plain token tables.
+14. Visual parity fixes must follow this order:
    - token/theme
    - primitive/shared component
    - component variant/props
    - composition/layout
    - page-only styling
-13. If Figma and screenshots disagree, prefer Figma when Figma mode is configured.
+15. If Figma and screenshots disagree, prefer Figma when Figma mode is configured.
+16. Record remaining variance as accepted, deferred, or blocked before sign-off.
 
 ## Expected outputs
 
 - `src/` application code
 - `.storybook/` setup and Storybook 10 component stories with Autodocs
+- source accuracy tier and assumption log
 - `design/foundations/*.md` updated from placeholder into a real foundation guide set
 - Storybook foundations include a docs IA guide before component-level detail pages
 - design analysis documented with observed signals, inferred principles, and normalized design elements
 - `design/extracted-design-tokens/design-tokens.json` updated from placeholder
 - `product/*` manifests updated from placeholder
-- parity-ready compare workflow using screenshot and/or Figma evidence
+- parity-ready compare workflow using screenshot and/or Figma evidence, with remaining variance recorded
 
 ## Agent note
 

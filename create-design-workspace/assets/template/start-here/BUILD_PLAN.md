@@ -18,6 +18,9 @@
    - detect screenshot inputs
    - detect Figma inputs
    - prefer Figma when configured
+   - read `start-here/ACCURACY_CONTRACT.md`
+   - classify input as Figma-first, multi-reference screenshot, or single-image
+   - record missing context before implementation
 2. Design-system analysis
    - inspect shared signals in color proportion, spacing feel, corner size, and typography weight
    - separate observed source values from inferred system recommendations
@@ -36,11 +39,16 @@
    - build or refresh Storybook foundations pages with a design-led, bento-style layout when token work changes
 6. Screen composition
 7. Visual parity
+   - capture baseline
+   - compare generated output against the source viewport
+   - fix drift in ownership order: token/theme, shared primitive, component variant, layout composition, page-only styling
+   - record accepted variance and remaining missing context
 8. Product manifest cleanup
 
 ## Done criteria
 
 - `product/SCREEN_MANIFEST.json` reflects current source screens
+- source mode has an explicit accuracy tier and assumption log
 - reusable UI has Storybook 10 stories
 - reusable UI stories have Autodocs and component descriptions
 - source analysis is documented as observed signals, inferred principles, and recommended design elements
@@ -52,4 +60,5 @@
 - Figma mode has `FIGMA_PAT` configured or `FIGMA_AUTH_MODE=connector` declared before automation starts
 - Figma mode has completed Phase 0 token audit or binding for the active source components
 - compare workflow can operate in the chosen source mode
+- remaining visual variance is recorded as accepted, deferred, or blocked
 - app implementation matches design source with evidence-based fixes

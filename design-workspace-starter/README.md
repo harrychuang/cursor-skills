@@ -103,6 +103,7 @@ npm run workspace:check
 ```
 
 5. Open this folder in Claude Code, Cursor, or Codex and start with:
+   - `start-here/ACCURACY_CONTRACT.md`
    - `start-here/KICKSTART.md`
    - `start-here/BUILD_PLAN.md`
    - `start-here/STORYBOOK_10_AUTODOCS.md`
@@ -173,6 +174,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 
 - `reference/` is primary for screenshot-driven work.
 - `.env.local` is primary for Figma-driven work.
+- Read `start-here/ACCURACY_CONTRACT.md` before implementation. Figma-first mode can reach the highest fidelity because it exposes structured design context; single-image mode is an approximation path that must record assumptions and missing context.
 - If `.env.local` has `FIGMA_FILE_URL` and `FIGMA_NODE_ID` but has neither `FIGMA_PAT` nor `FIGMA_AUTH_MODE=connector`, `npm run workspace:check` should fail until you add one of them.
 - Use the latest stable Storybook 10 for shared component work. For new setups, use `npm create storybook@latest`; for upgrades, use `npx storybook@latest upgrade`.
 - Storybook 10 requires Node 20.19+ or 22.12+.
@@ -182,4 +184,5 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 - `design/foundations/storybook-docs/` includes starter templates for those Storybook docs pages plus a reusable component story template with Autodocs and prop docs wiring.
 - In Figma mode, run Phase 0 with `skills/figma-m3-variables/SKILL.md` before Phase A so the source file has agreed tokens and bindings before code implementation.
 - Figma-aware visual parity is supported at the workflow level: the compare flow can treat Figma as source-of-truth and screenshots as secondary validation.
+- Screenshot-only parity must run as an iteration loop and record remaining variance as accepted, deferred, or blocked.
 - This starter intentionally ships with placeholder manifests and tokens. It is a workspace skeleton, not a finished app.

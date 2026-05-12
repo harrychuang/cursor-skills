@@ -45,6 +45,16 @@ This skill is for starting a new design-driven project. It is not intended to be
 - Optional `FIGMA_AUTH_MODE=connector`
 - Optional target directory and project name
 
+## Accuracy expectations
+
+Before implementation, classify the source mode:
+
+- Figma-first: highest-fidelity path because the workflow can use structured layout, variables, components, and selected frame context.
+- Multi-reference screenshot: good visual reconstruction when repeated patterns and breakpoints are visible, but still requires explicit parity iteration.
+- Single-image: first-pass approximation only. Record observed facts, inferred decisions, missing context, and open questions before coding.
+
+Do not claim that one static image is enough to recover hidden states, responsive behavior, product rules, real data behavior, exact typography, or complete component ownership. Use `start-here/ACCURACY_CONTRACT.md` in the generated workspace to set expectations and sign-off criteria.
+
 ## Bootstrap workflow
 
 1. Choose the target directory.
@@ -109,12 +119,15 @@ npm run workspace:check
 Once the workspace exists:
 
 1. Read `start-here/KICKSTART.md`, `start-here/BUILD_PLAN.md`, `start-here/TASKS.md`, and `design/foundations/README.md`.
+   - Also read `start-here/ACCURACY_CONTRACT.md` before implementation.
 2. Follow the local workflow skills in this order:
    - `skills/design-system-governance/SKILL.md`
    - `skills/ui-screenshot-to-storybook-product/SKILL.md`
    - `skills/ui-visual-parity/SKILL.md`
    - `skills/figma-m3-variables/SKILL.md` first when Figma mode is configured
 3. Implement end-to-end:
+   - classify the input source as Figma-first, multi-reference screenshot, or single-image
+   - record observed, inferred, and missing context before coding from image-only sources
    - analyze the screenshot and/or Figma source for recurring signals in color proportion, spacing density, radius treatment, and type hierarchy
    - summarize 5-7 design principles backed by visible evidence
    - define design elements for color, typography, corner, and spacing before coding reusable components
@@ -124,6 +137,7 @@ Once the workspace exists:
    - build or update Storybook foundation pages when the token system changes
    - compose screens from reusable components
    - run visual parity and fix drift at the correct ownership layer
+   - record remaining variance as accepted, deferred, or blocked
 
 When handing off to a specific tool:
 

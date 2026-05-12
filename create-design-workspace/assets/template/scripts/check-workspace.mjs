@@ -3,6 +3,7 @@ import path from 'node:path'
 import { constants } from 'node:fs'
 import {
   getFigmaAuthMode,
+  getRequiredFoundationPaths,
   getRequiredSkillPaths,
   isFigmaAutomationReady,
   isFigmaConfigured,
@@ -10,6 +11,7 @@ import {
   parseEnvText,
   scanReferenceScreens
 } from './lib/workspace.js'
+import { validateStorybookDocs } from './lib/storybook.js'
 
 const rootDir = process.cwd()
 const config = await loadWorkspaceConfig(rootDir)
@@ -17,11 +19,13 @@ const requiredPaths = [
   'reference',
   'product',
   'design',
+  'design/foundations',
   'skills',
   'start-here',
   'workspace.config.json'
 ]
 const requiredSkillPaths = getRequiredSkillPaths(config)
+const requiredFoundationPaths = getRequiredFoundationPaths()
 
 const missing = []
 for (const relativePath of requiredPaths) {
@@ -33,6 +37,14 @@ for (const relativePath of requiredPaths) {
 }
 
 for (const relativePath of requiredSkillPaths) {
+  try {
+    await access(path.join(rootDir, relativePath), constants.F_OK)
+  } catch {
+    missing.push(relativePath)
+  }
+}
+
+for (const relativePath of requiredFoundationPaths) {
   try {
     await access(path.join(rootDir, relativePath), constants.F_OK)
   } catch {
@@ -52,6 +64,7 @@ try {
 const figmaConfigured = isFigmaConfigured(env)
 const figmaAutomationReady = isFigmaAutomationReady(env)
 const figmaAuthMode = getFigmaAuthMode(env)
+const storybookDocsResult = await validateStorybookDocs(rootDir, config)
 
 if (missing.length > 0) {
   console.error('Workspace check failed. Missing paths:')
@@ -72,8 +85,21 @@ if (figmaConfigured && !figmaAutomationReady) {
   process.exit(1)
 }
 
+if (storybookDocsResult.status === 'failed') {
+  console.error('Workspace check failed. Storybook docs validation found issues:')
+  for (const issue of storybookDocsResult.issues) console.error(`- ${issue}`)
+  console.error('Fix the affected stories or run `npm run storybook:check-docs` directly for the same report.')
+  process.exit(1)
+}
+
 console.log('Workspace check passed.')
 console.log(`- reference screens: ${screens.length}`)
 console.log(`- figma configured: ${figmaConfigured}`)
 console.log(`- figma automation ready: ${figmaAutomationReady}`)
 console.log(`- figma auth mode: ${figmaAuthMode || 'none'}`)
+console.log(`- foundation guides: ${requiredFoundationPaths.length - 1} files`)
+if (storybookDocsResult.status === 'skipped') {
+  console.log(`- storybook docs check: skipped (${storybookDocsResult.reason})`)
+} else {
+  console.log(`- storybook docs check: ${storybookDocsResult.componentCount} component(s), ${storybookDocsResult.storyCount} story file(s)`)
+}

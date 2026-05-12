@@ -11,6 +11,7 @@ This folder is the independent version of the generated ZIP workspace. It is mea
 - reference UI demos under `reference/`
 - optional Figma source in `.env.local`
 - product requirements under `product/`
+- foundation guides under `design/foundations/`
 - app code, Storybook 10, and design-system code created by your coding agent
 
 It does not require `ui-explorer` to run.
@@ -66,6 +67,7 @@ The repository includes:
    - design-system governance
    - screenshot/Figma to Storybook workflow
    - visual parity workflow
+   - foundation guides for principles, specs, and token usage
    - product manifests and phased build plan
 3. Gives each coding agent a native entrypoint:
    - `CLAUDE.md` and `.claude/commands/*` for Claude Code
@@ -105,6 +107,7 @@ npm run workspace:check
    - `start-here/BUILD_PLAN.md`
    - `start-here/STORYBOOK_10_AUTODOCS.md`
    - `start-here/TASKS.md`
+   - `design/foundations/README.md`
 
 ## Agent handoff
 
@@ -132,12 +135,16 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
   - regenerates `product/SCREEN_MANIFEST.json`
   - regenerates `start-here/TASKS.md`
   - regenerates `start-here/REFERENCE_INVENTORY.md`
+  - creates `design/foundations/*.md` when missing
 - `npm run workspace:check`
   - validates required folders
   - validates local and managed skill entrypoints
   - checks whether screenshot or Figma inputs exist
   - fails when a Figma URL is configured without either `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector`
   - reports whether Figma automation is ready
+- `npm run storybook:check-docs`
+  - validates that reusable components have companion stories
+  - validates Autodocs, component descriptions, `argTypes`, and expanded controls
 - `npm run figma:configure -- --url <figma-url> [--pat <figma-pat>] [--auth-mode connector]`
   - parses a Figma design URL
   - writes `.env.local`
@@ -155,6 +162,8 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 ├── start-here/
 ├── product/
 ├── design/
+│   ├── foundations/
+│   └── extracted-design-tokens/
 ├── reference/
 ├── scripts/
 └── workspace.config.json
@@ -168,6 +177,9 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 - Use the latest stable Storybook 10 for shared component work. For new setups, use `npm create storybook@latest`; for upgrades, use `npx storybook@latest upgrade`.
 - Storybook 10 requires Node 20.19+ or 22.12+.
 - Reusable Storybook components should enable Autodocs and include component descriptions in their docs pages.
+- `design/foundations/` should be maintained as the human-readable design system guide, and matching Storybook foundations pages should use a more designed layout such as bento modules instead of plain token tables.
+- Before component docs expand, define the documentation IA with `Foundations`, `Styles`, and `Components` as the default navigation and establish `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens` as the standard component page sections.
+- `design/foundations/storybook-docs/` includes starter templates for those Storybook docs pages plus a reusable component story template with Autodocs and prop docs wiring.
 - In Figma mode, run Phase 0 with `skills/figma-m3-variables/SKILL.md` before Phase A so the source file has agreed tokens and bindings before code implementation.
 - Figma-aware visual parity is supported at the workflow level: the compare flow can treat Figma as source-of-truth and screenshots as secondary validation.
 - This starter intentionally ships with placeholder manifests and tokens. It is a workspace skeleton, not a finished app.

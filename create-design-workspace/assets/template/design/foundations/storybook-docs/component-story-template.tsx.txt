@@ -1,0 +1,60 @@
+import type { Meta, StoryObj } from '@storybook/your-framework'
+import { ExampleComponent } from './ExampleComponent'
+
+const meta = {
+  title: 'Components/ExampleComponent',
+  component: ExampleComponent,
+  tags: ['autodocs'],
+  parameters: {
+    controls: {
+      expanded: true,
+      sort: 'requiredFirst'
+    },
+    docs: {
+      description: {
+        component: 'Explain what this component is for, where it should be used, and which foundation rules matter most.'
+      }
+    }
+  },
+  argTypes: {
+    variant: {
+      description: 'Visual treatment that should map to a documented product role.',
+      control: 'inline-radio',
+      options: ['primary', 'secondary'],
+      table: {
+        type: { summary: "'primary' | 'secondary'" },
+        defaultValue: { summary: 'primary' }
+      }
+    },
+    disabled: {
+      description: 'Prevents interaction while preserving layout and label visibility.',
+      control: 'boolean',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' }
+      }
+    }
+  },
+  args: {
+    variant: 'primary',
+    disabled: false
+  }
+} satisfies Meta<typeof ExampleComponent>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
+
+export const Secondary: Story = {
+  args: {
+    variant: 'secondary'
+  }
+}
+
+export const Disabled: Story = {
+  args: {
+    disabled: true
+  }
+}

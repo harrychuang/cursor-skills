@@ -18,21 +18,36 @@
    - detect screenshot inputs
    - detect Figma inputs
    - prefer Figma when configured
-2. Visual inventory
-3. Reuse and architecture
-4. Storybook-first shared UI
+2. Design-system analysis
+   - inspect shared signals in color proportion, spacing feel, corner size, and typography weight
+   - separate observed source values from inferred system recommendations
+   - summarize 5-7 evidence-backed design principles
+   - define design elements for color, typography, corner, and spacing
+   - define the documentation IA before component docs: default to `Foundations`, `Styles`, and `Components`
+   - establish the standard component page sections: `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`
+3. Visual inventory
+4. Reuse and architecture
+5. Storybook-first shared UI
    - use the latest stable Storybook 10
    - enable Autodocs for reusable components
    - add component descriptions to reusable component docs
-5. Screen composition
-6. Visual parity
-7. Product manifest cleanup
+   - maintain `design/foundations/*.md` as the human-readable design spec
+   - create or refine `Foundations/Guides` before expanding component docs
+   - build or refresh Storybook foundations pages with a design-led, bento-style layout when token work changes
+6. Screen composition
+7. Visual parity
+8. Product manifest cleanup
 
 ## Done criteria
 
 - `product/SCREEN_MANIFEST.json` reflects current source screens
 - reusable UI has Storybook 10 stories
 - reusable UI stories have Autodocs and component descriptions
+- source analysis is documented as observed signals, inferred principles, and recommended design elements
+- foundation guides exist for principles, color, typography, spacing, corner, and token usage
+- Storybook docs IA is defined before component detail pages expand
+- component documentation uses a stable section contract: overview, anatomy, states, usage, and tokens
+- Storybook foundations pages explain the active token system and design rules
 - tokens are not placeholder values
 - Figma mode has `FIGMA_PAT` configured or `FIGMA_AUTH_MODE=connector` declared before automation starts
 - Figma mode has completed Phase 0 token audit or binding for the active source components

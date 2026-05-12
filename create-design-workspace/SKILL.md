@@ -98,20 +98,30 @@ npm run workspace:check
 - Prefer the official setup flow for new projects and the official upgrade flow for existing projects.
 - Every reusable Storybook component must have Autodocs enabled.
 - Every reusable Storybook component must include a component description in its docs output.
+- Every reusable Storybook component must document important props through `argTypes` and expose expanded controls in docs.
+- The generated workspace must include foundation guides for color, typography, spacing, corner, design principles, and design token usage.
+- Foundation work must begin with evidence-backed analysis of the source design: color proportion, spacing feel, corner size, and typography weight.
+- That analysis must separate `observed` source values from `inferred` system recommendations, then map the chosen system into tokens.
+- When token work changes, maintain matching Storybook foundation pages with a design-led layout such as bento cards rather than plain token dumps.
 
 ## Full development workflow
 
 Once the workspace exists:
 
-1. Read `start-here/KICKSTART.md`, `start-here/BUILD_PLAN.md`, and `start-here/TASKS.md`.
+1. Read `start-here/KICKSTART.md`, `start-here/BUILD_PLAN.md`, `start-here/TASKS.md`, and `design/foundations/README.md`.
 2. Follow the local workflow skills in this order:
    - `skills/design-system-governance/SKILL.md`
    - `skills/ui-screenshot-to-storybook-product/SKILL.md`
    - `skills/ui-visual-parity/SKILL.md`
    - `skills/figma-m3-variables/SKILL.md` first when Figma mode is configured
 3. Implement end-to-end:
+   - analyze the screenshot and/or Figma source for recurring signals in color proportion, spacing density, radius treatment, and type hierarchy
+   - summarize 5-7 design principles backed by visible evidence
+   - define design elements for color, typography, corner, and spacing before coding reusable components
    - update product docs and manifests
+   - replace the placeholder foundation guides with project-specific design principles, specs, and token usage notes
    - build reusable Storybook components before screens
+   - build or update Storybook foundation pages when the token system changes
    - compose screens from reusable components
    - run visual parity and fix drift at the correct ownership layer
 

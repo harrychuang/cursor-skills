@@ -1,0 +1,31 @@
+import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+
+<Meta title="Foundations/Typography" parameters={{ layout: 'fullscreen' }} />
+
+<Title>Typography Foundation</Title>
+<Subtitle>Hierarchy, readability, and role-driven naming.</Subtitle>
+<Description>Mirror `design/foundations/typography.md`, but show the roles in real layout context and make the usage boundaries obvious.</Description>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
+  <section style={{ gridColumn: 'span 7', padding: 28, borderRadius: 28, background: '#fafaf9', border: '1px solid #d6d3d1' }}>
+    <div style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#78716c', marginBottom: 16 }}>Display</div>
+    <h1 style={{ marginTop: 0, marginBottom: 12 }}>Design the rules before the pages design themselves.</h1>
+    <p style={{ margin: 0, maxWidth: 560 }}>Use the largest text role for a front door, hero, or major section opener. If a heading appears this large inside a routine settings card, the system is over-signaling.</p>
+  </section>
+  <section style={{ gridColumn: 'span 5', padding: 24, borderRadius: 28, background: '#f5f3ff', border: '1px solid #c4b5fd' }}>
+    <h2 style={{ marginTop: 0 }}>Hierarchy Rules</h2>
+    <p style={{ margin: 0 }}>Size, weight, and spacing establish hierarchy first. Use color emphasis only after the text roles already read correctly in grayscale.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h3 style={{ marginTop: 0 }}>H1-H3</h3>
+    <p style={{ margin: 0 }}>Use headings for page, section, and module structure. Avoid skipping levels just because the visual size feels convenient.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#eef2ff', border: '1px solid #a5b4fc' }}>
+    <h3 style={{ marginTop: 0 }}>Body</h3>
+    <p style={{ margin: 0 }}>Use for guideline copy, helper text, and long-form explanation. Body styles optimize sustained reading, not marketing drama.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#fff7ed', border: '1px solid #fdba74' }}>
+    <h3 style={{ marginTop: 0 }}>Label and Meta</h3>
+    <p style={{ margin: 0 }}>Use labels for controls and compact UI context. Use meta text for timestamps, annotations, and supportive details that must stay secondary.</p>
+  </section>
+</div>

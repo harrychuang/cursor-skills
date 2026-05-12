@@ -1,0 +1,26 @@
+import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+
+<Meta title="Foundations/Corner" parameters={{ layout: 'fullscreen' }} />
+
+<Title>Corner Foundation</Title>
+<Subtitle>Shape language from crisp utility to expressive brand moments.</Subtitle>
+<Description>Use this page to show where the radius system should feel technical, neutral, or soft.</Description>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
+  <section style={{ gridColumn: 'span 4', padding: 24, borderRadius: 12, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h2 style={{ marginTop: 0 }}>Sharp</h2>
+    <p>Use for dense, technical, or structured areas like data tables and shells.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 24, borderRadius: 20, background: '#eef2ff', border: '1px solid #a5b4fc' }}>
+    <h2 style={{ marginTop: 0 }}>Subtle</h2>
+    <p>Default family for buttons, inputs, cards, and common product surfaces.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 24, borderRadius: 28, background: '#fff7ed', border: '1px solid #fdba74' }}>
+    <h2 style={{ marginTop: 0 }}>Expressive</h2>
+    <p>Reserve for hero cards or branded moments where softness adds meaning.</p>
+  </section>
+  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#0f172a', color: '#e2e8f0' }}>
+    <h2 style={{ marginTop: 0 }}>Combination Rules</h2>
+    <p style={{ marginBottom: 0 }}>Explain how adjacent surfaces should align their corner logic so seams feel intentional instead of accidental.</p>
+  </section>
+</div>

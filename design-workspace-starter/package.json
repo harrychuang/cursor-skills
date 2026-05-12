@@ -8,6 +8,7 @@
     "workspace:init": "node scripts/init-workspace.mjs",
     "workspace:sync": "node scripts/sync-workspace.mjs",
     "workspace:check": "node scripts/check-workspace.mjs",
+    "storybook:check-docs": "node scripts/check-storybook-docs.mjs",
     "figma:configure": "node scripts/configure-figma.mjs",
     "test": "node --test tests/*.test.mjs"
   },

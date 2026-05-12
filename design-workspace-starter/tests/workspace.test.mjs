@@ -4,11 +4,21 @@ import assert from 'node:assert/strict'
 import {
   buildScreenManifest,
   buildTasksMarkdown,
+  getFoundationGuideEntries,
+  getRequiredFoundationPaths,
   getFigmaAuthMode,
   getRequiredSkillPaths,
   isFigmaAutomationReady,
   parseFigmaUrl
 } from '../scripts/lib/workspace.js'
+import {
+  previewHasExpandedControls,
+  previewHasGlobalAutodocs,
+  storyHasArgTypes,
+  storyHasComponentDescription,
+  storyHasExpandedControls,
+  storyHasLocalAutodocs
+} from '../scripts/lib/storybook.js'
 
 test('parseFigmaUrl normalizes node id', () => {
   const parsed = parseFigmaUrl('https://www.figma.com/design/ABC123/MyFile?node-id=10-42')
@@ -75,4 +85,66 @@ test('getRequiredSkillPaths includes local and managed skills', () => {
     'skills/figma-m3-variables/SKILL.md',
     'skills/ui-visual-parity/SKILL.md'
   ])
+})
+
+test('foundation paths include storybook docs templates', () => {
+  const paths = getRequiredFoundationPaths()
+
+  assert.equal(paths.includes('design/foundations/storybook-docs/overview.mdx'), true)
+  assert.equal(paths.includes('design/foundations/storybook-docs/guides.mdx'), true)
+  assert.equal(paths.includes('design/foundations/storybook-docs/component-story-template.tsx.txt'), true)
+})
+
+test('foundation entries include storybook docs templates', () => {
+  const entries = getFoundationGuideEntries({ projectName: 'Workspace' })
+  const templateEntry = entries.find(entry => entry.relativePath === 'design/foundations/storybook-docs/component-story-template.tsx.txt')
+  const guidesEntry = entries.find(entry => entry.relativePath === 'design/foundations/storybook-docs/guides.mdx')
+
+  assert.ok(templateEntry)
+  assert.ok(guidesEntry)
+  assert.match(guidesEntry.content, /Foundations`, `Styles`, and `Components`/)
+  assert.match(templateEntry.content, /tags: \['autodocs'\]/)
+  assert.match(templateEntry.content, /argTypes:/)
+  assert.match(templateEntry.content, /expanded: true/)
+})
+
+test('storybook helper regexes detect autodocs and props docs settings', () => {
+  const previewText = `
+    const preview = {
+      tags: ['autodocs'],
+      parameters: {
+        controls: {
+          expanded: true
+        }
+      }
+    }
+  `
+  const storyText = `
+    const meta = {
+      component: Button,
+      tags: ['autodocs'],
+      parameters: {
+        controls: {
+          expanded: true
+        },
+        docs: {
+          description: {
+            component: 'Button docs'
+          }
+        }
+      },
+      argTypes: {
+        variant: {
+          control: 'inline-radio'
+        }
+      }
+    }
+  `
+
+  assert.equal(previewHasGlobalAutodocs(previewText), true)
+  assert.equal(previewHasExpandedControls(previewText), true)
+  assert.equal(storyHasLocalAutodocs(storyText), true)
+  assert.equal(storyHasComponentDescription(storyText), true)
+  assert.equal(storyHasArgTypes(storyText), true)
+  assert.equal(storyHasExpandedControls(storyText), true)
 })

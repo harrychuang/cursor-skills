@@ -1,0 +1,33 @@
+# Spectra local state (indexes, worktrees, caches)
+.spectra/
+
+# OpenSpec vector search index (local)
+openspec/.vector-search.db*
+
+# Dependencies (if added under this repo)
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test / build output (common in JS workspaces)
+coverage/
+dist/
+.turbo/
+.vercel/

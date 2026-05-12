@@ -1,0 +1,44 @@
+import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+
+<Meta title="Foundations/Overview" parameters={{ layout: 'fullscreen' }} />
+
+<Title>Foundations Overview</Title>
+<Subtitle>Use this as the design-system front door before component-level docs branch out.</Subtitle>
+<Description>
+This page should introduce the design-system reading order: start from documentation IA, then foundations, then component detail.
+</Description>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
+  <section style={{ gridColumn: 'span 7', padding: 28, borderRadius: 28, background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 55%, #334155 100%)', color: '#f8fafc' }}>
+    <h2 style={{ marginTop: 0, marginBottom: 12 }}>Documentation First</h2>
+    <p style={{ marginTop: 0, marginBottom: 16, opacity: 0.88 }}>Before component pages multiply, define the site map, the foundation logic, and the shared language for tokens and usage.</p>
+  </section>
+  <section style={{ gridColumn: 'span 5', padding: 24, borderRadius: 28, background: '#fff7ed', border: '1px solid #fdba74' }}>
+    <h2 style={{ marginTop: 0 }}>Default Docs Map</h2>
+    <p style={{ margin: 0 }}>Use `Foundations`, `Styles`, and `Components` as the primary navigation. Add `Patterns`, `Templates`, or `Resources` only when the system needs them.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h3 style={{ marginTop: 0 }}>Guides</h3>
+    <p style={{ marginBottom: 0 }}>Define IA, page sections, and the difference between guidance pages and component reference pages.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#eff6ff', border: '1px solid #93c5fd' }}>
+    <h3 style={{ marginTop: 0 }}>Color</h3>
+    <p style={{ marginBottom: 0 }}>Document what each semantic role means before a component invents local exceptions.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#f0fdf4', border: '1px solid #86efac' }}>
+    <h3 style={{ marginTop: 0 }}>Typography</h3>
+    <p style={{ marginBottom: 0 }}>Define hierarchy through role, not one-off sizes attached to a single screen.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#fefce8', border: '1px solid #fde047' }}>
+    <h3 style={{ marginTop: 0 }}>Spacing</h3>
+    <p style={{ marginBottom: 0 }}>Explain rhythm bands and safe defaults before teams reach for local padding fixes.</p>
+  </section>
+  <section style={{ gridColumn: 'span 6', padding: 20, borderRadius: 24, background: '#faf5ff', border: '1px solid #d8b4fe' }}>
+    <h3 style={{ marginTop: 0 }}>Standard Component Page</h3>
+    <p style={{ marginBottom: 0 }}>Every component page starts from `Overview`, then shows `Anatomy`, `States`, `Usage`, and `Tokens`.</p>
+  </section>
+  <section style={{ gridColumn: 'span 6', padding: 20, borderRadius: 24, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h3 style={{ marginTop: 0 }}>Token Layers</h3>
+    <p style={{ marginBottom: 0 }}>Explain how `Ref`, `Sys`, and `Comp` tokens relate before component implementation begins.</p>
+  </section>
+</div>

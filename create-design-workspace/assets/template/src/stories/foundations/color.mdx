@@ -1,0 +1,26 @@
+import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+
+<Meta title="Foundations/Color" parameters={{ layout: 'fullscreen' }} />
+
+<Title>Color Foundation</Title>
+<Subtitle>Semantic color roles before component-level exceptions.</Subtitle>
+<Description>Use this page to explain what each semantic color role means in practice. Replace the sample labels with the active token names, but keep the decision rules explicit.</Description>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
+  <section style={{ gridColumn: 'span 8', padding: 24, borderRadius: 28, background: '#111827', color: '#f9fafb' }}>
+    <h2 style={{ marginTop: 0 }}>Semantic Palette</h2>
+    <p>Document which role owns emphasis, containment, neutrality, and feedback before any component invents local color exceptions.</p>
+  </section>
+  <section style={{ gridColumn: 'span 4', padding: 24, borderRadius: 28, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h2 style={{ marginTop: 0 }}>Contrast Rules</h2>
+    <p>Call out minimum contrast expectations, inverse text pairings, and the failure cases where color alone is carrying meaning.</p>
+  </section>
+  <section style={{ gridColumn: 'span 6', padding: 20, borderRadius: 24, background: '#fff7ed', border: '1px solid #fdba74' }}>
+    <h3 style={{ marginTop: 0 }}>Feedback Roles</h3>
+    <p>Reserve error, warning, success, and info colors for actual state communication, not decoration.</p>
+  </section>
+  <section style={{ gridColumn: 'span 6', padding: 20, borderRadius: 24, background: '#eff6ff', border: '1px solid #93c5fd' }}>
+    <h3 style={{ marginTop: 0 }}>Component Exceptions</h3>
+    <p>List component-only tokens only when the semantic layer cannot express the behavior. Document why the exception exists.</p>
+  </section>
+</div>

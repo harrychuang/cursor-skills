@@ -116,6 +116,7 @@ The skill scaffolds a full workspace from the bundled template under `assets/tem
 - `start-here/` kickoff workflow
 - `design/foundations/` guides for design principles, specs, and token usage
 - `design/foundations/storybook-docs/` starter templates for foundations pages and component story docs
+- `src/stories/foundations/` Storybook-discoverable copies of the foundation guides
 - `scripts/` for workspace init, sync, and checks
 
 After bootstrap, the generated workspace installs these managed skills with `npm run workspace:init`:
@@ -214,7 +215,7 @@ When a Figma URL is configured, the workspace expects a Phase 0 gate before impl
 
 Use the latest stable Storybook 10 for shared component work. For new projects, follow the official `npm create storybook@latest` flow. For existing projects, use `npx storybook@latest upgrade`. Storybook 10 is ESM-only and requires Node 20.19+ or 22.12+.
 
-All reusable components should ship with Autodocs enabled and with component descriptions in the generated docs output. Foundation pages should also explain design principles, specs, and token usage with a design-led layout such as bento cards when the token layer changes.
+All reusable components should ship with Autodocs enabled and with component descriptions in the generated docs output. Foundation pages should also explain design principles, specs, and token usage with a design-led layout such as bento cards when the token layer changes. The generated workspace now mirrors those guides into `src/stories/foundations/` so a default Storybook install can discover them without extra glob changes.
 
 ## Files
 

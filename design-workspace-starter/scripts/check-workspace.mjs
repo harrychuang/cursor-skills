@@ -97,7 +97,7 @@ console.log(`- reference screens: ${screens.length}`)
 console.log(`- figma configured: ${figmaConfigured}`)
 console.log(`- figma automation ready: ${figmaAutomationReady}`)
 console.log(`- figma auth mode: ${figmaAuthMode || 'none'}`)
-console.log(`- foundation guides: ${requiredFoundationPaths.length - 1} files`)
+console.log(`- foundation guide assets: ${requiredFoundationPaths.length} paths`)
 if (storybookDocsResult.status === 'skipped') {
   console.log(`- storybook docs check: skipped (${storybookDocsResult.reason})`)
 } else {

@@ -1,12 +1,12 @@
-import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
+import { Meta, Title, Subtitle } from '@storybook/blocks'
 
 <Meta title="Foundations/Overview" parameters={{ layout: 'fullscreen' }} />
 
 <Title>Foundations Overview</Title>
 <Subtitle>Use this as the design-system front door before component-level docs branch out.</Subtitle>
-<Description>
+<p style={{ marginTop: 12, maxWidth: 760 }}>
 This page should introduce the design-system reading order: start from documentation IA, then foundations, then component detail.
-</Description>
+</p>
 
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
   <section style={{ gridColumn: 'span 7', padding: 28, borderRadius: 28, background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 55%, #334155 100%)', color: '#f8fafc' }}>

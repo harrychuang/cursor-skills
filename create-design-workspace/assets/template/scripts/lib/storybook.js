@@ -11,6 +11,7 @@ const PREVIEW_CANDIDATES = [
   '.storybook/preview.mjs',
   '.storybook/preview.cjs'
 ]
+const UNATTACHED_MDX_BLOCK_PATTERN = /<(Description|Primary|Controls|Stories|ArgTypes|ArgsTable)\b(?![^>]*\bof=)[^>]*>/
 
 async function listFilesRecursive(rootDir) {
   const entries = await readdir(rootDir, { withFileTypes: true })
@@ -89,13 +90,65 @@ export function storyHasComponentMeta(text) {
   return /component\s*:/.test(text)
 }
 
+export function mdxHasAttachedMeta(text) {
+  return /<Meta\b[^>]*\bof=/.test(text)
+}
+
+export function mdxHasUnattachedDocsBlock(text) {
+  if (mdxHasAttachedMeta(text)) return false
+  return UNATTACHED_MDX_BLOCK_PATTERN.test(text)
+}
+
+async function listMdxDocsFiles(rootDir, config) {
+  const docsRoots = [
+    config.appSourceDir || 'src',
+    'design/foundations/storybook-docs'
+  ]
+  const files = new Set()
+
+  for (const relativeRoot of docsRoots) {
+    const absoluteRoot = path.join(rootDir, relativeRoot)
+    let rootFiles = []
+    try {
+      rootFiles = await listFilesRecursive(absoluteRoot)
+    } catch {
+      continue
+    }
+
+    for (const file of rootFiles) {
+      if (path.extname(file) === '.mdx') {
+        files.add(file)
+      }
+    }
+  }
+
+  return [...files]
+}
+
 export async function validateStorybookDocs(rootDir, config) {
   const storybookDir = path.join(rootDir, config.storybookDir || 'src/components')
+  const issues = []
+
+  for (const mdxFile of await listMdxDocsFiles(rootDir, config)) {
+    const text = await readFile(mdxFile, 'utf8')
+    if (mdxHasUnattachedDocsBlock(text)) {
+      issues.push(`${path.relative(rootDir, mdxFile)} uses a Storybook docs block that needs an attached CSF story; use plain MDX/HTML for custom foundation pages or add \`of={...}\``)
+    }
+  }
 
   let allFiles = []
   try {
     allFiles = await listFilesRecursive(storybookDir)
   } catch {
+    if (issues.length > 0) {
+      return {
+        status: 'failed',
+        componentCount: 0,
+        storyCount: 0,
+        issues
+      }
+    }
+
     return {
       status: 'skipped',
       reason: `storybook source directory not found: ${path.relative(rootDir, storybookDir)}`,
@@ -109,6 +162,15 @@ export async function validateStorybookDocs(rootDir, config) {
   const storyFiles = allFiles.filter(isStoryFile)
 
   if (componentFiles.length === 0) {
+    if (issues.length > 0) {
+      return {
+        status: 'failed',
+        componentCount: 0,
+        storyCount: storyFiles.length,
+        issues
+      }
+    }
+
     return {
       status: 'skipped',
       reason: `no component source files found under ${path.relative(rootDir, storybookDir)}`,
@@ -126,7 +188,6 @@ export async function validateStorybookDocs(rootDir, config) {
 
   const hasGlobalAutodocs = previewHasGlobalAutodocs(previewText)
   const hasGlobalExpandedControls = previewHasExpandedControls(previewText)
-  const issues = []
   const checkedStories = new Set()
 
   for (const componentFile of componentFiles) {

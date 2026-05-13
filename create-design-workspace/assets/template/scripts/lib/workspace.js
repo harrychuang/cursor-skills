@@ -792,15 +792,15 @@ function buildStorybookFoundationsReadme() {
 
 function buildFoundationsOverviewMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Overview" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Foundations Overview</Title>',
     '<Subtitle>Use this as the design-system front door before component-level docs branch out.</Subtitle>',
-    '<Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>',
     'This page should introduce the design-system reading order: start from documentation IA, then foundations, then component detail.',
-    '</Description>',
+    '</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 7\', padding: 28, borderRadius: 28, background: \'linear-gradient(145deg, #0f172a 0%, #1e293b 55%, #334155 100%)\', color: \'#f8fafc\' }}>',
@@ -853,13 +853,13 @@ function buildFoundationsOverviewMdx() {
 
 function buildGuidesMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Guides" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Documentation Guides</Title>',
     '<Subtitle>Plan the design-system site map and page contract before detailing components.</Subtitle>',
-    '<Description>Use this page as the documentation architecture brief for the Storybook site. Foundations explain shared logic; component pages explain concrete implementation and states.</Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>Use this page as the documentation architecture brief for the Storybook site. Foundations explain shared logic; component pages explain concrete implementation and states.</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 7\', padding: 28, borderRadius: 28, background: \'#111827\', color: \'#f9fafb\' }}>',
@@ -900,13 +900,13 @@ function buildGuidesMdx() {
 
 function buildColorMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Color" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Color Foundation</Title>',
     '<Subtitle>Semantic color roles before component-level exceptions.</Subtitle>',
-    '<Description>Use this page to explain what each semantic color role means in practice. Replace the sample labels with the active token names, but keep the decision rules explicit.</Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>Use this page to explain what each semantic color role means in practice. Replace the sample labels with the active token names, but keep the decision rules explicit.</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 8\', padding: 24, borderRadius: 28, background: \'#111827\', color: \'#f9fafb\' }}>',
@@ -939,13 +939,13 @@ function buildColorMdx() {
 
 function buildTypographyMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Typography" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Typography Foundation</Title>',
     '<Subtitle>Hierarchy, readability, and role-driven naming.</Subtitle>',
-    '<Description>Mirror `design/foundations/typography.md`, but show the roles in real layout context and make the usage boundaries obvious.</Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>Mirror `design/foundations/typography.md`, but show the roles in real layout context and make the usage boundaries obvious.</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 7\', padding: 24, borderRadius: 28, background: \'#fafaf9\', border: \'1px solid #d6d3d1\' }}>',
@@ -982,13 +982,13 @@ function buildTypographyMdx() {
 
 function buildSpacingMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Spacing" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Spacing Foundation</Title>',
     '<Subtitle>Rhythm, density, and layout separation.</Subtitle>',
-    '<Description>Translate `design/foundations/spacing.md` into a layout-first page that shows which spacing bands are safe defaults for new work.</Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>Translate `design/foundations/spacing.md` into a layout-first page that shows which spacing bands are safe defaults for new work.</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 6\', padding: 24, borderRadius: 28, background: \'#f0fdf4\', border: \'1px solid #86efac\' }}>',
@@ -1025,13 +1025,13 @@ function buildSpacingMdx() {
 
 function buildCornerMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Corner" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Corner Foundation</Title>',
     '<Subtitle>Shape language from crisp utility to expressive brand moments.</Subtitle>',
-    '<Description>Use this page to show where the radius system should feel technical, neutral, or soft.</Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>Use this page to show where the radius system should feel technical, neutral, or soft.</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 4\', padding: 24, borderRadius: 12, background: \'#f8fafc\', border: \'1px solid #cbd5e1\' }}>',
@@ -1064,13 +1064,13 @@ function buildCornerMdx() {
 
 function buildDesignTokenUsageMdx() {
   return [
-    "import { Meta, Title, Subtitle, Description } from '@storybook/blocks'",
+    "import { Meta, Title, Subtitle } from '@storybook/blocks'",
     '',
     '<Meta title="Foundations/Design Token Usage" parameters={{ layout: \'fullscreen\' }} />',
     '',
     '<Title>Design Token Usage</Title>',
     '<Subtitle>From extracted values to semantic roles to component implementation.</Subtitle>',
-    '<Description>Pair this page with `design/foundations/design-token-usage.md` so designers and engineers see the same source of truth.</Description>',
+    '<p style={{ marginTop: 12, maxWidth: 760 }}>Pair this page with `design/foundations/design-token-usage.md` so designers and engineers see the same source of truth.</p>',
     '',
     '<div style={{ display: \'grid\', gridTemplateColumns: \'repeat(12, minmax(0, 1fr))\', gap: 16, marginTop: 24 }}>',
     '  <section style={{ gridColumn: \'span 3\', padding: 20, borderRadius: 24, background: \'#f8fafc\', border: \'1px solid #cbd5e1\' }}>',

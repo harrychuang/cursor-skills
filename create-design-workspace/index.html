@@ -1,0 +1,1258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0d0f">
+  <title>create-design-workspace | Skill Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --bg-2: #16171a;
+      --surface: rgba(22, 23, 26, 0.9);
+      --surface-strong: #1d1f24;
+      --surface-soft: rgba(255, 255, 255, 0.04);
+      --ink: #f5f5f7;
+      --muted: #a4a7ae;
+      --line: rgba(255, 255, 255, 0.1);
+      --line-strong: rgba(255, 255, 255, 0.16);
+      --accent: #ffffff;
+      --accent-2: #d8d8dc;
+      --accent-3: #8b8e96;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+      --shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.18);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max: 1180px;
+      --grid-gap: 18px;
+      --body-font: "Noto Sans TC", "Noto Sans JP", system-ui, sans-serif;
+      --title-font: "Space Grotesk", "Noto Sans TC", "Noto Sans JP", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.05), transparent 26%),
+        linear-gradient(180deg, #0a0a0b 0%, #111214 48%, #151619 100%);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--body-font);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(18px);
+      opacity: 0.75;
+      z-index: -1;
+      animation: drift 18s ease-in-out infinite;
+    }
+
+    body::before {
+      top: -10vw;
+      left: -10vw;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 68%);
+    }
+
+    body::after {
+      right: -12vw;
+      bottom: -12vw;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 68%);
+      animation-direction: reverse;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(2vw, -1.2vw, 0) scale(1.05); }
+    }
+
+    .shell {
+      width: min(var(--max), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+      position: relative;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(18, 19, 22, 0.76);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #fcfcfd, #c9cbd1);
+      color: #0f1012;
+      font-family: var(--title-font);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-family: var(--title-font);
+      font-size: 0.98rem;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-copy span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .lang-switch button {
+      appearance: none;
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      border: 1px solid transparent;
+    }
+
+    .lang-switch button:hover {
+      transform: translateY(-1px);
+      color: var(--ink);
+    }
+
+    .lang-switch button[aria-pressed="true"] {
+      background: #f5f5f7;
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: #e8e8eb;
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #f4f4f6;
+      box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
+    }
+
+    main {
+      display: grid;
+      gap: 22px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.22fr) minmax(360px, 0.78fr);
+      gap: 0;
+      min-height: 600px;
+    }
+
+    .hero-copy {
+      padding: clamp(28px, 5vw, 60px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      inset: auto auto -10% -10%;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.09), transparent 64%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f4f4f6;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--title-font);
+      line-height: 1.05;
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 7vw, 5.8rem);
+      max-width: 11ch;
+    }
+
+    .lede {
+      margin: 20px 0 0;
+      max-width: 60ch;
+      font-size: clamp(1.04rem, 1.5vw, 1.22rem);
+      color: var(--muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      font-weight: 700;
+      color: #ececef;
+    }
+
+    .hero-aside {
+      padding: clamp(22px, 4vw, 34px);
+      border-left: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent 52%);
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .command-card, .info-card, .section-card, .step-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .command-card {
+      padding: 18px;
+    }
+
+    .small-label {
+      margin: 0 0 12px;
+      color: #f4f4f6;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.82;
+    }
+
+    .command {
+      margin: 0;
+      padding: 16px;
+      border-radius: 18px;
+      background: #09090b;
+      color: #f5f5f7;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      line-height: 1.65;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 18px 18px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      min-height: 96px;
+    }
+
+    .metric b {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--title-font);
+      font-size: 1.02rem;
+      color: #f5f5f7;
+    }
+
+    .metric span {
+      display: block;
+      color: #b8bbc2;
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .section {
+      padding: clamp(22px, 4vw, 36px);
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 62ch;
+      color: var(--muted);
+    }
+
+    .eyebrow-plain {
+      margin: 0 0 10px;
+      color: #efeff2;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.82;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .feature, .output-card, .note-card, .step-card {
+      padding: 20px;
+    }
+
+    .feature h3, .output-card h3, .note-card h3, .step-card h3 {
+      font-size: 1.18rem;
+      margin-bottom: 10px;
+    }
+
+    .feature p, .output-card p, .note-card p, .step-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .feature {
+      position: relative;
+      overflow: hidden;
+      min-height: 180px;
+    }
+
+    .feature::before {
+      content: "";
+      position: absolute;
+      inset: auto -18px -18px auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 70%);
+      pointer-events: none;
+    }
+
+    .feature:nth-child(2n)::before {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 70%);
+    }
+
+    .feature:nth-child(3n)::before {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.07), transparent 70%);
+    }
+
+    .flow-wrap {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--grid-gap);
+      align-items: start;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.24));
+    }
+
+    .step-card {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .step-card::before {
+      content: "";
+      position: absolute;
+      left: -18px;
+      top: 24px;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #0e0f11;
+      border: 3px solid #f3f3f5;
+      box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.06);
+    }
+
+    .step-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f3f3f5;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badges span {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #efeff2;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-weight: 700;
+    }
+
+    .soft-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .soft-list li {
+      display: flex;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+    }
+
+    .soft-list li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      margin-top: 7px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff, #a6a8ae);
+      flex: 0 0 auto;
+    }
+
+    .list-copy {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .list-copy strong {
+      color: var(--ink);
+      font-size: 0.98rem;
+    }
+
+    .warning {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 24px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .warning h3 {
+      font-size: 1.18rem;
+      margin-bottom: 8px;
+    }
+
+    .warning p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .footer {
+      padding: 8px 2px 2px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .footer strong {
+      color: var(--ink);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+        filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--delay, 0ms);
+      filter: blur(8px);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-aside {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .flow-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .shell {
+        width: min(100vw - 20px, var(--max));
+        padding-top: 10px;
+      }
+
+      .topbar {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .brand {
+        justify-content: center;
+      }
+
+      .grid-4, .grid-3, .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lang-switch {
+        width: 100%;
+        justify-content: center;
+      }
+
+      h1 {
+        max-width: 100%;
+        font-size: clamp(2.4rem, 12vw, 4rem);
+      }
+
+      .warning {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0ms !important;
+        transition-delay: 0ms !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar reveal" style="--delay: 20ms">
+      <div class="brand">
+        <div class="brand-mark">CDW</div>
+        <div class="brand-copy">
+          <strong id="brandTitle">create-design-workspace</strong>
+          <span id="brandSubtitle">Single-file guide for a screenshot- and Figma-driven bootstrap workflow</span>
+        </div>
+      </div>
+
+      <div class="status-pill" aria-live="polite">
+        <span class="status-dot"></span>
+        <span id="autoLanguageLabel">Auto language: English</span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language switcher">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="ja" aria-pressed="false">日本語</button>
+        <button type="button" data-lang="zh-Hant" aria-pressed="false">繁體中文</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel hero">
+        <div class="hero-copy reveal" style="--delay: 80ms">
+          <p class="eyebrow" id="heroEyebrow">Skill guide</p>
+          <h1 id="heroTitle">Bootstrap a full design workspace from screenshots or Figma.</h1>
+          <p class="lede" id="heroLede">
+            Start with an empty folder, feed in design references, and let the skill scaffold a Storybook-first workspace with foundation guides, token work, and visual parity checks.
+          </p>
+
+          <div class="chip-row" id="heroChips" aria-label="Key capabilities"></div>
+        </div>
+
+        <aside class="hero-aside reveal" style="--delay: 140ms">
+          <div class="command-card">
+            <p class="small-label" id="commandLabel">Typical starting point</p>
+            <pre class="command" id="commandBlock">node /path/to/create-design-workspace/scripts/bootstrap-design-workspace.mjs \
+  --target "./my-ui-workspace" \
+  --screenshot "./reference/home.png"</pre>
+          </div>
+
+          <div class="info-grid" id="heroMetrics"></div>
+        </aside>
+      </section>
+
+      <section class="panel section reveal" style="--delay: 120ms">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow-plain" id="featuresEyebrow">What this skill helps with</p>
+            <h2 id="featuresTitle">It turns design references into a workspace the agent can keep building.</h2>
+          </div>
+          <p id="featuresIntro">The point is not just to create files. It is to move the project from input gathering to a usable system: scaffold, analyze, document, build, and compare.</p>
+        </div>
+        <div class="grid-4" id="featureGrid"></div>
+      </section>
+
+      <section class="panel section reveal" style="--delay: 160ms">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow-plain" id="workflowEyebrow">How to start</p>
+            <h2 id="workflowTitle">A practical first run takes only a few steps.</h2>
+          </div>
+          <p id="workflowIntro">The skill is designed for a clean beginning: use a new folder, provide a design source, bootstrap the workspace, then continue through the guided flow.</p>
+        </div>
+
+        <div class="flow-wrap">
+          <div class="timeline" id="workflowSteps"></div>
+
+          <div class="stack">
+            <div class="section-card note-card reveal" style="--delay: 80ms">
+              <p class="small-label" id="outputsLabel">What gets created</p>
+              <ul class="soft-list" id="outputList"></ul>
+            </div>
+            <div class="section-card note-card reveal" style="--delay: 140ms">
+              <p class="small-label" id="specialLabel">Special case</p>
+              <div class="badges" id="specialBadges"></div>
+              <p id="specialText" style="margin: 14px 0 0; color: var(--muted);"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel section reveal" style="--delay: 180ms">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow-plain" id="outputsEyebrow">Outputs and ownership</p>
+            <h2 id="outputsTitle">What lives in the workspace after bootstrap.</h2>
+          </div>
+          <p id="outputsIntro">This skill creates a project skeleton that is meant to be continued by Cursor, Claude Code, or Codex. It keeps the handoff explicit so the next step is not guesswork.</p>
+        </div>
+        <div class="grid-3" id="workspaceGrid"></div>
+      </section>
+
+      <section class="panel section reveal" style="--delay: 220ms">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow-plain" id="notForEyebrow">What it is not for</p>
+            <h2 id="notForTitle">This skill is for new UI-to-code projects, not in-place patching.</h2>
+          </div>
+          <p id="notForIntro">The workflow assumes a fresh workspace and a design source. It is intentionally opinionated so the bootstrap path stays predictable.</p>
+        </div>
+
+        <div class="warning reveal" style="--delay: 60ms">
+          <div>
+            <h3 id="warningTitle">Avoid these mistakes</h3>
+            <p id="warningText">Do not drop it into an existing app root with unrelated code. Do not start without screenshots or a Figma URL. If you want Figma-first automation, make sure the workspace has `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector` before Phase 0.</p>
+          </div>
+          <div class="badges" id="warningTags"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div id="footerLeft">Built for GitHub Pages. Single-file. No framework runtime required.</div>
+      <div id="footerRight"></div>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'create-design-workspace-lang';
+    const SUPPORTED_LANGS = ['en', 'ja', 'zh-Hant'];
+
+    const translations = {
+      en: {
+        autoLanguage: 'Auto language: English',
+        brandSubtitle: 'Single-file guide for a screenshot- and Figma-driven bootstrap workflow',
+        eyebrow: 'Skill guide',
+        heroTitle: 'Bootstrap a full design workspace from screenshots or Figma.',
+        heroLede: 'Start with an empty folder, feed in design references, and let the skill scaffold a Storybook-first workspace with foundation guides, token work, and visual parity checks.',
+        commandLabel: 'Typical starting point',
+        command: 'node /path/to/create-design-workspace/scripts/bootstrap-design-workspace.mjs \\\n  --target "./my-ui-workspace" \\\n  --screenshot "./reference/home.png"',
+        chips: ['Empty folder', 'Screenshots or Figma', 'Storybook 10', 'Autodocs for components'],
+        metrics: [
+          { title: 'Input first', text: 'Design sources drive the workspace, not the other way around.' },
+          { title: 'Storybook-first', text: 'Reusable UI and foundation docs arrive before screen composition.' },
+          { title: 'Parity-aware', text: 'Visual comparison and agent handoff happen after the scaffold is in place.' }
+        ],
+        featuresEyebrow: 'What this skill helps with',
+        featuresTitle: 'It turns design references into a workspace the agent can keep building.',
+        featuresIntro: 'The point is not just to create files. It is to move the project from input gathering to a usable system: scaffold, analyze, document, build, and compare.',
+        features: [
+          { title: 'Start from a clean slate', text: 'Scaffold into a brand-new directory instead of patching an existing app.' },
+          { title: 'Keep the design source explicit', text: 'Accept screenshots, a Figma URL, or both, then classify the source mode before implementation.' },
+          { title: 'Build the system before screens', text: 'Create foundation guides, token guidance, and Storybook docs before page composition.' },
+          { title: 'Hand off with structure', text: 'Produce a workspace the next agent can continue without reconstructing the setup.' }
+        ],
+        workflowEyebrow: 'How to start',
+        workflowTitle: 'A practical first run takes only a few steps.',
+        workflowIntro: 'The skill is designed for a clean beginning: use a new folder, provide a design source, bootstrap the workspace, then continue through the guided flow.',
+        steps: [
+          { index: '01', title: 'Prepare an empty folder', text: 'Use a brand-new directory. The skill is meant for a fresh workspace, not an existing production repo.' },
+          { index: '02', title: 'Provide the source', text: 'Add screenshot files or pass a Figma URL. If the source is image-only, the workflow records observed, inferred, and missing context.' },
+          { index: '03', title: 'Bootstrap the workspace', text: 'The script copies the template, sets up reference files, and creates the starting structure for the project.' },
+          { index: '04', title: 'Initialize managed skills', text: 'Run `npm run workspace:init` so the workspace can use the installed workflow skills.' },
+          { index: '05', title: 'Continue from the guide', text: 'Open `start-here/KICKSTART.md` and follow the Storybook-first, token-first workflow.' },
+          { index: '06', title: 'Build and compare', text: 'Implement reusable components, compose screens, and run visual parity against the source.' }
+        ],
+        outputsLabel: 'What gets created',
+        outputs: [
+          { title: 'Reference inputs', text: 'A `reference/` folder for screenshots and image-based design inputs.' },
+          { title: 'Workspace config', text: '.env.local support for Figma mode and phase-zero token binding.' },
+          { title: 'Kickstart flow', text: '`start-here/` files that explain the order of work and the quality gates.' },
+          { title: 'Foundations docs', text: '`design/foundations/` guides for principles, color, typography, spacing, corner, and token usage.' },
+          { title: 'Storybook foundations', text: '`src/stories/foundations/` MDX pages that present the guides as designed front-end docs.' },
+          { title: 'Automation scripts', text: '`scripts/` for workspace init, sync, and checks.' }
+        ],
+        specialLabel: 'Special case',
+        specialBadges: ['Figma-first', 'Phase 0', 'Ref -> Sys -> Comp'],
+        specialText: 'When Figma is configured, the workflow gates implementation behind token preparation and variable binding before screen work begins.',
+        outputsEyebrow: 'Outputs and ownership',
+        outputsTitle: 'What lives in the workspace after bootstrap.',
+        outputsIntro: 'This skill creates a project skeleton that is meant to be continued by Cursor, Claude Code, or Codex. It keeps the handoff explicit so the next step is not guesswork.',
+        workspace: [
+          { title: 'Cursor', text: 'Open the generated project, read `start-here/KICKSTART.md`, and continue from the prompt.' },
+          { title: 'Claude Code', text: 'Open the project and run `/build` once the workspace has been initialized.' },
+          { title: 'Codex', text: 'Use `start-here/KICKSTART.md` to pick up the same bootstrap and implementation flow.' }
+        ],
+        notForEyebrow: 'What it is not for',
+        notForTitle: 'This skill is for new UI-to-code projects, not in-place patching.',
+        notForIntro: 'The workflow assumes a fresh workspace and a design source. It is intentionally opinionated so the bootstrap path stays predictable.',
+        warningTitle: 'Avoid these mistakes',
+        warningText: 'Do not drop it into an existing app root with unrelated code. Do not start without screenshots or a Figma URL. If you want Figma-first automation, make sure the workspace has `FIGMA_PAT` or `FIGMA_AUTH_MODE=connector` before Phase 0.',
+        warningTags: ['Empty folder only', 'Design source required', 'Autodocs for components'],
+        footerLeft: 'Built for GitHub Pages. Single-file. No framework runtime required.',
+        footerRightLabel: 'Supported tools',
+        footerRightValue: 'Cursor, Claude Code, Codex'
+      },
+      ja: {
+        autoLanguage: '自動言語: 日本語',
+        brandSubtitle: 'スクリーンショットと Figma から始める単一 HTML のガイド',
+        eyebrow: 'スキルガイド',
+        heroTitle: 'スクリーンショットや Figma から、設計ワークスペースをすぐに立ち上げる。',
+        heroLede: '空のフォルダを用意し、デザイン参照を渡すだけで、Storybook-first のワークスペース、基礎ガイド、トークン整理、ビジュアル差分確認まで進められます。',
+        commandLabel: '開始コマンドの例',
+        command: 'node /path/to/create-design-workspace/scripts/bootstrap-design-workspace.mjs \\\n  --target "./my-ui-workspace" \\\n  --screenshot "./reference/home.png"',
+        chips: ['空のフォルダ', 'スクリーンショット / Figma', 'Storybook 10', 'コンポーネント Autodocs'],
+        metrics: [
+          { title: '入力が起点', text: 'ワークスペースはデザインソースから作ります。' },
+          { title: 'Storybook 優先', text: '画面より先に、再利用コンポーネントと基礎ドキュメントを整えます。' },
+          { title: '差分と引き継ぎ', text: '生成後にビジュアル比較を行い、そのまま別の agent に引き継げます。' }
+        ],
+        featuresEyebrow: 'この skill でできること',
+        featuresTitle: 'デザイン参照を、そのまま続けられるワークスペースに変えます。',
+        featuresIntro: '単にファイルを作るだけではありません。入力の整理から、分析、ドキュメント、実装、比較までを一連の流れにします。',
+        features: [
+          { title: '新規プロジェクトとして立ち上げる', text: '既存アプリの修正ではなく、新しいディレクトリに scaffold します.' },
+          { title: 'デザインソースを明確に扱う', text: 'スクリーンショット、Figma URL、または両方を受け取り、実装前に source mode を分けます。' },
+          { title: '画面より先に土台を作る', text: '基礎ガイド、token ルール、Storybook docs を先に整えます。' },
+          { title: '次の担当者へ渡しやすくする', text: '後続の agent が setup を再構築しなくても続けられる形で出力します。' }
+        ],
+        workflowEyebrow: '始め方',
+        workflowTitle: '最初の 1 回は、少ない手順で始められます。',
+        workflowIntro: '新しいフォルダを使い、デザインソースを与え、workspace を bootstrap してから、ガイドに沿って進める流れです。',
+        steps: [
+          { index: '01', title: '空のフォルダを用意', text: '新規ディレクトリを使います。既存の本番アプリに直接入れる前提ではありません。' },
+          { index: '02', title: 'ソースを渡す', text: 'スクリーンショットか Figma URL を与えます。画像のみの場合は observed / inferred / missing を記録します。' },
+          { index: '03', title: 'workspace を bootstrap', text: 'テンプレートをコピーし、参照ファイルと初期構成を作ります。' },
+          { index: '04', title: 'managed skills を初期化', text: '`npm run workspace:init` で workflow skill を利用できる状態にします。' },
+          { index: '05', title: 'KICKSTART から続行', text: '`start-here/KICKSTART.md` を開き、Storybook-first / token-first の順で進めます。' },
+          { index: '06', title: '実装と比較', text: '再利用コンポーネントを作り、画面を組み、ソースと visual parity を確認します。' }
+        ],
+        outputsLabel: '作られるもの',
+        outputs: [
+          { title: 'Reference inputs', text: 'スクリーンショットを置く `reference/` フォルダ。' },
+          { title: 'Workspace config', text: 'Figma mode と Phase 0 token binding 用の `.env.local`。' },
+          { title: 'Kickstart flow', text: '作業順と quality gate を示す `start-here/`。' },
+          { title: 'Foundations docs', text: 'principles / color / typography / spacing / corner / token usage の `design/foundations/`。' },
+          { title: 'Storybook foundations', text: '設計感のある front-end docs として見せる `src/stories/foundations/`。' },
+          { title: 'Automation scripts', text: 'init / sync / check を行う `scripts/`。' }
+        ],
+        specialLabel: '特別な分岐',
+        specialBadges: ['Figma-first', 'Phase 0', 'Ref -> Sys -> Comp'],
+        specialText: 'Figma を使う場合は、実装前に token 準備と variables の binding を先に行います。',
+        outputsEyebrow: '出力と責任範囲',
+        outputsTitle: 'Bootstrap 後に workspace に残るもの。',
+        outputsIntro: 'この skill は Cursor, Claude Code, Codex が継続できる前提で workspace を作ります。次の手順が迷子にならないように、受け渡しを明示します。',
+        workspace: [
+          { title: 'Cursor', text: '生成されたプロジェクトを開き、`start-here/KICKSTART.md` を読んで続行します。' },
+          { title: 'Claude Code', text: 'workspace 初期化後に `/build` を実行して進めます。' },
+          { title: 'Codex', text: '`start-here/KICKSTART.md` から同じ flow を引き継ぎます。' }
+        ],
+        notForEyebrow: '向いていないケース',
+        notForTitle: 'この skill は新規の UI-to-code プロジェクト向けです。',
+        notForIntro: '新しい workspace とデザインソースを前提にしています。流れを予測しやすくするため、意図的に opinionated です。',
+        warningTitle: '避けるべき使い方',
+        warningText: '既存アプリの root に直接入れないでください。スクリーンショットや Figma URL なしで始めないでください。Figma-first を使うなら、Phase 0 前に `FIGMA_PAT` か `FIGMA_AUTH_MODE=connector` を用意してください。',
+        warningTags: ['空フォルダのみ', 'デザインソース必須', 'コンポーネントは Autodocs'],
+        footerLeft: 'GitHub Pages 用の単一 HTML。追加の framework runtime は不要です。',
+        footerRightLabel: '対応ツール',
+        footerRightValue: 'Cursor、Claude Code、Codex'
+      },
+      'zh-Hant': {
+        autoLanguage: '自動語言：繁體中文',
+        brandSubtitle: '給截圖與 Figma 驅動流程使用的單檔指南',
+        eyebrow: '技能指南',
+        heroTitle: '從截圖或 Figma，一次建立完整的設計工作空間。',
+        heroLede: '先準備一個空資料夾，再提供設計參考，這個 skill 會幫你建立 Storybook-first 的工作空間、基礎文件、token 規劃與視覺對齊流程。',
+        commandLabel: '典型起點',
+        command: 'node /path/to/create-design-workspace/scripts/bootstrap-design-workspace.mjs \\\n  --target "./my-ui-workspace" \\\n  --screenshot "./reference/home.png"',
+        chips: ['空資料夾', '截圖或 Figma', 'Storybook 10', '元件 Autodocs'],
+        metrics: [
+          { title: '先看輸入', text: '工作空間由設計來源驅動，不是反過來。' },
+          { title: 'Storybook 優先', text: '先建立可重用元件與 foundation 文件，再做畫面。' },
+          { title: '注重對齊與接手', text: '生成後會做 visual parity 檢查，也能直接交給下一個 agent 繼續。' }
+        ],
+        featuresEyebrow: '這個 skill 能幫你做什麼',
+        featuresTitle: '把設計參考，變成 agent 可以持續開發的工作空間。',
+        featuresIntro: '它不只是建立檔案，而是把輸入整理、分析、文件、實作、比較串成一條可執行的流程。',
+        features: [
+          { title: '從乾淨的新資料夾開始', text: '建立新專案骨架，不是在既有 app 上修補。' },
+          { title: '明確處理設計來源', text: '接受截圖、Figma URL 或兩者，並在實作前先分類 source mode。' },
+          { title: '先做系統，再做畫面', text: '先建立 foundation 指南、token 規範與 Storybook 文件。' },
+          { title: '方便交給下一個 agent', text: '讓後續工作不必重新推回 setup，直接延續。' }
+        ],
+        workflowEyebrow: '如何開始',
+        workflowTitle: '第一次使用，只需要少數幾個步驟。',
+        workflowIntro: '先準備空資料夾，提供設計來源，執行 bootstrap，再依照導引流程往下做。',
+        steps: [
+          { index: '01', title: '準備空資料夾', text: '請使用全新的目錄。這個 skill 不適合直接套在既有產品專案上。' },
+          { index: '02', title: '提供設計來源', text: '放入截圖或 Figma URL。若只有圖片，流程會先記錄 observed / inferred / missing。' },
+          { index: '03', title: 'Bootstrap 工作空間', text: '腳本會複製模板，建立參考檔案與初始結構。' },
+          { index: '04', title: '初始化 managed skills', text: '執行 `npm run workspace:init`，啟用工作流程技能。' },
+          { index: '05', title: '從 KICKSTART 繼續', text: '打開 `start-here/KICKSTART.md`，依照 Storybook-first、token-first 的順序前進。' },
+          { index: '06', title: '實作與比對', text: '先做可重用元件，再組畫面，最後做 visual parity 檢查。' }
+        ],
+        outputsLabel: '會建立哪些內容',
+        outputs: [
+          { title: 'Reference inputs', text: '放截圖與圖片來源的 `reference/`。' },
+          { title: 'Workspace config', text: '給 Figma mode 和 Phase 0 token binding 用的 `.env.local`。' },
+          { title: 'Kickstart flow', text: '說明工作順序與 quality gate 的 `start-here/`。' },
+          { title: 'Foundations docs', text: 'principles / color / typography / spacing / corner / token usage 的 `design/foundations/`。' },
+          { title: 'Storybook foundations', text: '以設計感前端頁面呈現的 `src/stories/foundations/`。' },
+          { title: 'Automation scripts', text: '負責 init / sync / check 的 `scripts/`。' }
+        ],
+        specialLabel: '特殊分支',
+        specialBadges: ['Figma-first', 'Phase 0', 'Ref -> Sys -> Comp'],
+        specialText: '如果使用 Figma，會先做 token 準備與 variables 綁定，再進入畫面實作。',
+        outputsEyebrow: '產出與分工',
+        outputsTitle: 'Bootstrap 完成後，workspace 裡會留下什麼。',
+        outputsIntro: '這個 skill 產出的是能被 Cursor、Claude Code、Codex 繼續接手的專案骨架。它會把交接說清楚，避免下一步靠猜。',
+        workspace: [
+          { title: 'Cursor', text: '打開生成的專案，閱讀 `start-here/KICKSTART.md` 後繼續。' },
+          { title: 'Claude Code', text: 'workspace 初始化後執行 `/build`。' },
+          { title: 'Codex', text: '從 `start-here/KICKSTART.md` 接手同一套流程。' }
+        ],
+        notForEyebrow: '不適合的情境',
+        notForTitle: '這個 skill 是給新的 UI-to-code 專案，不是原地修補。',
+        notForIntro: '它假設你有新的 workspace 與設計來源。流程刻意保持明確，讓 bootstrap 路徑可預期。',
+        warningTitle: '請避免這些用法',
+        warningText: '不要直接放進已有的 app root。不要在沒有截圖或 Figma URL 的情況下開始。若要使用 Figma-first，請在 Phase 0 前準備 `FIGMA_PAT` 或 `FIGMA_AUTH_MODE=connector`。',
+        warningTags: ['只適用空資料夾', '需要設計來源', '元件使用 Autodocs'],
+        footerLeft: '為 GitHub Pages 設計的單檔 HTML，不需要額外 runtime。',
+        footerRightLabel: '支援工具',
+        footerRightValue: 'Cursor、Claude Code、Codex'
+      }
+    };
+
+    const state = {
+      lang: 'en'
+    };
+
+    const els = {
+      autoLanguageLabel: document.getElementById('autoLanguageLabel'),
+      brandSubtitle: document.getElementById('brandSubtitle'),
+      heroEyebrow: document.getElementById('heroEyebrow'),
+      heroTitle: document.getElementById('heroTitle'),
+      heroLede: document.getElementById('heroLede'),
+      commandLabel: document.getElementById('commandLabel'),
+      commandBlock: document.getElementById('commandBlock'),
+      heroChips: document.getElementById('heroChips'),
+      heroMetrics: document.getElementById('heroMetrics'),
+      featuresEyebrow: document.getElementById('featuresEyebrow'),
+      featuresTitle: document.getElementById('featuresTitle'),
+      featuresIntro: document.getElementById('featuresIntro'),
+      featureGrid: document.getElementById('featureGrid'),
+      workflowEyebrow: document.getElementById('workflowEyebrow'),
+      workflowTitle: document.getElementById('workflowTitle'),
+      workflowIntro: document.getElementById('workflowIntro'),
+      workflowSteps: document.getElementById('workflowSteps'),
+      outputsLabel: document.getElementById('outputsLabel'),
+      outputList: document.getElementById('outputList'),
+      specialLabel: document.getElementById('specialLabel'),
+      specialBadges: document.getElementById('specialBadges'),
+      outputsEyebrow: document.getElementById('outputsEyebrow'),
+      outputsTitle: document.getElementById('outputsTitle'),
+      outputsIntro: document.getElementById('outputsIntro'),
+      workspaceGrid: document.getElementById('workspaceGrid'),
+      notForEyebrow: document.getElementById('notForEyebrow'),
+      notForTitle: document.getElementById('notForTitle'),
+      notForIntro: document.getElementById('notForIntro'),
+      warningTitle: document.getElementById('warningTitle'),
+      warningText: document.getElementById('warningText'),
+      warningTags: document.getElementById('warningTags'),
+      footerLeft: document.getElementById('footerLeft'),
+      footerRight: document.getElementById('footerRight'),
+      languageButtons: Array.from(document.querySelectorAll('[data-lang]'))
+    };
+
+    function normalizeLanguage(input) {
+      const lang = String(input || '').toLowerCase();
+      if (lang.startsWith('ja')) return 'ja';
+      if (lang.startsWith('zh')) return 'zh-Hant';
+      if (lang.startsWith('en')) return 'en';
+      return 'en';
+    }
+
+    function detectPreferredLanguage() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored && SUPPORTED_LANGS.includes(stored)) return stored;
+
+      const languages = Array.isArray(navigator.languages) && navigator.languages.length
+        ? navigator.languages
+        : [navigator.language || 'en'];
+
+      for (const lang of languages) {
+        const normalized = normalizeLanguage(lang);
+        if (SUPPORTED_LANGS.includes(normalized)) return normalized;
+      }
+
+      return 'en';
+    }
+
+    function createTag(text) {
+      const el = document.createElement('span');
+      el.className = 'chip';
+      el.textContent = text;
+      return el;
+    }
+
+    function createMetric(metric, delay) {
+      const el = document.createElement('article');
+      el.className = 'metric reveal';
+      el.style.setProperty('--delay', `${delay}ms`);
+      el.innerHTML = `<b>${metric.title}</b><span>${metric.text}</span>`;
+      return el;
+    }
+
+    function createFeature(feature, delay) {
+      const el = document.createElement('article');
+      el.className = 'panel feature reveal';
+      el.style.setProperty('--delay', `${delay}ms`);
+      el.innerHTML = `<h3>${feature.title}</h3><p>${feature.text}</p>`;
+      return el;
+    }
+
+    function createStep(step, delay) {
+      const el = document.createElement('article');
+      el.className = 'step-card reveal';
+      el.style.setProperty('--delay', `${delay}ms`);
+      el.innerHTML = `<div class="step-index">${step.index}</div><h3>${step.title}</h3><p>${step.text}</p>`;
+      return el;
+    }
+
+    function createWorkspaceCard(item, delay) {
+      const el = document.createElement('article');
+      el.className = 'panel note-card reveal';
+      el.style.setProperty('--delay', `${delay}ms`);
+      el.innerHTML = `<h3>${item.title}</h3><p>${item.text}</p>`;
+      return el;
+    }
+
+    function render(lang) {
+      const copy = translations[lang] || translations.en;
+      state.lang = lang;
+      localStorage.setItem(STORAGE_KEY, lang);
+
+      document.documentElement.lang = lang;
+      document.documentElement.dataset.lang = lang;
+      document.title = lang === 'ja'
+        ? 'create-design-workspace | Skill Guide'
+        : lang === 'zh-Hant'
+          ? 'create-design-workspace | 技能指南'
+          : 'create-design-workspace | Skill Guide';
+
+      els.autoLanguageLabel.textContent = copy.autoLanguage;
+      els.brandSubtitle.textContent = copy.brandSubtitle;
+      els.heroEyebrow.textContent = copy.eyebrow;
+      els.heroTitle.textContent = copy.heroTitle;
+      els.heroLede.textContent = copy.heroLede;
+      els.commandLabel.textContent = copy.commandLabel;
+      els.commandBlock.textContent = copy.command;
+
+      els.heroChips.replaceChildren(...copy.chips.map(createTag));
+      els.heroMetrics.replaceChildren(...copy.metrics.map((metric, index) => createMetric(metric, 100 + index * 60)));
+
+      els.featuresEyebrow.textContent = copy.featuresEyebrow;
+      els.featuresTitle.textContent = copy.featuresTitle;
+      els.featuresIntro.textContent = copy.featuresIntro;
+      els.featureGrid.replaceChildren(...copy.features.map((item, index) => createFeature(item, 80 + index * 60)));
+
+      els.workflowEyebrow.textContent = copy.workflowEyebrow;
+      els.workflowTitle.textContent = copy.workflowTitle;
+      els.workflowIntro.textContent = copy.workflowIntro;
+      els.workflowSteps.replaceChildren(...copy.steps.map((step, index) => createStep(step, 90 + index * 65)));
+
+      els.outputsLabel.textContent = copy.outputsLabel;
+      els.outputList.innerHTML = '';
+      copy.outputs.forEach((item) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<div class="list-copy"><strong>${item.title}</strong><span>${item.text}</span></div>`;
+        els.outputList.appendChild(li);
+      });
+
+      els.specialLabel.textContent = copy.specialLabel;
+      els.specialBadges.replaceChildren(...copy.specialBadges.map(createTag));
+      document.getElementById('specialText').textContent = copy.specialText;
+
+      els.outputsEyebrow.textContent = copy.outputsEyebrow;
+      els.outputsTitle.textContent = copy.outputsTitle;
+      els.outputsIntro.textContent = copy.outputsIntro;
+      els.workspaceGrid.replaceChildren(...copy.workspace.map((item, index) => createWorkspaceCard(item, 70 + index * 55)));
+
+      els.notForEyebrow.textContent = copy.notForEyebrow;
+      els.notForTitle.textContent = copy.notForTitle;
+      els.notForIntro.textContent = copy.notForIntro;
+      els.warningTitle.textContent = copy.warningTitle;
+      els.warningText.textContent = copy.warningText;
+      els.warningTags.replaceChildren(...copy.warningTags.map(createTag));
+
+      els.footerLeft.textContent = copy.footerLeft;
+      els.footerRight.innerHTML = `<strong>${copy.footerRightLabel}:</strong> ${copy.footerRightValue}`;
+
+      els.languageButtons.forEach((button) => {
+        const active = button.dataset.lang === lang;
+        button.setAttribute('aria-pressed', String(active));
+      });
+
+      document.querySelectorAll('.reveal').forEach((el) => {
+        if (!el.classList.contains('is-visible')) {
+          // Keep the loaded state deterministic on language switches.
+          el.classList.remove('is-visible');
+          requestAnimationFrame(() => el.classList.add('is-visible'));
+        }
+      });
+    }
+
+    function setupReveal() {
+      const targets = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+
+      targets.forEach((target) => observer.observe(target));
+      // Fallback: if the browser does not support intersection observing, reveal immediately.
+      if (!('IntersectionObserver' in window)) {
+        targets.forEach((target) => target.classList.add('is-visible'));
+      }
+    }
+
+    function init() {
+      const preferred = detectPreferredLanguage();
+      render(preferred);
+      setupReveal();
+
+      els.languageButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          render(button.dataset.lang);
+        });
+      });
+
+      window.addEventListener('storage', (event) => {
+        if (event.key === STORAGE_KEY && SUPPORTED_LANGS.includes(event.newValue)) {
+          render(event.newValue);
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

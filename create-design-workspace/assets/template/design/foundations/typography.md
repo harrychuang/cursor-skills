@@ -35,6 +35,13 @@ Describe the reading system, hierarchy rules, and token naming for text.
 - Weight mapping and where each weight is allowed
 - Rules for caps, tracking, truncation, and long-form text
 
+## Minimum Deliverable
+
+- A readable hierarchy ladder for display, heading, body, label, and meta roles.
+- One note on wrap versus truncate behavior for key UI contexts.
+- A clear rule for when stronger weight is allowed to replace larger size, and when it is not.
+- A short list of responsive or locale-sensitive exceptions if they matter.
+
 ## Usage Rules
 
 - Use type tokens for every reusable component story and screen.
@@ -46,23 +53,29 @@ Describe the reading system, hierarchy rules, and token naming for text.
 
 ### Display
 
-Reserve `Display` for landing moments, empty states, hero panels, or a document front door. It should signal a major shift in hierarchy, not routine section structure.
+Reserve `Display` for landing moments, empty states, hero panels, or a document front door.
 
 ### H1 / H2 / H3
 
-Use headings to organize page, section, and card structure. `H1` owns the page or major guide title, `H2` groups sections, and `H3` handles local modules such as cards, side panels, or anatomy callouts.
+Use headings to organize page, section, and card structure rather than attaching one-off sizes to single screens.
 
 ### Body
 
-Use body styles for guidelines, explanations, helper text, and long-form reading. The default body size should optimize for sustained reading before visual flair.
+Use body styles for guidelines, explanations, helper text, and sustained reading.
 
 ### Label
 
-Use labels for form controls, tabs, compact UI metadata, chips, and short descriptive text attached to another element. Labels can be tighter than body text, but they must remain readable at a glance.
+Use labels for form controls, tabs, compact metadata, chips, and short descriptive text attached to another element.
 
 ### Caption / Meta
 
-Use caption or meta text for timestamps, footnotes, supportive annotations, and non-primary quantitative detail. It should never carry core action or validation meaning by itself.
+Use caption or meta text for timestamps, annotations, and supportive details that must stay secondary.
+
+## Anti-Complexity Rules
+
+- Do not create a unique text role for every screen or card type.
+- Prefer one stable ladder that can stretch across product, docs, and marketing-lite surfaces.
+- If the source has decorative type moments, isolate them as exceptions instead of polluting the baseline scale.
 
 ## Storybook Expectations
 

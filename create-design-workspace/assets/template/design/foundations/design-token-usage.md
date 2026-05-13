@@ -27,6 +27,12 @@ Explain how tokens move from design source to implementation and docs.
 | Spacing |  |  |  |
 | Corner |  |  |  |
 
+## Minimum Deliverable
+
+- Show one concrete example per foundation dimension from observed value to normalized token to component usage.
+- Name the owner of normalization decisions when they are not obvious.
+- Record deprecations, temporary aliases, or pending token merges in one place.
+
 ## Implementation Guidance
 
 ```css
@@ -51,3 +57,4 @@ export const cardStyles = {
 - Record why a normalized token differs from an observed screenshot/Figma value when you intentionally simplify the system.
 - Component stories should reference the relevant foundation rules in their descriptions when the dependency is important.
 - If a token is deprecated, note the replacement and migration reason here before removing it.
+- Keep this guide operational. It should teach handoff and maintenance, not become a glossary dump.

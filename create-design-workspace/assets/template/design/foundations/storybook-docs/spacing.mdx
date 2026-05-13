@@ -9,22 +9,30 @@ import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
   <section style={{ gridColumn: 'span 6', padding: 24, borderRadius: 28, background: '#f0fdf4', border: '1px solid #86efac' }}>
     <h2 style={{ marginTop: 0 }}>Compact to Spacious</h2>
-    <p style={{ marginBottom: 0 }}>Document the spacing system as bands, not isolated numbers. Teams remember `compact`, `base`, and `spacious` more reliably than raw pixel tables.</p>
+    <p>Document the spacing system as bands, not isolated numbers. Teams remember `compact`, `base`, and `spacious` more reliably than raw pixel tables.</p>
   </section>
   <section style={{ gridColumn: 'span 6', padding: 24, borderRadius: 28, background: '#ecfeff', border: '1px solid #67e8f9' }}>
     <h2 style={{ marginTop: 0 }}>Density Modes</h2>
-    <p style={{ marginBottom: 0 }}>Explain when the product is allowed to compress: mobile constraints, data-heavy screens, or utility views. Compression should happen by band, not random exception.</p>
+    <p>Explain when the product is allowed to compress: mobile constraints, data-heavy screens, or utility views. Compression should happen by band, not random exception.</p>
   </section>
   <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
     <h3 style={{ marginTop: 0 }}>`xs-sm`</h3>
-    <p style={{ margin: 0 }}>Internal gaps: icon-label pairs, helper text offsets, pill padding, or tightly grouped metadata.</p>
+    <p>Internal gaps: icon-label pairs, helper text offsets, pill padding, or tightly grouped metadata.</p>
   </section>
   <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#fefce8', border: '1px solid #fde047' }}>
     <h3 style={{ marginTop: 0 }}>`md`</h3>
-    <p style={{ margin: 0 }}>Default component padding and the most common gap between sibling elements inside cards, forms, and list items.</p>
+    <p>Default component padding and the most common gap between sibling elements inside cards, forms, and list items.</p>
   </section>
   <section style={{ gridColumn: 'span 4', padding: 20, borderRadius: 24, background: '#fff7ed', border: '1px solid #fdba74' }}>
     <h3 style={{ marginTop: 0 }}>`lg-xl+`</h3>
-    <p style={{ margin: 0 }}>Section gaps, panel spacing, and page gutters. Use these steps to signal structural change, not to patch weak composition.</p>
+    <p>Section gaps, panel spacing, and page gutters. Use these steps to signal structural change, not to patch weak composition.</p>
+  </section>
+  <section style={{ gridColumn: 'span 7', padding: 20, borderRadius: 24, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h3 style={{ marginTop: 0 }}>Minimum Deliverable</h3>
+    <p style={{ marginBottom: 0 }}>Define the base grid, three spacing bands, default component padding, and one density compression rule before expanding the scale.</p>
+  </section>
+  <section style={{ gridColumn: 'span 5', padding: 20, borderRadius: 24, background: '#faf5ff', border: '1px solid #d8b4fe' }}>
+    <h3 style={{ marginTop: 0 }}>Do Not Over-Document</h3>
+    <p style={{ marginBottom: 0 }}>Avoid giant number charts when teams mainly need safe defaults and a few strong guardrails.</p>
   </section>
 </div>

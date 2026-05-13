@@ -34,6 +34,13 @@ Spacing rules define rhythm, grouping, and density across the product.
 - Grid gutters, section spacing, and responsive layout margins
 - Density rules for mobile, desktop, and data-heavy views
 
+## Minimum Deliverable
+
+- A base grid recommendation with one reason the team can defend.
+- Three practical spacing bands: compact, base, and spacious.
+- A short rule for how density compresses without random one-off shrinkage.
+- Default padding guidance for cards, forms, and stacked sections.
+
 ## Usage Rules
 
 - Reuse spacing tokens before adding one-off values.
@@ -45,23 +52,29 @@ Spacing rules define rhythm, grouping, and density across the product.
 
 ### `xs` to `sm`
 
-Use the smallest spacing steps for relationships inside a component: icon-to-label gaps, supporting text offsets, segmented control padding, or tightly grouped metadata.
+Use the smallest spacing steps for relationships inside a component: icon-to-label gaps, supporting text offsets, or segmented control padding.
 
 ### `md`
 
-Use the base spacing step for default control padding, list rows, chip padding, and the most common gap between sibling elements inside a card or form block.
+Use the base spacing step for default control padding and the most common gap between sibling elements inside a card or form block.
 
 ### `lg`
 
-Use larger steps when a group needs to read as a separate module: stacked cards, panel headers, form groups, or toolbar-to-content separation.
+Use larger steps when a group needs to read as a separate module: stacked cards, panel headers, or grouped form sections.
 
 ### `xl` and above
 
-Use the largest spacing steps for section gaps, page gutters, and layout-level rhythm. Large spacing should signal structural change, not compensate for weak hierarchy elsewhere.
+Use the largest spacing steps for section gaps, page gutters, and layout-level rhythm.
 
 ### Density Rule
 
-If a screen becomes dense, reduce spacing consistently by band rather than shrinking one-off gaps. The system should feel intentionally compact, not accidentally cramped.
+If a screen becomes dense, reduce spacing consistently by band rather than shrinking one-off gaps.
+
+## Anti-Complexity Rules
+
+- Do not publish a giant spacing matrix unless the product truly needs it.
+- Keep new values out of component code unless the existing scale cannot express the relationship.
+- When in doubt, choose the safer default spacing and note the unresolved edge case.
 
 ## Storybook Expectations
 

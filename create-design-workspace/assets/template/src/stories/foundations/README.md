@@ -1,6 +1,7 @@
 # Storybook Foundations Pages
 
 These files live under `src/stories/foundations/` so a default Storybook setup can discover the foundation guides without extra `stories` glob changes.
+They should remain custom MDX pages with designed layouts, not component Autodocs.
 
 ## Source Of Truth
 

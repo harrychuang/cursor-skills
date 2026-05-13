@@ -10,6 +10,7 @@
 - [ ] Define design elements for color, typography, corner, and spacing, then map them into tokens
 - [ ] Define the design-system documentation IA before component details; default to `Foundations`, `Styles`, and `Components`
 - [ ] Define the standard component docs sections: `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`
+- [ ] Keep Storybook foundations as custom MDX front-end pages rather than Autodocs
 - [ ] Replace the placeholder guidance in `design/foundations/*.md` with project-specific design rules
 - [ ] Keep color, typography, spacing, and corner guidance aligned with `design/extracted-design-tokens/design-tokens.json`
 - [ ] Install or upgrade to the latest stable Storybook 10 before shared component work
@@ -18,7 +19,7 @@
 - [ ] Run Phase B visual inventory
 - [ ] Run Phase C component reuse gate
 - [ ] Build or update `design/foundations/storybook-docs/guides.mdx` before expanding component docs
-- [ ] Build or update Storybook foundations pages with a design-led, bento-style layout when token work changes
+- [ ] Build or update Storybook foundations pages with a design-led, bento-style custom MDX layout when token work changes
 - [ ] Build or extend Storybook components with Autodocs enabled
 - [ ] Give every reusable component a companion story with `argTypes`, component description, and expanded controls
 - [ ] Run `npm run storybook:check-docs` before sign-off once reusable components exist

@@ -32,6 +32,13 @@ Corner and radius tokens help define the product tone from crisp to soft.
 - Component defaults for controls, cards, overlays, and media containers
 - Rules for mixing sharp and soft shapes in the same view
 
+## Minimum Deliverable
+
+- Name the default radius family and where it applies.
+- Document at least one intentional sharp exception and one expressive exception if they exist.
+- Explain how adjacent surfaces should align corners when they visually touch.
+- Keep the scale small unless the brand clearly needs a wider range.
+
 ## Usage Rules
 
 - Pick one default radius family for the product and document exceptions.

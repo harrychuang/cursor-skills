@@ -36,6 +36,7 @@
    - add component descriptions to reusable component docs
    - maintain `design/foundations/*.md` as the human-readable design spec
    - create or refine `Foundations/Guides` before expanding component docs
+   - keep foundations as custom MDX front-end pages rather than Autodocs
    - build or refresh Storybook foundations pages with a design-led, bento-style layout when token work changes
 6. Screen composition
 7. Visual parity
@@ -53,6 +54,7 @@
 - reusable UI stories have Autodocs and component descriptions
 - source analysis is documented as observed signals, inferred principles, and recommended design elements
 - foundation guides exist for principles, color, typography, spacing, corner, and token usage
+- Storybook foundation guides are custom MDX pages with designed layouts rather than Autodocs
 - Storybook docs IA is defined before component detail pages expand
 - component documentation uses a stable section contract: overview, anatomy, states, usage, and tokens
 - Storybook foundations pages explain the active token system and design rules

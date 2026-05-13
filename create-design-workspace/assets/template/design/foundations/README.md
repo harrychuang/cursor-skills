@@ -18,11 +18,19 @@ This folder is the operating manual for the workspace. Keep these guides aligned
 
 - Before reusable component work, derive the shared visual system from screenshot and/or Figma evidence.
 - Define the documentation site map before component details. Default docs IA: `Foundations`, `Styles`, `Components`, with optional `Patterns`, `Templates`, and `Resources`.
-- Standard component docs sections are `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`. Add `Accessibility` or `Content` only when the component contract needs them.
+- Standard component docs sections are `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`. Add extra sections only when the component contract needs them.
+- Keep each foundation guide decision-oriented and concise: a teammate should understand the rule in one read without paging through a thesis.
 - Update these guides whenever token meaning, naming, or visual rules change.
 - Keep Storybook foundation pages visually intentional. Prefer editorial or bento-like layouts instead of plain spec dumps.
 - Treat `Ref -> Sys -> Comp` as the token layering model when Figma mode is active.
 - Do not ship screens with hardcoded foundation values that bypass the token layer.
+
+## Depth Rule
+
+- Target a 5-10 minute read per guide, not a full brand book.
+- Each guide should answer five questions: what is the recommendation, why does it exist, when should it be used, what should be avoided, and where do exceptions live.
+- Prefer one strong table and a few explicit rules over exhaustive token inventories.
+- If the source is ambiguous, record the open question instead of inventing fake certainty.
 
 ## Required Outputs
 
@@ -31,8 +39,10 @@ This folder is the operating manual for the workspace. Keep these guides aligned
 - Fixed-schema tables for Signal Summary, Design Principles, Design Elements, and Observed vs Inferred.
 - A documentation architecture that tells teams where foundations stop and component docs begin.
 - Foundation specs for color, typography, spacing, and corner/radius.
+- A minimum decision set for each foundation: recommendation, rationale, usage boundaries, and exceptions.
 - Clear token usage guidance for code, CSS variables, component props, and Storybook docs.
 - A visible mapping between extracted tokens, semantic tokens, and component-level application.
+- Storybook foundations templates that can be turned into polished docs pages without starting from scratch.
 - Storybook pages that teach when to use a foundation role, not just what token name exists.
 
 ## Maintenance Loop

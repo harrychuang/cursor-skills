@@ -35,7 +35,7 @@ The generated workspace will guide the rest of the build:
 - generate Autodocs and component descriptions for reusable Storybook entries
 - create or align design tokens
 - auto-create foundation guides for design principles, color, typography, spacing, corner, and token usage
-- push foundation pages toward a designed, bento-style documentation layout instead of plain spec dumps
+- render foundation pages as custom MDX front-end pages with designed, bento-style layouts instead of plain spec dumps or Autodocs
 - implement screens from reusable components
 - run visual parity against screenshots or Figma
 
@@ -215,7 +215,7 @@ When a Figma URL is configured, the workspace expects a Phase 0 gate before impl
 
 Use the latest stable Storybook 10 for shared component work. For new projects, follow the official `npm create storybook@latest` flow. For existing projects, use `npx storybook@latest upgrade`. Storybook 10 is ESM-only and requires Node 20.19+ or 22.12+.
 
-All reusable components should ship with Autodocs enabled and with component descriptions in the generated docs output. Foundation pages should also explain design principles, specs, and token usage with a design-led layout such as bento cards when the token layer changes. The generated workspace now mirrors those guides into `src/stories/foundations/` so a default Storybook install can discover them without extra glob changes.
+All reusable components should ship with Autodocs enabled and with component descriptions in the generated docs output. Foundation pages should be custom MDX docs that explain design principles, specs, and token usage with a design-led layout such as bento cards when the token layer changes. The generated workspace now mirrors those guides into `src/stories/foundations/` so a default Storybook install can discover them without extra glob changes.
 
 ## Files
 

@@ -110,6 +110,7 @@ npm run workspace:check
 - Every reusable Storybook component must include a component description in its docs output.
 - Every reusable Storybook component must document important props through `argTypes` and expose expanded controls in docs.
 - The generated workspace must include foundation guides for color, typography, spacing, corner, design principles, and design token usage.
+- Foundation guides in Storybook must be custom front-end MDX pages with designed layouts, not Autodocs-generated component docs.
 - Foundation work must begin with evidence-backed analysis of the source design: color proportion, spacing feel, corner size, and typography weight.
 - That analysis must separate `observed` source values from `inferred` system recommendations, then map the chosen system into tokens.
 - When token work changes, maintain matching Storybook foundation pages with a design-led layout such as bento cards rather than plain token dumps.
@@ -133,8 +134,9 @@ Once the workspace exists:
    - define design elements for color, typography, corner, and spacing before coding reusable components
    - update product docs and manifests
    - replace the placeholder foundation guides with project-specific design principles, specs, and token usage notes
+   - keep foundation guides concise but deep: recommendation, rationale, usage boundaries, and exceptions
    - build reusable Storybook components before screens
-   - build or update Storybook foundation pages when the token system changes
+   - build or update Storybook foundation pages as custom MDX docs when the token system changes
    - compose screens from reusable components
    - run visual parity and fix drift at the correct ownership layer
    - record remaining variance as accepted, deferred, or blocked

@@ -12,7 +12,7 @@ const meta = {
     },
     docs: {
       description: {
-        component: 'Explain what this component is for, where it should be used, and which foundation rules matter most.'
+        component: 'Explain what this component is for, where it should be used, which foundation rules matter most, and any important state or accessibility caveats.'
       }
     }
   },

@@ -182,7 +182,7 @@ All three tools share the same `product/`, `start-here/`, `skills/`, and parity 
 - Use the latest stable Storybook 10 for shared component work. For new setups, use `npm create storybook@latest`; for upgrades, use `npx storybook@latest upgrade`.
 - Storybook 10 requires Node 20.19+ or 22.12+.
 - Reusable Storybook components should enable Autodocs and include component descriptions in their docs pages.
-- `design/foundations/` should be maintained as the human-readable design system guide, and matching Storybook foundations pages should use a more designed layout such as bento modules instead of plain token tables.
+- `design/foundations/` should be maintained as the human-readable design system guide, and matching Storybook foundations pages should be custom MDX front-end pages with a more designed layout such as bento modules instead of plain token tables or Autodocs.
 - Before component docs expand, define the documentation IA with `Foundations`, `Styles`, and `Components` as the default navigation and establish `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens` as the standard component page sections.
 - `design/foundations/storybook-docs/` includes the template source for those Storybook docs pages plus a reusable component story template with Autodocs and prop docs wiring.
 - `src/stories/foundations/` contains the MDX pages that a default Storybook setup will actually discover, so the foundation guides appear without extra `stories` glob changes.

@@ -2,6 +2,7 @@
 
 Use these principles to explain the system before discussing component details.
 Derive them from repeated evidence in screenshots or Figma, not taste alone.
+Keep the output short enough that a new teammate can absorb it in one sitting.
 
 ## Analysis Workflow
 
@@ -22,6 +23,12 @@ Derive them from repeated evidence in screenshots or Figma, not taste alone.
 
 Add rows 6-7 only when the evidence supports them.
 
+## Depth Target
+
+- Write 5 principles by default; only expand to 6-7 when the source clearly supports them.
+- Keep each principle to one row plus one short exception note when needed.
+- End with a short statement about product tone, density, and hierarchy so the principles feel like a system rather than a list.
+
 ## Bento Snapshot
 
 | Principle | Source evidence | Interpretation | Design rule | Token impact |
@@ -39,9 +46,16 @@ Add rows 6-7 only when the evidence supports them.
 - If references disagree, document the dominant pattern and the exceptions instead of averaging everything together.
 - Note platform constraints such as responsive breakpoints, touch targets, or enterprise density needs.
 
+## Exception Log
+
+| Area | Why it differs | Temporary or intentional | Owner |
+| --- | --- | --- | --- |
+|  |  |  |  |
+
 ## Review Questions
 
 - Can a new designer or engineer tell which layer is primary, secondary, and supporting?
 - Are repeated patterns explained once here instead of re-decided in each component?
 - Do tokens encode the rule, or are teams relying on visual memory?
 - Is each principle traceable to visible evidence rather than subjective preference alone?
+- Would another engineer know which edge cases are real exceptions versus unresolved ambiguity?

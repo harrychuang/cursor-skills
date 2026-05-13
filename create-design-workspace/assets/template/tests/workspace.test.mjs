@@ -50,6 +50,7 @@ test('buildTasksMarkdown includes figma tasks when configured', () => {
   assert.match(tasks, /Ref -> Sys -> Comp/)
   assert.match(tasks, /ACCURACY_CONTRACT\.md/)
   assert.match(tasks, /single-image/)
+  assert.match(tasks, /5-10 minute read/)
   assert.match(tasks, /Build `\/` from `reference\/home\.png` as `HomeScreen`/)
 })
 
@@ -101,13 +102,23 @@ test('foundation entries include storybook docs templates', () => {
   const entries = getFoundationGuideEntries({ projectName: 'Workspace' })
   const templateEntry = entries.find(entry => entry.relativePath === 'design/foundations/storybook-docs/component-story-template.tsx.txt')
   const guidesEntry = entries.find(entry => entry.relativePath === 'design/foundations/storybook-docs/guides.mdx')
+  const overviewEntry = entries.find(entry => entry.relativePath === 'design/foundations/storybook-docs/overview.mdx')
+  const colorEntry = entries.find(entry => entry.relativePath === 'design/foundations/color.md')
 
   assert.ok(templateEntry)
   assert.ok(guidesEntry)
+  assert.ok(overviewEntry)
+  assert.ok(colorEntry)
   assert.match(guidesEntry.content, /Foundations`, `Styles`, and `Components`/)
+  assert.match(guidesEntry.content, /Minimum Viable Foundation Page/)
+  assert.match(guidesEntry.content, /Autodocs belongs to reusable components/)
+  assert.match(overviewEntry.content, /Do Not Over-Document/)
+  assert.match(overviewEntry.content, /editorial MDX pages/)
+  assert.match(colorEntry.content, /## Minimum Deliverable/)
   assert.match(templateEntry.content, /tags: \['autodocs'\]/)
   assert.match(templateEntry.content, /argTypes:/)
   assert.match(templateEntry.content, /expanded: true/)
+  assert.match(templateEntry.content, /state or accessibility caveats/)
 })
 
 test('storybook helper regexes detect autodocs and props docs settings', () => {

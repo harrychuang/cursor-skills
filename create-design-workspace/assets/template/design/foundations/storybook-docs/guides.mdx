@@ -4,68 +4,39 @@ import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
 
 <Title>Documentation Guides</Title>
 <Subtitle>Plan the design-system site map and page contract before detailing components.</Subtitle>
-<Description>
-Use this page as the documentation architecture brief for the Storybook site. It is inspired by Material Design's separation between foundations and components: foundations explain shared logic, component pages explain concrete implementation and states.
-</Description>
+<Description>Use this page as the documentation architecture brief for the Storybook site. Foundations explain shared logic; component pages explain concrete implementation and states.</Description>
 
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 16, marginTop: 24 }}>
   <section style={{ gridColumn: 'span 7', padding: 28, borderRadius: 28, background: '#111827', color: '#f9fafb' }}>
     <h2 style={{ marginTop: 0 }}>Default Navigation Map</h2>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginTop: 16 }}>
-      <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.08)' }}>
-        <strong>Foundations</strong>
-        <p style={{ margin: '8px 0 0', opacity: 0.84 }}>Color, typography, spacing, corner, motion, and token usage.</p>
-      </div>
-      <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.08)' }}>
-        <strong>Styles</strong>
-        <p style={{ margin: '8px 0 0', opacity: 0.84 }}>Brand voice, iconography, illustration, data viz, or other cross-component styling systems.</p>
-      </div>
-      <div style={{ padding: 16, borderRadius: 18, background: 'rgba(255,255,255,0.08)' }}>
-        <strong>Components</strong>
-        <p style={{ margin: '8px 0 0', opacity: 0.84 }}>Reusable APIs, states, anatomy, usage, and tokens by component.</p>
-      </div>
-    </div>
+    <p style={{ marginBottom: 0 }}>Use `Foundations`, `Styles`, and `Components` as the primary navigation. Add `Patterns`, `Templates`, or `Resources` only when the system genuinely needs them.</p>
   </section>
   <section style={{ gridColumn: 'span 5', padding: 24, borderRadius: 28, background: '#fef3c7', border: '1px solid #f59e0b' }}>
     <h2 style={{ marginTop: 0 }}>Optional Layers</h2>
-    <p style={{ marginTop: 0, marginBottom: 8 }}>Only add these when the system needs them:</p>
-    <ul style={{ margin: 0, paddingLeft: 18 }}>
-      <li>`Patterns` for multi-component interaction flows</li>
-      <li>`Templates` for page-level composition blueprints</li>
-      <li>`Resources` for contribution rules, content, and references</li>
-    </ul>
+    <p style={{ margin: 0 }}>Patterns cover multi-component flows, templates cover page blueprints, and resources cover contribution references.</p>
   </section>
   <section style={{ gridColumn: 'span 8', padding: 24, borderRadius: 28, background: '#eff6ff', border: '1px solid #93c5fd' }}>
     <h2 style={{ marginTop: 0 }}>Standard Component Page</h2>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 12, marginTop: 16 }}>
-      <div style={{ padding: 14, borderRadius: 16, background: '#ffffff' }}>
-        <strong>Overview</strong>
-        <p style={{ margin: '8px 0 0' }}>What the component is for and when it earns a place in the system.</p>
-      </div>
-      <div style={{ padding: 14, borderRadius: 16, background: '#ffffff' }}>
-        <strong>Anatomy</strong>
-        <p style={{ margin: '8px 0 0' }}>Named parts, slots, and structural boundaries.</p>
-      </div>
-      <div style={{ padding: 14, borderRadius: 16, background: '#ffffff' }}>
-        <strong>States</strong>
-        <p style={{ margin: '8px 0 0' }}>Default, hover, focus, active, disabled, loading, or error behavior.</p>
-      </div>
-      <div style={{ padding: 14, borderRadius: 16, background: '#ffffff' }}>
-        <strong>Usage</strong>
-        <p style={{ margin: '8px 0 0' }}>Do and don't rules, placement guidance, and hierarchy notes.</p>
-      </div>
-      <div style={{ padding: 14, borderRadius: 16, background: '#ffffff' }}>
-        <strong>Tokens</strong>
-        <p style={{ margin: '8px 0 0' }}>Which semantic token families the component consumes and where exceptions live.</p>
-      </div>
-    </div>
+    <p style={{ margin: 0 }}>The default section order is `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`. Add more only when the component contract expands.</p>
   </section>
   <section style={{ gridColumn: 'span 4', padding: 24, borderRadius: 28, background: '#ecfccb', border: '1px solid #84cc16' }}>
     <h2 style={{ marginTop: 0 }}>Writing Rule</h2>
-    <p style={{ margin: 0 }}>A foundation page explains shared logic across many components. A component page explains a concrete API and its states. Do not let one substitute for the other.</p>
+    <p style={{ margin: 0 }}>Do not force component pages to re-explain foundation logic. Teach the shared rule once, then reference it.</p>
   </section>
-  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#faf5ff', border: '1px solid #d8b4fe' }}>
+  <section style={{ gridColumn: 'span 6', padding: 24, borderRadius: 28, background: '#faf5ff', border: '1px solid #d8b4fe' }}>
+    <h2 style={{ marginTop: 0 }}>Minimum Viable Foundation Page</h2>
+    <p style={{ margin: 0 }}>Recommendation, rationale, usage boundaries, and exceptions. If a page cannot answer those four items, it is not done yet.</p>
+  </section>
+  <section style={{ gridColumn: 'span 6', padding: 24, borderRadius: 28, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h2 style={{ marginTop: 0 }}>Complexity Guardrail</h2>
+    <p style={{ margin: 0 }}>Do not turn foundations into a page-by-page audit. Capture stable system rules first, then leave screen-specific nuance to product docs or component notes.</p>
+  </section>
+  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#fff7ed', border: '1px solid #fdba74' }}>
     <h2 style={{ marginTop: 0 }}>Recommended Sequence</h2>
-    <p style={{ marginTop: 0 }}>1. Define the docs map. 2. Write foundation usage guides. 3. Build component stories with Autodocs. 4. Add custom component docs pages only when the component contract needs more than generated props tables.</p>
+    <p style={{ margin: 0 }}>Define the docs map, write custom MDX foundation guides, ship Autodocs component stories, then add custom component docs only where default Autodocs is not enough.</p>
+  </section>
+  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#f0fdf4', border: '1px solid #86efac' }}>
+    <h2 style={{ marginTop: 0 }}>Autodocs Boundary</h2>
+    <p style={{ margin: 0 }}>Autodocs belongs to reusable components and their APIs. Foundation guides should stay as hand-designed MDX pages with stronger layout, narrative flow, and cross-component teaching.</p>
   </section>
 </div>

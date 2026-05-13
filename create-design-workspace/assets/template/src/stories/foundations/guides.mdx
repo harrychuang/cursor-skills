@@ -23,4 +23,20 @@ import { Meta, Title, Subtitle, Description } from '@storybook/blocks'
     <h2 style={{ marginTop: 0 }}>Writing Rule</h2>
     <p style={{ margin: 0 }}>Do not force component pages to re-explain foundation logic. Teach the shared rule once, then reference it.</p>
   </section>
+  <section style={{ gridColumn: 'span 6', padding: 24, borderRadius: 28, background: '#faf5ff', border: '1px solid #d8b4fe' }}>
+    <h2 style={{ marginTop: 0 }}>Minimum Viable Foundation Page</h2>
+    <p style={{ margin: 0 }}>Recommendation, rationale, usage boundaries, and exceptions. If a page cannot answer those four items, it is not done yet.</p>
+  </section>
+  <section style={{ gridColumn: 'span 6', padding: 24, borderRadius: 28, background: '#f8fafc', border: '1px solid #cbd5e1' }}>
+    <h2 style={{ marginTop: 0 }}>Complexity Guardrail</h2>
+    <p style={{ margin: 0 }}>Do not turn foundations into a page-by-page audit. Capture stable system rules first, then leave screen-specific nuance to product docs or component notes.</p>
+  </section>
+  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#fff7ed', border: '1px solid #fdba74' }}>
+    <h2 style={{ marginTop: 0 }}>Recommended Sequence</h2>
+    <p style={{ margin: 0 }}>Define the docs map, write custom MDX foundation guides, ship Autodocs component stories, then add custom component docs only where default Autodocs is not enough.</p>
+  </section>
+  <section style={{ gridColumn: 'span 12', padding: 24, borderRadius: 28, background: '#f0fdf4', border: '1px solid #86efac' }}>
+    <h2 style={{ marginTop: 0 }}>Autodocs Boundary</h2>
+    <p style={{ margin: 0 }}>Autodocs belongs to reusable components and their APIs. Foundation guides should stay as hand-designed MDX pages with stronger layout, narrative flow, and cross-component teaching.</p>
+  </section>
 </div>

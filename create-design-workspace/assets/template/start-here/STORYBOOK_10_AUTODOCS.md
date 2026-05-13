@@ -9,6 +9,7 @@ Use this reference when setting up or extending Storybook in this workspace.
 - Include component descriptions in docs output
 - Keep stories framework-agnostic where possible
 - Define foundations and guides pages before component docs sprawl
+- Keep foundation guides as custom MDX front-end pages, not Autodocs
 
 ## Install or upgrade
 
@@ -147,6 +148,7 @@ Before component docs multiply, create the foundations docs contract in Storyboo
 - document the site map, with `Foundations`, `Styles`, and `Components` as the default navigation
 - add a guides page that defines the standard component sections: `Overview`, `Anatomy`, `States`, `Usage`, and `Tokens`
 - write foundation pages so they explain when to use a role or token family, not only what values exist
+- build foundation pages as custom MDX with designed layout and narrative structure instead of generated Autodocs output
 
 This keeps Autodocs focused on component API and state details instead of forcing every component page to re-explain basic visual logic.
 
@@ -158,7 +160,7 @@ Use a custom docs page only when default Autodocs is not enough, for example:
 - layout primitives with usage constraints
 - components with non-obvious accessibility contracts
 
-Default Autodocs is still the baseline.
+Default Autodocs is still the baseline for reusable components. It is not the baseline for foundations.
 
 ## Validation
 
@@ -184,3 +186,4 @@ The check expects each reusable component under `src/components` to have:
 - reusable component docs include descriptions
 - reusable component docs expose important props through `argTypes`
 - stories cover representative visual and behavioral states
+- foundation guides are custom MDX pages with designed layout and clear usage guidance

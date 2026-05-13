@@ -171,16 +171,23 @@
       border: 1px solid transparent;
     }
 
-    .lang-switch button:hover {
+    /* Only brighten label on hover when not selected — avoids white-on-white on the active pill */
+    .lang-switch button:hover:not([aria-pressed="true"]) {
       transform: translateY(-1px);
       color: var(--ink);
     }
 
     .lang-switch button[aria-pressed="true"] {
       background: #f5f5f7;
-      color: var(--ink);
-      border-color: rgba(255, 255, 255, 0.14);
+      color: #12131a;
+      border-color: rgba(0, 0, 0, 0.12);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .lang-switch button[aria-pressed="true"]:hover,
+    .lang-switch button[aria-pressed="true"]:focus-visible {
+      color: #12131a;
+      background: #eaecef;
     }
 
     .status-pill {

@@ -1,5 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
 
 import {
   buildScreenManifest,
@@ -12,12 +15,15 @@ import {
   parseFigmaUrl
 } from '../scripts/lib/workspace.js'
 import {
+  mdxHasAttachedMeta,
+  mdxHasUnattachedDocsBlock,
   previewHasExpandedControls,
   previewHasGlobalAutodocs,
   storyHasArgTypes,
   storyHasComponentDescription,
   storyHasExpandedControls,
-  storyHasLocalAutodocs
+  storyHasLocalAutodocs,
+  validateStorybookDocs
 } from '../scripts/lib/storybook.js'
 
 test('parseFigmaUrl normalizes node id', () => {
@@ -114,6 +120,8 @@ test('foundation entries include storybook docs templates', () => {
   assert.match(guidesEntry.content, /Autodocs belongs to reusable components/)
   assert.match(overviewEntry.content, /Do Not Over-Document/)
   assert.match(overviewEntry.content, /editorial MDX pages/)
+  assert.doesNotMatch(overviewEntry.content, /<Description\b/)
+  assert.doesNotMatch(guidesEntry.content, /<Description\b/)
   assert.match(colorEntry.content, /## Minimum Deliverable/)
   assert.match(templateEntry.content, /tags: \['autodocs'\]/)
   assert.match(templateEntry.content, /argTypes:/)
@@ -160,4 +168,60 @@ test('storybook helper regexes detect autodocs and props docs settings', () => {
   assert.equal(storyHasComponentDescription(storyText), true)
   assert.equal(storyHasArgTypes(storyText), true)
   assert.equal(storyHasExpandedControls(storyText), true)
+})
+
+test('storybook helper detects docs blocks that require attached CSF stories', () => {
+  const brokenMdx = `
+    import { Meta, Description } from '@storybook/blocks'
+
+    <Meta title="Foundations/Overview" />
+    <Description>Overview copy</Description>
+  `
+  const customMdx = `
+    import { Meta, Title } from '@storybook/blocks'
+
+    <Meta title="Foundations/Overview" />
+    <Title>Foundations Overview</Title>
+    <p>Overview copy</p>
+  `
+  const attachedMdx = `
+    import { Meta, Description } from '@storybook/blocks'
+    import * as ButtonStories from './Button.stories'
+
+    <Meta of={ButtonStories} />
+    <Description />
+  `
+
+  assert.equal(mdxHasAttachedMeta(attachedMdx), true)
+  assert.equal(mdxHasUnattachedDocsBlock(brokenMdx), true)
+  assert.equal(mdxHasUnattachedDocsBlock(customMdx), false)
+  assert.equal(mdxHasUnattachedDocsBlock(attachedMdx), false)
+})
+
+test('storybook docs validation fails unattached docs blocks before components exist', async () => {
+  const rootDir = await mkdtemp(path.join(os.tmpdir(), 'storybook-docs-check-'))
+
+  try {
+    await mkdir(path.join(rootDir, 'src/stories/foundations'), { recursive: true })
+    await writeFile(
+      path.join(rootDir, 'src/stories/foundations/overview.mdx'),
+      [
+        "import { Meta, Description } from '@storybook/blocks'",
+        '',
+        '<Meta title="Foundations/Overview" />',
+        '<Description>Overview copy</Description>'
+      ].join('\n'),
+      'utf8'
+    )
+
+    const result = await validateStorybookDocs(rootDir, {
+      appSourceDir: 'src',
+      storybookDir: 'src/components'
+    })
+
+    assert.equal(result.status, 'failed')
+    assert.match(result.issues[0], /attached CSF story/)
+  } finally {
+    await rm(rootDir, { recursive: true, force: true })
+  }
 })

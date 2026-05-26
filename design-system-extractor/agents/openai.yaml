@@ -1,0 +1,7 @@
+interface:
+  display_name: "Design System Extractor"
+  short_description: "Extract token-backed design systems"
+  default_prompt: "Use $design-system-extractor to extract a reusable design-system package and static HTML docs from screenshots, a Figma URL, or a project folder."
+
+policy:
+  allow_implicit_invocation: true

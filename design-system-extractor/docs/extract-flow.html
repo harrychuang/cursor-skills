@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design System Extractor Flow</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #ffffff;
+        --surface: #ffffff;
+        --surface-alt: #ececec;
+        --ink: #1f2328;
+        --muted: #62666d;
+        --line: #d8d8d2;
+        --line-strong: #a8aaa8;
+        --accent: #34383f;
+        --accent-soft: #ebeceb;
+        --code: #272b30;
+        --rail: #c7c8c5;
+        --radius: 24px;
+        --radius-sm: 18px;
+        --shadow: 0 26px 80px rgba(31, 35, 40, 0.1);
+        --shadow-soft: 0 18px 56px rgba(31, 35, 40, 0.08);
+        --shadow-control: 0 10px 30px rgba(31, 35, 40, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -48px;
+        z-index: 10;
+        background: var(--ink);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+      }
+
+      .skip-link:focus {
+        top: 16px;
+      }
+
+      header {
+        box-shadow: none;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+        gap: 44px;
+        align-items: end;
+        padding: 64px 0 36px;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      h1 {
+        max-width: 880px;
+        font-size: clamp(2.2rem, 7vw, 4.8rem);
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 820px;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .hero-map {
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+
+      .hero-map-title {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .flow-mini {
+        display: grid;
+        gap: 10px;
+      }
+
+      .flow-mini-item {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+        position: relative;
+      }
+
+      .flow-mini-item:not(:last-child)::after {
+        position: absolute;
+        left: 15px;
+        top: 34px;
+        width: 1px;
+        height: 16px;
+        background: rgba(0, 0, 0, 0.1);
+        content: "";
+      }
+
+      .flow-mini-number {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: #000;
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 900;
+        box-shadow: var(--shadow-control);
+      }
+
+      .flow-mini-label {
+        border-radius: var(--radius-sm);
+        background: #fff;
+        padding: 8px 10px;
+        color: var(--code);
+        font-size: 0.9rem;
+        font-weight: 750;
+        box-shadow: var(--shadow-control);
+      }
+
+      .language-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      .language-nav button {
+        display: inline-flex;
+        align-items: center;
+        appearance: none;
+        min-height: 38px;
+        border: 0;
+        border-radius: var(--radius);
+        background: var(--surface);
+        padding: 8px 14px;
+        color: var(--code);
+        font: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: var(--shadow-control);
+      }
+
+      .language-nav button:hover,
+      .language-nav button:focus-visible {
+        background: var(--accent-soft);
+      }
+
+      .language-nav button[aria-selected="true"] {
+        background: #000;
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(31, 35, 40, 0.14);
+      }
+
+      main {
+        padding: 34px 0 56px;
+      }
+
+      section {
+        scroll-margin-top: 24px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin: 0 0 34px;
+      }
+
+      .panel {
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .summary-card {
+        padding: 20px;
+      }
+
+      .summary-card h2 {
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
+
+      .summary-card p,
+      .summary-card ul {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .summary-card ul {
+        padding-left: 18px;
+      }
+
+      .language-section {
+        margin-top: 28px;
+        overflow: hidden;
+      }
+
+      #traditional-chinese {
+        margin-top: 0;
+        box-shadow: none;
+      }
+
+      #english {
+        box-shadow: none;
+      }
+
+      #japanese {
+        box-shadow: none;
+      }
+
+      .language-section[hidden] {
+        display: none;
+      }
+
+      .section-head {
+        background: #fff;
+        padding: 24px 0 0;
+      }
+
+      .section-head h2 {
+        font-size: clamp(1.6rem, 4vw, 2.5rem);
+      }
+
+      .section-head p {
+        max-width: 800px;
+        margin: 10px 0 0;
+        color: var(--muted);
+      }
+
+      .section-body {
+        box-sizing: content-box;
+        padding: 24px 0;
+      }
+
+      .block + .block {
+        margin-top: 32px;
+      }
+
+      .block h3 {
+        margin-bottom: 14px;
+        font-size: 1.25rem;
+      }
+
+      .flow {
+        position: relative;
+        display: grid;
+        gap: 16px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: flow;
+      }
+
+      .flow::before {
+        position: absolute;
+        left: 39px;
+        top: 18px;
+        bottom: 18px;
+        width: 2px;
+        background: var(--rail);
+        content: "";
+      }
+
+      .flow li {
+        position: relative;
+        display: grid;
+        grid-template-columns: 50px minmax(0, 1fr);
+        gap: 16px;
+        border-radius: var(--radius);
+        background: #f9f9f9;
+        padding: 18px;
+        counter-increment: flow;
+      }
+
+      .flow li::before {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 999px;
+        background: #000;
+        color: #fff;
+        content: counter(flow);
+        font-weight: 900;
+        box-shadow: var(--shadow-control);
+      }
+
+      .flow li.flow-purple::before {
+        background: #403c8e;
+        color: #fff;
+      }
+
+      .flow h4 {
+        margin-bottom: 6px;
+        font-size: 1rem;
+      }
+
+      .flow p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .why-grid,
+      .output-grid,
+      .principle-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .principle-grid,
+      .why-grid,
+      .output-grid {
+        counter-reset: card;
+      }
+
+      .why-item,
+      .output-item,
+      .principle-item {
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr);
+        column-gap: 14px;
+        border-radius: var(--radius);
+        background: #f9f9f9;
+        padding: 16px;
+      }
+
+      .why-item,
+      .output-item,
+      .principle-item {
+        counter-increment: card;
+      }
+
+      .why-item h4,
+      .output-item h4,
+      .principle-item h4 {
+        margin-bottom: 6px;
+        font-size: 1rem;
+      }
+
+      .why-item p,
+      .output-item p,
+      .principle-item p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .why-item::before,
+      .output-item::before,
+      .principle-item::before {
+        display: grid;
+        place-items: center;
+        grid-row: 1 / span 2;
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        background: #fff;
+        color: #7a7d83;
+        content: counter(card, upper-alpha);
+        font-size: 1.18rem;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .why-item h4,
+      .why-item p,
+      .output-item h4,
+      .output-item p,
+      .principle-item h4,
+      .principle-item p {
+        grid-column: 2;
+      }
+
+      code {
+        border-radius: 10px;
+        background: #ededeb;
+        color: var(--code);
+        padding: 0.12em 0.36em;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.92em;
+      }
+
+      .note {
+        background: var(--accent-soft);
+        box-shadow: inset 6px 0 0 rgba(31, 35, 40, 0.72);
+        padding: 14px 16px;
+        color: var(--code);
+      }
+
+      .note p {
+        margin: 0;
+      }
+
+      footer {
+        background: var(--surface);
+        padding: 24px 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        box-shadow: 0 -18px 58px rgba(31, 35, 40, 0.06);
+      }
+
+      @media (max-width: 800px) {
+        .summary-grid,
+        .why-grid,
+        .output-grid,
+        .principle-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .hero {
+          padding-top: 40px;
+        }
+
+        .section-head,
+        .section-body {
+          padding: 18px 0;
+        }
+
+        .flow li {
+          grid-template-columns: 1fr;
+        }
+
+        .why-item,
+        .output-item,
+        .principle-item {
+          grid-template-columns: 54px minmax(0, 1fr);
+        }
+
+        .flow::before {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="skipLink">跳到內容</a>
+
+    <header>
+      <div class="shell hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Design System Extractor Skill</p>
+          <h1 data-i18n="heroTitle">Extract 流程與目的</h1>
+          <p class="lead" data-i18n="heroLead">
+            多語系導覽，說明這個 skill 如何從圖片、Figma URL、專案資料夾 extract
+            evidence、設計原則、tokens、components 與開發者文件。
+          </p>
+          <div class="language-nav" role="tablist" aria-label="Language selector">
+            <button
+              id="tab-traditional-chinese"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="traditional-chinese"
+              data-language-button="zh-Hant"
+            >
+              繁體中文
+            </button>
+            <button
+              id="tab-english"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="english"
+              data-language-button="en"
+            >
+              English
+            </button>
+            <button
+              id="tab-japanese"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="japanese"
+              data-language-button="ja"
+            >
+              日本語
+            </button>
+          </div>
+        </div>
+        <aside class="hero-map" aria-label="Extraction flow map">
+          <p class="hero-map-title" data-i18n="flowMapTitle">流程圖</p>
+          <div class="flow-mini">
+            <div class="flow-mini-item">
+              <span class="flow-mini-number">01</span>
+              <span class="flow-mini-label" data-i18n="flowMapEvidence"
+                >設計證據</span
+              >
+            </div>
+            <div class="flow-mini-item">
+              <span class="flow-mini-number">02</span>
+              <span class="flow-mini-label" data-i18n="flowMapPrinciples"
+                >設計原則</span
+              >
+            </div>
+            <div class="flow-mini-item">
+              <span class="flow-mini-number">03</span>
+              <span class="flow-mini-label" data-i18n="flowMapTokens"
+                >Token 層級</span
+              >
+            </div>
+            <div class="flow-mini-item">
+              <span class="flow-mini-number">04</span>
+              <span class="flow-mini-label" data-i18n="flowMapComponents"
+                >Components</span
+              >
+            </div>
+            <div class="flow-mini-item">
+              <span class="flow-mini-number">05</span>
+              <span class="flow-mini-label" data-i18n="flowMapDocs"
+                >文件與 audit</span
+              >
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <main id="main" class="shell">
+      <section class="summary-grid" aria-label="Overview">
+        <article class="summary-card panel">
+          <h2 data-i18n="inputsTitle">輸入來源</h2>
+          <ul data-i18n-list="inputsItems">
+            <li>圖片與 screenshots</li>
+            <li>Figma URL、exports、variables</li>
+            <li>Project 或 prototype folders</li>
+          </ul>
+        </article>
+        <article class="summary-card panel">
+          <h2 data-i18n="contractTitle">核心約定</h2>
+          <p data-i18n="contractText">
+            先 extract 有 evidence 支撐的設計規範。除非明確要求，product UI code
+            只會在 checkpoint 之後才開始。
+          </p>
+        </article>
+        <article class="summary-card panel">
+          <h2 data-i18n="outputsTitle">輸出內容</h2>
+          <p data-i18n="outputsText" data-i18n-html="true">
+            Markdown 規範、設計原則、嚴格 <code>ref -&gt; sys -&gt; comp</code> tokens、
+            component inventory、anti-AI style rules、HTML docs 與 audit results。
+          </p>
+        </article>
+      </section>
+
+      <section
+        id="english"
+        class="language-section panel"
+        lang="en"
+        role="tabpanel"
+        aria-labelledby="tab-english"
+        data-language-panel="en"
+        data-layout="extract-flow"
+        hidden
+      >
+        <div class="section-head">
+          <h2>How the extract flow works</h2>
+          <p>
+            The skill turns visual and code references into a portable
+            design-system package that future agents and developers can trust.
+          </p>
+        </div>
+        <div class="section-body">
+          <div class="block">
+            <h3>Extract flow</h3>
+            <ol class="flow">
+              <li>
+                <div>
+                  <h4>Discover inputs</h4>
+                  <p>
+                    Locate screenshots, image exports, Figma links, variables,
+                    routes, Storybook stories, CSS, token files, and existing
+                    agent rules.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>Create the evidence map</h4>
+                  <p>
+                    Record where each decision comes from: source, observed
+                    region, pattern, affected token or component, and confidence.
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>Extract design principles</h4>
+                  <p>
+                    Turn repeated evidence into 5-7 product principles, each
+                    with a clear name, supporting observations, implementation
+                    rule, and confidence level.
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>Extract foundations</h4>
+                  <p>
+                    Define product character through color, type, spacing,
+                    density, shape, elevation, imagery, data display, and state
+                    language.
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>Build token architecture</h4>
+                  <p>
+                    Convert raw values into reference tokens, semantic roles
+                    into system tokens, and component slots into component
+                    tokens.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>Inventory components</h4>
+                  <p>
+                    Identify repeated UI patterns and classify them as
+                    extracted, planned, blocked, or out of scope.
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>Extract component specs</h4>
+                  <p>
+                    Write anatomy, variants, states, accessibility rules, and
+                    token slots for high-value reusable components.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>Define composition and interaction rules</h4>
+                  <p>
+                    Capture page rhythm, layout density, navigation patterns,
+                    motion expectations, and state behavior.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>Add anti-AI style constraints</h4>
+                  <p>
+                    Block unsupported generic UI patterns such as inflated
+                    spacing, decorative gradients, glass panels, or invented
+                    illustration styles.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>Generate developer HTML</h4>
+                  <p>
+                    Render Markdown specs and token tables into
+                    <code>docs/design-system/index.html</code> so developers can
+                    scan the system without opening every source file.
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>Audit and checkpoint</h4>
+                  <p>
+                    Run token audits, update session state, list open questions,
+                    and stop before implementation work changes the scope.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="block">
+            <h3>Design principle extraction</h3>
+            <div class="principle-grid">
+              <article class="principle-item">
+                <h4>Find repeated choices</h4>
+                <p>
+                  Compare screens or nodes and identify decisions that appear
+                  consistently: density, emphasis, hierarchy, restraint,
+                  contrast, motion, and feedback.
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>Name the behavior</h4>
+                <p>
+                  Write principles as product behavior, not decoration. Example:
+                  "dense lists stay readable" is stronger than "use compact UI."
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>Convert to rules</h4>
+                <p>
+                  Each principle must become an implementation rule that can
+                  guide tokens, components, layout, state, and future UI work.
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>Keep uncertainty visible</h4>
+                <p>
+                  If evidence is partial, mark the principle as medium or low
+                  confidence and record what source would confirm it.
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>Why these extracts matter</h3>
+            <div class="why-grid">
+              <article class="why-item">
+                <h4>Principles align judgment</h4>
+                <p>
+                  They give future agents a decision model when no exact token
+                  or component already covers a new interface case.
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>Evidence prevents guessing</h4>
+                <p>
+                  Every rule is traceable to an image, Figma node, route, or
+                  source file, so future AI agents do not invent design intent.
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>Tokens prevent drift</h4>
+                <p>
+                  Strict inheritance keeps raw values, semantic roles, and
+                  component decisions separate and easier to audit.
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>Inventory prevents duplication</h4>
+                <p>
+                  Components are reused or extended intentionally instead of
+                  being recreated with slightly different anatomy.
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>HTML improves handoff</h4>
+                <p>
+                  The generated documentation gives developers a readable index
+                  of rules, tokens, and component specs.
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>Output contract</h3>
+            <div class="output-grid">
+              <article class="output-item">
+                <h4>Source of truth</h4>
+                <p>
+                  <code>design-system/*.md</code> and <code>tokens/*.css</code>
+                  remain the editable source files.
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>Reading layer</h4>
+                <p>
+                  <code>docs/design-system/index.html</code> is generated from
+                  the source files for developer review.
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>Agent handoff</h4>
+                <p>
+                  Claude Code, Cursor, and Codex should read the same specs,
+                  token rules, anti-AI constraints, and session checkpoint.
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>Quality gate</h4>
+                <p>
+                  Token audits and session-state updates make the extraction
+                  repeatable across projects.
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="japanese"
+        class="language-section panel"
+        lang="ja"
+        role="tabpanel"
+        aria-labelledby="tab-japanese"
+        data-language-panel="ja"
+        data-layout="extract-flow"
+        hidden
+      >
+        <div class="section-head">
+          <h2>抽出フローの考え方</h2>
+          <p>
+            この skill は、画像、Figma、プロジェクトフォルダを根拠として、
+            将来の AI エージェントと開発者が同じ判断で使える
+            デザインシステム一式に整理します。
+          </p>
+        </div>
+        <div class="section-body">
+          <div class="block">
+            <h3>抽出フロー</h3>
+            <ol class="flow">
+              <li>
+                <div>
+                  <h4>入力を確認する</h4>
+                  <p>
+                    スクリーンショット、画像書き出し、Figma URL、Variables、
+                    画面ルート、Storybook、CSS、token、既存の agent ルールを確認します。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>根拠マップを作る</h4>
+                  <p>
+                    判断の出典、観察した領域、パターン、影響する token
+                    または component、確信度を記録します。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>デザイン原則を抽出する</h4>
+                  <p>
+                    繰り返し見える根拠を 5-7 個の product principles に変換し、
+                    名前、観察事実、実装ルール、確信度をセットで記録します。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>基礎要素を抽出する</h4>
+                  <p>
+                    色、文字、余白、密度、角丸、奥行き、画像、データ表示、
+                    state 表現からプロダクトらしさを定義します。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>token 構造を作る</h4>
+                  <p>
+                    生の値は reference token、意味を持つ役割は system token、
+                    component の slot は component token に分けます。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>component を棚卸しする</h4>
+                  <p>
+                    繰り返し使われる UI パターンを見つけ、extracted、planned、
+                    blocked、out-of-scope に分類します。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>component spec を抽出する</h4>
+                  <p>
+                    重要な再利用 component について、構造、variant、state、
+                    アクセシビリティ、token slot を文書化します。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>構成と interaction ルールを定義する</h4>
+                  <p>
+                    画面リズム、レイアウト密度、ナビゲーション、motion、
+                    state の振る舞いを固定します。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>AI らしいズレを防ぐ制約を追加する</h4>
+                  <p>
+                    根拠のない広すぎる余白、装飾的な gradient、glass 表現、
+                    勝手なイラスト表現を防ぎます。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>開発者向け HTML を生成する</h4>
+                  <p>
+                    Markdown と token table を
+                    <code>docs/design-system/index.html</code> にまとめ、
+                    開発者が仕様を読みやすくします。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>audit と checkpoint を行う</h4>
+                  <p>
+                    token audit を実行し、session state に決定事項と未解決事項を残し、
+                    実装に進む前に一度止めます。
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="block">
+            <h3>デザイン原則の抽出</h3>
+            <div class="principle-grid">
+              <article class="principle-item">
+                <h4>繰り返される判断を見つける</h4>
+                <p>
+                  複数の画面や node を比較し、密度、強調、階層、抑制、
+                  contrast、motion、feedback など一貫した判断を探します。
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>振る舞いとして名付ける</h4>
+                <p>
+                  原則は装飾名ではなく product behavior として書きます。
+                  例として「dense lists stay readable」は「compact UI」より判断に使えます。
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>実装ルールへ変換する</h4>
+                <p>
+                  各原則は token、component、layout、state、将来の UI
+                  に使える implementation rule に落とし込みます。
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>不確実性を残す</h4>
+                <p>
+                  根拠が不足している場合は medium または low confidence
+                  として記録し、何を確認すれば確定できるかを書きます。
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>なぜ抽出するのか</h3>
+            <div class="why-grid">
+              <article class="why-item">
+                <h4>原則が判断を揃える</h4>
+                <p>
+                  まだ token や component がない新しい UI でも、agent
+                  が同じ判断モデルで設計できます。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>根拠が推測を防ぐ</h4>
+                <p>
+                  すべてのルールを画像、Figma node、route、source file に結びつけ、
+                  AI が意図を勝手に補完しないようにします。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>token がずれを防ぐ</h4>
+                <p>
+                  <code>ref -&gt; sys -&gt; comp</code> を守ることで、
+                  生値、意味、component 固有の判断を分離できます。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>棚卸しが重複を防ぐ</h4>
+                <p>
+                  似た component を作り直すのではなく、意図的に再利用または拡張します。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>HTML が引き継ぎを助ける</h4>
+                <p>
+                  開発者は、仕様、token、component spec を 1 つの読みやすい画面で確認できます。
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>出力の約束</h3>
+            <div class="output-grid">
+              <article class="output-item">
+                <h4>編集する source of truth</h4>
+                <p>
+                  <code>design-system/*.md</code> と <code>tokens/*.css</code>
+                  が編集対象の原本です。
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>読むための layer</h4>
+                <p>
+                  <code>docs/design-system/index.html</code> は原本から生成される
+                  開発者向けの閲覧ページです。
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>agent への引き継ぎ</h4>
+                <p>
+                  Claude Code、Cursor、Codex は同じ仕様、token ルール、
+                  anti-AI 制約、checkpoint を参照します。
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>品質 gate</h4>
+                <p>
+                  token audit と session-state 更新により、別プロジェクトでも同じ流れを再現できます。
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="traditional-chinese"
+        class="language-section panel"
+        lang="zh-Hant"
+        role="tabpanel"
+        aria-labelledby="tab-traditional-chinese"
+        data-language-panel="zh-Hant"
+        data-layout="extract-flow"
+      >
+        <div class="section-head">
+          <h2>Extract 流程與目的</h2>
+          <p>
+            這個 skill 會把圖片、Figma URL、專案資料夾中的視覺與程式線索，
+            整理成未來 AI 和開發者都能共同依循的設計系統規範。
+          </p>
+        </div>
+        <div class="section-body">
+          <div class="block">
+            <h3>Extract 流程</h3>
+            <ol class="flow">
+              <li>
+                <div>
+                  <h4>盤點輸入來源</h4>
+                  <p>
+                    找出 screenshots、圖片輸出、Figma URL、Variables、畫面路由、
+                    Storybook、CSS、token 檔案與既有 agent 規則。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>建立 evidence map</h4>
+                  <p>
+                    記錄每個設計判斷的來源、觀察區域、可重複模式、
+                    影響的 token 或 component，以及信心等級。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>萃取設計原則</h4>
+                  <p>
+                    將反覆出現的 evidence 轉成 5-7 條產品設計原則，
+                    每條都包含命名、觀察依據、實作規則與信心等級。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>萃取設計基礎</h4>
+                  <p>
+                    從色彩、字體、間距、密度、圓角、層次、圖像、資料呈現與狀態語言，
+                    定義產品的視覺個性。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>建立 token 架構</h4>
+                  <p>
+                    把原始值放在 reference token，把語意角色放在 system token，
+                    把 component slot 放在 component token。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>盤點 component</h4>
+                  <p>
+                    找出重複出現的 UI 模式，並標記為 extracted、planned、blocked
+                    或 out-of-scope。
+                  </p>
+                </div>
+              </li>
+              <li class="flow-purple">
+                <div>
+                  <h4>抽出 component spec</h4>
+                  <p>
+                    針對高價值且可重用的 component，整理 anatomy、variants、
+                    states、accessibility 與 token slots。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>定義版面與互動規則</h4>
+                  <p>
+                    固定頁面節奏、排版密度、導覽模式、動效期待與狀態行為，
+                    讓後續實作不偏離產品語氣。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>補上 anti-AI style rules</h4>
+                  <p>
+                    防止 AI 自動加入沒有根據的巨大留白、裝飾漸層、玻璃感卡片、
+                    或不符合參考畫面的插畫風格。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>產生開發者 HTML</h4>
+                  <p>
+                    將 Markdown 規範與 token tables 產生成
+                    <code>docs/design-system/index.html</code>，方便開發者快速閱讀。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h4>執行 audit 並 checkpoint</h4>
+                  <p>
+                    檢查 token 繼承、更新 session state、列出未決問題，
+                    並在進入產品實作前暫停確認下一步。
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="block">
+            <h3>設計原則怎麼萃取</h3>
+            <div class="principle-grid">
+              <article class="principle-item">
+                <h4>找出反覆出現的選擇</h4>
+                <p>
+                  比對多個畫面或 Figma nodes，找出一致出現的密度、強調、
+                  階層、克制、對比、動效與回饋方式。
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>用產品行為命名</h4>
+                <p>
+                  原則不是裝飾形容詞，而是可判斷的產品行為。
+                  例如「高密度列表仍需易讀」會比「使用緊湊 UI」更可執行。
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>轉成實作規則</h4>
+                <p>
+                  每條原則都要能指導 tokens、components、layout、states
+                  和未來 UI 建議，避免只停留在抽象描述。
+                </p>
+              </article>
+              <article class="principle-item">
+                <h4>保留不確定性</h4>
+                <p>
+                  如果 evidence 不夠完整，就標記 medium 或 low confidence，
+                  並記錄還需要哪個來源才能確認。
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>為什麼要做這些 extract</h3>
+            <div class="why-grid">
+              <article class="why-item">
+                <h4>設計原則讓判斷一致</h4>
+                <p>
+                  當新的 UI 情境還沒有既有 token 或 component 可套用時，
+                  原則可以讓 AI 和開發者用同一套判斷模型延伸設計。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>Evidence 防止 AI 猜測</h4>
+                <p>
+                  每個規則都能追溯到圖片、Figma node、route 或 source file，
+                  後續 AI 不需要自行想像設計意圖。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>Tokens 防止樣式漂移</h4>
+                <p>
+                  嚴格維持 <code>ref -&gt; sys -&gt; comp</code>，
+                  可以把原始值、語意角色和 component 決策分清楚。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>Component inventory 防止重複建造</h4>
+                <p>
+                  先確認既有模式，再決定重用、延伸或新增 component，
+                  避免產生多個相似但不一致的版本。
+                </p>
+              </article>
+              <article class="why-item">
+                <h4>HTML 讓交付更容易理解</h4>
+                <p>
+                  開發者可以從單一頁面瀏覽規範、token、component spec 與開放問題。
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>輸出約定</h3>
+            <div class="output-grid">
+              <article class="output-item">
+                <h4>Source of truth</h4>
+                <p>
+                  <code>design-system/*.md</code> 與 <code>tokens/*.css</code>
+                  是可編輯的規範原始檔。
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>閱讀層</h4>
+                <p>
+                  <code>docs/design-system/index.html</code> 是由原始檔產生的
+                  開發者閱讀頁面。
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>AI agent handoff</h4>
+                <p>
+                  Claude Code、Cursor、Codex 都應該讀取同一套規範、token rules、
+                  anti-AI constraints 與 session checkpoint。
+                </p>
+              </article>
+              <article class="output-item">
+                <h4>品質關卡</h4>
+                <p>
+                  透過 token audit 和 session-state 更新，讓 extract 流程能在不同專案中重複使用。
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <div class="block note">
+            <p>
+              這份 HTML 是 skill 本身的流程說明；每次實際 extract 後產出的
+              <code>docs/design-system/index.html</code> 則是該專案的設計系統閱讀文件。
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell" data-i18n="footerText">
+        Source files 仍然是 Markdown 與 CSS tokens。這個頁面是執行 Claude Code、
+        Cursor 或 Codex skill 前，用來理解 extract workflow 的可攜式導覽。
+      </div>
+    </footer>
+    <script>
+      (() => {
+        const copy = {
+          en: {
+            htmlLang: "en",
+            skipLink: "Skip to content",
+            heroTitle: "Extract flow and rationale",
+            heroLead:
+              "A multilingual guide that explains how this skill extracts evidence, design principles, tokens, components, and developer documentation from images, Figma URLs, and project folders.",
+            flowMapTitle: "Flow map",
+            flowMapEvidence: "Evidence",
+            flowMapPrinciples: "Design principles",
+            flowMapTokens: "Token layers",
+            flowMapComponents: "Components",
+            flowMapDocs: "Docs and audit",
+            inputsTitle: "Inputs",
+            inputsItems: [
+              "Images and screenshots",
+              "Figma URLs, exports, and variables",
+              "Project or prototype folders",
+            ],
+            contractTitle: "Core contract",
+            contractText:
+              "Extract evidence-backed design rules first. Product UI code comes only after the checkpoint unless explicitly requested.",
+            outputsTitle: "Outputs",
+            outputsText:
+              'Markdown specs, design principles, strict <code>ref -&gt; sys -&gt; comp</code> tokens, component inventory, anti-AI style rules, HTML docs, and audit results.',
+            footerText:
+              "Source files remain Markdown and CSS tokens. This page is a portable guide for understanding the extraction workflow before running the skill in Claude Code, Cursor, or Codex.",
+          },
+          ja: {
+            htmlLang: "ja",
+            skipLink: "本文へ移動",
+            heroTitle: "抽出フローと目的",
+            heroLead:
+              "この skill が画像、Figma URL、プロジェクトフォルダから evidence、design principles、tokens、components、developer documentation を抽出する流れを説明する多言語ガイドです。",
+            flowMapTitle: "フローマップ",
+            flowMapEvidence: "根拠",
+            flowMapPrinciples: "デザイン原則",
+            flowMapTokens: "Token 層",
+            flowMapComponents: "Components",
+            flowMapDocs: "Docs と audit",
+            inputsTitle: "入力",
+            inputsItems: [
+              "画像とスクリーンショット",
+              "Figma URL、exports、variables",
+              "Project または prototype folders",
+            ],
+            contractTitle: "基本ルール",
+            contractText:
+              "まず根拠に基づくデザインルールを抽出します。明示的に依頼されない限り、product UI code は checkpoint の後に扱います。",
+            outputsTitle: "出力",
+            outputsText:
+              'Markdown specs、design principles、厳格な <code>ref -&gt; sys -&gt; comp</code> tokens、component inventory、anti-AI style rules、HTML docs、audit results。',
+            footerText:
+              "Source files は Markdown と CSS tokens のままです。このページは、Claude Code、Cursor、Codex で skill を実行する前に extraction workflow を理解するためのポータブルガイドです。",
+          },
+          "zh-Hant": {
+            htmlLang: "zh-Hant",
+            skipLink: "跳到內容",
+            heroTitle: "Extract 流程與目的",
+            heroLead:
+              "多語系導覽，說明這個 skill 如何從圖片、Figma URL、專案資料夾 extract evidence、設計原則、tokens、components 與開發者文件。",
+            flowMapTitle: "流程圖",
+            flowMapEvidence: "設計證據",
+            flowMapPrinciples: "設計原則",
+            flowMapTokens: "Token 層級",
+            flowMapComponents: "Components",
+            flowMapDocs: "文件與 audit",
+            inputsTitle: "輸入來源",
+            inputsItems: [
+              "圖片與 screenshots",
+              "Figma URL、exports、variables",
+              "Project 或 prototype folders",
+            ],
+            contractTitle: "核心約定",
+            contractText:
+              "先 extract 有 evidence 支撐的設計規範。除非明確要求，product UI code 只會在 checkpoint 之後才開始。",
+            outputsTitle: "輸出內容",
+            outputsText:
+              'Markdown 規範、設計原則、嚴格 <code>ref -&gt; sys -&gt; comp</code> tokens、component inventory、anti-AI style rules、HTML docs 與 audit results。',
+            footerText:
+              "Source files 仍然是 Markdown 與 CSS tokens。這個頁面是執行 Claude Code、Cursor 或 Codex skill 前，用來理解 extract workflow 的可攜式導覽。",
+          },
+        };
+
+        const buttons = Array.from(
+          document.querySelectorAll("[data-language-button]")
+        );
+        const panels = Array.from(
+          document.querySelectorAll("[data-language-panel]")
+        );
+
+        function setLanguage(language) {
+          const messages = copy[language] || copy["zh-Hant"];
+          document.documentElement.lang = messages.htmlLang;
+
+          document.querySelectorAll("[data-i18n]").forEach((node) => {
+            const value = messages[node.dataset.i18n];
+            if (typeof value !== "string") return;
+            if (node.dataset.i18nHtml === "true") {
+              node.innerHTML = value;
+            } else {
+              node.textContent = value;
+            }
+          });
+
+          document.querySelectorAll("[data-i18n-list]").forEach((list) => {
+            const values = messages[list.dataset.i18nList];
+            if (!Array.isArray(values)) return;
+            list.replaceChildren(
+              ...values.map((value) => {
+                const item = document.createElement("li");
+                item.textContent = value;
+                return item;
+              })
+            );
+          });
+
+          buttons.forEach((button) => {
+            const selected = button.dataset.languageButton === language;
+            button.setAttribute("aria-selected", String(selected));
+          });
+
+          panels.forEach((panel) => {
+            panel.hidden = panel.dataset.languagePanel !== language;
+          });
+        }
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => {
+            setLanguage(button.dataset.languageButton);
+          });
+        });
+
+        setLanguage("zh-Hant");
+      })();
+    </script>
+  </body>
+</html>

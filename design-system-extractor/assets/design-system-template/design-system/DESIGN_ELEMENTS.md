@@ -5,6 +5,8 @@
 | Role | Recommended value | Usage | Evidence / rationale |
 |---|---|---|---|
 
+Document palette families with `100` as the lightest step and `0` as the darkest step. Note any close colors that need a merge/keep-distinct decision in `TOKEN_ARCHITECTURE.md`.
+
 ## Typography
 
 | Role | Font / weight / size guidance | Usage | Evidence / rationale |
@@ -19,6 +21,8 @@
 
 | Role | Value | Usage | Evidence / rationale |
 |---|---|---|---|
+
+Record close spacing, sizing, type, radius, opacity, or motion values that need developer confirmation before becoming separate reference tokens.
 
 ## Elevation And Depth
 

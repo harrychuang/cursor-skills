@@ -27,6 +27,7 @@ Each component spec must include:
 
 - Purpose
 - Evidence
+- Component fingerprint
 - Anatomy
 - Variants
 - States
@@ -36,6 +37,40 @@ Each component spec must include:
 - Accessibility rules
 - Do / Don't
 - Implementation notes
+
+## Component Fingerprint
+
+Before creating a new component spec, summarize the candidate as a fingerprint:
+
+| Dimension | What to capture |
+|---|---|
+| Purpose / behavior | action, navigation, selection, display-only, data entry, feedback, or layout container |
+| Anatomy | slots such as container, icon, label, media, metadata, badge, divider, state layer |
+| Variants / states | default, selected, active, disabled, loading, density, hierarchy, emphasis |
+| Token contract summary | main color, type, spacing, radius, elevation, size, and state tokens |
+| Layout / density | height, padding, gap, alignment, truncation, responsive behavior |
+| Visual reference | Figma node preview/screenshot or screenshot crop; schematic SVG only as labeled fallback |
+| Similar components reviewed | matching existing components and final decision |
+
+Similarity review compares purpose and behavior first. Visual similarity alone is not enough to merge components; different behavior may require separate components or variants.
+
+## Component Similarity Review
+
+Use `COMPONENT_INVENTORY.md` to document close matches before adding a new component:
+
+| New candidate | Similar existing component | Visual reference | Similarity reason | Suggested action | Developer decision | Rationale / owner |
+|---|---|---|---|---|---|---|
+
+Suggested actions:
+
+- `merge`: the candidate is the same component and should reuse the existing spec and tokens
+- `make variant`: the candidate belongs inside the existing component as a variant, density, state, or slot option
+- `keep distinct`: the candidate needs a separate component because purpose, behavior, accessibility, or token contract differs
+- `blocked`: more design evidence or developer confirmation is needed
+
+For Figma inputs, capture actual node previews/screenshots for both the new candidate and the closest existing component when possible. For screenshot inputs, crop the relevant component regions. Store source-based review images under `design-system/assets/component-review/` and link them in the `Visual reference` cell.
+
+Do not use an AI-drawn schematic as the review image when a Figma preview or screenshot crop is available. A schematic SVG is allowed only as a last-resort fallback when source previews cannot be captured, and it must be labeled `schematic fallback - source preview unavailable`. Treat fallback SVGs as explanatory aids, not design evidence.
 
 ## Anatomy
 

@@ -8,7 +8,7 @@ It does not implement product screens by default. It produces design-system docu
 
 Open `docs/extract-flow.html` for a self-contained HTML guide that explains the extraction flow and why each step exists in English, Japanese, and Traditional Chinese.
 
-This guide describes the skill's reusable workflow. The generated project-specific documentation remains `docs/design-system/index.html` after running `scripts/generate_docs_html.mjs`.
+This guide describes the skill's reusable workflow. The generated project-specific documentation remains `docs/design-system/index.html`, with review items in `docs/design-system/review.html`.
 
 ## When To Use
 
@@ -50,6 +50,8 @@ design-system/
 ├── INTERACTION_STATES.md
 ├── PAGE_COMPOSITION_RULES.md
 ├── ANTI_AI_STYLE_RULES.md
+├── assets/
+│   └── component-review/
 └── SESSION_STATE.md
 
 tokens/
@@ -60,7 +62,8 @@ tokens/
 
 docs/
 └── design-system/
-    └── index.html
+    ├── index.html
+    └── review.html
 ```
 
 The default token model is:
@@ -75,18 +78,24 @@ For CSS custom properties, the default prefixes are:
 - `--md-sys-*`: shared semantic roles only
 - `--md-comp-*`: component slots only
 
+Reference color scales use `100 -> 0` from light to dark. Near duplicate reference colors or numbers must be confirmed with the developer as either `merge` or `keep distinct` before the token set is finalized.
+
+Input sources also go through duplicate review. Screenshots, image exports, Figma URLs/nodes, rendered routes, and prototype references should be recorded with a source fingerprint in `DESIGN_EVIDENCE_MAP.md`. Exact or likely duplicate sources must be confirmed as `reuse existing source`, `ignore duplicate`, or `keep distinct` before both are counted as separate evidence.
+
+Component candidates also go through a similarity review. When a new Figma or screenshot component resembles an existing component, the extractor records a fingerprint and asks whether to merge it, make it a variant, keep it distinct, or block it pending more evidence. Visual comparison assets should come from actual Figma node previews/screenshots or screenshot crops, stored under `design-system/assets/component-review/`, and linked from `COMPONENT_INVENTORY.md`. Schematic SVGs are only a labeled last-resort fallback when source previews cannot be captured.
+
 ## Standard Workflow
 
-1. Discover inputs: screenshots, Figma data, rendered UI, project code, tokens, Storybook.
+1. Discover inputs: screenshots, Figma data, rendered UI, project code, tokens, Storybook, and review duplicate sources.
 2. Build `DESIGN_EVIDENCE_MAP.md` so design decisions trace back to source evidence.
 3. Extract 5-7 design principles with evidence and implementation rules.
 4. Define design elements: color, type, spacing, density, shape, elevation, iconography, imagery.
-5. Define token architecture and fill `tokens/`.
-6. Build `COMPONENT_INVENTORY.md` from repeated UI patterns.
+5. Define token architecture, review near token candidates, and fill `tokens/`.
+6. Build `COMPONENT_INVENTORY.md` from repeated UI patterns and review similar component candidates.
 7. Extract initial component token specs under `design-system/components/`, usually a primary action and core navigation/shell component.
 8. Document page composition, interaction states, and anti-AI style rules.
-9. Generate developer-facing HTML documentation.
-10. Run strict token audit.
+9. Generate developer-facing HTML documentation and the visual review queue.
+10. Run strict source, token, and component audits.
 11. Update `SESSION_STATE.md`, stop, and ask the user for the next step.
 
 ## Component Expansion Pass
@@ -96,20 +105,22 @@ After the initial checkpoint, use the same skill to expand component tokens from
 Recommended prompt:
 
 ```txt
-Use $design-system-extractor to run a component expansion pass for <component-name>. Start from COMPONENT_INVENTORY.md, write the component token spec under design-system/components/, add missing sys/comp tokens with strict ref -> sys -> comp inheritance, regenerate docs/design-system/index.html, run strict token audit, update SESSION_STATE.md, then stop.
+Use $design-system-extractor to run a component expansion pass for <component-name>. Start from COMPONENT_INVENTORY.md, review similar components, write the component token spec under design-system/components/, add missing sys/comp tokens with strict ref -> sys -> comp inheritance, regenerate docs/design-system/index.html and docs/design-system/review.html, run strict source, token, and component audits, update SESSION_STATE.md, then stop.
 ```
 
 Expansion workflow:
 
 1. Pick one or more `planned` components from `COMPONENT_INVENTORY.md`.
 2. Confirm source evidence in `DESIGN_EVIDENCE_MAP.md`.
-3. Create or update the component spec in `design-system/components/<component-name>.md` from `COMPONENT_SPEC_TEMPLATE.md`.
-4. Add only reusable product-wide system tokens.
-5. Add component slots to `tokens/tokens-comp.css`.
-6. Update inventory, interaction states, and page composition rules.
-7. Regenerate HTML docs.
-8. Run strict token audit.
-9. Update session state and stop.
+3. Compare the candidate fingerprint against existing component specs.
+4. Record any merge/variant/keep-distinct/blocked decision in `COMPONENT_INVENTORY.md`.
+5. Create or update the component spec in `design-system/components/<component-name>.md` from `COMPONENT_SPEC_TEMPLATE.md`.
+6. Add only reusable product-wide system tokens.
+7. Add component slots to `tokens/tokens-comp.css`.
+8. Update inventory, interaction states, and page composition rules.
+9. Regenerate HTML docs and review queue.
+10. Run strict source, token, and component audits.
+11. Update session state and stop.
 
 ## HTML Documentation
 
@@ -117,12 +128,14 @@ Generate a static documentation page from `design-system/` Markdown files, `desi
 
 ```sh
 node skills/design-system-extractor/scripts/generate_docs_html.mjs .
+node skills/design-system-extractor/scripts/generate_review_html.mjs .
 ```
 
 Default output:
 
 ```txt
 docs/design-system/index.html
+docs/design-system/review.html
 ```
 
 You can pass a custom output path:
@@ -140,32 +153,52 @@ The generated HTML includes:
 - reference, system, and component token tables
 - resolved token values
 - color swatches for resolved colors
+- component similarity review images linked from `design-system/assets/`
+
+The generated review queue includes:
+
+- duplicate source review rows with fingerprint or normalized source keys
+- color scale issues with swatches
+- near color token pairs with swatches and deltaE
+- near numeric token pairs with differences
+- component similarity review rows with visual references
+- documented versus needs-review status
 
 Use this HTML file as the developer-friendly reading layer. The Markdown files and CSS token files remain the source of truth.
 
-## Token Audit
+## Audits
 
 Run the strict audit from the project root after real extraction work:
 
 ```sh
+node skills/design-system-extractor/scripts/audit_sources.mjs . --strict
 node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict
+node skills/design-system-extractor/scripts/audit_components.mjs . --strict
 ```
 
 Use non-strict mode only for an empty starter package or early setup check. Run strict mode against another target package like this:
 
 ```sh
+node path/to/design-system-extractor/scripts/audit_sources.mjs /path/to/design-system-package --strict
 node path/to/design-system-extractor/scripts/audit_tokens.mjs /path/to/design-system-package --strict
+node path/to/design-system-extractor/scripts/audit_components.mjs /path/to/design-system-package --strict
 ```
 
 The audit checks for:
 
+- missing source fingerprints in `DESIGN_EVIDENCE_MAP.md`
+- repeated screenshot, Figma, route, or source keys without a documented duplicate source decision
 - component tokens referencing reference tokens directly
 - system token names that include component vocabulary
 - reference token names that include semantic roles
+- reference color scale direction: `100` lightest to `0` darkest
+- near duplicate reference colors or numbers that need a documented merge/keep-distinct decision
 - raw values in system/component layers
 - missing token files or empty token layers in strict mode
 - `tokens.css` import order in strict mode
 - background-like system colors missing `on-*` foreground pairs
+- unresolved component similarity review rows
+- component specs missing a `Component Fingerprint` section
 
 ## Cross-Agent Use
 
@@ -207,8 +240,12 @@ Use `skills/design-system-extractor/SKILL.md` when extracting a design system fr
 Start with `design-system/SESSION_STATE.md` when it exists.
 Use `design-system/` and `tokens/` as source of truth before product UI code.
 Maintain token inheritance: ref -> sys -> comp.
-Run `node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict` after token changes.
-Run `node skills/design-system-extractor/scripts/generate_docs_html.mjs .` after design-system documentation or token changes.
+Keep reference color scales ordered as 100 lightest to 0 darkest.
+Document duplicate source reuse/ignore/keep-distinct decisions in `DESIGN_EVIDENCE_MAP.md`.
+Document near-token merge/keep-distinct decisions in `TOKEN_ARCHITECTURE.md`.
+Review similar component candidates before creating new specs; record merge/variant/keep-distinct/blocked decisions in `COMPONENT_INVENTORY.md`.
+Run `node skills/design-system-extractor/scripts/audit_sources.mjs . --strict`, `node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict`, and `node skills/design-system-extractor/scripts/audit_components.mjs . --strict` after extraction, token, or component changes.
+Run `node skills/design-system-extractor/scripts/generate_docs_html.mjs .` and `node skills/design-system-extractor/scripts/generate_review_html.mjs .` after design-system documentation or review changes.
 Apply `design-system/ANTI_AI_STYLE_RULES.md` before UI recommendations.
 Stop at the checkpoint and ask before product implementation.
 ```
@@ -216,13 +253,13 @@ Stop at the checkpoint and ask before product implementation.
 Recommended Claude Code prompt:
 
 ```txt
-Use skills/design-system-extractor/SKILL.md to extract a reusable design-system package from the screenshots in design-reference/. Fill design-system/ and tokens/, generate docs/design-system/index.html, run strict token audit, update SESSION_STATE.md, then stop and ask for the next step.
+Use skills/design-system-extractor/SKILL.md to extract a reusable design-system package from the screenshots in design-reference/. Fill design-system/ and tokens/, review duplicate sources and similar components, generate docs/design-system/index.html and docs/design-system/review.html, run strict source, token, and component audits, update SESSION_STATE.md, then stop and ask for the next step.
 ```
 
 For a Figma input:
 
 ```txt
-Use skills/design-system-extractor/SKILL.md to extract design-system docs and tokens from this Figma URL: <figma-url>. Treat Figma data as evidence, create an evidence map, generate docs/design-system/index.html, run strict token audit, and stop at the checkpoint.
+Use skills/design-system-extractor/SKILL.md to extract design-system docs and tokens from this Figma URL: <figma-url>. Treat Figma data as evidence, create an evidence map with source fingerprints, review duplicate Figma sources, capture component similarity review images when candidates overlap, generate docs/design-system/index.html and docs/design-system/review.html, run strict source, token, and component audits, and stop at the checkpoint.
 ```
 
 ### Cursor
@@ -254,24 +291,28 @@ Use `skills/design-system-extractor/SKILL.md` for design-system extraction from 
 Read `design-system/SESSION_STATE.md` before continuing existing work.
 Fill or update `design-system/` and `tokens/` before product UI code.
 Maintain token inheritance: ref -> sys -> comp.
+Keep reference color scales ordered as 100 lightest to 0 darkest.
+Document duplicate source reuse/ignore/keep-distinct decisions in `DESIGN_EVIDENCE_MAP.md`.
+Document near-token merge/keep-distinct decisions in `TOKEN_ARCHITECTURE.md`.
+Review similar component candidates before creating new specs; record merge/variant/keep-distinct/blocked decisions in `COMPONENT_INVENTORY.md`.
 Component tokens may reference only system tokens.
 Do not hardcode color, spacing, radius, typography, opacity, shadow, or motion values when tokens exist.
 Apply `design-system/ANTI_AI_STYLE_RULES.md` before UI generation.
-Run `node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict` after token changes.
-Run `node skills/design-system-extractor/scripts/generate_docs_html.mjs .` after design-system documentation or token changes.
+Run `node skills/design-system-extractor/scripts/audit_sources.mjs . --strict`, `node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict`, and `node skills/design-system-extractor/scripts/audit_components.mjs . --strict` after extraction, token, or component changes.
+Run `node skills/design-system-extractor/scripts/generate_docs_html.mjs .` and `node skills/design-system-extractor/scripts/generate_review_html.mjs .` after design-system documentation or review changes.
 Stop and ask before moving from extraction into product implementation.
 ```
 
 Recommended Cursor prompt:
 
 ```txt
-Follow .cursor/rules/design-system.mdc and use skills/design-system-extractor/SKILL.md. Extract a reusable design-system package from design-reference/, update design-system/ and tokens/, generate docs/design-system/index.html, run strict token audit, then update SESSION_STATE.md.
+Follow .cursor/rules/design-system.mdc and use skills/design-system-extractor/SKILL.md. Extract a reusable design-system package from design-reference/, update design-system/ and tokens/, review duplicate sources and similar components, generate docs/design-system/index.html and docs/design-system/review.html, run strict source, token, and component audits, then update SESSION_STATE.md.
 ```
 
 When starting from an existing project:
 
 ```txt
-Use skills/design-system-extractor/SKILL.md to inspect this project as reference material. Extract the design system into design-system/ and tokens/, then generate docs/design-system/index.html. Do not refactor product UI yet.
+Use skills/design-system-extractor/SKILL.md to inspect this project as reference material. Extract the design system into design-system/ and tokens/, then generate docs/design-system/index.html and docs/design-system/review.html. Do not refactor product UI yet.
 ```
 
 ### Codex
@@ -298,23 +339,27 @@ Use `skills/design-system-extractor/SKILL.md` when extracting a design system fr
 Use all reference screenshots, Figma data, rendered UI, and `design-system/` docs as source evidence.
 Start with `design-system/SESSION_STATE.md`.
 Keep token inheritance strict: ref -> sys -> comp.
+Keep reference color scales ordered as 100 lightest to 0 darkest.
+Document duplicate source reuse/ignore/keep-distinct decisions in `DESIGN_EVIDENCE_MAP.md`.
+Document near-token merge/keep-distinct decisions in `TOKEN_ARCHITECTURE.md`.
+Review similar component candidates before creating new specs; record merge/variant/keep-distinct/blocked decisions in `COMPONENT_INVENTORY.md`.
 Fill or update design-system docs and tokens before product UI code.
 Apply `design-system/ANTI_AI_STYLE_RULES.md` before interface work.
-Run `node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict` after token changes.
-Run `node skills/design-system-extractor/scripts/generate_docs_html.mjs .` after design-system documentation or token changes.
+Run `node skills/design-system-extractor/scripts/audit_sources.mjs . --strict`, `node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict`, and `node skills/design-system-extractor/scripts/audit_components.mjs . --strict` after extraction, token, or component changes.
+Run `node skills/design-system-extractor/scripts/generate_docs_html.mjs .` and `node skills/design-system-extractor/scripts/generate_review_html.mjs .` after design-system documentation or review changes.
 Update `design-system/SESSION_STATE.md` and ask for the next step before continuing.
 ```
 
 Recommended Codex prompt:
 
 ```txt
-Use $design-system-extractor to extract a reusable design-system package from design-reference/. Fill design-system/ and tokens/, generate docs/design-system/index.html, run strict token audit, update SESSION_STATE.md, then stop before product implementation.
+Use $design-system-extractor to extract a reusable design-system package from design-reference/. Fill design-system/ and tokens/, review duplicate sources and similar components, generate docs/design-system/index.html and docs/design-system/review.html, run strict source, token, and component audits, update SESSION_STATE.md, then stop before product implementation.
 ```
 
 If the skill is only project-local and not installed globally:
 
 ```txt
-Use skills/design-system-extractor/SKILL.md to extract a reusable design-system package from this project. Treat screenshots, Figma data, and prototype code as evidence. Fill design-system/ and tokens/, generate docs/design-system/index.html, run the audit, and stop at the checkpoint.
+Use skills/design-system-extractor/SKILL.md to extract a reusable design-system package from this project. Treat screenshots, Figma data, and prototype code as evidence. Fill design-system/ and tokens/, generate docs/design-system/index.html and docs/design-system/review.html, run the audits, and stop at the checkpoint.
 ```
 
 To install for global Codex discovery, copy the `design-system-extractor/` folder into your Codex skills directory, commonly:

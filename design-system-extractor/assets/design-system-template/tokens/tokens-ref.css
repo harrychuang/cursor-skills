@@ -2,4 +2,5 @@
 
 :root {
   /* Add raw palette steps, sizes, radii, typefaces, weights, opacities, and motion values. */
+  /* Color steps run light to dark as 100 -> 0. Document near-token decisions before finalizing. */
 }

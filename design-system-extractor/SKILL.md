@@ -30,6 +30,15 @@ Record source types, paths/URLs, confidence, and known gaps in `design-system/SE
 
 For screenshots, list every image. For Figma, list node/page names or variable collections when available. For project folders, list token files, component directories, Storybook entries, and screenshot/render routes if available.
 
+Before using sources as evidence, run a source duplicate review:
+
+1. Create a source fingerprint for every input and record it in `design-system/DESIGN_EVIDENCE_MAP.md`.
+2. For local screenshots or exports, prefer `sha256:<hash>` for exact matches and add `phash:<hash>` or a screenshot crop note when perceptual comparison is available.
+3. For Figma inputs, normalize to `figma:<file-key>#<node-id>` when a node is known, or `figma:<file-key>#page:<page-name>` when only a page is known.
+4. For rendered routes or project screenshots, include the route, viewport, state, and source file or command in the fingerprint.
+5. If two sources are exact duplicates or likely duplicates, stop and ask the developer whether to `reuse existing source`, `ignore duplicate`, or `keep distinct`.
+6. Record every decision in `design-system/DESIGN_EVIDENCE_MAP.md` under `Source Duplicate Review` before using duplicate inputs to support separate design decisions.
+
 ### 2. Evidence Map
 
 Fill `design-system/DESIGN_EVIDENCE_MAP.md` before writing final design decisions.
@@ -64,11 +73,31 @@ Default to strict `ref -> sys -> comp` inheritance when the project has no stron
 
 Use `references/token-architecture.md` before creating or changing token layers.
 
+Before finalizing token files, run a token candidate review:
+
+1. Collect raw color, spacing, radius, typography, opacity, shadow, and motion values from evidence.
+2. Normalize reference colors into palette families with numeric steps where `100` is lightest and `0` is darkest.
+3. Check each palette family so higher numbers are visually lighter than lower numbers.
+4. Cluster very close reference colors and very close reference numbers in the same value family.
+5. If close candidates appear, stop and ask the developer whether to `merge` or `keep distinct`.
+6. Record every decision in `design-system/TOKEN_ARCHITECTURE.md` under `Near Token Decisions`, or add an adjacent `token-review:` CSS comment when the decision must stay next to the token.
+7. Only then write final `ref`, `sys`, and `comp` tokens.
+
 ### 5. Component Inventory
 
 Fill `design-system/COMPONENT_INVENTORY.md`.
 
 Inventory repeated patterns from the references. Mark each component as `extracted`, `planned`, `blocked`, or `out-of-scope`. Include priority, observed sources, required token groups, missing states, and implementation notes.
+
+Before finalizing inventory or adding a new component spec, run a component similarity review:
+
+1. Read existing `COMPONENT_INVENTORY.md`, `design-system/components/*.md`, and relevant component tokens.
+2. Create a component fingerprint for each new candidate: purpose, anatomy, variants/states, token contract, layout/density, behavior, source evidence, and visual reference.
+3. Compare the candidate with existing extracted or planned components. Weight purpose and behavior first, then anatomy, states, token usage, and layout.
+4. If a candidate is similar to an existing component, stop and ask the developer whether to `merge`, `make variant`, `keep distinct`, or `block pending more evidence`.
+5. Record the decision in `COMPONENT_INVENTORY.md` under `Component Similarity Review` before creating or updating component specs.
+6. Use source-based visual references: for Figma, capture the actual node preview/screenshot or a crop of the design frame; for screenshot inputs, crop the relevant component region. Store review images under `design-system/assets/component-review/` and link them from the similarity table.
+7. Do not use an AI-drawn schematic as the review image when a Figma preview or screenshot crop is available. A schematic SVG is allowed only as a last-resort fallback when source previews cannot be captured, and it must be labeled `schematic fallback - source preview unavailable`; it is not design evidence.
 
 ### 6. Component Token Specs
 
@@ -96,22 +125,28 @@ Generate developer-facing static HTML docs after design-system Markdown and toke
 
 ```sh
 node <skill-root>/scripts/generate_docs_html.mjs <target-root>
+node <skill-root>/scripts/generate_review_html.mjs <target-root>
 ```
 
-Default output:
+Default outputs:
 
 ```txt
 docs/design-system/index.html
+docs/design-system/review.html
 ```
+
+The HTML shell supports `zh-Hant` (default), `en`, and `ja` UI locales with a sidebar language switcher. Markdown body content remains in the extraction language.
 
 Use `references/html-documentation.md` when changing the HTML documentation behavior.
 
 ### 9. Audit And Checkpoint
 
-Run the strict token audit after an extraction or component expansion:
+Run strict source, token, and component audits after an extraction or component expansion:
 
 ```sh
+node <skill-root>/scripts/audit_sources.mjs <target-root> --strict
 node <skill-root>/scripts/audit_tokens.mjs <target-root> --strict
+node <skill-root>/scripts/audit_components.mjs <target-root> --strict
 ```
 
 Use non-strict mode only for an empty starter package or early setup check.
@@ -123,7 +158,10 @@ Update `design-system/SESSION_STATE.md` with:
 - open questions
 - token layers changed
 - generated HTML docs path
+- generated review queue path
 - audit result
+- source duplicate review result
+- component similarity review result
 - recommended next prompt
 
 Then stop and ask the user what to do next. Suggested choices:
@@ -147,8 +185,8 @@ Use this pass when the user chooses to expand component tokens after the initial
 5. Add component tokens in `tokens/tokens-comp.css`; component tokens must reference system tokens only.
 6. Update `COMPONENT_INVENTORY.md` status and missing states.
 7. Update related interaction and page composition rules.
-8. Regenerate `docs/design-system/index.html`.
-9. Run `node <skill-root>/scripts/audit_tokens.mjs <target-root> --strict`.
+8. Regenerate `docs/design-system/index.html` and `docs/design-system/review.html`.
+9. Run `node <skill-root>/scripts/audit_sources.mjs <target-root> --strict`, `node <skill-root>/scripts/audit_tokens.mjs <target-root> --strict`, and `node <skill-root>/scripts/audit_components.mjs <target-root> --strict`.
 10. Update `SESSION_STATE.md`, then stop and ask for the next step.
 
 ## Gates
@@ -157,13 +195,19 @@ Use this pass when the user chooses to expand component tokens after the initial
 
 If an important design rule has no source evidence, mark it Low confidence or ask the user before making it normative.
 
+Do not count duplicate screenshots, duplicate Figma nodes, or duplicate rendered routes as independent evidence until the duplicate source decision is recorded. If a source fingerprint matches or appears very close to another source, ask the developer for a reuse/ignore/keep-distinct decision before it changes confidence.
+
 ### Token Gate
 
 If a component needs a semantic or component token that does not exist, create or propose the token at the correct layer. Never use hardcoded fallback values in implementation guidance.
 
+Do not silently merge or split close token values. When near duplicate colors or numbers are found, ask the developer for a merge/keep-distinct decision and document it before the checkpoint.
+
 ### Component Gate
 
 Before adding a new component spec, check `COMPONENT_INVENTORY.md` and existing component docs. Reuse or extend a known component when intent, anatomy, slots, and states match.
+
+Do not create a new component only because the Figma layer name is new. If a candidate resembles an existing component, present the visual comparison and fingerprint difference, then ask for a merge/variant/keep-distinct/block decision.
 
 ### Implementation Boundary Gate
 
@@ -183,5 +227,8 @@ If the user wants to use the extraction package with Claude Code, Cursor, or Cod
 - `references/agent-integration.md`: Claude Code, Cursor, and Codex handoff guidance.
 - `references/html-documentation.md`: static HTML documentation output rules.
 - `assets/design-system-template/`: starter output package.
+- `scripts/audit_sources.mjs`: source inventory and duplicate source review audit; pass `--strict` after real extraction work.
 - `scripts/audit_tokens.mjs`: token layer audit; pass `--strict` after real extraction work.
+- `scripts/audit_components.mjs`: component similarity review audit; pass `--strict` after inventory or component spec changes.
 - `scripts/generate_docs_html.mjs`: generated developer-facing HTML docs, including `design-system/components/*.md`.
+- `scripts/generate_review_html.mjs`: generated visual review queue for duplicate sources, near tokens, color scale issues, and similar components.

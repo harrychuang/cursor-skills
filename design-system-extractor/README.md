@@ -78,11 +78,11 @@ For CSS custom properties, the default prefixes are:
 - `--md-sys-*`: shared semantic roles only
 - `--md-comp-*`: component slots only
 
-Reference color scales use `100 -> 0` from light to dark. Near duplicate reference colors or numbers must be confirmed with the developer as either `merge` or `keep distinct` before the token set is finalized.
+Reference color scales use `100 -> 0` from light to dark. Near duplicate reference colors or numbers, exact system/component aliases inside the same audit group, and usage-aware system/component token pairs must be confirmed with the developer as either `merge` or `keep distinct` before the token set is finalized. Usage-aware comparison resolves `ref -> sys -> comp` inheritance chains, then compares semantic role, component category, slot/anatomy, state, and resolved raw value so component tokens are not deduped on raw value alone.
 
 Input sources also go through duplicate review. Screenshots, image exports, Figma URLs/nodes, rendered routes, and prototype references should be recorded with a source fingerprint in `DESIGN_EVIDENCE_MAP.md`. Exact or likely duplicate sources must be confirmed as `reuse existing source`, `ignore duplicate`, or `keep distinct` before both are counted as separate evidence.
 
-Component candidates also go through a similarity review. When a new Figma or screenshot component resembles an existing component, the extractor records a fingerprint and asks whether to merge it, make it a variant, keep it distinct, or block it pending more evidence. Visual comparison assets should come from actual Figma node previews/screenshots or screenshot crops, stored under `design-system/assets/component-review/`, and linked from `COMPONENT_INVENTORY.md`. Schematic SVGs are only a labeled last-resort fallback when source previews cannot be captured.
+Component candidates also go through a similarity review. The component audit automatically compares fingerprints from the inventory and component specs; when a new Figma or screenshot component resembles an existing component, the extractor records a fingerprint and asks whether to merge it, make it a variant, keep it distinct, or block it pending more evidence. Visual comparison assets should come from actual Figma node previews/screenshots or screenshot crops, stored under `design-system/assets/component-review/`, and linked from `COMPONENT_INVENTORY.md`. Schematic SVGs are only a labeled last-resort fallback when source previews cannot be captured.
 
 ## Standard Workflow
 
@@ -161,7 +161,9 @@ The generated review queue includes:
 - color scale issues with swatches
 - near color token pairs with swatches and deltaE
 - near numeric token pairs with differences
-- component similarity review rows with visual references
+- exact system/component token aliases that need merge/keep-distinct review
+- usage-aware token graph pairs with inheritance chains, purpose labels, similarity scores, and resolved values
+- manual and automatically detected component similarity review rows with visual references
 - documented versus needs-review status
 
 Use this HTML file as the developer-friendly reading layer. The Markdown files and CSS token files remain the source of truth.
@@ -193,11 +195,14 @@ The audit checks for:
 - reference token names that include semantic roles
 - reference color scale direction: `100` lightest to `0` darkest
 - near duplicate reference colors or numbers that need a documented merge/keep-distinct decision
+- exact duplicate system aliases in the same semantic dimension and component aliases in the same component/dimension
+- usage-aware system/component pairs whose resolved values and purpose fingerprints are both close
 - raw values in system/component layers
 - missing token files or empty token layers in strict mode
 - `tokens.css` import order in strict mode
 - background-like system colors missing `on-*` foreground pairs
 - unresolved component similarity review rows
+- automatically detected component fingerprint similarities without an inventory decision
 - component specs missing a `Component Fingerprint` section
 
 ## Cross-Agent Use

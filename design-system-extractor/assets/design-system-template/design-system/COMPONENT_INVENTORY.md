@@ -9,7 +9,7 @@ Status values: `extracted`, `planned`, `blocked`, `out-of-scope`.
 
 ## Component Similarity Review
 
-Use this table when a newly observed component is visually, structurally, or behaviorally close to an existing component. Stop and confirm unresolved rows before creating another component spec.
+Use this table when a newly observed component is visually, structurally, or behaviorally close to an existing component. The component audit also auto-compares fingerprints from this inventory and `design-system/components/*.md`; record any reported automatic similarity candidate here. Stop and confirm unresolved rows before creating another component spec.
 
 | New candidate | Similar existing component | Visual reference | Similarity reason | Suggested action | Developer decision (`merge` / `make variant` / `keep distinct` / `blocked`) | Rationale / owner |
 |---|---|---|---|---|---|---|

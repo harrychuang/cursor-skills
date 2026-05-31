@@ -57,6 +57,16 @@ Stop and ask the developer when either condition appears:
 
 - two reference colors are visually very close, including exact duplicates
 - two reference numbers in the same value family and unit group are very close, such as `15px` and `16px`, `6px` and `8px`, `0.10` and `0.12`, or `180ms` and `200ms`
+- two system tokens have close resolved reference values and similar semantic role/category
+- two component tokens have close resolved reference values and similar component category, slot/anatomy, and state
+
+For system/component tokens, compare the inheritance graph before making a dedupe recommendation:
+
+```txt
+component token -> system token -> reference token -> raw value
+```
+
+The review should include the token purpose, inheritance chain, resolved raw value, and why the usage is considered close. Do not merge component tokens only because their raw values are close; different components, slots, or states can justify `keep distinct`.
 
 The decision must be one of:
 
@@ -149,6 +159,7 @@ At minimum, extract:
 - `ref` names must not include semantic role names.
 - `ref` color tokens must use numeric palette steps from `100` lightest to `0` darkest.
 - Near color and numeric reference tokens must be merged or documented with a developer-confirmed keep-distinct decision.
+- Usage-aware system/component token pairs with close purpose and close resolved values must be merged or documented with a developer-confirmed keep-distinct decision.
 - Run strict audit mode after extraction; empty starter templates may use non-strict mode.
 - Background-like system colors need matching `on-*` foreground tokens.
 - Component docs and component CSS tokens should stay in sync.

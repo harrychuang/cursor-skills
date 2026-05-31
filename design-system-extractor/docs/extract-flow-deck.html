@@ -7,18 +7,21 @@
     <style>
       :root {
         color-scheme: light;
-        --bg: #ffffff;
+        --bg: #f5f5f7;
         --surface: #ffffff;
-        --muted-surface: #f5f7fa;
-        --text: #151922;
-        --muted: #596170;
-        --line: #d9dfe8;
-        --accent: #2368d2;
-        --accent-soft: #eaf2ff;
-        --review: #7a4e18;
-        --review-soft: #fff3dc;
-        --ok: #1f7a4d;
-        --ok-soft: #e8f6ef;
+        --muted-surface: #fbfbfd;
+        --strong-surface: #e8e8ed;
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --subtle: #86868b;
+        --line: #d2d2d7;
+        --accent: #0071e3;
+        --accent-strong: #0057b8;
+        --accent-soft: #e8f2ff;
+        --review: #8a5a00;
+        --review-soft: #fff7e6;
+        --ok: #248a3d;
+        --ok-soft: #edf8f0;
         --radius: 8px;
       }
 
@@ -35,9 +38,11 @@
         background: var(--bg);
         color: var(--text);
         font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
           "Segoe UI", "Noto Sans TC", sans-serif;
         line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
 
       a {
@@ -47,7 +52,7 @@
       code {
         border: 1px solid var(--line);
         border-radius: 6px;
-        background: var(--muted-surface);
+        background: #f5f5f7;
         padding: 0.12em 0.34em;
         font-family:
           "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -64,7 +69,8 @@
         gap: 6px;
         border: 1px solid var(--line);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.94);
+        background: rgba(245, 245, 247, 0.78);
+        backdrop-filter: saturate(180%) blur(20px);
         padding: 6px;
       }
 
@@ -76,7 +82,7 @@
         border-radius: 999px;
         color: var(--muted);
         font-size: 0.8rem;
-        font-weight: 760;
+        font-weight: 640;
         text-decoration: none;
       }
 
@@ -91,7 +97,7 @@
         scroll-snap-align: start;
         display: grid;
         align-items: center;
-        padding: 64px max(32px, calc((100vw - 1120px) / 2));
+        padding: 72px max(40px, calc((100vw - 1120px) / 2));
         border-bottom: 1px solid var(--line);
       }
 
@@ -99,11 +105,17 @@
         width: 100%;
       }
 
+      .slide:nth-child(2),
+      .slide:nth-child(4),
+      .slide:nth-child(6) {
+        background: var(--muted-surface);
+      }
+
       .kicker {
         margin: 0 0 12px;
         color: var(--accent);
         font-size: 0.84rem;
-        font-weight: 800;
+        font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
@@ -119,51 +131,56 @@
       h2,
       h3 {
         line-height: 1.12;
-        letter-spacing: 0;
+        letter-spacing: -0.015em;
       }
 
       h1 {
-        max-width: 900px;
-        margin-bottom: 18px;
-        font-size: clamp(3rem, 8vw, 6rem);
+        max-width: 980px;
+        margin-bottom: 20px;
+        font-size: clamp(3.25rem, 8.5vw, 6.7rem);
+        font-weight: 760;
       }
 
       h2 {
-        max-width: 900px;
-        margin-bottom: 22px;
-        font-size: clamp(2.4rem, 6vw, 4.8rem);
+        max-width: 980px;
+        margin-bottom: 24px;
+        font-size: clamp(2.7rem, 6.5vw, 5.4rem);
+        font-weight: 750;
       }
 
       .lead {
         max-width: 820px;
         color: var(--muted);
-        font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+        font-size: clamp(1.22rem, 2.35vw, 1.68rem);
+        line-height: 1.45;
       }
 
       .split {
         display: grid;
         grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.72fr);
-        gap: 48px;
+        gap: 56px;
         align-items: center;
       }
 
       .cards {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
       }
 
       .card {
         border: 1px solid var(--line);
         border-radius: var(--radius);
         background: var(--surface);
-        padding: 20px;
+        min-height: 180px;
+        padding: 24px;
       }
 
       .card strong {
         display: block;
         margin-bottom: 8px;
-        font-size: 1.1rem;
+        font-size: 1.16rem;
+        font-weight: 720;
       }
 
       .card p {
@@ -173,7 +190,7 @@
 
       .flow {
         display: grid;
-        gap: 12px;
+        gap: 14px;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -188,7 +205,7 @@
         border: 1px solid var(--line);
         border-radius: var(--radius);
         background: var(--surface);
-        padding: 16px;
+        padding: 18px;
         counter-increment: step;
       }
 
@@ -197,26 +214,27 @@
         place-items: center;
         width: 42px;
         height: 42px;
-        border-radius: var(--radius);
-        background: var(--muted-surface);
+        border-radius: 999px;
+        background: var(--strong-surface);
         color: var(--muted);
         content: counter(step, decimal-leading-zero);
-        font-weight: 820;
+        font-weight: 720;
       }
 
       .flow li.review {
-        border-color: #e8c886;
+        border-color: #f1d893;
         background: var(--review-soft);
       }
 
       .flow li.review::before {
-        background: #f4dfb4;
+        background: #f8e6ad;
         color: var(--review);
       }
 
       .flow h3 {
         margin-bottom: 4px;
         font-size: 1.05rem;
+        font-weight: 720;
       }
 
       .flow p {
@@ -229,6 +247,7 @@
         overflow: hidden;
         border: 1px solid var(--line);
         border-radius: var(--radius);
+        background: var(--surface);
       }
 
       .row {
@@ -236,7 +255,7 @@
         grid-template-columns: 220px minmax(0, 1fr);
         gap: 18px;
         border-bottom: 1px solid var(--line);
-        padding: 16px 18px;
+        padding: 20px 22px;
       }
 
       .row:last-child {
@@ -252,12 +271,12 @@
       }
 
       .callout {
-        border: 1px solid #b8d9c8;
+        border: 1px solid #bde3ca;
         border-radius: var(--radius);
         background: var(--ok-soft);
-        padding: 22px;
-        color: #164d31;
-        font-size: 1.2rem;
+        padding: 26px;
+        color: #1d6b34;
+        font-size: clamp(1.16rem, 2vw, 1.42rem);
       }
 
       .callout p {
@@ -313,6 +332,7 @@
       <a href="#s4">4</a>
       <a href="#s5">5</a>
       <a href="#s6">6</a>
+      <a href="#s7">7</a>
     </nav>
 
     <section class="slide" id="s1">
@@ -435,6 +455,31 @@
     </section>
 
     <section class="slide" id="s6">
+      <div class="slide-inner">
+        <p class="kicker">Scripts</p>
+        <h2>Script 是檢查器，不是決策者</h2>
+        <div class="table">
+          <div class="row">
+            <strong>Generate</strong>
+            <span><code>generate_docs_html</code> 產生三語文件殼；<code>generate_review_html</code> 彙整 review queue 與自動偵測項目。</span>
+          </div>
+          <div class="row">
+            <strong>Audit sources</strong>
+            <span>確認 source inventory、fingerprint、duplicate source decision 都已記錄。</span>
+          </div>
+          <div class="row">
+            <strong>Audit tokens</strong>
+            <span>檢查 inheritance、色階、near values、exact alias 和 usage-aware sys/comp token pair。</span>
+          </div>
+          <div class="row">
+            <strong>Audit components</strong>
+            <span>檢查 fingerprint、visual reference，並自動比對相似 component pair。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s7">
       <div class="slide-inner">
         <p class="kicker">Takeaway</p>
         <h2>Extractor 讓設計判斷可追溯、可審查、可重用</h2>

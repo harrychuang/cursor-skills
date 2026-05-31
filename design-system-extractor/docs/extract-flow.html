@@ -7,24 +7,23 @@
     <style>
       :root {
         color-scheme: light;
-        --page-bg: #ffffff;
+        --page-bg: #f5f5f7;
         --surface: #ffffff;
-        --surface-muted: #f6f7f8;
-        --surface-strong: #eef1f4;
-        --text: #171a1f;
-        --muted: #5d6470;
-        --subtle: #7b8290;
-        --line: #d8dde5;
-        --line-strong: #aeb6c2;
-        --accent: #2368d2;
-        --accent-soft: #eaf2ff;
-        --review: #7a4e18;
-        --review-soft: #fff3dc;
-        --ok: #1f7a4d;
-        --ok-soft: #e8f6ef;
-        --danger: #a33a2a;
-        --danger-soft: #fff0ee;
-        --code-bg: #f0f2f4;
+        --surface-muted: #fbfbfd;
+        --surface-strong: #e8e8ed;
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --subtle: #86868b;
+        --line: #d2d2d7;
+        --line-strong: #a1a1a6;
+        --accent: #0071e3;
+        --accent-strong: #0057b8;
+        --accent-soft: #e8f2ff;
+        --review: #8a5a00;
+        --review-soft: #fff7e6;
+        --ok: #248a3d;
+        --ok-soft: #edf8f0;
+        --code-bg: #f5f5f7;
         --radius: 8px;
         --radius-sm: 6px;
         --max: 1120px;
@@ -43,9 +42,11 @@
         background: var(--page-bg);
         color: var(--text);
         font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
           "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
 
       a {
@@ -72,9 +73,9 @@
         overflow: auto;
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        background: #111827;
+        background: var(--surface);
         padding: 16px;
-        color: #f8fafc;
+        color: var(--text);
         line-height: 1.55;
       }
 
@@ -100,19 +101,24 @@
       }
 
       h1 {
-        max-width: 820px;
-        margin-bottom: 16px;
-        font-size: clamp(2.2rem, 7vw, 4.2rem);
+        max-width: 920px;
+        margin: 0 auto 18px;
+        font-size: clamp(2.75rem, 7.5vw, 5.8rem);
+        font-weight: 760;
+        letter-spacing: -0.02em;
       }
 
       h2 {
         margin-bottom: 14px;
-        font-size: clamp(1.45rem, 3vw, 2.1rem);
+        font-size: clamp(1.7rem, 3.5vw, 2.75rem);
+        font-weight: 740;
+        letter-spacing: -0.01em;
       }
 
       h3 {
         margin-bottom: 8px;
         font-size: 1.04rem;
+        font-weight: 720;
       }
 
       .skip-link {
@@ -135,7 +141,8 @@
         top: 0;
         z-index: 10;
         border-bottom: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.96);
+        background: rgba(245, 245, 247, 0.78);
+        backdrop-filter: saturate(180%) blur(20px);
       }
 
       .topbar-inner,
@@ -146,7 +153,7 @@
 
       .topbar-inner {
         display: flex;
-        min-height: 58px;
+        min-height: 52px;
         align-items: center;
         justify-content: space-between;
         gap: 20px;
@@ -155,7 +162,8 @@
       .brand {
         margin: 0;
         color: var(--text);
-        font-weight: 760;
+        font-size: 0.94rem;
+        font-weight: 680;
       }
 
       .nav {
@@ -166,11 +174,11 @@
       }
 
       .nav a {
-        border-radius: var(--radius-sm);
-        padding: 7px 10px;
+        border-radius: 999px;
+        padding: 6px 10px;
         color: var(--muted);
-        font-size: 0.9rem;
-        font-weight: 650;
+        font-size: 0.82rem;
+        font-weight: 560;
         text-decoration: none;
       }
 
@@ -181,44 +189,48 @@
       }
 
       .hero {
-        padding: 64px 0 32px;
+        padding: 86px 0 56px;
         border-bottom: 1px solid var(--line);
+        background: var(--surface-muted);
+        text-align: center;
       }
 
       .eyebrow {
         margin-bottom: 10px;
         color: var(--accent);
         font-size: 0.78rem;
-        font-weight: 780;
+        font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
 
       .lead {
         max-width: 780px;
-        margin-bottom: 0;
+        margin: 0 auto;
         color: var(--muted);
-        font-size: 1.12rem;
+        font-size: clamp(1.12rem, 2vw, 1.42rem);
+        line-height: 1.48;
       }
 
       .hero-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
+        justify-content: center;
         margin-top: 28px;
       }
 
       .button {
         display: inline-flex;
-        min-height: 40px;
+        min-height: 42px;
         align-items: center;
         justify-content: center;
         border: 1px solid var(--line-strong);
-        border-radius: var(--radius-sm);
+        border-radius: 999px;
         background: var(--surface);
-        padding: 9px 13px;
+        padding: 9px 18px;
         color: var(--text);
-        font-weight: 700;
+        font-weight: 620;
         text-decoration: none;
       }
 
@@ -228,13 +240,19 @@
         color: #fff;
       }
 
+      .button.primary:hover,
+      .button.primary:focus-visible {
+        border-color: var(--accent-strong);
+        background: var(--accent-strong);
+      }
+
       main {
-        padding: 30px 0 72px;
+        padding: 44px 0 80px;
       }
 
       section {
         scroll-margin-top: 82px;
-        padding: 34px 0;
+        padding: 44px 0;
         border-bottom: 1px solid var(--line);
       }
 
@@ -247,7 +265,7 @@
         grid-template-columns: minmax(0, 0.76fr) minmax(260px, 0.42fr);
         gap: 28px;
         align-items: start;
-        margin-bottom: 22px;
+        margin-bottom: 24px;
       }
 
       .section-head p {
@@ -258,7 +276,7 @@
       .summary-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
       }
 
       .summary-card,
@@ -273,14 +291,16 @@
       }
 
       .summary-card {
-        padding: 18px;
+        min-height: 142px;
+        padding: 22px;
       }
 
       .summary-card strong {
         display: block;
         margin-bottom: 6px;
         color: var(--text);
-        font-size: 1rem;
+        font-size: 1.05rem;
+        font-weight: 720;
       }
 
       .summary-card p,
@@ -294,42 +314,43 @@
       .flow-grid {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 12px;
+        gap: 14px;
       }
 
       .step-card {
         display: grid;
         align-content: start;
         gap: 10px;
-        padding: 16px;
+        min-height: 190px;
+        padding: 18px;
       }
 
       .step-number {
         display: inline-flex;
         width: max-content;
         align-items: center;
-        border-radius: var(--radius-sm);
+        border-radius: 999px;
         background: var(--surface-strong);
-        padding: 3px 8px;
+        padding: 4px 9px;
         color: var(--muted);
         font-size: 0.78rem;
-        font-weight: 780;
+        font-weight: 700;
       }
 
       .step-card.review {
-        border-color: #e8c886;
+        border-color: #f1d893;
         background: var(--review-soft);
       }
 
       .step-card.review .step-number {
-        background: #f4dfb4;
+        background: #f8e6ad;
         color: var(--review);
       }
 
       .detail-list {
         display: grid;
         gap: 12px;
-        margin: 18px 0 0;
+        margin: 24px 0 0;
         padding: 0;
         list-style: none;
       }
@@ -338,8 +359,10 @@
         display: grid;
         grid-template-columns: 120px minmax(0, 1fr);
         gap: 14px;
-        border-top: 1px solid var(--line);
-        padding-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        padding: 14px 16px;
       }
 
       .detail-list strong {
@@ -353,11 +376,12 @@
       .review-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
       }
 
       .review-card {
-        padding: 18px;
+        min-height: 176px;
+        padding: 22px;
       }
 
       .review-card h3 {
@@ -369,22 +393,22 @@
       .badge {
         display: inline-flex;
         width: max-content;
-        border-radius: var(--radius-sm);
+        border-radius: 999px;
         background: var(--review-soft);
-        padding: 3px 7px;
+        padding: 4px 9px;
         color: var(--review);
         font-size: 0.75rem;
-        font-weight: 780;
+        font-weight: 700;
       }
 
       .output-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
       }
 
       .output-card {
-        padding: 18px;
+        padding: 22px;
       }
 
       .table-card {
@@ -425,14 +449,14 @@
       .command-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
       }
 
       .note {
-        border-color: #b8d9c8;
+        border-color: #bde3ca;
         background: var(--ok-soft);
-        padding: 16px;
-        color: #164d31;
+        padding: 18px;
+        color: #1d6b34;
       }
 
       .note.spacing-top {
@@ -540,6 +564,8 @@
           <a href="#flow">流程</a>
           <a href="#reviews">Review gates</a>
           <a href="#outputs">輸出</a>
+          <a href="#template">Template</a>
+          <a href="#scripts">Scripts</a>
           <a href="#commands">指令</a>
         </nav>
       </div>
@@ -676,7 +702,8 @@
             <h3>近似 values</h3>
             <p>
               很接近的顏色、spacing、radius、type 或 motion 值要確認 merge
-              還是 keep distinct。色階固定為 100 最亮、0 最暗。
+              還是 keep distinct。色階固定為 100 最亮、0 最暗；audit 也會檢查
+              system / component token 的 exact alias duplicate 和 usage-aware 近似用途。
             </p>
           </article>
           <article class="review-card">
@@ -684,7 +711,8 @@
             <h3>相似元件</h3>
             <p>
               新候選元件如果像既有元件，需要比較 purpose、behavior、anatomy、
-              states 和 token contract，再決定 merge、variant、distinct 或 blocked。
+              states 和 token contract。component audit 會自動比對 inventory 與
+              component specs 的 fingerprint，再要求記錄 merge、variant、distinct 或 blocked。
             </p>
           </article>
         </div>
@@ -729,15 +757,115 @@
               </tr>
               <tr>
                 <td><code>docs/design-system/index.html</code></td>
-                <td>把規範和 token 表整理成可閱讀的開發者文件。</td>
+                <td>把規範、component specs 和 token 表整理成可閱讀的開發者文件；文件殼支援繁中、英文、日文切換。</td>
               </tr>
               <tr>
                 <td><code>docs/design-system/review.html</code></td>
-                <td>集中顯示重複來源、近似 token 和相似 component 的 review queue。</td>
+                <td>集中顯示重複來源、色階問題、近似 token、usage-aware token review 和相似 component 的 review queue。</td>
               </tr>
               <tr>
                 <td><code>design-system/SESSION_STATE.md</code></td>
                 <td>記錄目前階段、audit 結果、未決問題和下一步 prompt。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="template">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Template package</p>
+            <h2>初始化後應該依照 template 的順序填寫</h2>
+          </div>
+          <p>
+            <code>assets/design-system-template/</code> 是每個專案的起始包。真正的 extract 工作不是只跑 script，
+            而是先把這些 Markdown 和 CSS token 檔案填完整，再用 script 產生閱讀層和檢查缺口。
+          </p>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>順序</th>
+                <th>要填的內容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Evidence</td>
+                <td><code>DESIGN_EVIDENCE_MAP.md</code>：source inventory、fingerprints、duplicate source review 和 evidence rows。</td>
+              </tr>
+              <tr>
+                <td>2. Principles</td>
+                <td><code>DESIGN_PRINCIPLES.md</code>：5-7 條從參考來源萃取出的產品設計原則，每條要有 evidence、implementation rule、do / don't。</td>
+              </tr>
+              <tr>
+                <td>3. Foundations</td>
+                <td><code>DESIGN_ELEMENTS.md</code>：色彩、字體、spacing、shape、elevation、iconography、imagery；同時標記近似值。</td>
+              </tr>
+              <tr>
+                <td>4. Tokens</td>
+                <td><code>TOKEN_ARCHITECTURE.md</code> 與 <code>tokens/*.css</code>：建立 ref / sys / comp，記錄 near-token decisions。</td>
+              </tr>
+              <tr>
+                <td>5. Components</td>
+                <td><code>COMPONENT_INVENTORY.md</code> 和 <code>components/*.md</code>：填 inventory、fingerprint、similarity review、component token contract。</td>
+              </tr>
+              <tr>
+                <td>6. Composition</td>
+                <td><code>PAGE_COMPOSITION_RULES.md</code>、<code>INTERACTION_STATES.md</code>、<code>ANTI_AI_STYLE_RULES.md</code>：固定版面、狀態和 anti-drift 規則。</td>
+              </tr>
+              <tr>
+                <td>7. Checkpoint</td>
+                <td><code>SESSION_STATE.md</code>：更新完成項目、review 結果、audit 結果、open questions 和下一步 prompt。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="scripts">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Scripts</p>
+            <h2>5 個 script 各自負責不同層級</h2>
+          </div>
+          <p>
+            這些 script 不會替你做設計判斷；它們會把缺少的 evidence、未決 review、token
+            繼承問題和 component 重複風險暴露出來，讓 checkpoint 可以被可靠驗證。
+          </p>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Script</th>
+                <th>實際檢查或產出</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>generate_docs_html.mjs</code></td>
+                <td>產生 <code>docs/design-system/index.html</code>，渲染 core docs、extra docs、component specs、token tables、resolved token values、color swatches；也會複製 <code>design-system/assets/</code> 到 generated docs，並提供繁中 / 英文 / 日文文件殼切換。</td>
+              </tr>
+              <tr>
+                <td><code>generate_review_html.mjs</code></td>
+                <td>產生 <code>docs/design-system/review.html</code>，彙整 duplicate source rows、color scale issues、near colors、near numbers、exact sys/comp aliases、usage-aware token pairs 和 component similarity rows。</td>
+              </tr>
+              <tr>
+                <td><code>audit_sources.mjs</code></td>
+                <td>檢查 <code>DESIGN_EVIDENCE_MAP.md</code> 是否有 Source Inventory、source fingerprint、重複 fingerprint / path-state group，以及 unresolved duplicate source decision。</td>
+              </tr>
+              <tr>
+                <td><code>audit_tokens.mjs</code></td>
+                <td>檢查 token import order、ref / sys / comp 命名與繼承、ref 色階 100 -&gt; 0、near reference colors/numbers、exact sys/comp alias duplicates、usage-aware sys/comp near token pairs。</td>
+              </tr>
+              <tr>
+                <td><code>audit_components.mjs</code></td>
+                <td>檢查 inventory、similarity review table、visual reference 是否為 Figma preview / screenshot crop / labeled fallback、component specs 是否有 Component Fingerprint，並自動比對 inventory/spec fingerprints 找出相似 component pair。</td>
               </tr>
             </tbody>
           </table>

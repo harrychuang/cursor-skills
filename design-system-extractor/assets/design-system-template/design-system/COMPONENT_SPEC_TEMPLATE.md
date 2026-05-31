@@ -9,6 +9,18 @@ Copy this template to `design-system/components/<component-name>.md` for each ex
 | Evidence ID | Source | Region | Notes |
 |---|---|---|---|
 
+## Component Fingerprint
+
+| Dimension | Description |
+|---|---|
+| Purpose / behavior | |
+| Anatomy | |
+| Variants / states | |
+| Token contract summary | |
+| Layout / density | |
+| Visual reference | |
+| Similar components reviewed | |
+
 ## Anatomy
 
 ## Variants

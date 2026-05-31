@@ -23,6 +23,7 @@ Update this file at every checkpoint.
 - [ ] tokens/tokens-sys.css
 - [ ] tokens/tokens-comp.css
 - [ ] docs/design-system/index.html
+- [ ] docs/design-system/review.html
 
 ## Key Design Decisions
 
@@ -35,15 +36,37 @@ Update this file at every checkpoint.
 - System:
 - Component:
 
+## Source Duplicate Review
+
+- Duplicate source candidates found:
+- Developer decisions recorded in `DESIGN_EVIDENCE_MAP.md`:
+- Source fingerprints recorded:
+
+## Token Review
+
+- Near token candidates found:
+- Developer decisions recorded in `TOKEN_ARCHITECTURE.md`:
+
+## Component Similarity Review
+
+- Similar component candidates found:
+- Developer decisions recorded in `COMPONENT_INVENTORY.md`:
+- Visual comparison assets:
+
 ## Open Questions
 
 ## Verification
 
+- Source audit mode:
+- Source audit result:
 - Token audit mode:
 - Token audit result:
+- Component audit mode:
+- Component audit result:
 
 ## Generated Documentation
 
 - HTML docs:
+- Review queue:
 
 ## Recommended Next Prompt

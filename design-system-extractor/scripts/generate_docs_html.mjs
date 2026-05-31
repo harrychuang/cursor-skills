@@ -11,26 +11,174 @@ const outputPath = path.resolve(
 const designSystemDir = path.join(targetRoot, "design-system");
 const componentDocsDir = path.join(designSystemDir, "components");
 const tokensDir = path.join(targetRoot, "tokens");
+const designSystemAssetsDir = path.join(designSystemDir, "assets");
+
+const DEFAULT_LOCALE = "zh-Hant";
 
 const coreDocumentFiles = [
-  ["Kickstart", "DESIGN_SYSTEM_KICKSTART.md"],
-  ["Session State", "SESSION_STATE.md"],
-  ["Evidence Map", "DESIGN_EVIDENCE_MAP.md"],
-  ["Design Principles", "DESIGN_PRINCIPLES.md"],
-  ["Design Elements", "DESIGN_ELEMENTS.md"],
-  ["Token Architecture", "TOKEN_ARCHITECTURE.md"],
-  ["Component Inventory", "COMPONENT_INVENTORY.md"],
-  ["Component Spec Template", "COMPONENT_SPEC_TEMPLATE.md"],
-  ["Interaction States", "INTERACTION_STATES.md"],
-  ["Page Composition", "PAGE_COMPOSITION_RULES.md"],
-  ["Anti-AI Style Rules", "ANTI_AI_STYLE_RULES.md"],
+  ["docKickstart", "DESIGN_SYSTEM_KICKSTART.md"],
+  ["docSessionState", "SESSION_STATE.md"],
+  ["docEvidenceMap", "DESIGN_EVIDENCE_MAP.md"],
+  ["docDesignPrinciples", "DESIGN_PRINCIPLES.md"],
+  ["docDesignElements", "DESIGN_ELEMENTS.md"],
+  ["docTokenArchitecture", "TOKEN_ARCHITECTURE.md"],
+  ["docComponentInventory", "COMPONENT_INVENTORY.md"],
+  ["docComponentSpecTemplate", "COMPONENT_SPEC_TEMPLATE.md"],
+  ["docInteractionStates", "INTERACTION_STATES.md"],
+  ["docPageComposition", "PAGE_COMPOSITION_RULES.md"],
+  ["docAntiAiStyleRules", "ANTI_AI_STYLE_RULES.md"],
 ];
 
 const tokenFiles = [
-  ["Reference Tokens", "tokens-ref.css", "ref"],
-  ["System Tokens", "tokens-sys.css", "sys"],
-  ["Component Tokens", "tokens-comp.css", "comp"],
+  ["tokenRef", "tokens-ref.css", "ref"],
+  ["tokenSys", "tokens-sys.css", "sys"],
+  ["tokenComp", "tokens-comp.css", "comp"],
 ];
+
+const uiCopy = {
+  "zh-Hant": {
+    htmlLang: "zh-Hant",
+    pageTitle: "設計系統文件",
+    brand: "設計系統",
+    subtitle: "自動產生文件",
+    langSelectorLabel: "語言",
+    navOverview: "總覽",
+    navTokens: "Tokens",
+    navReviewQueue: "審查佇列",
+    navMissingDocuments: "缺少文件",
+    heroTitle: "設計系統文件",
+    heroLead:
+      "此靜態參考文件由 <code>design-system/</code> Markdown 與 <code>tokens/</code> CSS 自訂屬性自動產生。",
+    pillGenerated: "產生時間",
+    pillDocuments: "份文件",
+    pillTokens: "個 tokens",
+    summaryAriaLabel: "文件摘要",
+    statDocuments: "設計系統文件",
+    statTokens: "Token 總數",
+    statTokenRef: "Reference tokens",
+    statTokenSys: "System tokens",
+    statTokenComp: "Component tokens",
+    statMissing: "缺少預期文件",
+    tokenRef: "Reference Tokens",
+    tokenSys: "System Tokens",
+    tokenComp: "Component Tokens",
+    tokenColumnName: "Token",
+    tokenColumnValue: "值",
+    tokenColumnResolved: "解析值",
+    noTokensFound: "找不到 tokens。",
+    missingDocumentsTitle: "缺少文件",
+    missingDocumentsLead: "此套件中找不到以下預期的設計系統文件。",
+    componentPrefix: "元件：",
+    docKickstart: "Kickstart",
+    docSessionState: "Session 狀態",
+    docEvidenceMap: "設計證據對照",
+    docDesignPrinciples: "設計原則",
+    docDesignElements: "設計元素",
+    docTokenArchitecture: "Token 架構",
+    docComponentInventory: "元件盤點",
+    docComponentSpecTemplate: "元件規格範本",
+    docInteractionStates: "互動狀態",
+    docPageComposition: "頁面組成",
+    docAntiAiStyleRules: "Anti-AI 風格規則",
+  },
+  en: {
+    htmlLang: "en",
+    pageTitle: "Design System Documentation",
+    brand: "Design System",
+    subtitle: "Generated documentation",
+    langSelectorLabel: "Language",
+    navOverview: "Overview",
+    navTokens: "Tokens",
+    navReviewQueue: "Review Queue",
+    navMissingDocuments: "Missing Documents",
+    heroTitle: "Design System Documentation",
+    heroLead:
+      "This static reference was generated from <code>design-system/</code> Markdown files and <code>tokens/</code> CSS custom properties.",
+    pillGenerated: "Generated",
+    pillDocuments: "documents",
+    pillTokens: "tokens",
+    summaryAriaLabel: "Documentation summary",
+    statDocuments: "Design-system documents",
+    statTokens: "Total tokens",
+    statTokenRef: "Reference tokens",
+    statTokenSys: "System tokens",
+    statTokenComp: "Component tokens",
+    statMissing: "Missing expected docs",
+    tokenRef: "Reference Tokens",
+    tokenSys: "System Tokens",
+    tokenComp: "Component Tokens",
+    tokenColumnName: "Token",
+    tokenColumnValue: "Value",
+    tokenColumnResolved: "Resolved",
+    noTokensFound: "No tokens found.",
+    missingDocumentsTitle: "Missing Documents",
+    missingDocumentsLead:
+      "These expected design-system documents were not found in this package.",
+    componentPrefix: "Component: ",
+    docKickstart: "Kickstart",
+    docSessionState: "Session State",
+    docEvidenceMap: "Evidence Map",
+    docDesignPrinciples: "Design Principles",
+    docDesignElements: "Design Elements",
+    docTokenArchitecture: "Token Architecture",
+    docComponentInventory: "Component Inventory",
+    docComponentSpecTemplate: "Component Spec Template",
+    docInteractionStates: "Interaction States",
+    docPageComposition: "Page Composition",
+    docAntiAiStyleRules: "Anti-AI Style Rules",
+  },
+  ja: {
+    htmlLang: "ja",
+    pageTitle: "デザインシステムドキュメント",
+    brand: "Design System",
+    subtitle: "自動生成ドキュメント",
+    langSelectorLabel: "言語",
+    navOverview: "概要",
+    navTokens: "Tokens",
+    navReviewQueue: "Review Queue",
+    navMissingDocuments: "不足ドキュメント",
+    heroTitle: "デザインシステムドキュメント",
+    heroLead:
+      "この静的リファレンスは <code>design-system/</code> の Markdown と <code>tokens/</code> CSS カスタムプロパティから生成されました。",
+    pillGenerated: "生成",
+    pillDocuments: "件のドキュメント",
+    pillTokens: "件の tokens",
+    summaryAriaLabel: "ドキュメント概要",
+    statDocuments: "デザインシステムドキュメント",
+    statTokens: "Token 総数",
+    statTokenRef: "Reference tokens",
+    statTokenSys: "System tokens",
+    statTokenComp: "Component tokens",
+    statMissing: "不足している想定ドキュメント",
+    tokenRef: "Reference Tokens",
+    tokenSys: "System Tokens",
+    tokenComp: "Component Tokens",
+    tokenColumnName: "Token",
+    tokenColumnValue: "値",
+    tokenColumnResolved: "解決値",
+    noTokensFound: "tokens が見つかりません。",
+    missingDocumentsTitle: "不足ドキュメント",
+    missingDocumentsLead:
+      "このパッケージで次の想定デザインシステムドキュメントが見つかりませんでした。",
+    componentPrefix: "コンポーネント：",
+    docKickstart: "Kickstart",
+    docSessionState: "Session 状態",
+    docEvidenceMap: "Evidence Map",
+    docDesignPrinciples: "デザイン原則",
+    docDesignElements: "デザイン要素",
+    docTokenArchitecture: "Token アーキテクチャ",
+    docComponentInventory: "コンポーネント一覧",
+    docComponentSpecTemplate: "コンポーネント仕様テンプレート",
+    docInteractionStates: "インタラクション状態",
+    docPageComposition: "ページ構成",
+    docAntiAiStyleRules: "Anti-AI スタイルルール",
+  },
+};
+
+function t(locale, key) {
+  const messages = uiCopy[locale] || uiCopy[DEFAULT_LOCALE];
+  return messages[key] ?? uiCopy[DEFAULT_LOCALE][key] ?? key;
+}
 
 function escapeHtml(value) {
   return String(value)
@@ -53,6 +201,10 @@ function slugify(value) {
 
 function formatInline(raw) {
   let text = escapeHtml(raw);
+  text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_match, alt, href) => {
+    const safeHref = String(href).trim().startsWith("javascript:") ? "#" : href;
+    return `<img class="doc-image" src="${escapeAttr(safeHref)}" alt="${escapeAttr(alt)}" loading="lazy">`;
+  });
   text = text.replace(/`([^`]+)`/g, "<code>$1</code>");
   text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, href) => {
@@ -257,9 +409,13 @@ function isColor(value) {
   return /^#[0-9a-fA-F]{3,8}$/.test(value) || /^rgba?\(/.test(value) || /^hsla?\(/.test(value);
 }
 
-function tokenTableHtml(title, tokens, tokenMap) {
+function tokenTableHtml(i18nKey, layerId, tokens, tokenMap) {
+  const sectionId = layerId;
   if (!tokens.length) {
-    return `<section class="panel" id="${slugify(title)}"><h2>${escapeHtml(title)}</h2><p class="muted">No tokens found.</p></section>`;
+    return `<section class="panel" id="${escapeAttr(sectionId)}">
+      <h2 data-i18n="${escapeAttr(i18nKey)}">${escapeHtml(t(DEFAULT_LOCALE, i18nKey))}</h2>
+      <p class="muted" data-i18n="noTokensFound">${escapeHtml(t(DEFAULT_LOCALE, "noTokensFound"))}</p>
+    </section>`;
   }
 
   const rows = tokens
@@ -276,10 +432,14 @@ function tokenTableHtml(title, tokens, tokenMap) {
     })
     .join("");
 
-  return `<section class="panel" id="${slugify(title)}">
-    <h2>${escapeHtml(title)}</h2>
+  return `<section class="panel" id="${escapeAttr(sectionId)}">
+    <h2 data-i18n="${escapeAttr(i18nKey)}">${escapeHtml(t(DEFAULT_LOCALE, i18nKey))}</h2>
     <div class="table-wrap"><table>
-      <thead><tr><th>Token</th><th>Value</th><th>Resolved</th></tr></thead>
+      <thead><tr>
+        <th data-i18n="tokenColumnName">${escapeHtml(t(DEFAULT_LOCALE, "tokenColumnName"))}</th>
+        <th data-i18n="tokenColumnValue">${escapeHtml(t(DEFAULT_LOCALE, "tokenColumnValue"))}</th>
+        <th data-i18n="tokenColumnResolved">${escapeHtml(t(DEFAULT_LOCALE, "tokenColumnResolved"))}</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
   </section>`;
@@ -289,27 +449,28 @@ function pageCss() {
   return `
     :root {
       color-scheme: light;
-      --doc-bg: #f7f7f4;
+      --doc-bg: #ffffff;
       --doc-surface: #ffffff;
+      --doc-surface-subtle: #f5f6f3;
       --doc-text: #141414;
-      --doc-muted: #5f625d;
-      --doc-border: #d9ddd6;
-      --doc-accent: #174a2a;
-      --doc-code-bg: #eef1eb;
-      --doc-shadow: 0 12px 32px rgba(20, 20, 20, 0.08);
+      --doc-muted: #60645f;
+      --doc-border: #d7dbd3;
+      --doc-border-strong: #aeb5aa;
+      --doc-accent: #2f5d3a;
+      --doc-code-bg: #f0f2ee;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--doc-bg);
       color: var(--doc-text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
       line-height: 1.55;
     }
     a { color: var(--doc-accent); }
     .layout {
       display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
+      grid-template-columns: 288px minmax(0, 1fr);
       min-height: 100vh;
     }
     aside {
@@ -317,13 +478,13 @@ function pageCss() {
       top: 0;
       height: 100vh;
       overflow: auto;
-      padding: 28px 20px;
+      padding: 28px 22px;
       border-right: 1px solid var(--doc-border);
       background: var(--doc-surface);
     }
     main {
-      width: min(1120px, 100%);
-      padding: 40px 32px 80px;
+      width: min(1160px, 100%);
+      padding: 34px 32px 72px;
     }
     .brand {
       font-size: 14px;
@@ -346,49 +507,81 @@ function pageCss() {
       font-weight: 650;
     }
     nav a:hover { color: var(--doc-text); }
-    .hero {
-      padding: 32px;
-      background: var(--doc-surface);
+    .language-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 20px;
+    }
+    .language-nav button {
+      appearance: none;
       border: 1px solid var(--doc-border);
-      border-radius: 8px;
-      box-shadow: var(--doc-shadow);
-      margin-bottom: 24px;
+      border-radius: 6px;
+      background: var(--doc-surface);
+      padding: 6px 12px;
+      color: var(--doc-muted);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .language-nav button:hover,
+    .language-nav button:focus-visible {
+      color: var(--doc-text);
+      border-color: var(--doc-border-strong);
+    }
+    .language-nav button[aria-selected="true"] {
+      background: var(--doc-surface-subtle);
+      border-color: var(--doc-border-strong);
+      color: var(--doc-text);
+    }
+    .hero {
+      padding: 0 0 24px;
+      border-bottom: 1px solid var(--doc-border);
+      margin-bottom: 18px;
     }
     .hero h1 {
-      font-size: clamp(32px, 4vw, 56px);
-      line-height: 1;
-      margin: 0 0 16px;
+      max-width: 760px;
+      font-size: 34px;
+      line-height: 1.12;
+      margin: 0 0 12px;
       letter-spacing: 0;
+    }
+    .hero p {
+      max-width: 820px;
+      margin: 0;
+      color: var(--doc-muted);
     }
     .meta {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 20px;
+      margin-top: 16px;
     }
     .pill {
       border: 1px solid var(--doc-border);
-      background: var(--doc-code-bg);
-      border-radius: 999px;
+      background: var(--doc-surface);
+      border-radius: 6px;
       padding: 6px 10px;
       font-size: 13px;
       color: var(--doc-muted);
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0;
+      border-bottom: 1px solid var(--doc-border);
+      margin-bottom: 8px;
     }
     .stat {
-      padding: 18px;
-      border: 1px solid var(--doc-border);
-      border-radius: 8px;
-      background: var(--doc-surface);
+      padding: 14px 18px 16px;
+      border-right: 1px solid var(--doc-border);
     }
+    .stat:first-child { padding-left: 0; }
+    .stat:last-child { border-right: 0; }
     .stat strong {
       display: block;
-      font-size: 28px;
+      font-size: 24px;
       line-height: 1;
       margin-bottom: 6px;
     }
@@ -397,11 +590,10 @@ function pageCss() {
       font-size: 13px;
     }
     .panel {
-      padding: 28px;
-      background: var(--doc-surface);
-      border: 1px solid var(--doc-border);
-      border-radius: 8px;
-      margin: 0 0 20px;
+      padding: 24px 0;
+      background: transparent;
+      border-top: 1px solid var(--doc-border);
+      margin: 0;
       overflow: hidden;
     }
     .panel h1, .panel h2, .panel h3, .panel h4 {
@@ -409,9 +601,9 @@ function pageCss() {
       line-height: 1.15;
       margin-top: 0;
     }
-    .panel h1 { font-size: 34px; }
-    .panel h2 { font-size: 26px; margin-top: 28px; }
-    .panel h3 { font-size: 20px; margin-top: 24px; }
+    .panel h1 { font-size: 30px; }
+    .panel h2 { font-size: 23px; margin-top: 26px; }
+    .panel h3 { font-size: 18px; margin-top: 22px; }
     .panel p, .panel li { color: var(--doc-text); }
     .muted { color: var(--doc-muted); }
     .source {
@@ -441,8 +633,18 @@ function pageCss() {
     .table-wrap {
       overflow: auto;
       border: 1px solid var(--doc-border);
-      border-radius: 8px;
+      border-radius: 6px;
       margin: 16px 0;
+    }
+    .doc-image {
+      display: block;
+      max-width: min(220px, 100%);
+      max-height: 160px;
+      margin: 4px 0;
+      border: 1px solid var(--doc-border);
+      border-radius: 6px;
+      background: var(--doc-surface);
+      object-fit: contain;
     }
     table {
       width: 100%;
@@ -457,7 +659,7 @@ function pageCss() {
       font-size: 14px;
     }
     th {
-      background: var(--doc-code-bg);
+      background: var(--doc-surface-subtle);
       color: var(--doc-muted);
       font-size: 12px;
       text-transform: uppercase;
@@ -483,7 +685,15 @@ function pageCss() {
       }
       main { padding: 24px 16px 56px; }
       .grid { grid-template-columns: 1fr; }
-      .hero, .panel { padding: 20px; }
+      .stat,
+      .stat + .stat,
+      .stat:last-child {
+        border-right: 0;
+        border-top: 1px solid var(--doc-border);
+        padding: 14px 0;
+      }
+      .hero { padding-bottom: 20px; }
+      .panel { padding: 22px 0; }
     }
   `;
 }
@@ -510,14 +720,27 @@ for (const [label, file] of coreDocumentFiles) {
   if (content === null) {
     missingDocs.push(file);
   } else {
-    docs.push({ label, file, content });
+    docs.push({ i18nKey: label, label: t(DEFAULT_LOCALE, label), file, content });
   }
 }
 
 for (const [label, file] of [...extraDocumentFiles, ...componentDocumentFiles]) {
   const fullPath = path.join(designSystemDir, file);
   const content = await readOptional(fullPath);
-  if (content !== null) docs.push({ label, file, content });
+  if (content !== null) {
+    const isComponent = file.startsWith("components/");
+    const componentName = isComponent
+      ? label.replace(/^Component:\s*/i, "")
+      : null;
+    docs.push({
+      i18nKey: null,
+      label,
+      file,
+      content,
+      isComponent,
+      componentName,
+    });
+  }
 }
 
 const tokensByLayer = new Map();
@@ -531,11 +754,33 @@ for (const [label, file, layer] of tokenFiles) {
 }
 
 const totalTokens = [...tokensByLayer.values()].reduce((sum, entry) => sum + entry.tokens.length, 0);
+const tokenCounts = Object.fromEntries(
+  tokenFiles.map(([_i18nKey, _file, layer]) => [
+    layer,
+    tokensByLayer.get(layer)?.tokens.length || 0,
+  ]),
+);
 const generatedAt = new Date().toISOString();
+
+function navLink(doc) {
+  const id = `doc-${slugify(doc.file)}`;
+  if (doc.i18nKey) {
+    return `<a href="#${escapeAttr(id)}" data-i18n="${escapeAttr(doc.i18nKey)}">${escapeHtml(t(DEFAULT_LOCALE, doc.i18nKey))}</a>`;
+  }
+  if (doc.isComponent && doc.componentName) {
+    return `<a href="#${escapeAttr(id)}" data-i18n-template="component" data-i18n-name="${escapeAttr(doc.componentName)}">${escapeHtml(t(DEFAULT_LOCALE, "componentPrefix") + doc.componentName)}</a>`;
+  }
+  return `<a href="#${escapeAttr(id)}">${escapeHtml(doc.label)}</a>`;
+}
+
 const navItems = [
-  ["Overview", "overview"],
-  ["Tokens", "tokens"],
-  ...docs.map((doc) => [doc.label, `doc-${slugify(doc.file)}`]),
+  `<a href="#overview" data-i18n="navOverview">${escapeHtml(t(DEFAULT_LOCALE, "navOverview"))}</a>`,
+  `<a href="#tokens" data-i18n="navTokens">${escapeHtml(t(DEFAULT_LOCALE, "navTokens"))}</a>`,
+  `<a href="review.html" data-i18n="navReviewQueue">${escapeHtml(t(DEFAULT_LOCALE, "navReviewQueue"))}</a>`,
+  ...docs.map((doc) => navLink(doc)),
+  ...(missingDocs.length
+    ? [`<a href="#missing-documents" data-i18n="navMissingDocuments">${escapeHtml(t(DEFAULT_LOCALE, "navMissingDocuments"))}</a>`]
+    : []),
 ];
 
 const docSections = docs
@@ -549,54 +794,122 @@ const docSections = docs
   .join("\n");
 
 const tokenSections = tokenFiles
-  .map((_entry) => {
-    const layer = _entry[2];
+  .map((entry) => {
+    const i18nKey = entry[0];
+    const layer = entry[2];
     const tokenEntry = tokensByLayer.get(layer);
-    return tokenTableHtml(tokenEntry.label, tokenEntry.tokens, tokenMap);
+    return tokenTableHtml(i18nKey, layer, tokenEntry.tokens, tokenMap);
   })
   .join("\n");
 
 const missingSection = missingDocs.length
   ? `<section class="panel" id="missing-documents">
-      <h2>Missing Documents</h2>
-      <p class="muted">These expected design-system documents were not found in this package.</p>
+      <h2 data-i18n="missingDocumentsTitle">${escapeHtml(t(DEFAULT_LOCALE, "missingDocumentsTitle"))}</h2>
+      <p class="muted" data-i18n="missingDocumentsLead">${escapeHtml(t(DEFAULT_LOCALE, "missingDocumentsLead"))}</p>
       <ul>${missingDocs.map((file) => `<li><code>${escapeHtml(file)}</code></li>`).join("")}</ul>
     </section>`
   : "";
 
+function i18nScript() {
+  return `<script>
+(() => {
+  const STORAGE_KEY = "design-system-docs-lang";
+  const DEFAULT_LOCALE = "zh-Hant";
+  const copy = ${JSON.stringify(uiCopy)};
+
+  const buttons = Array.from(document.querySelectorAll("[data-language-button]"));
+
+  function setLanguage(language) {
+    const messages = copy[language] || copy[DEFAULT_LOCALE];
+    document.documentElement.lang = messages.htmlLang;
+    document.title = messages.pageTitle;
+
+    document.querySelectorAll("[data-i18n]").forEach((node) => {
+      const value = messages[node.dataset.i18n];
+      if (typeof value !== "string") return;
+      if (node.dataset.i18nHtml === "true") {
+        node.innerHTML = value;
+      } else {
+        node.textContent = value;
+      }
+    });
+
+    document.querySelectorAll("[data-i18n-template]").forEach((node) => {
+      if (node.dataset.i18nTemplate === "component" && node.dataset.i18nName) {
+        node.textContent = (messages.componentPrefix || "") + node.dataset.i18nName;
+      }
+    });
+
+    buttons.forEach((button) => {
+      const selected = button.dataset.languageButton === language;
+      button.setAttribute("aria-selected", String(selected));
+    });
+
+    try {
+      localStorage.setItem(STORAGE_KEY, language);
+    } catch (_error) {
+      /* ignore storage failures */
+    }
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setLanguage(button.dataset.languageButton);
+    });
+  });
+
+  let initial = DEFAULT_LOCALE;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored && copy[stored]) initial = stored;
+  } catch (_error) {
+    /* ignore storage failures */
+  }
+  setLanguage(initial);
+})();
+</script>`;
+}
+
 const html = `<!doctype html>
-<html lang="en">
+<html lang="${escapeAttr(t(DEFAULT_LOCALE, "htmlLang"))}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Design System Documentation</title>
+  <title>${escapeHtml(t(DEFAULT_LOCALE, "pageTitle"))}</title>
   <style>${pageCss()}</style>
 </head>
 <body>
   <div class="layout">
     <aside>
-      <p class="brand">Design System</p>
-      <p class="subtitle">Generated documentation</p>
+      <p class="brand" data-i18n="brand">${escapeHtml(t(DEFAULT_LOCALE, "brand"))}</p>
+      <p class="subtitle" data-i18n="subtitle">${escapeHtml(t(DEFAULT_LOCALE, "subtitle"))}</p>
+      <div class="language-nav" role="tablist" aria-label="${escapeAttr(t(DEFAULT_LOCALE, "langSelectorLabel"))}">
+        <button type="button" role="tab" data-language-button="zh-Hant" aria-selected="true">繁中</button>
+        <button type="button" role="tab" data-language-button="en" aria-selected="false">EN</button>
+        <button type="button" role="tab" data-language-button="ja" aria-selected="false">日本語</button>
+      </div>
       <nav>
-        ${navItems.map(([label, id]) => `<a href="#${escapeAttr(id)}">${escapeHtml(label)}</a>`).join("")}
-        ${missingDocs.length ? '<a href="#missing-documents">Missing Documents</a>' : ""}
+        ${navItems.join("")}
       </nav>
     </aside>
     <main>
       <section class="hero" id="overview">
-        <h1>Design System Documentation</h1>
-        <p>This static reference was generated from <code>design-system/</code> Markdown files and <code>tokens/</code> CSS custom properties.</p>
+        <h1 data-i18n="heroTitle">${escapeHtml(t(DEFAULT_LOCALE, "heroTitle"))}</h1>
+        <p data-i18n="heroLead" data-i18n-html="true">${t(DEFAULT_LOCALE, "heroLead")}</p>
         <div class="meta">
-          <span class="pill">Generated ${escapeHtml(generatedAt)}</span>
-          <span class="pill">${docs.length} documents</span>
-          <span class="pill">${totalTokens} tokens</span>
+          <span class="pill"><span data-i18n="pillGenerated">${escapeHtml(t(DEFAULT_LOCALE, "pillGenerated"))}</span> ${escapeHtml(generatedAt)}</span>
+          <span class="pill">${docs.length} <span data-i18n="pillDocuments">${escapeHtml(t(DEFAULT_LOCALE, "pillDocuments"))}</span></span>
+          <span class="pill">${totalTokens} <span data-i18n="pillTokens">${escapeHtml(t(DEFAULT_LOCALE, "pillTokens"))}</span></span>
         </div>
       </section>
 
-      <section class="grid" aria-label="Documentation summary">
-        <div class="stat"><strong>${docs.length}</strong><span>Design-system documents</span></div>
-        <div class="stat"><strong>${totalTokens}</strong><span>Total tokens</span></div>
-        <div class="stat"><strong>${missingDocs.length}</strong><span>Missing expected docs</span></div>
+      <section class="grid" aria-label="${escapeAttr(t(DEFAULT_LOCALE, "summaryAriaLabel"))}">
+        <div class="stat"><strong>${docs.length}</strong><span data-i18n="statDocuments">${escapeHtml(t(DEFAULT_LOCALE, "statDocuments"))}</span></div>
+        <div class="stat"><strong>${totalTokens}</strong><span data-i18n="statTokens">${escapeHtml(t(DEFAULT_LOCALE, "statTokens"))}</span></div>
+        <div class="stat"><strong>${tokenCounts.ref}</strong><span data-i18n="statTokenRef">${escapeHtml(t(DEFAULT_LOCALE, "statTokenRef"))}</span></div>
+        <div class="stat"><strong>${tokenCounts.sys}</strong><span data-i18n="statTokenSys">${escapeHtml(t(DEFAULT_LOCALE, "statTokenSys"))}</span></div>
+        <div class="stat"><strong>${tokenCounts.comp}</strong><span data-i18n="statTokenComp">${escapeHtml(t(DEFAULT_LOCALE, "statTokenComp"))}</span></div>
+        <div class="stat"><strong>${missingDocs.length}</strong><span data-i18n="statMissing">${escapeHtml(t(DEFAULT_LOCALE, "statMissing"))}</span></div>
       </section>
 
       <section id="tokens">
@@ -607,6 +920,7 @@ const html = `<!doctype html>
       ${docSections}
     </main>
   </div>
+  ${i18nScript()}
 </body>
 </html>
 `;
@@ -614,9 +928,26 @@ const html = `<!doctype html>
 await fs.mkdir(path.dirname(outputPath), { recursive: true });
 await fs.writeFile(outputPath, html, "utf8");
 
+let copiedAssets = false;
+try {
+  const assetEntries = await fs.readdir(designSystemAssetsDir);
+  if (assetEntries.length) {
+    await fs.cp(designSystemAssetsDir, path.join(path.dirname(outputPath), "assets"), {
+      recursive: true,
+    });
+    copiedAssets = true;
+  }
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+
 console.log(`Generated ${path.relative(process.cwd(), outputPath) || outputPath}`);
 console.log(`Documents: ${docs.length}`);
 console.log(`Tokens: ${totalTokens}`);
+console.log(`Reference tokens: ${tokenCounts.ref}`);
+console.log(`System tokens: ${tokenCounts.sys}`);
+console.log(`Component tokens: ${tokenCounts.comp}`);
+console.log(`Assets copied: ${copiedAssets ? "yes" : "no"}`);
 if (missingDocs.length) {
   console.log(`Missing documents: ${missingDocs.join(", ")}`);
 }

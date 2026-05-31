@@ -79,9 +79,12 @@ Before finalizing token files, run a token candidate review:
 2. Normalize reference colors into palette families with numeric steps where `100` is lightest and `0` is darkest.
 3. Check each palette family so higher numbers are visually lighter than lower numbers.
 4. Cluster very close reference colors and very close reference numbers in the same value family.
-5. If close candidates appear, stop and ask the developer whether to `merge` or `keep distinct`.
-6. Record every decision in `design-system/TOKEN_ARCHITECTURE.md` under `Near Token Decisions`, or add an adjacent `token-review:` CSS comment when the decision must stay next to the token.
-7. Only then write final `ref`, `sys`, and `comp` tokens.
+5. Check exact system-token aliases in the same semantic dimension and exact component-token aliases in the same component/dimension. Treat them as review candidates unless a documented semantic reason exists.
+6. Build a token inheritance graph for `ref -> sys -> comp`, resolve each system/component token to its raw reference value, and compare purpose fingerprints before deduping. Purpose fingerprints include layer, semantic role, component name/category, slot/anatomy, state, resolved raw value, and inheritance chain.
+7. For system tokens, review pairs only when the semantic role/category and resolved value are close enough. For component tokens, review pairs only when component category, slot/category, state, and resolved value are close enough.
+8. If close or duplicate candidates appear, stop and ask the developer whether to `merge` or `keep distinct`.
+9. Record every decision in `design-system/TOKEN_ARCHITECTURE.md` under `Near Token Decisions`, or add an adjacent `token-review:` CSS comment when the decision must stay next to the token.
+10. Only then write final `ref`, `sys`, and `comp` tokens.
 
 ### 5. Component Inventory
 
@@ -94,10 +97,11 @@ Before finalizing inventory or adding a new component spec, run a component simi
 1. Read existing `COMPONENT_INVENTORY.md`, `design-system/components/*.md`, and relevant component tokens.
 2. Create a component fingerprint for each new candidate: purpose, anatomy, variants/states, token contract, layout/density, behavior, source evidence, and visual reference.
 3. Compare the candidate with existing extracted or planned components. Weight purpose and behavior first, then anatomy, states, token usage, and layout.
-4. If a candidate is similar to an existing component, stop and ask the developer whether to `merge`, `make variant`, `keep distinct`, or `block pending more evidence`.
-5. Record the decision in `COMPONENT_INVENTORY.md` under `Component Similarity Review` before creating or updating component specs.
-6. Use source-based visual references: for Figma, capture the actual node preview/screenshot or a crop of the design frame; for screenshot inputs, crop the relevant component region. Store review images under `design-system/assets/component-review/` and link them from the similarity table.
-7. Do not use an AI-drawn schematic as the review image when a Figma preview or screenshot crop is available. A schematic SVG is allowed only as a last-resort fallback when source previews cannot be captured, and it must be labeled `schematic fallback - source preview unavailable`; it is not design evidence.
+4. Run `node <skill-root>/scripts/audit_components.mjs <target-root>` during extraction to surface automatically detected fingerprint similarities before strict checkpoint.
+5. If a candidate is similar to an existing component, stop and ask the developer whether to `merge`, `make variant`, `keep distinct`, or `block pending more evidence`.
+6. Record the decision in `COMPONENT_INVENTORY.md` under `Component Similarity Review` before creating or updating component specs.
+7. Use source-based visual references: for Figma, capture the actual node preview/screenshot or a crop of the design frame; for screenshot inputs, crop the relevant component region. Store review images under `design-system/assets/component-review/` and link them from the similarity table.
+8. Do not use an AI-drawn schematic as the review image when a Figma preview or screenshot crop is available. A schematic SVG is allowed only as a last-resort fallback when source previews cannot be captured, and it must be labeled `schematic fallback - source preview unavailable`; it is not design evidence.
 
 ### 6. Component Token Specs
 
@@ -203,11 +207,17 @@ If a component needs a semantic or component token that does not exist, create o
 
 Do not silently merge or split close token values. When near duplicate colors or numbers are found, ask the developer for a merge/keep-distinct decision and document it before the checkpoint.
 
+Do not silently create system/component token aliases that resolve to the same value in the same semantic audit group. If duplicate aliases are intentional, document why they must remain distinct.
+
+Do not dedupe component tokens only because their reference values are close. Use the inheritance chain and usage fingerprint first; component tokens in different component categories or slots can stay distinct when their purpose differs.
+
 ### Component Gate
 
 Before adding a new component spec, check `COMPONENT_INVENTORY.md` and existing component docs. Reuse or extend a known component when intent, anatomy, slots, and states match.
 
 Do not create a new component only because the Figma layer name is new. If a candidate resembles an existing component, present the visual comparison and fingerprint difference, then ask for a merge/variant/keep-distinct/block decision.
+
+Strict component audit automatically compares component fingerprints. If it reports an automatic similarity candidate, resolve it in `COMPONENT_INVENTORY.md` before treating the extraction as complete.
 
 ### Implementation Boundary Gate
 

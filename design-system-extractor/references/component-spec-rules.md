@@ -54,6 +54,8 @@ Before creating a new component spec, summarize the candidate as a fingerprint:
 
 Similarity review compares purpose and behavior first. Visual similarity alone is not enough to merge components; different behavior may require separate components or variants.
 
+The audit script automatically compares component fingerprints from `COMPONENT_INVENTORY.md` and `design-system/components/*.md`. Similarity scoring weights purpose/behavior first, then anatomy, variants/states, token contract, and layout/density. Any automatic candidate must be resolved in the inventory similarity table before the extraction checkpoint passes strict audit.
+
 ## Component Similarity Review
 
 Use `COMPONENT_INVENTORY.md` to document close matches before adding a new component:

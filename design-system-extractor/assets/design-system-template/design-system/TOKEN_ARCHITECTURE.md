@@ -39,9 +39,9 @@ Use numeric palette steps from light to dark:
 
 ## Near Token Decisions
 
-Use this table when candidate reference tokens are visually or numerically close. Stop and confirm with the developer before finalizing unresolved rows.
+Use this table when candidate reference tokens are visually/numerically close, when system/component tokens resolve to the same value inside the same semantic audit group, or when usage-aware token graph comparison reports close-purpose system/component tokens. Stop and confirm with the developer before finalizing unresolved rows.
 
-| Candidate A | Candidate B | Difference | Decision (`merge` / `keep distinct`) | Rationale | Confirmed by |
+| Candidate A | Candidate B | Difference / usage chain | Decision (`merge` / `keep distinct`) | Rationale | Confirmed by |
 |---|---|---|---|---|---|
 
 ## Required Audit
@@ -51,4 +51,6 @@ Use this table when candidate reference tokens are visually or numerically close
 - No reference token name includes semantic roles.
 - Reference color steps follow `100` lightest to `0` darkest.
 - Near reference colors and numbers have a documented merge or keep-distinct decision.
+- Exact system/component alias duplicates in the same audit group have a documented merge or keep-distinct decision.
+- Usage-aware system/component token pairs with close resolved values and close purpose have a documented merge or keep-distinct decision.
 - Every background-like system color has a matching foreground pair.

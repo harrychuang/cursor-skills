@@ -17,6 +17,33 @@ const decisionPattern =
 const unresolvedPattern =
   /^\s*(?:|[-—]|n\/a|na|none|tbd|todo|pending|open|unknown|needs review|needs decision|待確認|未決|未定|要確認|\?)\s*$/i;
 
+const STOP_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "as",
+  "for",
+  "from",
+  "in",
+  "is",
+  "of",
+  "on",
+  "or",
+  "the",
+  "to",
+  "with",
+  "component",
+  "token",
+  "tokens",
+  "state",
+  "states",
+  "slot",
+  "slots",
+  "variant",
+  "variants",
+  "default",
+]);
+
 async function readOptional(file) {
   try {
     return await fs.readFile(file, "utf8");
@@ -173,6 +200,146 @@ function hasFallbackDisclosure(value) {
   );
 }
 
+function tokenize(value) {
+  return cleanedCell(value)
+    .toLowerCase()
+    .replace(/<[^>]+>/g, " ")
+    .replace(/--[a-z0-9_-]+/g, " ")
+    .replace(/[^a-z0-9\u4e00-\u9fffぁ-んァ-ン一-龯]+/g, " ")
+    .split(/\s+/)
+    .filter((token) => token.length > 1 && !STOP_WORDS.has(token));
+}
+
+function tokenSet(value) {
+  return new Set(tokenize(value));
+}
+
+function jaccard(a, b) {
+  if (!a.size || !b.size) return 0;
+  let intersection = 0;
+  for (const token of a) {
+    if (b.has(token)) intersection += 1;
+  }
+  return intersection / (a.size + b.size - intersection);
+}
+
+function componentNameFromSpec(file) {
+  return path.basename(file, ".md");
+}
+
+function componentNameKey(value) {
+  return cleanedCell(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function extractComponentFingerprint(markdown) {
+  const fingerprint = new Map();
+  for (const table of parseTables(markdown)) {
+    const heading = normalizeHeading(table.heading);
+    const isFingerprint =
+      heading.includes("component fingerprint") ||
+      (includesHeader(table.headers, "dimension") && includesHeader(table.headers, "description"));
+    if (!isFingerprint) continue;
+    for (const entry of table.rows) {
+      const dimension = normalizeHeading(firstValue(entry.row, ["dimension"]));
+      const description = firstValue(entry.row, ["description", "summary", "value"]);
+      if (dimension && !unresolvedPattern.test(cleanedCell(description))) {
+        fingerprint.set(dimension, description);
+      }
+    }
+  }
+  return fingerprint;
+}
+
+function textForFingerprint(fingerprint, keys) {
+  return keys.map((key) => fingerprint.get(key) || "").join(" ");
+}
+
+function fingerprintWordCount(candidate) {
+  return tokenize(
+    [
+      candidate.purpose,
+      candidate.anatomy,
+      candidate.variants,
+      candidate.tokenContract,
+      candidate.layout,
+    ].join(" "),
+  ).length;
+}
+
+function candidateFromInventoryRow(entry) {
+  const component = firstValue(entry.row, ["component"]);
+  if (!component || /^[-—]$/.test(component.trim())) return null;
+  const fingerprintSummary = firstValue(entry.row, ["fingerprint"]);
+  const notes = firstValue(entry.row, ["notes"]);
+  const tokens = firstValue(entry.row, ["required tokens", "tokens"]);
+  const status = firstValue(entry.row, ["status"]);
+  return {
+    name: cleanedCell(component),
+    key: componentNameKey(component),
+    source: `inventory row ${entry.line}`,
+    purpose: `${fingerprintSummary} ${notes}`,
+    anatomy: fingerprintSummary,
+    variants: `${status} ${notes}`,
+    tokenContract: tokens,
+    layout: fingerprintSummary,
+    visual: "",
+  };
+}
+
+function candidateFromSpec(file, markdown) {
+  const fingerprint = extractComponentFingerprint(markdown);
+  const name = componentNameFromSpec(file);
+  return {
+    name,
+    key: componentNameKey(name),
+    source: path.relative(targetRoot, file),
+    purpose: textForFingerprint(fingerprint, ["purpose behavior", "purpose"]),
+    anatomy: textForFingerprint(fingerprint, ["anatomy"]),
+    variants: textForFingerprint(fingerprint, ["variants states", "variants", "states"]),
+    tokenContract: textForFingerprint(fingerprint, ["token contract summary", "token contract"]),
+    layout: textForFingerprint(fingerprint, ["layout density", "layout"]),
+    visual: textForFingerprint(fingerprint, ["visual reference"]),
+  };
+}
+
+function similarityScore(candidateA, candidateB) {
+  const purpose = jaccard(tokenSet(candidateA.purpose), tokenSet(candidateB.purpose));
+  const anatomy = jaccard(tokenSet(candidateA.anatomy), tokenSet(candidateB.anatomy));
+  const variants = jaccard(tokenSet(candidateA.variants), tokenSet(candidateB.variants));
+  const tokenContract = jaccard(tokenSet(candidateA.tokenContract), tokenSet(candidateB.tokenContract));
+  const layout = jaccard(tokenSet(candidateA.layout), tokenSet(candidateB.layout));
+  const weighted =
+    purpose * 0.34 + anatomy * 0.26 + variants * 0.14 + tokenContract * 0.16 + layout * 0.1;
+  const sameName = candidateA.key && candidateA.key === candidateB.key;
+  return {
+    purpose,
+    anatomy,
+    variants,
+    tokenContract,
+    layout,
+    weighted: sameName ? Math.max(weighted, 0.95) : weighted,
+  };
+}
+
+function isSimilarComponentPair(score) {
+  return (
+    score.weighted >= 0.62 ||
+    (score.weighted >= 0.5 && score.purpose >= 0.55 && score.anatomy >= 0.35)
+  );
+}
+
+function pairMentionedInReview(reviewRows, candidateA, candidateB, requireResolvedDecision) {
+  if (!candidateA.key || !candidateB.key) return false;
+  for (const entry of reviewRows) {
+    const text = componentNameKey(rowText(entry));
+    const mentionsBoth = text.includes(candidateA.key) && text.includes(candidateB.key);
+    if (!mentionsBoth) continue;
+    const decision = firstValue(entry.row, ["developer decision", "decision"]);
+    if (!requireResolvedDecision || !isUnresolvedDecision(decision)) return true;
+  }
+  return false;
+}
+
 const issues = [];
 const warnings = [];
 
@@ -180,10 +347,15 @@ const inventory = await readOptional(inventoryFile);
 let similarityRows = 0;
 let unresolvedSimilarityRows = 0;
 let documentedSimilarityRows = 0;
+let autoSimilarityRows = 0;
+let unresolvedAutoSimilarityRows = 0;
+let documentedAutoSimilarityRows = 0;
 let sourcePreviewRows = 0;
 let fallbackVisualRows = 0;
 let missingVisualRows = 0;
 let inventoryComponentRows = 0;
+const componentCandidates = [];
+let explicitSimilarityReviewRows = [];
 
 if (inventory === null) {
   const message = `Missing ${path.relative(targetRoot, inventoryFile)}`;
@@ -193,12 +365,15 @@ if (inventory === null) {
   const tables = parseTables(inventory);
   const similarityTables = tables.filter(isSimilarityTable);
   const inventoryTables = tables.filter(isInventoryTable);
+  explicitSimilarityReviewRows = similarityTables.flatMap((table) => table.rows);
 
   for (const table of inventoryTables) {
     for (const entry of table.rows) {
       const component = firstValue(entry.row, ["component"]);
       if (!component || /^[-—]$/.test(component.trim())) continue;
       inventoryComponentRows += 1;
+      const candidate = candidateFromInventoryRow(entry);
+      if (candidate) componentCandidates.push(candidate);
       const notes = firstValue(entry.row, ["notes"]);
       const status = firstValue(entry.row, ["status"]);
       if (containsSimilarityCue(`${status} ${notes}`) && !similarityTables.length) {
@@ -265,6 +440,33 @@ for (const file of componentDocs) {
     warnings.push(
       `Component spec is missing a Component Fingerprint section: ${path.relative(targetRoot, file)}`,
     );
+    continue;
+  }
+  componentCandidates.push(candidateFromSpec(file, content));
+}
+
+for (let firstIndex = 0; firstIndex < componentCandidates.length; firstIndex += 1) {
+  for (let secondIndex = firstIndex + 1; secondIndex < componentCandidates.length; secondIndex += 1) {
+    const first = componentCandidates[firstIndex];
+    const second = componentCandidates[secondIndex];
+    if (first.source === second.source) continue;
+    if (first.key && first.key === second.key) continue;
+    if (fingerprintWordCount(first) < 5 || fingerprintWordCount(second) < 5) continue;
+    const score = similarityScore(first, second);
+    if (!isSimilarComponentPair(score)) continue;
+    autoSimilarityRows += 1;
+    if (pairMentionedInReview(explicitSimilarityReviewRows, first, second, false)) {
+      if (pairMentionedInReview(explicitSimilarityReviewRows, first, second, true)) {
+        documentedAutoSimilarityRows += 1;
+      }
+      continue;
+    }
+    unresolvedAutoSimilarityRows += 1;
+    const message = `Automatic component similarity candidate needs review: ${first.name} (${first.source}) and ${second.name} (${second.source}) score ${score.weighted.toFixed(
+      2,
+    )}. Record merge, make variant, keep distinct, or blocked in COMPONENT_INVENTORY.md.`;
+    if (strict) issues.push(message);
+    else warnings.push(message);
   }
 }
 
@@ -273,8 +475,11 @@ console.log(`Component audit target: ${relRoot}`);
 console.log(`Inventory component rows: ${inventoryComponentRows}`);
 console.log(`Component specs: ${componentDocs.length}`);
 console.log(`Similarity review rows: ${similarityRows}`);
+console.log(`Automatic similarity candidates: ${autoSimilarityRows}`);
 console.log(`Unresolved similarity rows: ${unresolvedSimilarityRows}`);
+console.log(`Unresolved automatic similarity candidates: ${unresolvedAutoSimilarityRows}`);
 console.log(`Documented similarity decisions: ${documentedSimilarityRows}`);
+console.log(`Documented automatic similarity candidates: ${documentedAutoSimilarityRows}`);
 console.log(`Source preview visual rows: ${sourcePreviewRows}`);
 console.log(`Fallback visual rows: ${fallbackVisualRows}`);
 console.log(`Missing visual rows: ${missingVisualRows}`);

@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Figma M3 Variables — 設計系統文件</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f3f0;
+        --surface: #ffffff;
+        --surface-alt: #ececea;
+        --ink: #1a1c1e;
+        --muted: #5c6066;
+        --line: #d6d4cf;
+        --line-strong: #a8a6a0;
+        --accent: #1a1c1e;
+        --accent-soft: #ebeae6;
+        --ref: #6750a4;
+        --ref-soft: #eaddff;
+        --sys: #00639b;
+        --sys-soft: #d3e4ff;
+        --comp: #386a20;
+        --comp-soft: #d9e7cb;
+        --warn: #7d5700;
+        --warn-soft: #ffecb3;
+        --code: #2b2f33;
+        --code-bg: #f0efec;
+        --sidebar-w: 260px;
+        --radius: 20px;
+        --radius-sm: 12px;
+        --shadow: 0 20px 60px rgba(26, 28, 30, 0.08);
+        --shadow-soft: 0 8px 24px rgba(26, 28, 30, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Noto Sans TC", sans-serif;
+        line-height: 1.65;
+        font-size: 15px;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -48px;
+        z-index: 100;
+        background: var(--ink);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+      }
+
+      .skip-link:focus {
+        top: 16px;
+      }
+
+      /* Layout */
+      .layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: var(--surface);
+        border-right: 1px solid var(--line);
+        padding: 28px 20px 40px;
+      }
+
+      .sidebar-brand {
+        margin-bottom: 28px;
+      }
+
+      .sidebar-brand .eyebrow {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-brand h1 {
+        margin: 0;
+        font-size: 1.15rem;
+        line-height: 1.3;
+        font-weight: 800;
+      }
+
+      .sidebar-brand p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      .nav-group {
+        margin-bottom: 22px;
+      }
+
+      .nav-group-label {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-list a {
+        display: block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+      }
+
+      .nav-list a:hover,
+      .nav-list a:focus-visible {
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      .nav-list a.active {
+        background: var(--ink);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .content {
+        padding: 0 48px 80px;
+        max-width: 920px;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 56px 0 40px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 48px;
+      }
+
+      .hero .eyebrow {
+        margin: 0 0 12px;
+        color: var(--ref);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        font-weight: 800;
+      }
+
+      .hero .lead {
+        margin: 16px 0 0;
+        max-width: 640px;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        padding: 5px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--code);
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .badge-dot.ref { background: var(--ref); }
+      .badge-dot.sys { background: var(--sys); }
+      .badge-dot.comp { background: var(--comp); }
+
+      /* Sections */
+      section {
+        scroll-margin-top: 32px;
+        margin-bottom: 56px;
+      }
+
+      .section-head {
+        margin-bottom: 24px;
+      }
+
+      .section-head h3 {
+        margin: 0;
+        font-size: 1.55rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+
+      .section-head p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        max-width: 680px;
+      }
+
+      h4 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      /* Cards & panels */
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+      }
+
+      .panel + .panel {
+        margin-top: 16px;
+      }
+
+      .panel-body {
+        padding: 20px 22px;
+      }
+
+      /* Three-tier diagram */
+      .tier-stack {
+        display: grid;
+        gap: 0;
+      }
+
+      .tier-row {
+        display: grid;
+        grid-template-columns: 100px minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+        padding: 20px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tier-row:last-child {
+        border-bottom: 0;
+      }
+
+      .tier-label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .tier-tag {
+        display: inline-block;
+        width: fit-content;
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .tier-tag.ref {
+        background: var(--ref-soft);
+        color: var(--ref);
+      }
+
+      .tier-tag.sys {
+        background: var(--sys-soft);
+        color: var(--sys);
+      }
+
+      .tier-tag.comp {
+        background: var(--comp-soft);
+        color: var(--comp);
+      }
+
+      .tier-label span {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .tier-content h4 {
+        margin-bottom: 6px;
+      }
+
+      .tier-content p {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .token-path {
+        display: block;
+        border-radius: var(--radius-sm);
+        background: var(--code-bg);
+        padding: 10px 14px;
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.82rem;
+        color: var(--code);
+        word-break: break-all;
+      }
+
+      .tier-arrow {
+        text-align: center;
+        padding: 6px;
+        color: var(--line-strong);
+        font-size: 1.1rem;
+      }
+
+      /* Bento grid */
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .bento-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .bento-card.wide {
+        grid-column: span 2;
+      }
+
+      .bento-card.full {
+        grid-column: span 3;
+      }
+
+      .bento-card h4 {
+        margin-bottom: 8px;
+      }
+
+      .bento-card p,
+      .bento-card ul {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .bento-card ul {
+        padding-left: 18px;
+      }
+
+      .bento-card li + li {
+        margin-top: 4px;
+      }
+
+      /* Rules list */
+      .rules-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: rule;
+      }
+
+      .rules-list li {
+        counter-increment: rule;
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 14px;
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .rules-list li:last-child {
+        border-bottom: 0;
+      }
+
+      .rules-list li::before {
+        content: counter(rule);
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .rules-list strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.95rem;
+      }
+
+      .rules-list span {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      /* Workflow cards */
+      .workflow-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .workflow-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .workflow-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+        background: var(--surface-alt);
+      }
+
+      .workflow-letter {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 900;
+        flex-shrink: 0;
+      }
+
+      .workflow-header h4 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .workflow-header p {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .workflow-steps {
+        margin: 0;
+        padding: 18px 22px 18px 42px;
+        list-style: decimal;
+      }
+
+      .workflow-steps li {
+        color: var(--muted);
+        font-size: 0.9rem;
+        padding-left: 6px;
+      }
+
+      .workflow-steps li + li {
+        margin-top: 8px;
+      }
+
+      .workflow-steps strong {
+        color: var(--ink);
+      }
+
+      /* Tables */
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.86rem;
+      }
+
+      thead th {
+        background: var(--surface-alt);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+
+      tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      tbody tr:hover td {
+        background: rgba(0, 0, 0, 0.015);
+      }
+
+      .cell-good {
+        color: var(--comp);
+        font-weight: 600;
+      }
+
+      .cell-bad {
+        color: #b3261e;
+        font-weight: 600;
+      }
+
+      /* Token specimens */
+      .specimen-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .specimen {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: var(--surface);
+      }
+
+      .specimen-swatch {
+        height: 56px;
+        display: flex;
+        align-items: flex-end;
+        padding: 8px 10px;
+      }
+
+      .specimen-swatch span {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      .specimen-info {
+        padding: 10px 12px;
+      }
+
+      .specimen-name {
+        display: block;
+        font-family: monospace;
+        font-size: 0.72rem;
+        color: var(--code);
+        word-break: break-all;
+        margin-bottom: 4px;
+      }
+
+      .specimen-css {
+        display: block;
+        font-family: monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        word-break: break-all;
+      }
+
+      /* Code blocks */
+      pre {
+        margin: 0;
+        border-radius: var(--radius-sm);
+        background: #1e2124;
+        color: #e8eaed;
+        padding: 16px 18px;
+        overflow-x: auto;
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+
+      code {
+        border-radius: 6px;
+        background: var(--code-bg);
+        color: var(--code);
+        padding: 0.1em 0.35em;
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.88em;
+      }
+
+      pre code {
+        background: none;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+      }
+
+      .comment { color: #8b949e; }
+      .keyword { color: #ff7b72; }
+      .string { color: #a5d6ff; }
+      .fn { color: #d2a8ff; }
+
+      /* Notes */
+      .note {
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        font-size: 0.88rem;
+        margin-top: 14px;
+      }
+
+      .note-warn {
+        background: var(--warn-soft);
+        border-left: 4px solid var(--warn);
+        color: #3d2e00;
+      }
+
+      .note-info {
+        background: var(--sys-soft);
+        border-left: 4px solid var(--sys);
+        color: #002a4d;
+      }
+
+      .note p {
+        margin: 0;
+      }
+
+      /* Audit violations */
+      .violation-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .violation-item {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+      }
+
+      .violation-num {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--warn-soft);
+        color: var(--warn);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .violation-item h4 {
+        margin: 0 0 4px;
+        font-size: 0.92rem;
+      }
+
+      .violation-item p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      /* Skill matrix */
+      .skill-matrix td:first-child {
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* Cascade visual */
+      .cascade {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 20px 22px;
+      }
+
+      .cascade-node {
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-family: monospace;
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .cascade-node.ref-node {
+        background: var(--ref-soft);
+        color: var(--ref);
+      }
+
+      .cascade-node.sys-node {
+        background: var(--sys-soft);
+        color: var(--sys);
+      }
+
+      .cascade-node.comp-node {
+        background: var(--comp-soft);
+        color: var(--comp);
+      }
+
+      .cascade-arrow {
+        color: var(--line-strong);
+        font-size: 1.2rem;
+        font-weight: 300;
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+          padding: 20px;
+        }
+
+        .content {
+          padding: 0 20px 60px;
+        }
+
+        .bento {
+          grid-template-columns: 1fr;
+        }
+
+        .bento-card.wide,
+        .bento-card.full {
+          grid-column: span 1;
+        }
+
+        .tier-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .hero {
+          padding-top: 32px;
+        }
+
+        .cascade {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .cascade-arrow {
+          transform: rotate(90deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="文件導覽">
+        <div class="sidebar-brand">
+          <p class="eyebrow">Agent Skill</p>
+          <h1>Figma M3 Variables</h1>
+          <p>Material Design 3 三層 Token 繼承（Ref → Sys → Comp）在 Figma Variables 中的完整工作流程。</p>
+        </div>
+
+        <nav>
+          <div class="nav-group">
+            <p class="nav-group-label">概覽</p>
+            <ul class="nav-list">
+              <li><a href="#overview">簡介</a></li>
+              <li><a href="#architecture">三層架構</a></li>
+              <li><a href="#rules">通用規則</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">命名</p>
+            <ul class="nav-list">
+              <li><a href="#naming">命名哲學</a></li>
+              <li><a href="#syntax">WEB Code Syntax</a></li>
+              <li><a href="#scopes">Scope 對照表</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">工作流程</p>
+            <ul class="nav-list">
+              <li><a href="#workflow-a">A · 套用現有 Variables</a></li>
+              <li><a href="#workflow-b">B · 建立 Variables</a></li>
+              <li><a href="#workflow-c">C · 稽核 Variables</a></li>
+              <li><a href="#workflow-d">D · 從 Variables 設計元件</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">參考</p>
+            <ul class="nav-list">
+              <li><a href="#example-button">Filled Button 範例</a></li>
+              <li><a href="#states">變體與互動狀態</a></li>
+              <li><a href="#audit">稽核規則</a></li>
+              <li><a href="#skills">技能分工</a></li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      <main id="main" class="content">
+        <header class="hero" id="overview">
+          <p class="eyebrow">Design Token Architecture</p>
+          <h2>Figma M3 Variables</h2>
+          <p class="lead">
+            在 Figma 中建立、套用、稽核與理解 Variables 的完整 Agent Skill。
+            遵循 Google Material Design 3 的三層 Token 繼承模型，讓設計與程式碼共用同一套語意化命名。
+          </p>
+          <div class="hero-meta">
+            <span class="badge"><span class="badge-dot ref"></span> Reference</span>
+            <span class="badge"><span class="badge-dot sys"></span> System</span>
+            <span class="badge"><span class="badge-dot comp"></span> Component</span>
+            <span class="badge">Ref → Sys → Comp</span>
+          </div>
+        </header>
+
+        <!-- Architecture -->
+        <section id="architecture">
+          <div class="section-head">
+            <h3>三層架構</h3>
+            <p>每一層回答不同的問題，且不可跨層混用命名職責。</p>
+          </div>
+
+          <div class="panel">
+            <div class="tier-stack">
+              <div class="tier-row">
+                <div class="tier-label">
+                  <span class="tier-tag ref">Ref</span>
+                  <span>原始值</span>
+                </div>
+                <div class="tier-content">
+                  <h4>Reference — 這個值本身是什麼？</h4>
+                  <p>存放 hex 色碼、px 數值、字重等原始資料。名稱必須直覺反映數值本身，不可出現元件或版面區域名稱。</p>
+                  <code class="token-path">{prefix}/ref/palette/primary/40</code>
+                </div>
+              </div>
+              <div class="tier-row">
+                <div class="tier-label">
+                  <span class="tier-tag sys">Sys</span>
+                  <span>語意角色</span>
+                </div>
+                <div class="tier-content">
+                  <h4>System — 產品共用的語意是什麼？</h4>
+                  <p>將 Ref 映射為跨元件共用的語意角色（primary、error、inset-md 等）。不可綁定單一元件的解剖結構。</p>
+                  <code class="token-path">{prefix}/sys/color/primary</code>
+                </div>
+              </div>
+              <div class="tier-row">
+                <div class="tier-label">
+                  <span class="tier-tag comp">Comp</span>
+                  <span>元件綁定</span>
+                </div>
+                <div class="tier-content">
+                  <h4>Component — 這個元件如何使用 Token？</h4>
+                  <p>只有這一層可以出現 button、card、padding-horizontal 等元件與結構名稱。Comp 必須 alias 到 Sys，而非直接指向 Ref。</p>
+                  <code class="token-path">{prefix}/comp/filled-button/container/background-color</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="cascade" aria-label="Token 繼承流向">
+              <span class="cascade-node ref-node">ref/palette/primary/40</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node sys-node">sys/color/primary</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node comp-node">comp/filled-button/container/background-color</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node" style="background: var(--accent-soft); color: var(--ink)">Figma Node</span>
+            </div>
+          </div>
+
+          <div class="note note-info" style="margin-top: 16px">
+            <p><strong>前置條件：</strong>每次呼叫 <code>use_figma</code> 前必須先讀取 <code>figma-use</code> skill，且必須傳入 <code>skillNames: "figma-m3-variables"</code>。所有 <code>use_figma</code> 呼叫必須<strong>依序執行</strong>，不可平行。</p>
+          </div>
+        </section>
+
+        <!-- Rules -->
+        <section id="rules">
+          <div class="section-head">
+            <h3>通用規則</h3>
+            <p>適用於所有工作流程（A / B / C / D）的七項強制規則。</p>
+          </div>
+
+          <div class="panel">
+            <ol class="rules-list">
+              <li>
+                <div>
+                  <strong>Inspect before Write</strong>
+                  <span>每次寫入前先以唯讀 <code>use_figma</code> 確認目前狀態，再執行寫入操作。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>ALL_SCOPES 禁止使用</strong>
+                  <span>必須依 Token 角色設定明確的 scope，不可使用 ALL_SCOPES 或留空（Ref 層除外）。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>必須設定 WEB code syntax</strong>
+                  <span>格式固定為 <code>var(--{prefix}-{layer}-{name})</code>，例如 <code>var(--md-sys-color-primary)</code>。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>回傳所有 ID</strong>
+                  <span>每個建立或修改腳本都必須 <code>return</code> 所有受影響的 variable ID 與 node ID。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Prefix 一旦確認即固定</strong>
+                  <span>整個 session 使用同一 prefix（如 md、dd、bd），不可混用。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>use_figma 嚴格依序</strong>
+                  <span>絕不可同時平行執行兩個 <code>use_figma</code> 呼叫。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>錯誤處理</strong>
+                  <span>發生錯誤時停止、閱讀錯誤訊息、修正後重試 — 不可盲目重試。</span>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Naming -->
+        <section id="naming">
+          <div class="section-head">
+            <h3>命名哲學</h3>
+            <p>三層各有不同的命名職責。建立、套用或稽核 Variables 時，必須嚴格區分。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4><span class="tier-tag ref">Ref</span> 允許</h4>
+              <ul>
+                <li><code>ref/color/red/50</code></li>
+                <li><code>ref/spacing/16</code></li>
+                <li><code>ref/radius/12</code></li>
+                <li><code>ref/type/size/14</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4><span class="tier-tag ref">Ref</span> 禁止</h4>
+              <ul>
+                <li class="cell-bad">button、card、chip</li>
+                <li class="cell-bad">bottom-bar、top-app-bar</li>
+                <li class="cell-bad">ref/spacing/button/padding-h</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4><span class="tier-tag sys">Sys</span> 允許</h4>
+              <ul>
+                <li><code>sys/color/primary</code></li>
+                <li><code>sys/spacing/inset-horizontal-md</code></li>
+                <li><code>sys/shape/corner-full</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4><span class="tier-tag sys">Sys</span> 禁止</h4>
+              <ul>
+                <li class="cell-bad">sys/spacing/button-padding-h</li>
+                <li class="cell-bad">sys/color/top-app-bar-surface</li>
+              </ul>
+            </div>
+            <div class="bento-card wide">
+              <h4><span class="tier-tag comp">Comp</span> 元件結構命名</h4>
+              <p>只有 Comp 層可以出現元件與解剖結構名稱，且必須 alias 到 Sys：</p>
+              <ul>
+                <li><code>comp/filled-button/container/padding-horizontal</code> → <code>sys/spacing/inset-horizontal-md</code></li>
+                <li><code>comp/text-field/label-text/color</code> → <code>sys/color/on-surface-variant</code></li>
+                <li><code>comp/navigation-bar/container/background-color</code> → <code>sys/color/surface-container</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>Collection 命名</h4>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>結構選項</th>
+                      <th>Collection 名稱</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>三個獨立 Collection（建議）</td>
+                      <td><code>{Prefix} · Reference</code> / <code>{Prefix} · System</code> / <code>{Prefix} · Component · {ElementName}</code></td>
+                    </tr>
+                    <tr>
+                      <td>單一 Collection</td>
+                      <td><code>{Prefix} · Design Tokens</code>（以 group prefix 區分三層）</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Syntax -->
+        <section id="syntax">
+          <div class="section-head">
+            <h3>WEB Code Syntax</h3>
+            <p>所有 Variable 都必須設定 WEB code syntax，供設計到程式碼的 handoff 使用。</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-body">
+              <code class="token-path" style="display: block; margin-bottom: 16px">var(--{prefix}-{layer}-{category}-{name})</code>
+              <div class="specimen-grid">
+                <div class="specimen">
+                  <div class="specimen-swatch" style="background: #6750a4"><span>#6750A4</span></div>
+                  <div class="specimen-info">
+                    <span class="specimen-name">md/ref/palette/primary/40</span>
+                    <span class="specimen-css">var(--md-ref-palette-primary-40)</span>
+                  </div>
+                </div>
+                <div class="specimen">
+                  <div class="specimen-swatch" style="background: #6750a4"><span>primary</span></div>
+                  <div class="specimen-info">
+                    <span class="specimen-name">md/sys/color/primary</span>
+                    <span class="specimen-css">var(--md-sys-color-primary)</span>
+                  </div>
+                </div>
+                <div class="specimen">
+                  <div class="specimen-swatch" style="background: #6750a4"><span>button fill</span></div>
+                  <div class="specimen-info">
+                    <span class="specimen-name">md/comp/filled-button/container/background-color</span>
+                    <span class="specimen-css">var(--md-comp-filled-button-container-background-color)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="note note-info" style="margin-top: 16px">
+                <p>規則：層級以 <code>-</code> 分隔（非 <code>/</code>），全小寫，空格替換為 <code>-</code>。Ref 保持簡短且值導向；長元件路徑只存在於 <code>comp-</code> 下。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Scopes -->
+        <section id="scopes">
+          <div class="section-head">
+            <h3>Variable Scope 對照表</h3>
+            <p>依 Token 角色設定 Figma scope。Ref 層必須設為空陣列以隱藏於 picker。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Token 角色</th>
+                    <th>Figma Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ref 層（全部）</td>
+                    <td><code>[]</code>（空陣列，隱藏於 picker）</td>
+                  </tr>
+                  <tr>
+                    <td>背景 / 容器填色（Sys / Comp）</td>
+                    <td><code>["FRAME_FILL", "SHAPE_FILL"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>文字顏色（Sys / Comp）</td>
+                    <td><code>["TEXT_FILL"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>圖形 / 通用填色</td>
+                    <td><code>["ALL_FILLS"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>邊框顏色</td>
+                    <td><code>["STROKE_COLOR"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>圓角半徑</td>
+                    <td><code>["CORNER_RADIUS"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>Padding / Gap</td>
+                    <td><code>["GAP"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>寬度 / 高度</td>
+                    <td><code>["WIDTH_HEIGHT"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>不透明度</td>
+                    <td><code>["OPACITY"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>Font Family / Size / Weight / Line Height / Letter Spacing</td>
+                    <td><code>["FONT_FAMILY"]</code> 等對應 scope</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Workflows -->
+        <section id="workflows">
+          <div class="section-head">
+            <h3>四大工作流程</h3>
+            <p>依觸發情境選擇對應流程。所有流程共享上方的通用規則。</p>
+          </div>
+
+          <div class="workflow-grid">
+            <article class="workflow-card" id="workflow-a">
+              <div class="workflow-header">
+                <div class="workflow-letter">A</div>
+                <div>
+                  <h4>套用現有 Variables 到元件</h4>
+                  <p>觸發：使用者提供 Figma URL + node-id，要求套用 Variables</p>
+                </div>
+              </div>
+              <ol class="workflow-steps">
+                <li><strong>Inspect</strong> — 列出所有 variable collections 與 variables</li>
+                <li><strong>Evaluate</strong> — 確認命名符合 M3 三層結構；若缺失則切換至 Workflow B</li>
+                <li><strong>Match</strong> — 依元件類型找出 Comp 層 token，列出綁定提案供使用者確認</li>
+                <li><strong>Bind</strong> — 執行綁定（fills、corner radius、padding、gap、text color）</li>
+                <li><strong>Validate</strong> — 呼叫 <code>get_screenshot</code> 確認視覺正確性</li>
+              </ol>
+            </article>
+
+            <article class="workflow-card" id="workflow-b">
+              <div class="workflow-header">
+                <div class="workflow-letter">B</div>
+                <div>
+                  <h4>建立 Variables（檔案中尚無）</h4>
+                  <p>觸發：檔案中找不到 M3 三層 Variables，或使用者明確要求建立</p>
+                </div>
+              </div>
+              <ol class="workflow-steps">
+                <li><strong>Discover</strong> — 探索設計指南；若無則以 AskQuestion 收集視覺風格偏好</li>
+                <li><strong>Ask prefix</strong> — 讓使用者選擇 prefix（md、dd、bd 或自訂）</li>
+                <li><strong>Ask Collection 結構</strong> — 三個獨立 Collection（建議）或單一 Collection</li>
+                <li><strong>Inspect</strong> — 確認無重複 Collection 名稱</li>
+                <li><strong>Create</strong> — 依 token-spec 建立 Ref（原始值）→ Sys（alias Ref）→ Comp（alias Sys）</li>
+                <li><strong>Bind</strong> — 執行 Workflow A Step 4 綁定到目標節點</li>
+                <li><strong>Validate</strong> — 截圖確認並回報各層 variable 數量</li>
+              </ol>
+            </article>
+
+            <article class="workflow-card" id="workflow-c">
+              <div class="workflow-header">
+                <div class="workflow-letter">C</div>
+                <div>
+                  <h4>稽核現有 Variables</h4>
+                  <p>觸發：使用者要求檢查、稽核，或詢問「命名是否正確？」</p>
+                </div>
+              </div>
+              <ol class="workflow-steps">
+                <li><strong>Inspect</strong> — 讀取所有 collections、variables、scopes、codeSyntax、valuesByMode</li>
+                <li><strong>Apply audit-rules</strong> — 依七種違規類型（含 Ref/Sys 命名 §7）編列問題清單</li>
+                <li><strong>Report</strong> — 以表格呈現：違規變數名稱、違規類型、建議修正</li>
+                <li><strong>Ask</strong> — 詢問是否自動修正</li>
+                <li><strong>Validate</strong> — 修正後再次 inspect，確認零違規</li>
+              </ol>
+            </article>
+
+            <article class="workflow-card" id="workflow-d">
+              <div class="workflow-header">
+                <div class="workflow-letter">D</div>
+                <div>
+                  <h4>從現有 Variables 設計元件</h4>
+                  <p>觸發：使用者希望 AI 理解現有 token 並用它們建立或更新元件</p>
+                </div>
+              </div>
+              <ol class="workflow-steps">
+                <li><strong>Discover guidelines</strong> — 掃描 paint styles、text styles、components；有則摘要確認，無則 AskQuestion 收集偏好</li>
+                <li><strong>Inspect variables</strong> — 分析三層結構與 token 語意</li>
+                <li><strong>Semantic mapping</strong> — 對照 design guidelines，衝突時標記給使用者</li>
+                <li><strong>Variants &amp; states</strong> — 以 AskQuestion 讓使用者選擇變體維度與互動狀態</li>
+                <li><strong>Plan state tokens</strong> — 確認現有 Comp token 是否涵蓋各狀態，不足則新增</li>
+                <li><strong>Build</strong> — 建立 Component 或 Component Set，綁定 variables</li>
+                <li><strong>Validate</strong> — 截圖確認視覺正確且各狀態可區分</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <!-- Filled Button Example -->
+        <section id="example-button">
+          <div class="section-head">
+            <h3>Filled Button — 完整 Token 範例</h3>
+            <p>以 Filled Button 示範三層 token 的建立、alias 鏈與節點綁定對照。</p>
+          </div>
+
+          <h4 style="margin-bottom: 12px"><span class="tier-tag ref">Ref</span> 原始值層</h4>
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Token 名稱</th>
+                    <th>類型</th>
+                    <th>範例值</th>
+                    <th>Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>{p}/ref/palette/primary/40</code></td><td>COLOR</td><td>#FF0101</td><td><code>[]</code></td></tr>
+                  <tr><td><code>{p}/ref/palette/neutral/100</code></td><td>COLOR</td><td>#FFFFFF</td><td><code>[]</code></td></tr>
+                  <tr><td><code>{p}/ref/radius/12</code></td><td>FLOAT</td><td>12</td><td><code>[]</code></td></tr>
+                  <tr><td><code>{p}/ref/spacing/16</code></td><td>FLOAT</td><td>16</td><td><code>[]</code></td></tr>
+                  <tr><td><code>{p}/ref/spacing/12</code></td><td>FLOAT</td><td>12</td><td><code>[]</code></td></tr>
+                  <tr><td><code>{p}/ref/spacing/8</code></td><td>FLOAT</td><td>8</td><td><code>[]</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h4 style="margin: 24px 0 12px"><span class="tier-tag sys">Sys</span> 語意層（alias Ref）</h4>
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Token 名稱</th>
+                    <th>Alias 目標</th>
+                    <th>Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>{p}/sys/color/primary</code></td><td>ref/palette/primary/40</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/sys/color/on-primary</code></td><td>ref/palette/neutral/100</td><td>TEXT_FILL</td></tr>
+                  <tr><td><code>{p}/sys/shape/corner-full</code></td><td>ref/radius/12</td><td>CORNER_RADIUS</td></tr>
+                  <tr><td><code>{p}/sys/spacing/inset-horizontal-md</code></td><td>ref/spacing/16</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/sys/spacing/inset-vertical-sm</code></td><td>ref/spacing/12</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/sys/spacing/gap-inline-sm</code></td><td>ref/spacing/8</td><td>GAP</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h4 style="margin: 24px 0 12px"><span class="tier-tag comp">Comp</span> 元件層（alias Sys）</h4>
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Token 名稱</th>
+                    <th>Alias 目標</th>
+                    <th>Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>{p}/comp/filled-button/container/background-color</code></td><td>sys/color/primary</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/shape</code></td><td>sys/shape/corner-full</td><td>CORNER_RADIUS</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/padding-horizontal</code></td><td>sys/spacing/inset-horizontal-md</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/label-text/color</code></td><td>sys/color/on-primary</td><td>TEXT_FILL</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/with-icon/icon-label-gap</code></td><td>sys/spacing/gap-inline-sm</td><td>GAP</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h4 style="margin: 24px 0 12px">節點綁定對照</h4>
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>節點屬性</th>
+                    <th>綁定的 Comp Token</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Container <code>fills</code></td><td><code>…/container/background-color</code></td></tr>
+                  <tr><td>Container 四角 <code>radius</code></td><td><code>…/container/shape</code></td></tr>
+                  <tr><td>Container <code>paddingLeft/Right</code></td><td><code>…/container/padding-horizontal</code></td></tr>
+                  <tr><td>Container <code>paddingTop/Bottom</code></td><td><code>…/container/padding-vertical</code></td></tr>
+                  <tr><td>Text node <code>fills</code></td><td><code>…/label-text/color</code></td></tr>
+                  <tr><td>Icon 與 label 間 <code>itemSpacing</code></td><td><code>…/with-icon/icon-label-gap</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>綁定 API 範例</h4>
+              <pre><code><span class="comment">// 背景 / 前景顏色</span>
+<span class="fn">figma.variables.setBoundVariableForPaint</span>(paint, <span class="string">"color"</span>, variable)
+
+<span class="comment">// 圓角（四個角都要綁）</span>
+node.<span class="fn">setBoundVariable</span>(<span class="string">"topLeftRadius"</span>, variable)
+
+<span class="comment">// Padding / Gap</span>
+node.<span class="fn">setBoundVariable</span>(<span class="string">"paddingLeft"</span>, variable)
+node.<span class="fn">setBoundVariable</span>(<span class="string">"itemSpacing"</span>, variable)</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- States -->
+        <section id="states">
+          <div class="section-head">
+            <h3>變體與互動狀態</h3>
+            <p>狀態 token 作為 Comp token 路徑的子屬性。M3 標準 state layer 不透明度如下。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>State Token 命名</h4>
+              <ul>
+                <li><code>…/background-color</code> — Default</li>
+                <li><code>…/background-color/hovered</code></li>
+                <li><code>…/background-color/focused</code></li>
+                <li><code>…/background-color/pressed</code></li>
+                <li><code>…/background-color/disabled</code></li>
+                <li><code>…/background-color/error</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>State Layer 不透明度</h4>
+              <ul>
+                <li>Hovered — 8%</li>
+                <li>Focused — 12%</li>
+                <li>Pressed — 12%</li>
+                <li>Dragged — 16%</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>Disabled 覆寫規則</h4>
+              <ul>
+                <li>Container fill → <code>on-surface</code> @ 12%</li>
+                <li>Label / icon → <code>on-surface</code> @ 38%</li>
+                <li>Outline → <code>on-surface</code> @ 12%</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note note-warn" style="margin-top: 16px">
+            <p>Disabled 狀態必須建立專用 token，不可重用 Default token。不透明度應透過 node 的 <code>opacity</code> 或 <code>OPACITY</code> variable 設定，不可 bake 進 color token 值。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>Light / Dark 雙模式擴展</h4>
+              <p style="color: var(--muted); margin: 0 0 12px">Sys 層 Collection 可新增 Dark mode。每個 Sys color token 在 Dark mode 指向不同的 Ref palette token。Comp 層與節點綁定無需修改。</p>
+              <pre><code><span class="comment">// Light mode</span>
+sysPrimary.<span class="fn">setValueForMode</span>(lightModeId, { type: <span class="string">'VARIABLE_ALIAS'</span>, id: refPrimary40.id })
+<span class="comment">// Dark mode</span>
+sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span class="string">'VARIABLE_ALIAS'</span>, id: refPrimary80.id })</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Audit -->
+        <section id="audit">
+          <div class="section-head">
+            <h3>稽核規則 — 七種違規類型</h3>
+            <p>Workflow C 使用的完整違規偵測清單。零違規時回報「All Variables comply」。</p>
+          </div>
+
+          <div class="violation-list">
+            <div class="violation-item">
+              <div class="violation-num">1</div>
+              <div>
+                <h4>跨層直接 Alias（Comp → Ref，跳過 Sys）</h4>
+                <p>Comp 層 variable 直接 alias 到 Ref 層。修正：建立缺失的 Sys token，更新 Comp 指向正確 Sys。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">2</div>
+              <div>
+                <h4>Scope 使用 ALL_SCOPES</h4>
+                <p>scopes 包含 ALL_SCOPES 或非 Ref 層的空 scope。修正：依 scope 對照表設定明確 scope。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">3</div>
+              <div>
+                <h4>缺少 WEB Code Syntax</h4>
+                <p>codeSyntax.WEB 為空或不存在。修正：從 variable 名稱自動推導 CSS 名稱。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">4</div>
+              <div>
+                <h4>Prefix 不一致</h4>
+                <p>同一檔案混用多個 prefix（如 md 與 bd）。修正：確認正確 prefix 後批次重新命名。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">5</div>
+              <div>
+                <h4>Ref 層 Variable 直接綁定到節點</h4>
+                <p>節點視覺屬性直接綁定 Ref 層 variable。修正：重新綁定到對應 Sys 或 Comp token。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">6</div>
+              <div>
+                <h4>空 Collection</h4>
+                <p>Collection 存在但 variableIds 為空。修正：詢問使用者是否刪除。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">7</div>
+              <div>
+                <h4>Ref 或 Sys 使用元件 / 區域特定命名</h4>
+                <p>Ref/Sys 名稱包含 button、bottom-bar 等僅屬 Comp 的詞彙。修正：Ref 改為 primitive 路徑，Sys 改為通用語意，Comp 新增 alias。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Skills -->
+        <section id="skills">
+          <div class="section-head">
+            <h3>與其他 Skill 的分工</h3>
+            <p>此 skill 專注 Figma Variables 的 M3 三層管理，與程式碼端治理及完整 design system 建置互補。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table class="skill-matrix">
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th>職責</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>figma-use</code></td>
+                    <td>底層 Plugin API 規則（顏色 0–1、return、page switching 等）— <strong>必須優先讀取</strong></td>
+                  </tr>
+                  <tr>
+                    <td><code>figma-m3-variables</code></td>
+                    <td>在 Figma 中建立、套用、稽核與逆向工程 M3 Variables（本 skill）</td>
+                  </tr>
+                  <tr>
+                    <td><code>design-system-governance</code></td>
+                    <td>程式碼端 token 治理（CSS/SCSS tokens）— 與本 skill 互補</td>
+                  </tr>
+                  <tr>
+                    <td><code>figma-generate-library</code></td>
+                    <td>完整多階段 design system 建置；Workflow D 涉及元件建立時參考其 Phase 3</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          <p>
+            來源：<code>figma-m3-variables/SKILL.md</code> ·
+            <code>references/token-spec.md</code> ·
+            <code>references/audit-rules.md</code>
+          </p>
+          <p style="margin-top: 6px">產生時間：2026-05-26 · 靜態 HTML，無外部依賴</p>
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        var links = document.querySelectorAll(".nav-list a");
+        var sections = [];
+
+        links.forEach(function (link) {
+          var id = link.getAttribute("href").slice(1);
+          var el = document.getElementById(id);
+          if (el) sections.push({ link: link, el: el });
+        });
+
+        function onScroll() {
+          var scrollY = window.scrollY + 120;
+          var current = sections[0];
+          sections.forEach(function (item) {
+            if (item.el.offsetTop <= scrollY) current = item;
+          });
+          links.forEach(function (l) {
+            l.classList.remove("active");
+          });
+          if (current) current.link.classList.add("active");
+        }
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+      })();
+    </script>
+  </body>
+</html>

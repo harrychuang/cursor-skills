@@ -1,0 +1,7 @@
+interface:
+  display_name: "Design System to Storybook"
+  short_description: "Batch Storybook from design-system docs"
+  default_prompt: "Use $design-system-to-storybook to install the Figma export addon, plan batches, and build token-backed Storybook foundations and components from an extracted design-system package."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,74 @@
+{
+  "name": "@harrychuang/storybook-addon-figma-export",
+  "version": "0.1.0",
+  "description": "Export Storybook stories to Figma import payloads with ref/sys/comp CSS token layers",
+  "type": "module",
+  "license": "MIT",
+  "author": "Harry Chuang",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harrychuang/storybook-addons.git",
+    "directory": "packages/figma-export"
+  },
+  "bugs": {
+    "url": "https://github.com/harrychuang/storybook-addons/issues"
+  },
+  "homepage": "https://github.com/harrychuang/storybook-addons/tree/main/packages/figma-export#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": [
+    "./dist/manager.js",
+    "./dist/figma-code-exporter.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./preview": {
+      "types": "./dist/preview.d.ts",
+      "default": "./dist/preview.js"
+    },
+    "./preset": {
+      "types": "./dist/preset.d.ts",
+      "default": "./dist/preset.js"
+    },
+    "./manager": {
+      "types": "./dist/manager.d.ts",
+      "default": "./dist/manager.js"
+    },
+    "./styles.css": "./dist/figma-code-exporter.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@storybook/icons": "^1.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "storybook": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "@storybook/icons": "^1.4.0",
+    "@types/react": "^19.1.8",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "storybook": "^10.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "storybook": {
+    "displayName": "Figma Export",
+    "unsupportedFrameworks": []
+  }
+}

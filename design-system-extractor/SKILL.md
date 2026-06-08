@@ -109,6 +109,8 @@ Extract at least one high-value component when the user did not specify one, usu
 
 For each extracted component, create `design-system/components/<component-name>.md` from `design-system/COMPONENT_SPEC_TEMPLATE.md` and update `tokens/tokens-comp.css`. Use lowercase hyphen-case filenames, such as `primary-button.md` or `bottom-navigation.md`.
 
+For each component spec, fill `Source Trace` whenever source material exists. Include the exact Figma node or design URL, screenshot crop/export path, rendered route with viewport/state, prototype/source files, and existing product component candidates. If a trace type is unavailable, mark it `not available` with a short reason instead of leaving it ambiguous.
+
 Use `references/component-spec-rules.md` for anatomy, variants, state coverage, accessibility, and token naming.
 
 ### 7. Composition, Interaction, And Anti-AI Rules

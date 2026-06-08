@@ -9,6 +9,18 @@ Copy this template to `design-system/components/<component-name>.md` for each ex
 | Evidence ID | Source | Region | Notes |
 |---|---|---|---|
 
+## Source Trace
+
+Use this section to help downstream implementation skills locate the original design and reference code without re-extracting the design system.
+
+| Trace type | Reference | What it proves | Confidence |
+|---|---|---|---|
+| Figma node / design URL |  |  |  |
+| Screenshot crop / export |  |  |  |
+| Rendered route / viewport / state |  |  |  |
+| Prototype or source files |  |  |  |
+| Existing product component candidates |  |  |  |
+
 ## Component Fingerprint
 
 | Dimension | Description |

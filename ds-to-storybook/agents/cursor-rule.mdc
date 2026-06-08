@@ -1,0 +1,50 @@
+---
+description: Build Storybook from extracted design-system docs with bounded batches
+globs:
+  - "design-system/**"
+  - "tokens/**"
+  - ".storybook/**"
+  - "src/**/*.stories.*"
+  - "components/**"
+  - "src/components/**"
+alwaysApply: false
+---
+
+# Design System to Storybook
+
+Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, shared UI components, and stories from an extracted design-system package.
+
+## Source Of Truth
+
+- Read `design-system/SESSION_STATE.md`.
+- Read `design-system/COMPONENT_INVENTORY.md`.
+- Read relevant `design-system/components/*.md`.
+- Read `design-system/DESIGN_EVIDENCE_MAP.md` for evidence and source trace.
+- Read touched token files under `tokens/`.
+- Do not infer component design from screenshots or broad Figma search inside this workflow.
+
+## Batch Rules
+
+- Implement one bounded pass at a time.
+- Default pass size is foundations only, 3-5 simple components, or 1-2 complex composites.
+- If more than 8 components are implementable, create or update `design-system/STORYBOOK_COMPONENT_QUEUE.md`.
+- Update `design-system/STORYBOOK_IMPLEMENTATION_MAP.md` before code edits.
+- Stop after verification and checkpoint update.
+
+## Component Rules
+
+- Resolve source trace before implementation.
+- Prefer reuse or extension of existing product components.
+- Keep all visual values token-backed.
+- Add Storybook stories for documented variants and states.
+- Mark missing specs as `needs-extraction`; do not invent undocumented variants.
+
+## Figma Export Addon
+
+For React Storybook 10 projects, install the vendored addon from the local skill folder:
+
+```sh
+npm install -D "file:skills/ds-to-storybook/assets/figma-export-addon" @storybook/icons
+```
+
+Configure `sourceReferences` from component `Source Trace` or `DESIGN_EVIDENCE_MAP.md` so the addon source review panel can open Figma/reference URLs.

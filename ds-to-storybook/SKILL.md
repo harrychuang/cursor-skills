@@ -356,6 +356,10 @@ Do not rewrite product screens to use the new library until the relevant shared 
 
 ## Resource Map
 
+- `README.md`: human-facing overview, setup, prompts, cross-agent installation, and maintenance notes.
+- `agents/claude.md`: Claude Code `CLAUDE.md` handoff template and `.claude/skills/` usage guidance.
+- `agents/codex-agents.md`: Codex `AGENTS.md` handoff template.
+- `agents/cursor-rule.mdc`: Cursor `.cursor/rules/` project rule template.
 - `assets/storybook-component-queue-template.md`: queue template for large component inventories.
 - `assets/storybook-implementation-map-template.md`: implementation map template for doc-driven passes, source trace records, verification logs, and checkpoint handoff.
 - `assets/figma-export-addon/`: vendored `@harrychuang/storybook-addon-figma-export` package installed by this skill via local `file:` dependency.

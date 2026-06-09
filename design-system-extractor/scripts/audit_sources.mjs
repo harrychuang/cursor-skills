@@ -111,6 +111,19 @@ function isUnresolvedDecision(value) {
   return unresolvedPattern.test(cleaned) || !decisionPattern.test(cleaned);
 }
 
+function hasDocumentedUnresolvedReason(value) {
+  const cleaned = cleanCell(value);
+  return /^unresolved\s*[-:]/i.test(cleaned) || /^not available\s*[-:]/i.test(cleaned);
+}
+
+function isFigmaSourceRow({ type, source, fingerprint }) {
+  return /figma/i.test(`${type} ${source} ${fingerprint}`);
+}
+
+function hasFigmaUrl(value) {
+  return /https?:\/\/(?:www\.)?figma\.com\//i.test(cleanCell(value));
+}
+
 function normalizeKey(value) {
   return cleanCell(value)
     .toLowerCase()
@@ -197,6 +210,10 @@ let unresolvedDuplicateRows = 0;
 let documentedDuplicateRows = 0;
 let repeatedFingerprintGroups = 0;
 let repeatedSourceKeyGroups = 0;
+let figmaSourceRows = 0;
+let figmaSourcesWithOriginalUrl = 0;
+let figmaSourcesWithMcpTarget = 0;
+let unresolvedFigmaMcpTargets = 0;
 
 if (evidenceMap === null) {
   const message = `Missing ${path.relative(targetRoot, evidenceMapFile)}`;
@@ -240,6 +257,18 @@ if (evidenceMap === null) {
       }
 
       const fingerprint = firstValue(entry.row, ["source fingerprint", "fingerprint"]);
+      const isFigma = isFigmaSourceRow({ type, source, fingerprint });
+      if (isFigma) {
+        figmaSourceRows += 1;
+        if (hasFigmaUrl(source)) {
+          figmaSourcesWithOriginalUrl += 1;
+        } else {
+          const message = `Figma Source Inventory row ${entry.line} should keep the original Figma URL in Path / URL / Node for downstream Figma MCP handoff.`;
+          if (strict) issues.push(message);
+          else warnings.push(message);
+        }
+      }
+
       const fingerprintKeys = extractFingerprintKeys(fingerprint);
       if (fingerprintKeys.length) {
         sourcesWithFingerprint += 1;
@@ -251,6 +280,19 @@ if (evidenceMap === null) {
         const message = `Source Inventory row ${entry.line} is missing a source fingerprint for ${id || source || "source"}.`;
         if (strict) issues.push(message);
         else warnings.push(message);
+      }
+
+      if (isFigma) {
+        const mcpTarget = firstValue(entry.row, ["figma mcp target", "mcp target"]);
+        if (!isEmptyCell(mcpTarget) && !hasDocumentedUnresolvedReason(mcpTarget)) {
+          figmaSourcesWithMcpTarget += 1;
+        } else if (hasDocumentedUnresolvedReason(mcpTarget)) {
+          unresolvedFigmaMcpTargets += 1;
+        } else {
+          const message = `Figma Source Inventory row ${entry.line} is missing a Figma MCP target or unresolved reason.`;
+          if (strict) issues.push(message);
+          else warnings.push(message);
+        }
       }
 
       addGroup(sourceKeyGroups, sourceKeyFor(entry.row), entry, { id, type, source });
@@ -328,6 +370,10 @@ console.log(`Unresolved duplicate rows: ${unresolvedDuplicateRows}`);
 console.log(`Documented duplicate decisions: ${documentedDuplicateRows}`);
 console.log(`Repeated fingerprint groups: ${repeatedFingerprintGroups}`);
 console.log(`Repeated source path/state groups: ${repeatedSourceKeyGroups}`);
+console.log(`Figma source rows: ${figmaSourceRows}`);
+console.log(`Figma sources with original URL: ${figmaSourcesWithOriginalUrl}`);
+console.log(`Figma sources with MCP target: ${figmaSourcesWithMcpTarget}`);
+console.log(`Unresolved Figma MCP targets: ${unresolvedFigmaMcpTargets}`);
 console.log(`Strict mode: ${strict ? "on" : "off"}`);
 
 if (warnings.length) {

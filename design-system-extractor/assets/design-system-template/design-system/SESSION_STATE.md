@@ -42,6 +42,13 @@ Update this file at every checkpoint.
 - Developer decisions recorded in `DESIGN_EVIDENCE_MAP.md`:
 - Source fingerprints recorded:
 
+## Figma MCP Handoff
+
+- Figma sources found:
+- Figma source rows with original URL:
+- Figma source rows with MCP-ready target:
+- Unresolved Figma targets and reasons:
+
 ## Token Review
 
 - Near token candidates found:

@@ -6,8 +6,8 @@ Use this rubric before writing design-system decisions.
 
 Record every source:
 
-| Source ID | Type | Path / URL / Node | Source fingerprint | Screen or state | Notes | Confidence |
-|---|---|---|---|---|---|---|
+| Source ID | Type | Path / URL / Node | Source fingerprint | Screen or state | Notes | Confidence | Figma MCP target |
+|---|---|---|---|---|---|---|---|
 
 Source types:
 
@@ -20,7 +20,7 @@ Source types:
 Fingerprint guidance:
 
 - Images and screenshots: use `sha256:<hash>` for exact file matches; add `phash:<hash>` or a crop note when perceptual comparison is available.
-- Figma: normalize URLs to `figma:<file-key>#<node-id>` or `figma:<file-key>#page:<page-name>`.
+- Figma: keep the original URL, normalize fingerprints to `figma:<file-key>#<node-id>` or `figma:<file-key>#page:<page-name>`, and record the MCP-ready file key, node id, page/frame/node names, and suggested read call in `Figma MCP target`.
 - Rendered routes: include route, viewport, state, and screenshot/render command.
 - Project code: include normalized file path plus exported token/component name when relevant.
 

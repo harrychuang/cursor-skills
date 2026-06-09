@@ -1846,6 +1846,16 @@ void (async function importStorybookStory(payload) {
 `;
 }
 
+// src/source.ts
+function isRecord(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function getParameterUrl(value) {
+  if (typeof value === "string") return value;
+  if (!isRecord(value)) return void 0;
+  return typeof value.url === "string" ? value.url : void 0;
+}
+
 // src/FigmaCodeExporter.tsx
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 var statusLabels = {
@@ -1903,7 +1913,7 @@ function getDesignParameterReferences(design) {
 }
 function getSourceReferences(context, options) {
   const parameterReferences = context.parameters?.figmaExport?.sourceReferences ?? [];
-  const singleParameterReference = context.parameters?.figmaExport?.sourceReference ?? context.parameters?.figmaExport?.sourceUrl;
+  const singleParameterReference = context.parameters?.figmaSourceUrl ?? getParameterUrl(context.parameters?.figma) ?? context.parameters?.figmaExport?.sourceReference ?? context.parameters?.figmaExport?.sourceUrl;
   const normalizedSingle = normalizeSourceReference(singleParameterReference, "Source");
   return [
     ...options.sourceReferences.map(

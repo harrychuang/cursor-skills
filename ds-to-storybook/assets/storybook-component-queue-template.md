@@ -6,58 +6,69 @@
 - Product repo:
 - Framework:
 - Storybook/catalog:
+- Source trace:
+- Component build plan:
 - Figma export addon:
 - Package manager:
 - Token import strategy:
+- Target layout: components in `src/components/<ComponentName>/`, pages in `src/pages/<PageName>/`, foundation docs in `stories/` or `src/stories/`
 - Current batch:
-- Pass budget:
-- Stop condition:
 
 ## Status Values
 
 - `queued`: ready for a future batch
 - `in-progress`: selected for the current batch
 - `done`: implemented, documented, and verified
+- `reused`: existing product component accepted as the implementation
 - `blocked`: cannot continue without a decision or missing source
 - `deferred`: intentionally postponed
 - `needs-extraction`: missing design-system evidence or component spec
+- `needs-source`: extractor source evidence exists but the Figma node, image, route, or frontend folder cannot be resolved
 - `needs-token`: missing token at the required layer
 - `needs-api-decision`: shared component API needs a product decision
 - `needs-existing-component-review`: similar product component needs review first
 - `needs-addon-compatibility`: Storybook, React, or addon setup requirement is missing
-- `source-trace-missing`: component spec is present but original design/source trace is absent or incomplete
 - `out-of-scope`: not part of this Storybook rollout
 
-## Doc-Driven Pass Checklist
+## Source Trace
 
-- [ ] Read `design-system/SESSION_STATE.md`
-- [ ] Read `design-system/COMPONENT_INVENTORY.md`
-- [ ] Read relevant `design-system/components/*.md`
-- [ ] Read touched token files under `tokens/`
-- [ ] Resolve evidence IDs through `design-system/DESIGN_EVIDENCE_MAP.md`
-- [ ] Resolve source trace for selected components
-- [ ] Inspect matching existing product components/stories
-- [ ] Update this queue before code edits
-- [ ] Verify current batch
-- [ ] Update queue and stop at checkpoint
+| Source ID / location | Type | Resolved file / Figma node / route | Story source URL | Components | Status | Notes |
+|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |
+
+## Current Component Checkpoint
+
+| Field | Value |
+|---|---|
+| Active component |  |
+| Queue order / batch |  |
+| Dependency status |  |
+| Source inspected |  |
+| Existing component review |  |
+| Token decision |  |
+| Product files |  |
+| Story files |  |
+| Target layout |  |
+| Verification |  |
+| Blocker / next action |  |
+
+## Dependency Plan
+
+| Order | Component | Category | Depends on | Used by | Core reason | Status | Notes |
+|---|---|---|---|---|---|---|---|
+| 1 |  |  |  |  |  | queued |  |
 
 ## Component Queue
 
-| Batch | Component | Category | Source spec | Evidence IDs | Source trace | Dependencies | Product target | Story target | Decision | Status |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `B01` |  |  |  |  |  |  |  |  |  | queued |
+| Batch | Order | Component | Category | Source spec | Design sources | Story source URL | Depends on | Used by | Product target | Story target | Decision | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `B01` | 1 |  |  |  |  |  |  |  | `src/components/<ComponentName>/<ComponentName>.tsx` | `src/components/<ComponentName>/<ComponentName>.stories.tsx` |  | queued |
 
 ## Batch Plan
 
-| Batch | Components | Source trace status | Shared dependencies | Validation | Exit criteria | Stop condition | Status |
-|---|---|---|---|---|---|---|---|
-| `B01` |  |  |  |  |  | update queue and stop | queued |
-
-## Source Trace Log
-
-| Component | Evidence IDs | Figma nodes / screenshots | Rendered routes | Prototype or source files | Existing product candidates | Status | Notes |
-|---|---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |  |
+| Batch | Components | Shared dependencies | Design sources | Dependency exit criteria | Validation | Status |
+|---|---|---|---|---|---|---|
+| `B01` |  |  |  | all listed dependencies are done, reused, or accepted blocked decisions |  | queued |
 
 ## Decisions
 
@@ -71,10 +82,14 @@
 |---|---|---|---|
 | Storybook `^10` |  |  |  |
 | React |  |  |  |
+| Bundled addon asset | `assets/figma-export-addon/` |  |  |
+| Product vendor path | `.storybook/vendor/figma-export-addon/` |  |  |
+| Project config | `.storybook/figma-export.config.ts` |  |  |
 | `@storybook/icons` |  |  |  |
 | Addon package |  |  |  |
 | `.storybook/main.*` registration |  |  |  |
 | `.storybook/preview.*` decorator/globals |  |  |  |
+| Review helper / status API |  |  |  |
 | Token prefix/options |  |  |  |
 
 ## Verification Log

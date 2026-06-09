@@ -12,7 +12,9 @@ Use this skill when you want to:
 - create Storybook foundation docs for color, type, spacing, radius, elevation, or motion
 - implement selected component specs from `design-system/components/*.md`
 - build a reusable component library from `COMPONENT_INVENTORY.md`
-- install the vendored Figma export addon for compatible React Storybook 10 projects
+- trace extractor source evidence into `STORYBOOK_SOURCE_TRACE.md`
+- infer component dependency order into `STORYBOOK_COMPONENT_PLAN.md`
+- install and configure the bundled Figma export addon for compatible React Storybook 10 projects
 - keep component implementation work split into short, resumable batches
 
 Do not use it to infer a design system from screenshots or Figma from scratch. Run or continue `design-system-extractor` first.
@@ -50,19 +52,26 @@ For component implementation, each component spec should include:
 - `Layout Rules`
 - `Accessibility Rules`
 
-If source trace is missing but the component spec is otherwise complete, the skill can continue and record `source-trace-missing`. If the component spec itself is incomplete, it should mark the item `needs-extraction`.
+If source trace is missing but the component spec is otherwise complete, the skill can continue and record the missing source. If extractor evidence exists but cannot be resolved, mark the item `needs-source`. If the component spec itself is incomplete, mark the item `needs-extraction`.
 
 ## Standard Workflow
 
 1. Locate the design-system package and product repo.
-2. Read `SESSION_STATE.md`, `COMPONENT_INVENTORY.md`, relevant component specs, and touched token files.
-3. Choose a bounded pass:
+2. Read `SESSION_STATE.md`, `DESIGN_EVIDENCE_MAP.md`, `COMPONENT_INVENTORY.md`, relevant component specs, and touched token files.
+3. Generate source trace and dependency plan:
+
+```sh
+node <skill-root>/scripts/trace_sources.mjs <design-system-package-root> --write
+node <skill-root>/scripts/plan_component_batches.mjs <design-system-package-root> --write --queue
+```
+
+4. Choose a bounded pass:
    - foundations only
    - 3-5 simple components
    - 1-2 complex composites
    - blocker-resolution only
-4. Create or update an implementation map.
-5. Resolve each selected component through:
+5. Create or update an implementation map.
+6. Resolve each selected component through:
 
 ```txt
 COMPONENT_INVENTORY.md
@@ -73,17 +82,18 @@ COMPONENT_INVENTORY.md
   -> product component/story target
 ```
 
-6. Inspect existing product components and Storybook conventions.
-7. Integrate tokens before components.
-8. Implement the selected components and stories.
-9. Run the cheapest reliable verification.
-10. Update the implementation map and queue, then stop.
+7. Inspect existing product components and Storybook conventions.
+8. Integrate tokens before components.
+9. Implement the selected components with co-located stories.
+10. Run the cheapest reliable verification.
+11. Update the implementation map and queue, then stop.
 
 ## Bounded Passes
 
-This skill intentionally avoids long continuous implementation runs. If the inventory has more than 8 implementable components, create or update:
+This skill intentionally avoids long continuous implementation runs. If implementing more than one component, or if the inventory has more than 8 implementable components, create or update:
 
 ```txt
+design-system/STORYBOOK_COMPONENT_PLAN.md
 design-system/STORYBOOK_COMPONENT_QUEUE.md
 ```
 
@@ -98,7 +108,9 @@ Use `assets/storybook-component-queue-template.md` when starting the queue.
 Every pass should leave durable state:
 
 - selected batch
+- dependency plan status
 - source trace status
+- story source URL status
 - product target files
 - Storybook story target files
 - verification result
@@ -125,6 +137,8 @@ The implementation map records:
 
 - docs read during the pass
 - source trace records
+- dependency decisions
+- co-located component/page target layout
 - token decisions
 - component target files
 - story target files
@@ -140,18 +154,16 @@ This skill vendors `@harrychuang/storybook-addon-figma-export` under:
 assets/figma-export-addon/
 ```
 
-Install it from the local skill folder, not GitHub:
+Install it with the bundled installer, not GitHub:
 
 ```sh
-npm install -D "file:<skill-root>/assets/figma-export-addon" @storybook/icons
+node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root>
 ```
 
-Equivalent commands:
+The installer copies the addon into `<product-repo-root>/.storybook/vendor/figma-export-addon/`, detects the package manager, installs the local `file:` dependency, and adds `@storybook/icons` only when needed. Use `--copy-only` when you only want to stage the vendored package:
 
 ```sh
-pnpm add -D "file:<skill-root>/assets/figma-export-addon" @storybook/icons
-yarn add -D "file:<skill-root>/assets/figma-export-addon" @storybook/icons
-bun add -d "file:<skill-root>/assets/figma-export-addon" @storybook/icons
+node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root> --copy-only
 ```
 
 The addon should be installed by default only when:
@@ -164,6 +176,12 @@ The addon should be installed by default only when:
 If incompatible, record `figma-export-addon` as `blocked` in the implementation map with the reason.
 
 ### Storybook Setup
+
+Generate project-local config before editing Storybook files:
+
+```sh
+node <skill-root>/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+```
 
 `.storybook/main.ts`:
 
@@ -187,24 +205,24 @@ import {
   createFigmaExportGlobalTypes,
   createFigmaExportInitialGlobals,
 } from "@harrychuang/storybook-addon-figma-export/preview";
+import { createFigmaExportReviewDecorator } from "@harrychuang/storybook-addon-figma-export/review";
 import type { FigmaExportAddonOptions } from "@harrychuang/storybook-addon-figma-export";
+import { figmaExportProjectConfig } from "./figma-export.config";
 import "@harrychuang/storybook-addon-figma-export/styles.css";
+import "@harrychuang/storybook-addon-figma-export/review.css";
 
 const figmaExportOptions = {
-  componentClassPrefixes: ["md-"],
-  sourceReferences: [
-    {
-      label: "Design system source",
-      url: "https://www.figma.com/file/...",
-      editUrl: "https://www.figma.com/file/...",
-      type: "figma",
-    },
-  ],
-  storyTitlePrefix: "Components/",
+  ...figmaExportProjectConfig.addon,
 } satisfies FigmaExportAddonOptions;
 
 const preview: Preview = {
-  decorators: [createFigmaExportDecorator(figmaExportOptions)],
+  decorators: [
+    createFigmaExportReviewDecorator({
+      ...figmaExportProjectConfig.review,
+      ...figmaExportProjectConfig.source,
+    }),
+    createFigmaExportDecorator(figmaExportOptions),
+  ],
   globalTypes: {
     ...createFigmaExportGlobalTypes(figmaExportOptions),
   },
@@ -221,19 +239,19 @@ export default preview;
 When the toolbar toggle is on, the addon renders:
 
 - `Figma export` panel in the bottom-right corner
-- `Source review` panel in the top-right corner
+- optional `Export review` panel in the top-right corner when the review decorator is configured
 
-The source review panel includes:
+The review helper includes:
 
 - `Open source`
 - `Edit source`
-- export review status stored per story in `localStorage`
+- export/import review status persisted through the configured Storybook review API
 
 Default review statuses:
 
-- `not-reviewed`
 - `exported`
-- `need-fix`
+- `imported`
+- `needs-fix`
 - `approved`
 
 Per-story source references:
@@ -241,21 +259,12 @@ Per-story source references:
 ```ts
 export const Primary = {
   parameters: {
-    figmaExport: {
-      sourceReferences: [
-        {
-          label: "Primary button source",
-          url: "https://www.figma.com/file/...",
-          editUrl: "https://www.figma.com/file/...",
-          type: "figma",
-        },
-      ],
-    },
+    figmaSourceUrl: "https://www.figma.com/design/...?...node-id=...",
   },
 };
 ```
 
-The addon also reads `parameters.design.url` from common Storybook design addon configuration.
+The helper also reads `parameters.figma.url` and `parameters.design.url` from common Storybook design addon configuration.
 
 ## Recommended Prompts
 
@@ -280,7 +289,7 @@ Use $ds-to-storybook to implement <component-name> from design-system/components
 Addon setup only:
 
 ```txt
-Use $ds-to-storybook to install and configure the vendored Figma export addon for this React Storybook 10 project. Use the local file dependency from the skill, wire preview globals/decorator/styles, configure sourceReferences from design-system Source Trace, verify the toolbar and panels, update the implementation map, then stop.
+Use $ds-to-storybook to install and configure the bundled Figma export addon for this React Storybook 10 project. Use scripts/install_figma_export_addon.mjs and scripts/generate_figma_export_config.mjs, wire preview globals/decorator/styles/review helper, configure story source URLs from STORYBOOK_SOURCE_TRACE.md, verify the toolbar and panels, update the implementation map, then stop.
 ```
 
 ## Cross-Agent Setup
@@ -288,6 +297,8 @@ Use $ds-to-storybook to install and configure the vendored Figma export addon fo
 This skill is designed to be portable across Claude Code, Codex, and Cursor. The key is to keep the same durable workflow files in the target project:
 
 - `design-system/STORYBOOK_IMPLEMENTATION_MAP.md`
+- `design-system/STORYBOOK_SOURCE_TRACE.md`
+- `design-system/STORYBOOK_COMPONENT_PLAN.md`
 - `design-system/STORYBOOK_COMPONENT_QUEUE.md`
 - `design-system/components/*.md`
 - `tokens/*.css`
@@ -303,6 +314,8 @@ Claude Code can use skills from `.claude/skills/<name>/SKILL.md`. Copy this skil
         ├── SKILL.md
         ├── README.md
         ├── agents/
+        ├── references/
+        ├── scripts/
         └── assets/
 ```
 
@@ -312,10 +325,10 @@ Then add the template from `agents/claude.md` to the target repo's `CLAUDE.md`, 
 Use the ds-to-storybook skill to implement the next Storybook component batch from the extracted design-system docs.
 ```
 
-When installing the addon from Claude Code, use the local skill path:
+When installing the addon from Claude Code, use the bundled installer:
 
 ```sh
-npm install -D "file:.claude/skills/ds-to-storybook/assets/figma-export-addon" @storybook/icons
+node .claude/skills/ds-to-storybook/scripts/install_figma_export_addon.mjs <product-repo-root>
 ```
 
 ### Codex
@@ -328,13 +341,15 @@ skills/
     ├── SKILL.md
     ├── README.md
     ├── agents/
+    ├── references/
+    ├── scripts/
     └── assets/
 ```
 
-Then copy the template from `agents/codex-agents.md` into the target repo's `AGENTS.md`. The addon install path should be:
+Then copy the template from `agents/codex-agents.md` into the target repo's `AGENTS.md`. Use the bundled installer for addon setup:
 
 ```sh
-npm install -D "file:skills/ds-to-storybook/assets/figma-export-addon" @storybook/icons
+node skills/ds-to-storybook/scripts/install_figma_export_addon.mjs <product-repo-root>
 ```
 
 ### Cursor
@@ -359,10 +374,11 @@ Regardless of agent, keep these constraints:
 
 - Use extracted design-system docs as source of truth.
 - Resolve evidence and source trace before code.
+- Start multi-component work from `STORYBOOK_COMPONENT_PLAN.md`.
 - Use tokens before component CSS values.
 - Implement one bounded pass.
 - Update the implementation map and queue before stopping.
-- Install the Figma export addon from the local vendored folder, not GitHub.
+- Install the Figma export addon with the bundled installer, not GitHub.
 
 ## Maintenance
 

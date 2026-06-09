@@ -29,5 +29,7 @@ pnpm-debug.log*
 # Test / build output (common in JS workspaces)
 coverage/
 dist/
+!ds-to-storybook/assets/figma-export-addon/dist/
+!ds-to-storybook/assets/figma-export-addon/dist/**
 .turbo/
 .vercel/

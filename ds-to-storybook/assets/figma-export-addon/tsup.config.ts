@@ -10,6 +10,9 @@ export default defineConfig({
     preview: "src/preview.tsx",
     preset: "src/preset.ts",
     manager: "src/manager-entry.ts",
+    review: "src/review.ts",
+    "review-server": "src/review-server.ts",
+    source: "src/source.ts",
   },
   external: [
     "react",
@@ -39,9 +42,11 @@ export default defineConfig({
   },
   onSuccess() {
     copyFileSync("src/figma-code-exporter.css", "dist/figma-code-exporter.css");
+    copyFileSync("src/review.css", "dist/review.css");
     for (const artifact of [
       "index.css",
       "preview.css",
+      "review.css.map",
       "index.css.map",
       "preview.css.map",
     ]) {

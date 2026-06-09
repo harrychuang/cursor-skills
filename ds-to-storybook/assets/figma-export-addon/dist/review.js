@@ -1,3 +1,57 @@
+// src/review.ts
+import { EditIcon, FigmaIcon as FigmaIcon2, LinkIcon } from "@storybook/icons";
+import { Fragment as Fragment2, createElement as h, useEffect, useRef as useRef2, useState as useState2 } from "react";
+
+// src/options.ts
+var defaultFigmaExportGlobalName = "figmaExport";
+var defaultTokenLayers = {
+  comp: "comp",
+  ref: "ref",
+  sys: "sys"
+};
+function normalizeTokenPrefix(prefix) {
+  if (!prefix) return void 0;
+  return prefix.replace(/^--/, "").replace(/-$/, "");
+}
+function normalizeStoryTitlePrefix(prefix) {
+  if (prefix === false) return false;
+  if (Array.isArray(prefix)) return prefix;
+  if (typeof prefix === "string") return [prefix];
+  return false;
+}
+function resolveFigmaExportAddonOptions(options) {
+  return {
+    absoluteFidelityComponents: new Set(options?.absoluteFidelityComponents ?? []),
+    collections: {
+      ...defaultTokenLayers,
+      ...options?.collections
+    },
+    componentClassPrefixes: options?.componentClassPrefixes ?? [],
+    embeddedSvgByDataGraphic: options?.embeddedSvgByDataGraphic ?? {},
+    globalName: options?.globalName ?? defaultFigmaExportGlobalName,
+    pluginDataKey: options?.pluginDataKey ?? "storybookCssToken",
+    reviewStorageKey: options?.reviewStorageKey ?? "storybookFigmaExportReviews",
+    reviewStatuses: options?.reviewStatuses ?? [
+      "not-reviewed",
+      "exported",
+      "need-fix",
+      "approved"
+    ],
+    sourceReferences: options?.sourceReferences ?? [],
+    storyTitlePrefix: normalizeStoryTitlePrefix(options?.storyTitlePrefix),
+    tokenLayers: {
+      ...defaultTokenLayers,
+      ...options?.tokenLayers
+    },
+    tokenPrefix: normalizeTokenPrefix(options?.tokenPrefix)
+  };
+}
+function isStoryIncludedForFigmaExport(title, options) {
+  if (!title) return true;
+  if (options.storyTitlePrefix === false) return true;
+  return options.storyTitlePrefix.some((prefix) => title.startsWith(prefix));
+}
+
 // src/preview.tsx
 import { createElement } from "react";
 
@@ -1207,56 +1261,6 @@ async function createFigmaExportPayload({
   };
 }
 
-// src/options.ts
-var defaultFigmaExportGlobalName = "figmaExport";
-var defaultTokenLayers = {
-  comp: "comp",
-  ref: "ref",
-  sys: "sys"
-};
-function normalizeTokenPrefix(prefix) {
-  if (!prefix) return void 0;
-  return prefix.replace(/^--/, "").replace(/-$/, "");
-}
-function normalizeStoryTitlePrefix(prefix) {
-  if (prefix === false) return false;
-  if (Array.isArray(prefix)) return prefix;
-  if (typeof prefix === "string") return [prefix];
-  return false;
-}
-function resolveFigmaExportAddonOptions(options) {
-  return {
-    absoluteFidelityComponents: new Set(options?.absoluteFidelityComponents ?? []),
-    collections: {
-      ...defaultTokenLayers,
-      ...options?.collections
-    },
-    componentClassPrefixes: options?.componentClassPrefixes ?? [],
-    embeddedSvgByDataGraphic: options?.embeddedSvgByDataGraphic ?? {},
-    globalName: options?.globalName ?? defaultFigmaExportGlobalName,
-    pluginDataKey: options?.pluginDataKey ?? "storybookCssToken",
-    reviewStorageKey: options?.reviewStorageKey ?? "storybookFigmaExportReviews",
-    reviewStatuses: options?.reviewStatuses ?? [
-      "not-reviewed",
-      "exported",
-      "need-fix",
-      "approved"
-    ],
-    sourceReferences: options?.sourceReferences ?? [],
-    storyTitlePrefix: normalizeStoryTitlePrefix(options?.storyTitlePrefix),
-    tokenLayers: {
-      ...defaultTokenLayers,
-      ...options?.tokenLayers
-    },
-    tokenPrefix: normalizeTokenPrefix(options?.tokenPrefix)
-  };
-}
-function isStoryIncludedForFigmaExport(title, options) {
-  if (!title) return true;
-  if (options.storyTitlePrefix === false) return true;
-  return options.storyTitlePrefix.some((prefix) => title.startsWith(prefix));
-}
-
 // src/pluginCode.ts
 function createFigmaExportJson(payload) {
   return JSON.stringify(payload, null, 2);
@@ -2152,29 +2156,429 @@ function FigmaCodeExporter({
 }
 
 // src/preview.tsx
-function getFigmaExportGlobalName(options) {
-  return options?.globalName ?? defaultFigmaExportGlobalName;
-}
 function createFigmaExportDecorator(options) {
   return (Story, context) => createElement(FigmaCodeExporter, { context, options }, Story());
 }
-function createFigmaExportGlobalTypes(options) {
+
+// src/review.ts
+var defaultFigmaReviewStatusApiPath = "/__figma_export_review_status";
+var defaultLabels = {
+  approved: "Approved",
+  closeNotes: "Close",
+  editFigmaSource: "Edit Figma source",
+  exported: "Exported",
+  figmaSource: "Figma source",
+  imported: "Imported",
+  needsFix: "Needs fix",
+  notStarted: "Not started",
+  notes: "Notes",
+  notesSaved: "Notes saved",
+  openNotes: "Open",
+  openSource: "Open source",
+  review: "Review",
+  sourcePlaceholder: "https://www.figma.com/design/...",
+  title: "Export review"
+};
+var defaultEntry = {
+  figmaReviewStatus: "not-started"
+};
+function normalizeEntry(entry) {
+  const notes = entry?.notes ?? "";
   return {
-    [getFigmaExportGlobalName(options)]: {
-      defaultValue: "off",
-      description: "Show the component-to-Figma code exporter."
-    }
+    componentTitle: entry?.componentTitle,
+    figmaNodeUrl: entry?.figmaNodeUrl,
+    figmaReviewStatus: entry?.figmaReviewStatus ?? defaultEntry.figmaReviewStatus,
+    name: entry?.name,
+    notes,
+    notesOpen: typeof entry?.notesOpen === "boolean" ? entry.notesOpen : Boolean(notes),
+    storyTitle: entry?.storyTitle,
+    updatedAt: entry?.updatedAt
   };
 }
-function createFigmaExportInitialGlobals(options) {
-  return {
-    [getFigmaExportGlobalName(options)]: "off"
+function normalizeFigmaSourceUrl(value) {
+  const trimmedValue = value.trim();
+  if (!trimmedValue) return "";
+  if (trimmedValue.startsWith("figma.com/") || trimmedValue.startsWith("www.figma.com/")) {
+    return `https://${trimmedValue}`;
+  }
+  return trimmedValue;
+}
+function getOpenableUrl(value) {
+  const normalizedValue = normalizeFigmaSourceUrl(value ?? "");
+  if (!normalizedValue) return "";
+  try {
+    const url = new URL(normalizedValue);
+    if (url.protocol === "http:" || url.protocol === "https:") return url.href;
+  } catch {
+    return "";
+  }
+  return "";
+}
+function getStatusText(state) {
+  if (state === "loading") return "Loading";
+  if (state === "saving") return "Saving";
+  if (state === "saved") return "Saved";
+  if (state === "error") return "Save failed";
+  return "Ready";
+}
+function getDefaultFigmaExportComponentTitle(title, options) {
+  if (!title) return "Component";
+  if (options.storyTitlePrefix === false) return title;
+  const matchingPrefix = options.storyTitlePrefix.find(
+    (prefix) => title.startsWith(prefix)
+  );
+  return matchingPrefix ? title.slice(matchingPrefix.length) : title;
+}
+function getDefaultFigmaSourceUrl(parameters) {
+  if (!parameters) return void 0;
+  return (typeof parameters.figmaSourceUrl === "string" ? parameters.figmaSourceUrl : void 0) ?? getParameterUrl(parameters.figma) ?? getParameterUrl(parameters.design);
+}
+function getReviewStatusOptions(labels) {
+  return [
+    { label: labels.notStarted, value: "not-started" },
+    { label: labels.exported, value: "exported" },
+    { label: labels.imported, value: "imported" },
+    { label: labels.needsFix, value: "needs-fix" },
+    { label: labels.approved, value: "approved" }
+  ];
+}
+function FigmaExportReview({
+  apiPath = defaultFigmaReviewStatusApiPath,
+  autoMarkExported = true,
+  children,
+  componentTitle,
+  enabled,
+  figmaSourceUrl,
+  labels: labelsOverride,
+  showNotes = true,
+  storyId,
+  storyName,
+  storyTitle
+}) {
+  const labels = { ...defaultLabels, ...labelsOverride };
+  const initialFigmaSourceUrl = normalizeFigmaSourceUrl(figmaSourceUrl ?? "");
+  const [entry, setEntry] = useState2(() => normalizeEntry(null));
+  const [draftDetails, setDraftDetails] = useState2(() => ({
+    figmaNodeUrl: initialFigmaSourceUrl,
+    notes: ""
+  }));
+  const [isSourceEditing, setIsSourceEditing] = useState2(false);
+  const [saveState, setSaveState] = useState2("idle");
+  const [errorMessage, setErrorMessage] = useState2("");
+  const autoExportStoryRef = useRef2(void 0);
+  const entryRef = useRef2(entry);
+  const saveQueueRef = useRef2(Promise.resolve());
+  useEffect(() => {
+    entryRef.current = entry;
+  }, [entry]);
+  useEffect(() => {
+    if (!enabled || !storyId) return;
+    const controller = new AbortController();
+    setSaveState("loading");
+    setErrorMessage("");
+    async function loadReviewStatus() {
+      try {
+        const response = await fetch(
+          `${apiPath}?storyId=${encodeURIComponent(storyId)}`,
+          { signal: controller.signal }
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        const savedFigmaNodeUrl = normalizeFigmaSourceUrl(
+          payload.entry?.figmaNodeUrl ?? ""
+        );
+        const nextEntry = normalizeEntry({
+          ...payload.entry ?? {},
+          figmaNodeUrl: savedFigmaNodeUrl || initialFigmaSourceUrl
+        });
+        entryRef.current = nextEntry;
+        setEntry(nextEntry);
+        setDraftDetails({
+          figmaNodeUrl: nextEntry.figmaNodeUrl ?? "",
+          notes: nextEntry.notes ?? ""
+        });
+        setIsSourceEditing(false);
+        setSaveState("idle");
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setSaveState("error");
+        setErrorMessage(error instanceof Error ? error.message : "Unable to load status.");
+      }
+    }
+    void loadReviewStatus();
+    return () => {
+      controller.abort();
+    };
+  }, [apiPath, enabled, initialFigmaSourceUrl, storyId]);
+  async function saveReviewStatus(patch) {
+    const nextEntry = normalizeEntry({
+      ...entryRef.current,
+      ...patch,
+      componentTitle,
+      name: storyName,
+      storyTitle
+    });
+    entryRef.current = nextEntry;
+    setEntry(nextEntry);
+    setSaveState("saving");
+    setErrorMessage("");
+    saveQueueRef.current = saveQueueRef.current.catch(() => void 0).then(async () => {
+      const entryToSave = entryRef.current;
+      const response = await fetch(apiPath, {
+        body: JSON.stringify({
+          entry: entryToSave,
+          storyId
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "PUT"
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json();
+      const savedEntry = normalizeEntry(payload.entry ?? entryToSave);
+      entryRef.current = savedEntry;
+      setEntry(savedEntry);
+      setDraftDetails({
+        figmaNodeUrl: savedEntry.figmaNodeUrl ?? "",
+        notes: savedEntry.notes ?? ""
+      });
+      setSaveState("saved");
+    }).catch((error) => {
+      setSaveState("error");
+      setErrorMessage(error instanceof Error ? error.message : "Unable to save status.");
+    });
+    await saveQueueRef.current;
+  }
+  useEffect(() => {
+    if (!enabled || !storyId || !autoMarkExported) return;
+    const markExported = () => {
+      if (autoExportStoryRef.current === storyId) return;
+      if (entry.figmaReviewStatus !== "not-started") return;
+      const exporter = document.querySelector(".sbfx-exporter");
+      const summary = exporter?.querySelector(".sbfx-exporter__summary");
+      if (exporter?.dataset.status === "copied" && summary?.textContent?.includes("JSON copied")) {
+        autoExportStoryRef.current = storyId;
+        void saveReviewStatus({ figmaReviewStatus: "exported" });
+      }
+    };
+    const observer = new MutationObserver(markExported);
+    observer.observe(document.body, {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+    markExported();
+    return () => {
+      observer.disconnect();
+    };
+  }, [autoMarkExported, enabled, entry.figmaReviewStatus, storyId]);
+  const shouldShowPanel = enabled && Boolean(storyId);
+  const openableFigmaSourceUrl = getOpenableUrl(entry.figmaNodeUrl);
+  const shouldEditFigmaSource = isSourceEditing || !openableFigmaSourceUrl;
+  function saveFigmaSourceUrl() {
+    const figmaNodeUrl = normalizeFigmaSourceUrl(draftDetails.figmaNodeUrl);
+    setDraftDetails((current) => ({
+      ...current,
+      figmaNodeUrl
+    }));
+    setIsSourceEditing(!figmaNodeUrl);
+    void saveReviewStatus({ figmaNodeUrl });
+  }
+  const reviewStatusOptions = getReviewStatusOptions(labels);
+  return h(
+    Fragment2,
+    null,
+    children,
+    shouldShowPanel ? h(
+      "aside",
+      {
+        "aria-label": "Figma export review",
+        className: "sbfx-review",
+        "data-save-state": saveState
+      },
+      h(
+        "header",
+        { className: "sbfx-review__header" },
+        h(
+          "span",
+          { "aria-hidden": "true", className: "sbfx-review__mark" },
+          h(FigmaIcon2, { size: 14 })
+        ),
+        h(
+          "span",
+          { className: "sbfx-review__heading" },
+          h("span", { className: "sbfx-review__title" }, labels.title),
+          h(
+            "span",
+            { className: "sbfx-review__subtitle", title: componentTitle },
+            componentTitle
+          )
+        ),
+        h(
+          "span",
+          { className: "sbfx-review__status" },
+          h("span", { "aria-hidden": "true", className: "sbfx-review__status-dot" }),
+          getStatusText(saveState)
+        )
+      ),
+      h(
+        "div",
+        { className: "sbfx-review__body" },
+        h(
+          "label",
+          { className: "sbfx-review__field" },
+          h("span", null, labels.review),
+          h(
+            "select",
+            {
+              onChange: (event) => {
+                void saveReviewStatus({
+                  figmaReviewStatus: event.currentTarget.value
+                });
+              },
+              value: entry.figmaReviewStatus
+            },
+            ...reviewStatusOptions.map(
+              (option) => h("option", { key: option.value, value: option.value }, option.label)
+            )
+          )
+        )
+      ),
+      shouldEditFigmaSource ? h(
+        "label",
+        { className: "sbfx-review__field" },
+        h("span", null, labels.figmaSource),
+        h("input", {
+          onBlur: saveFigmaSourceUrl,
+          onChange: (event) => {
+            const figmaNodeUrl = event.currentTarget.value;
+            setDraftDetails((current) => ({
+              ...current,
+              figmaNodeUrl
+            }));
+          },
+          onKeyDown: (event) => {
+            if (event.key === "Enter") {
+              event.currentTarget.blur();
+            }
+          },
+          placeholder: labels.sourcePlaceholder,
+          type: "url",
+          value: draftDetails.figmaNodeUrl
+        })
+      ) : h(
+        "div",
+        { className: "sbfx-review__source" },
+        h("span", { className: "sbfx-review__label" }, labels.figmaSource),
+        h(
+          "div",
+          { className: "sbfx-review__source-actions" },
+          h(
+            "a",
+            {
+              className: "sbfx-review__button sbfx-review__button--outline",
+              href: openableFigmaSourceUrl,
+              rel: "noreferrer",
+              target: "_blank"
+            },
+            h(LinkIcon, { size: 14 }),
+            labels.openSource
+          ),
+          h(
+            "button",
+            {
+              "aria-label": labels.editFigmaSource,
+              className: "sbfx-review__icon-button",
+              onClick: () => setIsSourceEditing(true),
+              type: "button"
+            },
+            h(EditIcon, { size: 14 })
+          )
+        )
+      ),
+      showNotes ? h(
+        "div",
+        { className: "sbfx-review__notes" },
+        h(
+          "button",
+          {
+            "aria-expanded": entry.notesOpen,
+            className: "sbfx-review__button sbfx-review__button--secondary sbfx-review__notes-toggle",
+            onClick: () => {
+              void saveReviewStatus({ notesOpen: !entry.notesOpen });
+            },
+            type: "button"
+          },
+          h("span", null, labels.notes),
+          h(
+            "span",
+            { className: "sbfx-review__notes-state" },
+            entry.notesOpen ? labels.closeNotes : labels.openNotes
+          )
+        ),
+        entry.notesOpen ? h(
+          "label",
+          { className: "sbfx-review__field" },
+          h("textarea", {
+            onBlur: () => {
+              void saveReviewStatus({ notes: draftDetails.notes });
+            },
+            onChange: (event) => {
+              const notes = event.currentTarget.value;
+              setDraftDetails((current) => ({
+                ...current,
+                notes
+              }));
+            },
+            rows: 2,
+            value: draftDetails.notes
+          })
+        ) : draftDetails.notes ? h("p", { className: "sbfx-review__notes-summary" }, labels.notesSaved) : null
+      ) : null,
+      entry.updatedAt ? h(
+        "p",
+        { className: "sbfx-review__meta" },
+        `Updated ${new Date(entry.updatedAt).toLocaleString()}`
+      ) : null,
+      errorMessage ? h("p", { className: "sbfx-review__error" }, errorMessage) : null
+    ) : null
+  );
+}
+function createFigmaExportReviewDecorator(figmaExportOptions, reviewOptions) {
+  const figmaExportDecorator = createFigmaExportDecorator(figmaExportOptions);
+  const resolvedOptions = resolveFigmaExportAddonOptions(figmaExportOptions);
+  return (Story, context) => {
+    const includedStory = isStoryIncludedForFigmaExport(
+      context.title,
+      resolvedOptions
+    );
+    const componentTitle = reviewOptions?.getComponentTitle?.(context, resolvedOptions) ?? getDefaultFigmaExportComponentTitle(context.title, resolvedOptions);
+    const figmaSourceUrl = reviewOptions?.getFigmaSourceUrl?.(context, componentTitle) ?? getDefaultFigmaSourceUrl(context.parameters);
+    const enabled = reviewOptions?.enabled !== false && includedStory && context.globals?.[resolvedOptions.globalName] === "on";
+    return h(
+      FigmaExportReview,
+      {
+        apiPath: reviewOptions?.apiPath,
+        autoMarkExported: reviewOptions?.autoMarkExported,
+        componentTitle,
+        enabled,
+        figmaSourceUrl,
+        labels: reviewOptions?.labels,
+        showNotes: reviewOptions?.showNotes,
+        storyId: context.id ?? "unknown-story",
+        storyName: context.name ?? "Story",
+        storyTitle: context.title ?? ""
+      },
+      figmaExportDecorator(Story, context)
+    );
   };
 }
 export {
-  createFigmaExportDecorator,
-  createFigmaExportGlobalTypes,
-  createFigmaExportInitialGlobals,
-  getFigmaExportGlobalName
+  FigmaExportReview,
+  createFigmaExportReviewDecorator,
+  defaultFigmaReviewStatusApiPath,
+  getDefaultFigmaExportComponentTitle,
+  getDefaultFigmaSourceUrl
 };
-//# sourceMappingURL=preview.js.map
+//# sourceMappingURL=review.js.map

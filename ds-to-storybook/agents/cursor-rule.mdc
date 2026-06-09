@@ -21,19 +21,21 @@ Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, s
 - Read relevant `design-system/components/*.md`.
 - Read `design-system/DESIGN_EVIDENCE_MAP.md` for evidence and source trace.
 - Read touched token files under `tokens/`.
+- Run `skills/ds-to-storybook/scripts/trace_sources.mjs` and `skills/ds-to-storybook/scripts/plan_component_batches.mjs` before multi-component implementation.
 - Do not infer component design from screenshots or broad Figma search inside this workflow.
 
 ## Batch Rules
 
 - Implement one bounded pass at a time.
 - Default pass size is foundations only, 3-5 simple components, or 1-2 complex composites.
-- If more than 8 components are implementable, create or update `design-system/STORYBOOK_COMPONENT_QUEUE.md`.
+- If implementing more than one component, create or update `design-system/STORYBOOK_COMPONENT_PLAN.md` and `design-system/STORYBOOK_COMPONENT_QUEUE.md`.
 - Update `design-system/STORYBOOK_IMPLEMENTATION_MAP.md` before code edits.
 - Stop after verification and checkpoint update.
 
 ## Component Rules
 
 - Resolve source trace before implementation.
+- Implement components and pages with co-located stories unless existing product convention requires otherwise.
 - Prefer reuse or extension of existing product components.
 - Keep all visual values token-backed.
 - Add Storybook stories for documented variants and states.
@@ -41,10 +43,11 @@ Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, s
 
 ## Figma Export Addon
 
-For React Storybook 10 projects, install the vendored addon from the local skill folder:
+For React Storybook 10 projects, install and configure the bundled addon with the skill scripts:
 
 ```sh
-npm install -D "file:skills/ds-to-storybook/assets/figma-export-addon" @storybook/icons
+node skills/ds-to-storybook/scripts/install_figma_export_addon.mjs <product-repo-root>
+node skills/ds-to-storybook/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
 ```
 
-Configure `sourceReferences` from component `Source Trace` or `DESIGN_EVIDENCE_MAP.md` so the addon source review panel can open Figma/reference URLs.
+For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`.

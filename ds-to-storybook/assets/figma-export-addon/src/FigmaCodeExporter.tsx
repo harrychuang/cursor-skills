@@ -16,6 +16,7 @@ import {
   type FigmaExportSourceReference,
 } from "./options";
 import { createFigmaExportJson, createFigmaPluginCode } from "./pluginCode";
+import { getParameterUrl } from "./source";
 
 type StorybookContext = {
   globals?: Record<string, unknown>;
@@ -23,12 +24,14 @@ type StorybookContext = {
   name?: string;
   parameters?: {
     design?: unknown;
+    figma?: unknown;
     figmaExport?: {
       reviewStorageKey?: string;
       sourceReference?: FigmaExportSourceReference | string;
       sourceReferences?: Array<FigmaExportSourceReference | string>;
       sourceUrl?: string;
     };
+    figmaSourceUrl?: string;
   };
   title?: string;
 };
@@ -115,6 +118,8 @@ function getSourceReferences(
 ): FigmaExportSourceReference[] {
   const parameterReferences = context.parameters?.figmaExport?.sourceReferences ?? [];
   const singleParameterReference =
+    context.parameters?.figmaSourceUrl ??
+    getParameterUrl(context.parameters?.figma) ??
     context.parameters?.figmaExport?.sourceReference ??
     context.parameters?.figmaExport?.sourceUrl;
   const normalizedSingle = normalizeSourceReference(singleParameterReference, "Source");

@@ -20,7 +20,8 @@
   ],
   "sideEffects": [
     "./dist/manager.js",
-    "./dist/figma-code-exporter.css"
+    "./dist/figma-code-exporter.css",
+    "./dist/review.css"
   ],
   "exports": {
     ".": {
@@ -39,7 +40,20 @@
       "types": "./dist/manager.d.ts",
       "default": "./dist/manager.js"
     },
+    "./review": {
+      "types": "./dist/review.d.ts",
+      "default": "./dist/review.js"
+    },
+    "./review-server": {
+      "types": "./dist/review-server.d.ts",
+      "default": "./dist/review-server.js"
+    },
+    "./source": {
+      "types": "./dist/source.d.ts",
+      "default": "./dist/source.js"
+    },
     "./styles.css": "./dist/figma-code-exporter.css",
+    "./review.css": "./dist/review.css",
     "./package.json": "./package.json"
   },
   "scripts": {

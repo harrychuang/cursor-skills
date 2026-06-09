@@ -1,6 +1,3 @@
-import * as react from 'react';
-import { ReactNode } from 'react';
-
 type TokenLayer = "ref" | "sys" | "comp";
 type FigmaVariableType = "BOOLEAN" | "COLOR" | "FLOAT" | "STRING";
 type FigmaVariableValue = boolean | number | string | {
@@ -112,37 +109,4 @@ declare const defaultFigmaExportGlobalName = "figmaExport";
 declare function resolveFigmaExportAddonOptions(options: FigmaExportAddonOptions | undefined): ResolvedFigmaExportAddonOptions;
 declare function isStoryIncludedForFigmaExport(title: string | undefined, options: ResolvedFigmaExportAddonOptions): boolean;
 
-type StorybookContext = {
-    globals?: Record<string, unknown>;
-    id?: string;
-    name?: string;
-    title?: string;
-};
-type StorybookStory = () => ReactNode;
-declare function getFigmaExportGlobalName(options?: FigmaExportAddonOptions): string;
-declare function createFigmaExportDecorator(options?: FigmaExportAddonOptions): (Story: StorybookStory, context: StorybookContext) => react.FunctionComponentElement<{
-    children?: ReactNode;
-    context: {
-        globals?: Record<string, unknown>;
-        id?: string;
-        name?: string;
-        parameters?: {
-            design?: unknown;
-            figmaExport?: {
-                reviewStorageKey?: string;
-                sourceReference?: FigmaExportSourceReference | string;
-                sourceReferences?: Array<FigmaExportSourceReference | string>;
-                sourceUrl?: string;
-            };
-        };
-        title?: string;
-    };
-    options?: FigmaExportAddonOptions;
-}>;
-declare function createFigmaExportGlobalTypes(options?: FigmaExportAddonOptions): Record<string, {
-    defaultValue: "off";
-    description: string;
-}>;
-declare function createFigmaExportInitialGlobals(options?: FigmaExportAddonOptions): Record<string, "off">;
-
-export { type FigmaExportSourceReference as F, type ResolvedFigmaExportAddonOptions as R, type TokenLayer as T, type FigmaExportAddonOptions as a, type FigmaExportPayload as b, type FigmaBindingName as c, type FigmaExportNode as d, type FigmaExportReviewStatus as e, type FigmaExportToken as f, type FigmaLayoutStrategy as g, type FigmaNodeKind as h, createFigmaExportDecorator as i, createFigmaExportGlobalTypes as j, createFigmaExportInitialGlobals as k, defaultFigmaExportGlobalName as l, getFigmaExportGlobalName as m, isStoryIncludedForFigmaExport as n, resolveFigmaExportAddonOptions as r };
+export { type FigmaExportAddonOptions as F, type ResolvedFigmaExportAddonOptions as R, type TokenLayer as T, type FigmaExportSourceReference as a, type FigmaExportPayload as b, type FigmaBindingName as c, type FigmaExportNode as d, type FigmaExportReviewStatus as e, type FigmaExportToken as f, type FigmaLayoutStrategy as g, type FigmaNodeKind as h, defaultFigmaExportGlobalName as i, isStoryIncludedForFigmaExport as j, resolveFigmaExportAddonOptions as r };

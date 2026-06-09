@@ -63,13 +63,21 @@ Record the implementation lookup chain for every extracted component:
 
 | Trace type | What to capture |
 |---|---|
-| Figma node / design URL | exact file/node URL, selected node name, component set, or page/frame reference |
+| Figma node / design URL | exact file/design URL, canonical node URL with `node-id`, selected node name, component set, or page/frame reference |
+| Figma MCP target | file key, MCP node id using `:`, page/frame/node names, variable collection when relevant, and suggested calls such as `get_design_context`, `get_screenshot`, `get_metadata`, or `get_variable_defs` |
 | Screenshot crop / export | path to the crop/export that shows the component and state |
 | Rendered route / viewport / state | local route or captured route, viewport, state, and command when available |
 | Prototype or source files | reference component files, CSS files, token files, or route owners inspected during extraction |
 | Existing product component candidates | product components that appear reusable or close enough for downstream review |
 
-If a trace type is unavailable, write `not available` and explain why. Do not leave trace rows blank. Downstream implementation skills use this section to find the original design or code reference without doing a fresh design-system extraction.
+If a trace type is unavailable, write `not available` and explain why. If a Figma URL exists but the MCP target cannot be confirmed, write `unresolved - <reason>` in the Figma MCP target row. Do not leave trace rows blank. Downstream implementation skills use this section to find the original design or code reference without doing a fresh design-system extraction.
+
+For Figma components, preserve both forms of identity:
+
+- the shareable Figma URL with `node-id=12-34`
+- the MCP node id / normalized fingerprint form `figma:<file-key>#12:34`
+
+Do not replace the Figma trace with only a screenshot crop. The crop supports visual review, but downstream Storybook work needs the Figma URL or MCP target to inspect the original node.
 
 ## Component Similarity Review
 

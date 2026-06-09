@@ -159,6 +159,11 @@ function isUnresolvedDecision(value) {
   return unresolvedPattern.test(cleaned) || !decisionPattern.test(cleaned);
 }
 
+function hasDocumentedUnresolvedReason(value) {
+  const cleaned = cleanedCell(value);
+  return /^unresolved\s*[-:]/i.test(cleaned) || /^not available\s*[-:]/i.test(cleaned);
+}
+
 function containsSimilarityCue(value) {
   return /similar|same as|duplicate|variant of|merge|相似|類似|同一|重複|合併|變體|似ている|重複|統合|バリアント/i.test(
     value,
@@ -192,6 +197,30 @@ function hasSourceBasedPreview(value) {
 
 function usesSvgReference(value) {
   return /\.svg(?:\b|[?#)])/i.test(cleanedCell(value));
+}
+
+function hasFigmaReference(value) {
+  return /https?:\/\/(?:www\.)?figma\.com\/|figma:[A-Za-z0-9_-]+#/i.test(cleanedCell(value));
+}
+
+function isSourceTraceTable(table) {
+  const heading = normalizeHeading(table.heading);
+  return heading.includes("source trace") || (
+    includesHeader(table.headers, "trace type") &&
+    includesHeader(table.headers, "reference")
+  );
+}
+
+function sourceTraceRowValue(table, rowName) {
+  for (const entry of table.rows) {
+    const traceType = firstValue(entry.row, ["trace type", "type"]);
+    if (!normalizeHeading(traceType).includes(rowName)) continue;
+    return {
+      line: entry.line,
+      value: entry.cells.slice(1).join(" "),
+    };
+  }
+  return null;
 }
 
 function hasFallbackDisclosure(value) {
@@ -432,13 +461,43 @@ if (inventory === null) {
 
 const componentDocs = await listMarkdownDocs(componentDocsDir);
 let specsMissingFingerprint = 0;
+let specsWithFigmaTrace = 0;
+let specsWithFigmaMcpTarget = 0;
+let specsWithUnresolvedFigmaMcpTarget = 0;
 for (const file of componentDocs) {
   const content = await readOptional(file);
   if (!content) continue;
+  const relativeFile = path.relative(targetRoot, file);
+  const sourceTraceTables = parseTables(content).filter(isSourceTraceTable);
+  const sourceTraceText = sourceTraceTables
+    .flatMap((table) => table.rows.flatMap((entry) => entry.cells))
+    .join(" ");
+  const hasFigmaTrace = hasFigmaReference(sourceTraceText);
+  if (hasFigmaTrace) {
+    specsWithFigmaTrace += 1;
+    const mcpRow = sourceTraceTables
+      .map((table) => sourceTraceRowValue(table, "figma mcp target"))
+      .find(Boolean);
+
+    if (!mcpRow) {
+      const message = `Figma-backed component spec is missing a Figma MCP target Source Trace row: ${relativeFile}`;
+      if (strict) issues.push(message);
+      else warnings.push(message);
+    } else if (hasDocumentedUnresolvedReason(mcpRow.value)) {
+      specsWithUnresolvedFigmaMcpTarget += 1;
+    } else if (unresolvedPattern.test(cleanedCell(mcpRow.value))) {
+      const message = `Figma-backed component spec has an empty Figma MCP target at ${relativeFile}:${mcpRow.line}.`;
+      if (strict) issues.push(message);
+      else warnings.push(message);
+    } else {
+      specsWithFigmaMcpTarget += 1;
+    }
+  }
+
   if (!/^##\s+Component Fingerprint\b/im.test(content)) {
     specsMissingFingerprint += 1;
     warnings.push(
-      `Component spec is missing a Component Fingerprint section: ${path.relative(targetRoot, file)}`,
+      `Component spec is missing a Component Fingerprint section: ${relativeFile}`,
     );
     continue;
   }
@@ -484,6 +543,9 @@ console.log(`Source preview visual rows: ${sourcePreviewRows}`);
 console.log(`Fallback visual rows: ${fallbackVisualRows}`);
 console.log(`Missing visual rows: ${missingVisualRows}`);
 console.log(`Specs missing fingerprint: ${specsMissingFingerprint}`);
+console.log(`Specs with Figma trace: ${specsWithFigmaTrace}`);
+console.log(`Specs with Figma MCP target: ${specsWithFigmaMcpTarget}`);
+console.log(`Specs with unresolved Figma MCP target: ${specsWithUnresolvedFigmaMcpTarget}`);
 console.log(`Strict mode: ${strict ? "on" : "off"}`);
 
 if (warnings.length) {

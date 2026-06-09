@@ -15,7 +15,8 @@ Use this section to help downstream implementation skills locate the original de
 
 | Trace type | Reference | What it proves | Confidence |
 |---|---|---|---|
-| Figma node / design URL |  |  |  |
+| Figma node / design URL |  | Original file/design URL, canonical node URL, selected node/frame/component set |  |
+| Figma MCP target |  | fileKey, MCP nodeId, page/frame/node names, suggested MCP calls; or unresolved reason |  |
 | Screenshot crop / export |  |  |  |
 | Rendered route / viewport / state |  |  |  |
 | Prototype or source files |  |  |  |

@@ -10,7 +10,7 @@ Act as a Design System Architect. Extract a reusable design-system package from 
 ## Supported Inputs
 
 - **Images / screenshots:** use all provided screenshots as source of truth. Prefer concrete observed regions over general style impressions.
-- **Figma URL / Figma exports:** use available Figma tools or exported screenshots/metadata. Treat selected nodes, variables, and component names as evidence, but still record where each decision came from.
+- **Figma URL / Figma exports:** use available Figma tools or exported screenshots/metadata. When Figma MCP is available, use it to inspect referenced files/nodes and preserve MCP-ready source targets. Treat selected nodes, variables, and component names as evidence, but still record where each decision came from.
 - **Project / prototype folder:** inspect rendered UI, screenshots, tokens, CSS, Storybook, and components. Treat prototype code as reference-only unless the user asks to migrate code.
 - **Mixed input:** rank evidence in this order unless user says otherwise: production Figma/component library, production screenshots, rendered project UI, prototype code, descriptive prompt.
 
@@ -28,13 +28,13 @@ Act as a Design System Architect. Extract a reusable design-system package from 
 
 Record source types, paths/URLs, confidence, and known gaps in `design-system/SESSION_STATE.md`.
 
-For screenshots, list every image. For Figma, list node/page names or variable collections when available. For project folders, list token files, component directories, Storybook entries, and screenshot/render routes if available.
+For screenshots, list every image. For Figma, list node/page names, component set names, variable collections, and MCP-ready identifiers when available. For project folders, list token files, component directories, Storybook entries, and screenshot/render routes if available.
 
 Before using sources as evidence, run a source duplicate review:
 
 1. Create a source fingerprint for every input and record it in `design-system/DESIGN_EVIDENCE_MAP.md`.
 2. For local screenshots or exports, prefer `sha256:<hash>` for exact matches and add `phash:<hash>` or a screenshot crop note when perceptual comparison is available.
-3. For Figma inputs, normalize to `figma:<file-key>#<node-id>` when a node is known, or `figma:<file-key>#page:<page-name>` when only a page is known.
+3. For Figma inputs, keep the original Figma URL, record the canonical node/design URL when known, and normalize the fingerprint to `figma:<file-key>#<node-id>` when a node is known, or `figma:<file-key>#page:<page-name>` when only a page is known. Use MCP node-id form with `:` in fingerprints and retain URL node-id form with `-` in the URL.
 4. For rendered routes or project screenshots, include the route, viewport, state, and source file or command in the fingerprint.
 5. If two sources are exact duplicates or likely duplicates, stop and ask the developer whether to `reuse existing source`, `ignore duplicate`, or `keep distinct`.
 6. Record every decision in `design-system/DESIGN_EVIDENCE_MAP.md` under `Source Duplicate Review` before using duplicate inputs to support separate design decisions.
@@ -46,6 +46,7 @@ Fill `design-system/DESIGN_EVIDENCE_MAP.md` before writing final design decision
 Each important decision needs an evidence row with:
 
 - source file, URL, node, or route
+- MCP-ready Figma target when the source is Figma
 - observed region
 - observed pattern
 - resulting design decision
@@ -53,6 +54,17 @@ Each important decision needs an evidence row with:
 - confidence: High, Medium, or Low
 
 Use `references/visual-analysis-rubric.md` when evaluating screenshots or rendered UI.
+
+For Figma sources, `DESIGN_EVIDENCE_MAP.md` must preserve enough information for a downstream agent to call Figma MCP without re-discovering the source:
+
+- original file/design URL
+- canonical node URL with `node-id` when available
+- file key
+- node id in MCP form, such as `12:34`
+- page, frame, selected node, and component set names when known
+- suggested MCP read path, usually `get_design_context` and `get_screenshot` for component nodes, `get_metadata` for page-level sources, and `get_variable_defs` for variable collections
+
+If Figma MCP is unavailable during extraction, still record the URL, page/frame/node names visible from the prompt or export metadata, and mark the MCP target as `unresolved - MCP unavailable` instead of dropping the trace.
 
 ### 3. Design Foundations
 
@@ -109,7 +121,9 @@ Extract at least one high-value component when the user did not specify one, usu
 
 For each extracted component, create `design-system/components/<component-name>.md` from `design-system/COMPONENT_SPEC_TEMPLATE.md` and update `tokens/tokens-comp.css`. Use lowercase hyphen-case filenames, such as `primary-button.md` or `bottom-navigation.md`.
 
-For each component spec, fill `Source Trace` whenever source material exists. Include the exact Figma node or design URL, screenshot crop/export path, rendered route with viewport/state, prototype/source files, and existing product component candidates. If a trace type is unavailable, mark it `not available` with a short reason instead of leaving it ambiguous.
+For each component spec, fill `Source Trace` whenever source material exists. Include the exact Figma node or design URL, Figma MCP target (`fileKey`, `nodeId`, page/frame/node names, suggested MCP calls), screenshot crop/export path, rendered route with viewport/state, prototype/source files, and existing product component candidates. If a trace type is unavailable, mark it `not available` with a short reason instead of leaving it ambiguous.
+
+When a component comes from Figma, do not treat a screenshot crop as a replacement for the Figma source trace. The crop is a visual reference; the Figma URL and MCP target are the handoff path for downstream implementation.
 
 Use `references/component-spec-rules.md` for anatomy, variants, state coverage, accessibility, and token naming.
 
@@ -167,6 +181,7 @@ Update `design-system/SESSION_STATE.md` with:
 - generated review queue path
 - audit result
 - source duplicate review result
+- Figma MCP target coverage, including unresolved Figma targets
 - component similarity review result
 - recommended next prompt
 
@@ -221,13 +236,17 @@ Do not create a new component only because the Figma layer name is new. If a can
 
 Strict component audit automatically compares component fingerprints. If it reports an automatic similarity candidate, resolve it in `COMPONENT_INVENTORY.md` before treating the extraction as complete.
 
+### Figma MCP Handoff Gate
+
+When a source is Figma, do not mark the extraction ready for implementation until Figma source rows and affected component specs include either a usable Figma URL plus MCP target, or a documented reason why the target cannot be resolved. Downstream Storybook implementation depends on these traces to inspect the original node with Figma MCP before writing component code.
+
 ### Implementation Boundary Gate
 
 Do not generate product UI code, Storybook implementation code, or app routes inside this skill before the checkpoint unless the user explicitly requests product implementation.
 
 ## Cross-Agent Use
 
-If the user wants to use the extraction package with Claude Code, Cursor, or Codex, read `references/agent-integration.md` and generate the appropriate instruction files from the extracted rules. Keep agent instructions short and point them back to the design-system docs and token audit.
+If the user wants to use the extraction package with Claude Code, Cursor, or Codex, read `references/agent-integration.md` and generate the appropriate instruction files from the extracted rules. Keep agent instructions short and point them back to the design-system docs, token audit, and Figma MCP source traces.
 
 ## Resource Map
 

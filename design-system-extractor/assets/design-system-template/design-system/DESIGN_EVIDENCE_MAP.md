@@ -4,8 +4,10 @@ Use this file to trace design decisions back to source evidence.
 
 ## Source Inventory
 
-| Source ID | Type | Path / URL / Node | Source fingerprint | Screen or state | Notes | Confidence |
-|---|---|---|---|---|---|---|
+For Figma sources, keep the original Figma URL in `Path / URL / Node`, use `figma:<file-key>#<node-id>` or `figma:<file-key>#page:<page-name>` in `Source fingerprint`, and fill `Figma MCP target` with file key, MCP node id, page/frame/node names, and suggested MCP calls. Use `unresolved - <reason>` when the MCP target cannot be resolved.
+
+| Source ID | Type | Path / URL / Node | Source fingerprint | Screen or state | Notes | Confidence | Figma MCP target |
+|---|---|---|---|---|---|---|---|
 
 ## Source Duplicate Review
 

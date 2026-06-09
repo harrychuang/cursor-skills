@@ -82,21 +82,24 @@ Reference color scales use `100 -> 0` from light to dark. Near duplicate referen
 
 Input sources also go through duplicate review. Screenshots, image exports, Figma URLs/nodes, rendered routes, and prototype references should be recorded with a source fingerprint in `DESIGN_EVIDENCE_MAP.md`. Exact or likely duplicate sources must be confirmed as `reuse existing source`, `ignore duplicate`, or `keep distinct` before both are counted as separate evidence.
 
+Figma sources are also preserved for downstream implementation. When a design comes from Figma, `DESIGN_EVIDENCE_MAP.md` and each affected component spec's `Source Trace` should keep the original Figma URL, canonical node URL when available, normalized `figma:<file-key>#<node-id>` fingerprint, and a `Figma MCP target` with file key, MCP node id, page/frame/node names, and suggested MCP calls. This lets `ds-to-storybook` or another implementation agent inspect the original node with Figma MCP before building the component.
+
 Component candidates also go through a similarity review. The component audit automatically compares fingerprints from the inventory and component specs; when a new Figma or screenshot component resembles an existing component, the extractor records a fingerprint and asks whether to merge it, make it a variant, keep it distinct, or block it pending more evidence. Visual comparison assets should come from actual Figma node previews/screenshots or screenshot crops, stored under `design-system/assets/component-review/`, and linked from `COMPONENT_INVENTORY.md`. Schematic SVGs are only a labeled last-resort fallback when source previews cannot be captured.
 
 ## Standard Workflow
 
 1. Discover inputs: screenshots, Figma data, rendered UI, project code, tokens, Storybook, and review duplicate sources.
 2. Build `DESIGN_EVIDENCE_MAP.md` so design decisions trace back to source evidence.
-3. Extract 5-7 design principles with evidence and implementation rules.
-4. Define design elements: color, type, spacing, density, shape, elevation, iconography, imagery.
-5. Define token architecture, review near token candidates, and fill `tokens/`.
-6. Build `COMPONENT_INVENTORY.md` from repeated UI patterns and review similar component candidates.
-7. Extract initial component token specs under `design-system/components/`, usually a primary action and core navigation/shell component.
-8. Document page composition, interaction states, and anti-AI style rules.
-9. Generate developer-facing HTML documentation and the visual review queue.
-10. Run strict source, token, and component audits.
-11. Update `SESSION_STATE.md`, stop, and ask the user for the next step.
+3. For Figma sources, preserve original URLs, normalized fingerprints, and MCP-ready targets for downstream Figma MCP inspection.
+4. Extract 5-7 design principles with evidence and implementation rules.
+5. Define design elements: color, type, spacing, density, shape, elevation, iconography, imagery.
+6. Define token architecture, review near token candidates, and fill `tokens/`.
+7. Build `COMPONENT_INVENTORY.md` from repeated UI patterns and review similar component candidates.
+8. Extract initial component token specs under `design-system/components/`, usually a primary action and core navigation/shell component.
+9. Document page composition, interaction states, and anti-AI style rules.
+10. Generate developer-facing HTML documentation and the visual review queue.
+11. Run strict source, token, and component audits.
+12. Update `SESSION_STATE.md`, stop, and ask the user for the next step.
 
 ## Component Expansion Pass
 
@@ -190,6 +193,7 @@ The audit checks for:
 
 - missing source fingerprints in `DESIGN_EVIDENCE_MAP.md`
 - repeated screenshot, Figma, route, or source keys without a documented duplicate source decision
+- unresolved Figma MCP target coverage when Figma-backed component specs are ready for implementation
 - component tokens referencing reference tokens directly
 - system token names that include component vocabulary
 - reference token names that include semantic roles

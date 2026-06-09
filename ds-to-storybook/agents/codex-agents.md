@@ -5,7 +5,7 @@ Use this content in a target repo's `AGENTS.md`, or under a scoped subdirectory 
 ~~~md
 # Design System to Storybook
 
-Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, shared UI components, and stories from an extracted design-system package.
+Use `skills/design-system-to-storybook/SKILL.md` when implementing Storybook foundations, shared UI components, and stories from an extracted design-system package.
 
 ## Required Inputs
 
@@ -48,18 +48,23 @@ If component specs or token contracts are missing, stop and ask to run `design-s
 For compatible React Storybook 10 projects, install and configure the bundled addon with the skill scripts:
 
 ```sh
-node skills/ds-to-storybook/scripts/install_figma_export_addon.mjs <product-repo-root>
-node skills/ds-to-storybook/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json
+node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root>
+node <skill-root>/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/generate_component_spec_modules.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/sync_story_source_parameters.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/validate_figma_export_setup.mjs <product-repo-root>
 ```
 
 Configure `.storybook/preview.*` with:
 
-- `createFigmaExportDecorator`
+- `createFigmaExportReviewDecorator`
 - `createFigmaExportGlobalTypes`
 - `createFigmaExportInitialGlobals`
+- `getFigmaSourceUrl` for project-local source fallbacks
+- generated `componentSpecModules` from `.storybook/figma-component-specs`
 - `@harrychuang/storybook-addon-figma-export/styles.css`
-- optional `createFigmaExportReviewDecorator`
-- optional `@harrychuang/storybook-addon-figma-export/review.css`
+- `@harrychuang/storybook-addon-figma-export/review.css`
 
-For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`.
+For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`. Verify the toolbar, review/Open source overlay, and Copy design SVG action before marking addon setup complete.
 ~~~

@@ -12,7 +12,7 @@ alwaysApply: false
 
 # Design System to Storybook
 
-Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, shared UI components, and stories from an extracted design-system package.
+Use `skills/design-system-to-storybook/SKILL.md` when implementing Storybook foundations, shared UI components, and stories from an extracted design-system package.
 
 ## Source Of Truth
 
@@ -21,7 +21,7 @@ Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, s
 - Read relevant `design-system/components/*.md`.
 - Read `design-system/DESIGN_EVIDENCE_MAP.md` for evidence and source trace.
 - Read touched token files under `tokens/`.
-- Run `skills/ds-to-storybook/scripts/trace_sources.mjs` and `skills/ds-to-storybook/scripts/plan_component_batches.mjs` before multi-component implementation.
+- Run `<skill-root>/scripts/trace_sources.mjs` and `<skill-root>/scripts/plan_component_batches.mjs` before multi-component implementation.
 - Do not infer component design from screenshots or broad Figma search inside this workflow.
 
 ## Batch Rules
@@ -46,8 +46,12 @@ Use `skills/ds-to-storybook/SKILL.md` when implementing Storybook foundations, s
 For React Storybook 10 projects, install and configure the bundled addon with the skill scripts:
 
 ```sh
-node skills/ds-to-storybook/scripts/install_figma_export_addon.mjs <product-repo-root>
-node skills/ds-to-storybook/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json
+node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root>
+node <skill-root>/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/generate_component_spec_modules.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/sync_story_source_parameters.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/validate_figma_export_setup.mjs <product-repo-root>
 ```
 
-For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`.
+Configure `createFigmaExportReviewDecorator`, `review.css`, and `getFigmaSourceUrl` by default so review/Open source works. For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`. Verify the toolbar, review/Open source overlay, and Copy design SVG action before marking addon setup complete.

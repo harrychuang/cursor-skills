@@ -17,6 +17,7 @@ import {
 } from "./options";
 import { createFigmaExportJson, createFigmaPluginCode } from "./pluginCode";
 import { getParameterUrl } from "./source";
+import type { FigmaExportNode, FigmaExportPayload } from "./types";
 
 type StorybookContext = {
   globals?: Record<string, unknown>;
@@ -42,7 +43,7 @@ type FigmaCodeExporterProps = {
   options?: FigmaExportAddonOptions;
 };
 
-type CopyFormat = "json" | "script";
+type CopyFormat = "design" | "json" | "script";
 type ExportStatus = "copied" | "copying" | "error" | "idle";
 
 const statusLabels: Record<ExportStatus, string> = {
@@ -193,6 +194,122 @@ async function copyText(text: string): Promise<void> {
   }
 }
 
+function exporterEscapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function exporterEscapeSvgAttribute(value: string): string {
+  return exporterEscapeXml(value).replace(/"/g, "&quot;");
+}
+
+function exporterFormatSvgNumber(value: number | undefined): string {
+  const numberValue = Number.isFinite(value) ? Number(value) : 0;
+  return Number.isInteger(numberValue) ? String(numberValue) : numberValue.toFixed(2);
+}
+
+function exporterSvgDataUrl(svgText: string): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+}
+
+function exporterGetSvgPaint(value: string | undefined, fallback = "none"): string {
+  return value ? exporterEscapeSvgAttribute(value) : fallback;
+}
+
+function renderSvgImageNode(node: FigmaExportNode, isRoot: boolean): string {
+  const { height, width, x, y } = node.styles;
+  const transform = isRoot
+    ? ""
+    : ` transform="translate(${exporterFormatSvgNumber(x)} ${exporterFormatSvgNumber(y)})"`;
+
+  if (!node.svgText) return "";
+
+  return `<g${transform}><image href="${exporterEscapeSvgAttribute(exporterSvgDataUrl(node.svgText))}" width="${exporterFormatSvgNumber(width)}" height="${exporterFormatSvgNumber(height)}" preserveAspectRatio="none"/></g>`;
+}
+
+function renderSvgTextNode(node: FigmaExportNode, isRoot: boolean): string {
+  const { color, fontFamily, fontSize, fontWeight, width, x, y } = node.styles;
+  const transform = isRoot
+    ? ""
+    : ` transform="translate(${exporterFormatSvgNumber(x)} ${exporterFormatSvgNumber(y)})"`;
+  const resolvedFontSize = fontSize ?? 12;
+
+  return `<text${transform} x="0" y="${exporterFormatSvgNumber(resolvedFontSize)}" fill="${exporterGetSvgPaint(color, "#000000")}" font-family="${exporterEscapeSvgAttribute(fontFamily ?? "sans-serif")}" font-size="${exporterFormatSvgNumber(resolvedFontSize)}" font-weight="${exporterEscapeSvgAttribute(String(fontWeight ?? 400))}" textLength="${exporterFormatSvgNumber(width)}">${exporterEscapeXml(node.text ?? "")}</text>`;
+}
+
+function renderSvgFrameNode(node: FigmaExportNode, isRoot: boolean): string {
+  const {
+    backgroundColor,
+    borderColor,
+    borderWidth,
+    height,
+    opacity,
+    radius,
+    width,
+    x,
+    y,
+  } = node.styles;
+  const transform = isRoot
+    ? ""
+    : ` transform="translate(${exporterFormatSvgNumber(x)} ${exporterFormatSvgNumber(y)})"`;
+  const groupOpacity =
+    typeof opacity === "number" && opacity >= 0 && opacity < 1
+      ? ` opacity="${exporterFormatSvgNumber(opacity)}"`
+      : "";
+  const hasRect = Boolean(backgroundColor || (borderColor && borderWidth));
+  const rect = hasRect
+    ? `<rect width="${exporterFormatSvgNumber(width)}" height="${exporterFormatSvgNumber(height)}" rx="${exporterFormatSvgNumber(radius)}" fill="${exporterGetSvgPaint(backgroundColor)}"${borderColor && borderWidth ? ` stroke="${exporterGetSvgPaint(borderColor)}" stroke-width="${exporterFormatSvgNumber(borderWidth)}"` : ""}/>`
+    : "";
+  const children = node.children.map((child) => renderSvgNode(child)).join("");
+
+  return `<g${transform}${groupOpacity}>${rect}${children}</g>`;
+}
+
+function renderSvgNode(node: FigmaExportNode, isRoot = false): string {
+  if (node.kind === "text") return renderSvgTextNode(node, isRoot);
+  if (node.kind === "image" || node.kind === "svg") {
+    return renderSvgImageNode(node, isRoot);
+  }
+  return renderSvgFrameNode(node, isRoot);
+}
+
+function createFigmaDesignSvg(payload: FigmaExportPayload): string {
+  const width = Math.max(1, payload.root.styles.width);
+  const height = Math.max(1, payload.root.styles.height);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${exporterFormatSvgNumber(width)}" height="${exporterFormatSvgNumber(height)}" viewBox="0 0 ${exporterFormatSvgNumber(width)} ${exporterFormatSvgNumber(height)}" role="img" aria-label="${exporterEscapeSvgAttribute(payload.root.name)}">${renderSvgNode(payload.root, true)}</svg>`;
+}
+
+async function copySvgDesign(svgText: string): Promise<void> {
+  if (navigator.clipboard?.write && typeof ClipboardItem !== "undefined") {
+    const plainText = new Blob([svgText], { type: "text/plain" });
+    const htmlText = new Blob([svgText], { type: "text/html" });
+
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "image/svg+xml": new Blob([svgText], { type: "image/svg+xml" }),
+          "text/html": htmlText,
+          "text/plain": plainText,
+        }),
+      ]);
+      return;
+    } catch {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "text/html": htmlText,
+          "text/plain": plainText,
+        }),
+      ]);
+      return;
+    }
+  }
+
+  await copyText(svgText);
+}
+
 export function FigmaCodeExporter({
   children,
   context,
@@ -227,7 +344,13 @@ export function FigmaCodeExporter({
     setActiveFormat(format);
     setCopiedFormat(undefined);
     setStatus("copying");
-    setSummary(format === "json" ? "Generating JSON payload..." : "Generating console script...");
+    setSummary(
+      format === "design"
+        ? "Generating SVG design..."
+        : format === "json"
+          ? "Generating JSON payload..."
+          : "Generating console script...",
+    );
 
     try {
       const payload = await createFigmaExportPayload({
@@ -237,17 +360,23 @@ export function FigmaCodeExporter({
         storyId: context.id ?? "unknown-story",
         storyName: context.name ?? "Story",
       });
-      const exportText =
-        format === "json"
-          ? createFigmaExportJson(payload)
-          : createFigmaPluginCode(payload);
-      await copyText(exportText);
+      if (format === "design") {
+        await copySvgDesign(createFigmaDesignSvg(payload));
+      } else {
+        const exportText =
+          format === "json"
+            ? createFigmaExportJson(payload)
+            : createFigmaPluginCode(payload);
+        await copyText(exportText);
+      }
       setCopiedFormat(format);
       setStatus("copied");
       setSummary(
-        format === "json"
-          ? `${payload.tokens.length} variables exported from ${payload.root.name}; JSON copied for importer.`
-          : `${payload.tokens.length} variables exported from ${payload.root.name}; script copied for plugin console only.`,
+        format === "design"
+          ? `Visual SVG copied from ${payload.root.name}; paste into Figma for quick review.`
+          : format === "json"
+            ? `${payload.tokens.length} variables exported from ${payload.root.name}; JSON copied for importer.`
+            : `${payload.tokens.length} variables exported from ${payload.root.name}; script copied for plugin console only.`,
       );
     } catch (error) {
       setStatus("error");
@@ -335,6 +464,23 @@ export function FigmaCodeExporter({
                 : copiedFormat === "script" && status === "copied"
                   ? "Copied"
                   : "Plugin Console Script"}
+            </button>
+            <button
+              aria-label="Copy design to Figma"
+              className="sbfx-exporter__button sbfx-exporter__button--secondary sbfx-exporter__button--icon"
+              data-exporting={status === "copying" ? "true" : undefined}
+              disabled={status === "copying"}
+              onClick={() => {
+                void handleCopy("design");
+              }}
+              title="Copy design to Figma"
+              type="button"
+            >
+              {copiedFormat === "design" && status === "copied" ? (
+                <CheckIcon size={14} />
+              ) : (
+                <FigmaIcon size={14} />
+              )}
             </button>
           </div>
         </aside>

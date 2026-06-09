@@ -72,6 +72,12 @@ export default preview;
 
 Adjust `figmaExportOptions` for your design tokens and story naming.
 
+When the `figmaExport` toolbar global is on, the exporter panel can copy:
+
+- JSON import payload for deterministic importer flows
+- plugin-console script for manual Figma console use
+- SVG design clipboard data for quick visual paste/review in Figma
+
 ### Optional export review panel
 
 Use the bundled review helpers when you want Storybook to track each story's

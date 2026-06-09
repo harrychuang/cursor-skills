@@ -20,9 +20,11 @@ if (help) {
 
 const scriptPath = fileURLToPath(import.meta.url);
 const skillRoot = path.resolve(path.dirname(scriptPath), "..");
-const skillName = path.basename(skillRoot);
+const folderName = path.basename(skillRoot);
+const skillMetadata = readSkillMetadata(skillRoot);
+const skillName = skillMetadata.name || folderName;
 
-validateSkillPackage(skillRoot, skillName);
+validateSkillPackage(skillRoot, skillMetadata);
 
 if (!["all", "claude", "codex", "cursor"].includes(agent)) {
   fail(`Unsupported --agent "${agent}". Expected claude, codex, cursor, or all.`);
@@ -144,16 +146,23 @@ function shouldSkip(name) {
 }
 
 function validateSkillPackage(root, expectedName) {
+  if (!expectedName.name) {
+    fail(`Missing required name field in ${path.join(root, "SKILL.md")}.`);
+  }
+}
+
+function readSkillMetadata(root) {
   const skillFile = path.join(root, "SKILL.md");
   if (!fs.existsSync(skillFile)) fail(`Missing ${skillFile}.`);
 
   const markdown = fs.readFileSync(skillFile, "utf8");
   const nameMatch = markdown.match(/^name:\s*([^\n]+)$/m);
-  const declaredName = nameMatch?.[1]?.trim().replace(/^["']|["']$/g, "");
+  const descriptionMatch = markdown.match(/^description:\s*(?:>-\s*)?([^\n]+)?$/m);
 
-  if (declaredName && declaredName !== expectedName) {
-    fail(`SKILL.md name "${declaredName}" must match folder name "${expectedName}".`);
-  }
+  return {
+    description: descriptionMatch?.[1]?.trim().replace(/^["']|["']$/g, "") || "",
+    name: nameMatch?.[1]?.trim().replace(/^["']|["']$/g, "") || "",
+  };
 }
 
 function fail(message) {

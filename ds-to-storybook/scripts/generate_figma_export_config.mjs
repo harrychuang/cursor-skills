@@ -8,9 +8,11 @@ const args = process.argv.slice(2);
 const writeConfig = args.includes("--write");
 const jsonOnly = args.includes("--json");
 const productRootFlagIndex = args.indexOf("--product-root");
+const storyRootArgs = readRepeatedFlag("--story-root");
 const positional = args.filter((arg, index) => {
-  if (arg === "--write" || arg === "--json" || arg === "--product-root") return false;
+  if (arg === "--write" || arg === "--json" || arg === "--product-root" || arg === "--story-root") return false;
   if (productRootFlagIndex >= 0 && index === productRootFlagIndex + 1) return false;
+  if (isFlagValueIndex(args, "--story-root", index)) return false;
   return !arg.startsWith("--");
 });
 const designSystemRoot = path.resolve(positional[0] || process.cwd());
@@ -32,7 +34,10 @@ const storyRows = fs.existsSync(sourceTracePath) ? parseStorySourceRows(sourceTr
 const planRows = fs.existsSync(componentPlanPath) ? parseBuildPlanRows(componentPlanPath) : [];
 const inventoryRows = fs.existsSync(componentInventoryPath) ? parseInventoryRows(componentInventoryPath) : [];
 const tokenPrefix = detectTokenPrefix(packageRoot, productRoot);
-const storyTitlePrefix = detectStoryTitlePrefixes(productRoot);
+const storyRoots = storyRootArgs.length
+  ? storyRootArgs.map((root) => path.resolve(productRoot, root))
+  : detectStoryRoots(productRoot);
+const storyTitlePrefix = detectStoryTitlePrefixes(storyRoots);
 const existingConfig = readExistingProjectConfig(configPath);
 const componentClassPrefixes = existingConfig.addon.componentClassPrefixes.length
   ? existingConfig.addon.componentClassPrefixes
@@ -80,15 +85,37 @@ const config = {
   },
 };
 
+if (writeConfig) {
+  writeProjectConfig();
+}
+
 if (jsonOnly) {
-  process.stdout.write(`${JSON.stringify({ config, configPath }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ config, configPath, storyRoots }, null, 2)}\n`);
 } else {
   const source = renderConfig(config);
-  if (writeConfig) {
-    fs.mkdirSync(storybookDir, { recursive: true });
-    fs.writeFileSync(configPath, source);
-  }
   process.stdout.write(source);
+}
+
+function writeProjectConfig() {
+  fs.mkdirSync(storybookDir, { recursive: true });
+  fs.writeFileSync(configPath, renderConfig(config));
+}
+
+function readRepeatedFlag(name) {
+  const values = [];
+  args.forEach((arg, index) => {
+    if (arg !== name) return;
+    const value = args[index + 1];
+    if (!value || value.startsWith("--")) {
+      throw new Error(`${name} requires a value.`);
+    }
+    values.push(value);
+  });
+  return values;
+}
+
+function isFlagValueIndex(values, flagName, index) {
+  return values[index - 1] === flagName;
 }
 
 function resolveDesignSystemDir(root) {
@@ -202,10 +229,24 @@ function detectTokenPrefix(...roots) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "";
 }
 
-function detectStoryTitlePrefixes(root) {
-  const storyFiles = walkSafe(path.join(root, "src"))
+function detectStoryRoots(root) {
+  const candidates = [
+    "src",
+    "stories",
+    "components",
+    "lib",
+    "app",
+    "apps",
+    "packages",
+  ].map((candidate) => path.join(root, candidate));
+  const existing = candidates.filter((candidate) => fs.existsSync(candidate));
+  return existing.length ? existing : [root];
+}
+
+function detectStoryTitlePrefixes(roots) {
+  const storyFiles = uniqueSorted(roots.flatMap((root) => walkSafe(root)))
     .filter((file) => /\.stories\.[cm]?[jt]sx?$/.test(file));
-  const prefixes = new Set(["Components/"]);
+  const prefixes = new Set();
 
   for (const file of storyFiles) {
     const text = fs.readFileSync(file, "utf8");
@@ -214,7 +255,8 @@ function detectStoryTitlePrefixes(root) {
     }
   }
 
-  return [...prefixes].sort();
+  const values = [...prefixes].sort();
+  return values.length ? values : false;
 }
 
 function inferAbsoluteFidelityComponents(planRows, inventoryRows) {
@@ -411,10 +453,25 @@ function walkSafe(dir) {
   const files = [];
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...walkSafe(fullPath));
+    if (entry.isDirectory() && !shouldSkipDirectory(entry.name)) files.push(...walkSafe(fullPath));
     if (entry.isFile()) files.push(fullPath);
   }
   return files;
+}
+
+function shouldSkipDirectory(name) {
+  return [
+    ".git",
+    ".next",
+    ".nuxt",
+    ".output",
+    ".storybook-static",
+    "build",
+    "coverage",
+    "dist",
+    "node_modules",
+    "storybook-static",
+  ].includes(name);
 }
 
 function sectionLines(lines, heading) {

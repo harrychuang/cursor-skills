@@ -1,11 +1,11 @@
 # Claude Code Handoff
 
-Use this content in a target repo's `CLAUDE.md`, or copy this skill folder to `.claude/skills/ds-to-storybook/` so Claude Code can invoke it as a skill.
+Use this content in a target repo's `CLAUDE.md`, or copy this skill folder to `.claude/skills/design-system-to-storybook/` so Claude Code can invoke it as a skill.
 
 ~~~md
 # Design System to Storybook
 
-Use `.claude/skills/ds-to-storybook/SKILL.md` when turning an extracted design-system package into Storybook foundations, shared components, and stories.
+Use `.claude/skills/design-system-to-storybook/SKILL.md` when turning an extracted design-system package into Storybook foundations, shared components, and stories.
 
 ## Source Of Truth
 
@@ -35,9 +35,13 @@ Use `.claude/skills/ds-to-storybook/SKILL.md` when turning an extracted design-s
 Install the addon with the bundled installer, not GitHub:
 
 ```sh
-node .claude/skills/ds-to-storybook/scripts/install_figma_export_addon.mjs <product-repo-root>
-node .claude/skills/ds-to-storybook/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json
+node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root>
+node <skill-root>/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/generate_component_spec_modules.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/sync_story_source_parameters.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/validate_figma_export_setup.mjs <product-repo-root>
 ```
 
-Adjust the path if the skill is stored elsewhere. Write the best resolved source URL to story parameters, preferring `parameters.figmaSourceUrl` for Figma and `parameters.design.url` for other web sources.
+Adjust the path if the skill is stored elsewhere. Configure `createFigmaExportReviewDecorator`, `review.css`, and `getFigmaSourceUrl` by default so review/Open source works. Write the best resolved source URL to story parameters, preferring `parameters.figmaSourceUrl` for Figma and `parameters.design.url` for other web sources. Verify the toolbar, review/Open source overlay, and Copy design SVG action before marking addon setup complete.
 ~~~

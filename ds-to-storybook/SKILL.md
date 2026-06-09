@@ -49,10 +49,11 @@ If the user asks for "all components" or a full library, create the trace, depen
 4. Run the component planner before choosing implementation order and queue rows: `node <skill-root>/scripts/plan_component_batches.mjs <design-system-package-root> --write --queue`.
 5. Inspect referenced design sources for the selected scope: use Figma MCP for Figma nodes, inspect local UI images/crops, and inspect referenced frontend folders/routes when present.
 6. Inspect product conventions before editing: component folders, page folders, story format, token files, theme providers, Storybook config, build scripts, lint/typecheck scripts, and package manager.
-7. Record an implementation map before code changes. Prefer `design-system/STORYBOOK_IMPLEMENTATION_MAP.md` when the design-system package lives in the product repo; otherwise use `docs/design-system/storybook-implementation.md`. Use `assets/storybook-implementation-map-template.md` when starting a new map.
-8. Install the bundled Figma export addon, generate project-local addon config, and configure Storybook when the product has a compatible React Storybook 10 setup.
-9. If implementing more than one component, create or update a component queue before reading every spec or editing code.
-10. If the product has explicit design-system governance instructions, follow them. Otherwise apply the gates in this skill.
+7. Run product discovery: `node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json`.
+8. Record an implementation map before code changes. Prefer `design-system/STORYBOOK_IMPLEMENTATION_MAP.md` when the design-system package lives in the product repo; otherwise use `docs/design-system/storybook-implementation.md`. Use `assets/storybook-implementation-map-template.md` when starting a new map.
+9. Install the bundled Figma export addon, generate project-local addon config, configure Storybook, and validate wiring when the product has a compatible React Storybook 10 setup.
+10. If implementing more than one component, create or update a component queue before reading every spec or editing code.
+11. If the product has explicit design-system governance instructions, follow them. Otherwise apply the gates in this skill.
 
 ## Scope Modes
 
@@ -104,7 +105,7 @@ Default output is `design-system/STORYBOOK_SOURCE_TRACE.md`. Use it to connect c
 - **Frontend folder or prototype source:** inspect the referenced code, Storybook entries, token files, rendered routes, and component API. Treat prototype code as migration evidence only when the user asks to migrate it; otherwise use it to understand behavior and states.
 - **Rendered route:** run or inspect the route only if the product setup makes that cheap and safe. Record viewport, state, and command in the implementation map when used for verification.
 
-Use the `Story Source URL Parameters` section from `STORYBOOK_SOURCE_TRACE.md` when creating or updating stories. Prefer Figma URLs and write them to `parameters.figmaSourceUrl`; use non-Figma web URLs only when they are the best available source and write them to `parameters.design.url`. Do not invent a URL from a local image path or normalized Figma fingerprint unless the design-system docs also provide the matching Figma file URL.
+Use the `Story Source URL Parameters` section from `STORYBOOK_SOURCE_TRACE.md` when creating or updating stories. Run `node <skill-root>/scripts/sync_story_source_parameters.mjs <design-system-package-root> --product-root <product-repo-root> --write` after story files exist; it writes Figma URLs to `parameters.figmaSourceUrl` and other web URLs to `parameters.design.url` when it can patch safely. Do not invent a URL from a local image path or normalized Figma fingerprint unless the docs also provide the matching file URL.
 
 If the trace finds source IDs in component specs that cannot be resolved, mark the affected component `blocked` or `needs-extraction` in the queue before writing component code. If the trace finds Figma or image evidence for a component, do not skip that source unless the source is unavailable; record the reason.
 
@@ -146,6 +147,14 @@ Find the local implementation pattern before adding files:
 
 Do not install Storybook or unrelated dependencies unless the user asked for Storybook setup or approves it after discovery. The bundled Figma export addon in the next section is the default dependency exception for compatible projects.
 
+Use the bundled inspector to make discovery repeatable:
+
+```sh
+node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json
+```
+
+Record the package manager, framework, Storybook major version, builder, story roots, component roots, token files, and addon readiness in the implementation map. If the inspector reports that addon setup is not ready, keep implementation moving without forcing Storybook installation or upgrades.
+
 ### 5. Target File Layout
 
 Use folder co-location for new implementation files. Do not create a separate root `stories/` folder for component stories.
@@ -177,13 +186,6 @@ Install it with the bundled installer:
 node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root>
 ```
 
-The installer:
-
-- copies `assets/figma-export-addon/` into `<product-repo-root>/.storybook/vendor/figma-export-addon/`
-- detects `npm`, `pnpm`, `yarn`, or `bun`
-- installs `file:.storybook/vendor/figma-export-addon`
-- installs `@storybook/icons@^1.0.0` only when the target package does not already declare `@storybook/icons`
-
 Use `--copy-only` only when you need to inspect or manually install the vendored package. If the bundled addon asset is missing or incomplete, mark `figma-export-addon` as `blocked`; do not fall back to GitHub unless the user explicitly asks to refresh the vendored asset.
 
 If Storybook is missing, not version 10, or the project is not React-based, do not force the addon. Mark `figma-export-addon` as `blocked` in the implementation map with the reason and ask before installing or upgrading Storybook.
@@ -192,15 +194,10 @@ Generate a project-local addon config before editing `.storybook/main.*` or `.st
 
 ```sh
 node <skill-root>/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/generate_component_spec_modules.mjs <design-system-package-root> --product-root <product-repo-root> --write
 ```
 
-Default output is `<product-repo-root>/.storybook/figma-export.config.ts`. This file is where project-specific settings belong:
-
-- `componentClassPrefixes` and `tokenPrefix`, inferred from token CSS variables such as `--cm-ref-*`, `--cm-sys-*`, and `--cm-comp-*`
-- `storyTitlePrefix`, inferred from existing story titles when possible
-- `absoluteFidelityComponents`, inferred from page/screen/composite/product-pattern entries
-- review API path, plugin name, and status JSON path
-- source fallback values, such as design-system Figma file URL and per-component node overrides from `STORYBOOK_SOURCE_TRACE.md`
+Default outputs are `.storybook/figma-export.config.ts` and `.storybook/figma-component-specs.ts`. If stories live outside common roots, pass one or more `--story-root <path>` flags to the config generator. Keep project-specific class prefixes, token prefix, story title prefixes, review API settings, Figma file fallbacks, node overrides, and generated spec-module maps out of the addon package.
 
 Do not hardcode project-specific Figma file URLs, node IDs, class prefixes, theme globals, local graphics, or token imports inside the addon package. Keep those in `.storybook/figma-export.config.ts`, `.storybook/preview.*`, or product code. The addon should only expose generic helpers.
 
@@ -209,24 +206,30 @@ Configuration rules:
 1. Add `"@harrychuang/storybook-addon-figma-export"` to `.storybook/main.*` `addons`, preserving existing addons.
 2. Import `figmaExportProjectConfig` from `.storybook/figma-export.config.ts` and build `figmaExportOptions` from that config.
 3. In `.storybook/preview.*`, import:
-   - `createFigmaExportDecorator`
    - `createFigmaExportGlobalTypes`
    - `createFigmaExportInitialGlobals`
    - `FigmaExportAddonOptions`
+   - `createFigmaExportReviewDecorator` from `@harrychuang/storybook-addon-figma-export/review`
+   - `getFigmaSourceUrl` from `@harrychuang/storybook-addon-figma-export/source`
    - `@harrychuang/storybook-addon-figma-export/styles.css`
-4. Merge the decorator, `globalTypes`, and `initialGlobals` into the existing preview export. Do not overwrite existing decorators or globals.
-5. Infer `figmaExportOptions` from the generated config, extracted token architecture, and Storybook titles:
-   - set `tokenPrefix` only when the CSS token prefix is explicit or auto-detection would be ambiguous
-   - keep `tokenLayers` aligned to `ref`, `sys`, and `comp` unless the extraction uses different segment names
-   - set `storyTitlePrefix` to the project's component story namespace, usually `"Components/"`
-   - set `componentClassPrefixes` from component CSS class prefixes when available
-6. When the project needs export review/status tracking, use the bundled addon helpers instead of copying a product-specific panel:
+   - `@harrychuang/storybook-addon-figma-export/review.css`
+4. Merge `createFigmaExportReviewDecorator`, `globalTypes`, and `initialGlobals` into the existing preview export. Do not overwrite existing decorators or globals. Use plain `createFigmaExportDecorator` only if the user explicitly opts out of review/Open source.
+5. Infer `figmaExportOptions` from the generated config, extracted token architecture, and Storybook titles. Use `storyTitlePrefix: false` when the project has no established story namespace; otherwise include every relevant namespace such as `"Components/"`, `"Pages/"`, and `"Foundations/"`.
+6. Configure review/Open source by default using the bundled addon helpers instead of copying a product-specific panel:
    - `.storybook/main.*`: import `createFigmaReviewStatusPlugin` from `@harrychuang/storybook-addon-figma-export/review-server`
-   - `.storybook/preview.*`: use `createFigmaExportReviewDecorator` from `@harrychuang/storybook-addon-figma-export/review`
-   - `.storybook/preview.*`: use `getFigmaSourceUrl` from `@harrychuang/storybook-addon-figma-export/source` only for project-local fallback logic
-   - import `@harrychuang/storybook-addon-figma-export/review.css`
-   - pass `componentSpecModules`, `designSystemFileUrlFallback`, and `nodeOverrides` from `.storybook/figma-export.config.ts` when local Markdown fallback is needed
+   - `.storybook/preview.*`: pass `componentSpecModules`, `specModulePathForSlug`, `designSystemFileUrl`, and `nodeOverrides` to `getFigmaSourceUrl`
+   - the review overlay and Open source action render only when the Storybook `figmaExport` toolbar global is toggled on
 7. Record the copied vendor path, installed package spec, generated config path, config values, config files, options, and review helper usage in the implementation map.
+
+Validate addon wiring before marking setup complete:
+
+```sh
+node <skill-root>/scripts/validate_figma_export_setup.mjs <product-repo-root>
+```
+
+Fix every failed check that applies to the target builder. For non-Vite Storybook builders, the review overlay can still be configured, but persisted review-status middleware may remain blocked unless the project has an equivalent middleware hook.
+
+If the Figma export toolbar is visible but the review overlay or Open source action is missing, read `references/figma-export-review-setup.md` and fix the missing preview/main wiring before marking addon setup complete.
 
 ### 7. Implementation Map
 
@@ -372,7 +375,11 @@ Every new or changed shared component needs Storybook coverage:
 - responsive or density stories when layout changes by viewport
 - theme stories when the product supports multiple themes
 
-Every component story should carry the best source URL the trace can resolve:
+Every component story should carry the best source URL the trace can resolve. Prefer the sync script before manual edits:
+
+```sh
+node <skill-root>/scripts/sync_story_source_parameters.mjs <design-system-package-root> --product-root <product-repo-root> --write
+```
 
 ```ts
 parameters: {
@@ -403,7 +410,7 @@ Run the cheapest reliable checks available:
 - visual screenshot checks for high-risk components against the best resolved original source
 - token audit or CSS variable scan when available
 
-If Storybook is runnable, open the relevant stories and inspect rendered states before calling the pass done. When the selected component has Figma evidence, compare against a Figma MCP screenshot or exported frame when available. When the Figma export addon is installed, confirm the Storybook toolbar loads without console errors and the export overlay can be enabled for at least one component story.
+If Storybook is runnable, open the relevant stories and inspect rendered states before calling the pass done. When the selected component has Figma evidence, compare against a Figma MCP screenshot or exported frame when available. When the Figma export addon is installed, confirm the Storybook toolbar loads without console errors, the `figmaExport` toolbar can be toggled on, the review overlay appears, Open source is available for at least one component story with a resolved source URL, and Copy design can place SVG design output on the clipboard.
 
 For large inventories, verify per batch and keep the full-library check for milestone boundaries. Do not wait until dozens of components are complete before running Storybook build or typecheck if those checks are available.
 
@@ -482,12 +489,12 @@ Do not rewrite product screens to use the new library until the relevant shared 
 
 ## Resource Map
 
-- `scripts/trace_sources.mjs`: scans extractor output and writes `design-system/STORYBOOK_SOURCE_TRACE.md` with Figma, image, frontend-folder, and rendered-route sources.
-- `scripts/plan_component_batches.mjs`: infers dependency order from component inventory/specs and writes `design-system/STORYBOOK_COMPONENT_PLAN.md`; use `--queue` to sync `design-system/STORYBOOK_COMPONENT_QUEUE.md`.
-- `scripts/install_agent_skill.mjs`: installs this skill into Claude Code, Codex, or Cursor user/project skill directories.
+- `scripts/trace_sources.mjs` and `scripts/plan_component_batches.mjs`: write source trace, component plan, and queue files.
+- `scripts/sync_story_source_parameters.mjs`: reports or writes story source URL parameters from `STORYBOOK_SOURCE_TRACE.md`.
 - `scripts/generate_figma_export_config.mjs`: infers product-specific addon settings and writes `.storybook/figma-export.config.ts`.
+- `scripts/generate_component_spec_modules.mjs`: writes `.storybook/figma-component-specs.ts` for Open source fallback.
 - `scripts/install_figma_export_addon.mjs`: copies the bundled Figma export addon into a product repo and installs it as a local `file:` dependency.
+- `scripts/inspect_storybook_project.mjs` and `scripts/validate_figma_export_setup.mjs`: inspect target Storybook compatibility and validate addon wiring.
 - `references/agent-installation.md`: target paths and verification checklist for Claude Code, Codex, and Cursor installation.
-- `assets/storybook-component-queue-template.md`: queue template for large component inventories.
-- `assets/storybook-implementation-map-template.md`: implementation map template for source traces, dependency decisions, target files, addon setup, verification logs, and checkpoint handoff.
-- `assets/figma-export-addon/`: vendored `@harrychuang/storybook-addon-figma-export` package, sourced from `https://github.com/harrychuang/storybook-addons/tree/main/packages/figma-export`.
+- `references/figma-export-review-setup.md`: troubleshooting and required wiring for the review overlay and Open source action.
+- `assets/storybook-component-queue-template.md`, `assets/storybook-implementation-map-template.md`, and `assets/figma-export-addon/`: templates and vendored addon package.

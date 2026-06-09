@@ -155,7 +155,7 @@
 
 .sbfx-exporter__actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   min-inline-size: 0;
   gap: 8px;
@@ -213,6 +213,12 @@
 .sbfx-exporter__button--secondary:hover:not(:disabled) {
   background: #292b38;
   box-shadow: 0 8px 22px rgb(0 0 0 / 18%);
+}
+
+.sbfx-exporter__button--icon {
+  inline-size: 36px;
+  min-inline-size: 36px;
+  padding: 8px;
 }
 
 .sbfx-exporter__button:disabled {
@@ -311,5 +317,10 @@
 
   .sbfx-exporter__button {
     inline-size: 100%;
+  }
+
+  .sbfx-exporter__button--icon {
+    inline-size: 36px;
+    justify-self: end;
   }
 }

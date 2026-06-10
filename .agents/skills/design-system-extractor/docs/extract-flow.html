@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design System Extractor Flow</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --page-bg: #f5f5f7;
+        --surface: #ffffff;
+        --surface-muted: #fbfbfd;
+        --surface-strong: #e8e8ed;
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --subtle: #86868b;
+        --line: #d2d2d7;
+        --line-strong: #a1a1a6;
+        --accent: #0071e3;
+        --accent-strong: #0057b8;
+        --accent-soft: #e8f2ff;
+        --review: #8a5a00;
+        --review-soft: #fff7e6;
+        --ok: #248a3d;
+        --ok-soft: #edf8f0;
+        --code-bg: #f5f5f7;
+        --radius: 8px;
+        --radius-sm: 6px;
+        --max: 1120px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--page-bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+          "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+
+      code {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--code-bg);
+        padding: 0.12em 0.36em;
+        color: var(--text);
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.92em;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      pre {
+        margin: 0;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        padding: 16px;
+        color: var(--text);
+        line-height: 1.55;
+      }
+
+      pre code {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        color: inherit;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        max-width: 920px;
+        margin: 0 auto 18px;
+        font-size: clamp(2.75rem, 7.5vw, 5.8rem);
+        font-weight: 760;
+        letter-spacing: -0.02em;
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: clamp(1.7rem, 3.5vw, 2.75rem);
+        font-weight: 740;
+        letter-spacing: -0.01em;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 1.04rem;
+        font-weight: 720;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -48px;
+        z-index: 20;
+        border-radius: var(--radius-sm);
+        background: var(--text);
+        padding: 10px 14px;
+        color: #fff;
+      }
+
+      .skip-link:focus {
+        top: 16px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--line);
+        background: rgba(245, 245, 247, 0.78);
+        backdrop-filter: saturate(180%) blur(20px);
+      }
+
+      .topbar-inner,
+      .shell {
+        width: min(var(--max), calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .topbar-inner {
+        display: flex;
+        min-height: 52px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .brand {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.94rem;
+        font-weight: 680;
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        justify-content: flex-end;
+      }
+
+      .nav a {
+        border-radius: 999px;
+        padding: 6px 10px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 560;
+        text-decoration: none;
+      }
+
+      .nav a:hover,
+      .nav a:focus-visible {
+        background: var(--surface-muted);
+        color: var(--text);
+      }
+
+      .hero {
+        padding: 86px 0 56px;
+        border-bottom: 1px solid var(--line);
+        background: var(--surface-muted);
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .lead {
+        max-width: 780px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: clamp(1.12rem, 2vw, 1.42rem);
+        line-height: 1.48;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 28px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--surface);
+        padding: 9px 18px;
+        color: var(--text);
+        font-weight: 620;
+        text-decoration: none;
+      }
+
+      .button.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .button.primary:hover,
+      .button.primary:focus-visible {
+        border-color: var(--accent-strong);
+        background: var(--accent-strong);
+      }
+
+      main {
+        padding: 44px 0 80px;
+      }
+
+      section {
+        scroll-margin-top: 82px;
+        padding: 44px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      section:last-child {
+        border-bottom: 0;
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 0.76fr) minmax(260px, 0.42fr);
+        gap: 28px;
+        align-items: start;
+        margin-bottom: 24px;
+      }
+
+      .section-head p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .summary-card,
+      .step-card,
+      .review-card,
+      .output-card,
+      .note,
+      .table-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+
+      .summary-card {
+        min-height: 142px;
+        padding: 22px;
+      }
+
+      .summary-card strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text);
+        font-size: 1.05rem;
+        font-weight: 720;
+      }
+
+      .summary-card p,
+      .step-card p,
+      .review-card p,
+      .output-card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .step-card {
+        display: grid;
+        align-content: start;
+        gap: 10px;
+        min-height: 190px;
+        padding: 18px;
+      }
+
+      .step-number {
+        display: inline-flex;
+        width: max-content;
+        align-items: center;
+        border-radius: 999px;
+        background: var(--surface-strong);
+        padding: 4px 9px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .step-card.review {
+        border-color: #f1d893;
+        background: var(--review-soft);
+      }
+
+      .step-card.review .step-number {
+        background: #f8e6ad;
+        color: var(--review);
+      }
+
+      .detail-list {
+        display: grid;
+        gap: 12px;
+        margin: 24px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .detail-list li {
+        display: grid;
+        grid-template-columns: 120px minmax(0, 1fr);
+        gap: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        padding: 14px 16px;
+      }
+
+      .detail-list strong {
+        color: var(--text);
+      }
+
+      .detail-list span {
+        color: var(--muted);
+      }
+
+      .review-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .review-card {
+        min-height: 176px;
+        padding: 22px;
+      }
+
+      .review-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .badge {
+        display: inline-flex;
+        width: max-content;
+        border-radius: 999px;
+        background: var(--review-soft);
+        padding: 4px 9px;
+        color: var(--review);
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .output-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .output-card {
+        padding: 22px;
+      }
+
+      .table-card {
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 13px 14px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--surface-muted);
+        color: var(--muted);
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      td:first-child {
+        width: 240px;
+        color: var(--text);
+        font-weight: 720;
+      }
+
+      .command-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .note {
+        border-color: #bde3ca;
+        background: var(--ok-soft);
+        padding: 18px;
+        color: #1d6b34;
+      }
+
+      .note.spacing-top {
+        margin-top: 16px;
+      }
+
+      .note p {
+        margin: 0;
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 24px 0;
+        color: var(--subtle);
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 920px) {
+        .topbar-inner {
+          display: grid;
+          padding: 12px 0;
+        }
+
+        .nav {
+          justify-content: flex-start;
+        }
+
+        .section-head,
+        .summary-grid,
+        .flow-grid,
+        .review-grid,
+        .output-grid,
+        .command-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          padding-top: 42px;
+        }
+
+        td:first-child {
+          width: auto;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .topbar {
+          position: static;
+        }
+
+        .topbar-inner,
+        .shell {
+          width: min(100% - 24px, var(--max));
+        }
+
+        h1 {
+          font-size: 2.15rem;
+        }
+
+        .detail-list li {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+
+        th,
+        td {
+          display: block;
+          width: 100%;
+        }
+
+        th:not(:first-child) {
+          display: none;
+        }
+
+        td {
+          border-bottom: 0;
+          padding: 10px 12px;
+        }
+
+        tr {
+          display: block;
+          border-bottom: 1px solid var(--line);
+        }
+
+        tr:last-child {
+          border-bottom: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到內容</a>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <p class="brand">Design System Extractor</p>
+        <nav class="nav" aria-label="頁面導覽">
+          <a href="#overview">總覽</a>
+          <a href="#flow">流程</a>
+          <a href="#reviews">Review gates</a>
+          <a href="#outputs">輸出</a>
+          <a href="#template">Template</a>
+          <a href="#scripts">Scripts</a>
+          <a href="#commands">指令</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="shell">
+        <p class="eyebrow">Developer Guide</p>
+        <h1>把參考畫面整理成可執行的設計系統</h1>
+        <p class="lead">
+          這一頁用開發者視角說明 extractor 做什麼、何時需要停下來 review、
+          以及最後會留下哪些檔案。目標是讓接手的人能快速判斷：
+          現在該讀 evidence、補 tokens、整理 component，還是進入 checkpoint。
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#flow">看流程</a>
+          <a class="button" href="extract-flow-deck.html">開啟簡報版</a>
+        </div>
+      </div>
+    </div>
+
+    <main id="main" class="shell">
+      <section id="overview">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">What it does</p>
+            <h2>Extractor 的工作不是改 UI，而是先建立可信任的規範</h2>
+          </div>
+          <p>
+            它把 screenshot、Figma、專案程式碼和既有 token 轉成可追溯的
+            design-system package。除非明確要求，產品 UI 實作會留到 checkpoint 之後。
+          </p>
+        </div>
+
+        <div class="summary-grid">
+          <article class="summary-card">
+            <strong>輸入</strong>
+            <p>圖片、Figma URL / exports / variables、prototype 或 project folders。</p>
+          </article>
+          <article class="summary-card">
+            <strong>處理</strong>
+            <p>建立 evidence map，萃取 principles、tokens、components 與 interaction rules。</p>
+          </article>
+          <article class="summary-card">
+            <strong>輸出</strong>
+            <p>Markdown 規範、CSS tokens、HTML docs、review queue 與 audit 結果。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="flow">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Five steps</p>
+            <h2>核心流程：先證據，再規範，最後才交付</h2>
+          </div>
+          <p>
+            對一般開發者來說，只要記住這五步：收集來源、整理證據、建立 token、
+            盤點 component、產生文件與 audit。中間遇到重複或近似項目時，不直接猜測。
+          </p>
+        </div>
+
+        <div class="flow-grid">
+          <article class="step-card">
+            <span class="step-number">01</span>
+            <h3>收集來源</h3>
+            <p>列出 screenshot、Figma node、route、CSS、Storybook 和既有規則。</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">02</span>
+            <h3>建立 evidence</h3>
+            <p>每個設計判斷都要能追到來源、狀態、區域與信心等級。</p>
+          </article>
+          <article class="step-card review">
+            <span class="step-number">03</span>
+            <h3>整理 tokens</h3>
+            <p>維持 <code>ref -&gt; sys -&gt; comp</code>，近似值先進 review。</p>
+          </article>
+          <article class="step-card review">
+            <span class="step-number">04</span>
+            <h3>盤點 components</h3>
+            <p>用 fingerprint 判斷要 merge、做 variant，或保留成獨立元件。</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">05</span>
+            <h3>文件與 audit</h3>
+            <p>產生閱讀頁、review queue，執行 source / token / component audit。</p>
+          </article>
+        </div>
+
+        <ul class="detail-list">
+          <li>
+            <strong>設計原則</strong>
+            <span>從反覆出現的視覺判斷萃取，不把單一畫面的偶發樣式當成規範。</span>
+          </li>
+          <li>
+            <strong>Token 架構</strong>
+            <span>Reference token 存 raw value；system token 存語意；component token 存元件 slot。</span>
+          </li>
+          <li>
+            <strong>Component spec</strong>
+            <span>包含 anatomy、variants、states、accessibility、token contract 和 visual evidence。</span>
+          </li>
+          <li>
+            <strong>Checkpoint</strong>
+            <span>更新 <code>SESSION_STATE.md</code>，列出 open questions，停下來等下一步。</span>
+          </li>
+        </ul>
+      </section>
+
+      <section id="reviews">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Review gates</p>
+            <h2>三個地方不能自動合併，也不能靜默新增</h2>
+          </div>
+          <p>
+            這些 review 是為了避免 token sprawl、重複證據和相似元件越堆越多。
+            如果 audit 找到問題，先記錄決策，再繼續。
+          </p>
+        </div>
+
+        <div class="review-grid">
+          <article class="review-card">
+            <span class="badge">Source</span>
+            <h3>重複來源</h3>
+            <p>
+              同一張圖、同一個 Figma node、同一路由狀態不能被重複算成多份 evidence。
+              決策是 reuse、ignore duplicate 或 keep distinct。
+            </p>
+          </article>
+          <article class="review-card">
+            <span class="badge">Token</span>
+            <h3>近似 values</h3>
+            <p>
+              很接近的顏色、spacing、radius、type 或 motion 值要確認 merge
+              還是 keep distinct。色階固定為 100 最亮、0 最暗；audit 也會檢查
+              system / component token 的 exact alias duplicate 和 usage-aware 近似用途。
+            </p>
+          </article>
+          <article class="review-card">
+            <span class="badge">Component</span>
+            <h3>相似元件</h3>
+            <p>
+              新候選元件如果像既有元件，需要比較 purpose、behavior、anatomy、
+              states 和 token contract。component audit 會自動比對 inventory 與
+              component specs 的 fingerprint，再要求記錄 merge、variant、distinct 或 blocked。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="outputs">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Files</p>
+            <h2>最後應該留下的檔案</h2>
+          </div>
+          <p>
+            Markdown 和 CSS 是 source of truth；HTML 是開發者閱讀層。
+            review 和 audit 結果要能讓下一個 agent 或開發者接手。
+          </p>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>檔案</th>
+                <th>用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>design-system/DESIGN_EVIDENCE_MAP.md</code></td>
+                <td>記錄來源、fingerprint、證據和 duplicate source review。</td>
+              </tr>
+              <tr>
+                <td><code>design-system/TOKEN_ARCHITECTURE.md</code></td>
+                <td>說明 token 分層、色階方向和 near-token 決策。</td>
+              </tr>
+              <tr>
+                <td><code>design-system/COMPONENT_INVENTORY.md</code></td>
+                <td>盤點元件狀態，記錄 component similarity review。</td>
+              </tr>
+              <tr>
+                <td><code>tokens/*.css</code></td>
+                <td>保存 ref、sys、comp 三層 token，供後續 UI 實作使用。</td>
+              </tr>
+              <tr>
+                <td><code>docs/design-system/index.html</code></td>
+                <td>把規範、component specs 和 token 表整理成可閱讀的開發者文件；文件殼支援繁中、英文、日文切換。</td>
+              </tr>
+              <tr>
+                <td><code>docs/design-system/review.html</code></td>
+                <td>集中顯示重複來源、色階問題、近似 token、usage-aware token review 和相似 component 的 review queue。</td>
+              </tr>
+              <tr>
+                <td><code>design-system/SESSION_STATE.md</code></td>
+                <td>記錄目前階段、audit 結果、未決問題和下一步 prompt。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="template">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Template package</p>
+            <h2>初始化後應該依照 template 的順序填寫</h2>
+          </div>
+          <p>
+            <code>assets/design-system-template/</code> 是每個專案的起始包。真正的 extract 工作不是只跑 script，
+            而是先把這些 Markdown 和 CSS token 檔案填完整，再用 script 產生閱讀層和檢查缺口。
+          </p>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>順序</th>
+                <th>要填的內容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Evidence</td>
+                <td><code>DESIGN_EVIDENCE_MAP.md</code>：source inventory、fingerprints、duplicate source review 和 evidence rows。</td>
+              </tr>
+              <tr>
+                <td>2. Principles</td>
+                <td><code>DESIGN_PRINCIPLES.md</code>：5-7 條從參考來源萃取出的產品設計原則，每條要有 evidence、implementation rule、do / don't。</td>
+              </tr>
+              <tr>
+                <td>3. Foundations</td>
+                <td><code>DESIGN_ELEMENTS.md</code>：色彩、字體、spacing、shape、elevation、iconography、imagery；同時標記近似值。</td>
+              </tr>
+              <tr>
+                <td>4. Tokens</td>
+                <td><code>TOKEN_ARCHITECTURE.md</code> 與 <code>tokens/*.css</code>：建立 ref / sys / comp，記錄 near-token decisions。</td>
+              </tr>
+              <tr>
+                <td>5. Components</td>
+                <td><code>COMPONENT_INVENTORY.md</code> 和 <code>components/*.md</code>：填 inventory、fingerprint、similarity review、component token contract。</td>
+              </tr>
+              <tr>
+                <td>6. Composition</td>
+                <td><code>PAGE_COMPOSITION_RULES.md</code>、<code>INTERACTION_STATES.md</code>、<code>ANTI_AI_STYLE_RULES.md</code>：固定版面、狀態和 anti-drift 規則。</td>
+              </tr>
+              <tr>
+                <td>7. Checkpoint</td>
+                <td><code>SESSION_STATE.md</code>：更新完成項目、review 結果、audit 結果、open questions 和下一步 prompt。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="scripts">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Scripts</p>
+            <h2>5 個 script 各自負責不同層級</h2>
+          </div>
+          <p>
+            這些 script 不會替你做設計判斷；它們會把缺少的 evidence、未決 review、token
+            繼承問題和 component 重複風險暴露出來，讓 checkpoint 可以被可靠驗證。
+          </p>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Script</th>
+                <th>實際檢查或產出</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>generate_docs_html.mjs</code></td>
+                <td>產生 <code>docs/design-system/index.html</code>，渲染 core docs、extra docs、component specs、token tables、resolved token values、color swatches；也會複製 <code>design-system/assets/</code> 到 generated docs，並提供繁中 / 英文 / 日文文件殼切換。</td>
+              </tr>
+              <tr>
+                <td><code>generate_review_html.mjs</code></td>
+                <td>產生 <code>docs/design-system/review.html</code>，彙整 duplicate source rows、color scale issues、near colors、near numbers、exact sys/comp aliases、usage-aware token pairs 和 component similarity rows。</td>
+              </tr>
+              <tr>
+                <td><code>audit_sources.mjs</code></td>
+                <td>檢查 <code>DESIGN_EVIDENCE_MAP.md</code> 是否有 Source Inventory、source fingerprint、重複 fingerprint / path-state group，以及 unresolved duplicate source decision。</td>
+              </tr>
+              <tr>
+                <td><code>audit_tokens.mjs</code></td>
+                <td>檢查 token import order、ref / sys / comp 命名與繼承、ref 色階 100 -&gt; 0、near reference colors/numbers、exact sys/comp alias duplicates、usage-aware sys/comp near token pairs。</td>
+              </tr>
+              <tr>
+                <td><code>audit_components.mjs</code></td>
+                <td>檢查 inventory、similarity review table、visual reference 是否為 Figma preview / screenshot crop / labeled fallback、component specs 是否有 Component Fingerprint，並自動比對 inventory/spec fingerprints 找出相似 component pair。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="commands">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Commands</p>
+            <h2>開發者最常需要跑的指令</h2>
+          </div>
+          <p>
+            產出文件後，跑三個 audit。若 strict mode 失敗，通常代表還缺 review
+            決策、fingerprint、token inheritance 或 component fingerprint。
+          </p>
+        </div>
+
+        <div class="command-grid">
+          <pre><code>node skills/design-system-extractor/scripts/generate_docs_html.mjs .
+node skills/design-system-extractor/scripts/generate_review_html.mjs .</code></pre>
+          <pre><code>node skills/design-system-extractor/scripts/audit_sources.mjs . --strict
+node skills/design-system-extractor/scripts/audit_tokens.mjs . --strict
+node skills/design-system-extractor/scripts/audit_components.mjs . --strict</code></pre>
+        </div>
+
+        <div class="note spacing-top">
+          <p>
+            這份頁面是 skill 自身的流程說明；實際專案的文件會產生在該專案的
+            <code>docs/design-system/</code> 目錄。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        Source files remain Markdown and CSS tokens. This guide exists so
+        Claude Code, Cursor, Codex, and human developers can follow the same extraction workflow.
+      </div>
+    </footer>
+  </body>
+</html>

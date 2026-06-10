@@ -1,0 +1,57 @@
+---
+description: Build Storybook from extracted design-system docs with bounded batches
+globs:
+  - "design-system/**"
+  - "tokens/**"
+  - ".storybook/**"
+  - "src/**/*.stories.*"
+  - "components/**"
+  - "src/components/**"
+alwaysApply: false
+---
+
+# Design System to Storybook
+
+Use `skills/design-system-to-storybook/SKILL.md` when implementing Storybook foundations, shared UI components, and stories from an extracted design-system package.
+
+## Source Of Truth
+
+- Read `design-system/SESSION_STATE.md`.
+- Read `design-system/COMPONENT_INVENTORY.md`.
+- Read relevant `design-system/components/*.md`.
+- Read `design-system/DESIGN_EVIDENCE_MAP.md` for evidence and source trace.
+- Read touched token files under `tokens/`.
+- Run `<skill-root>/scripts/trace_sources.mjs` and `<skill-root>/scripts/plan_component_batches.mjs` before multi-component implementation.
+- Do not infer component design from screenshots or broad Figma search inside this workflow.
+
+## Batch Rules
+
+- Implement one bounded pass at a time.
+- Default pass size is foundations only, 3-5 simple components, or 1-2 complex composites.
+- If implementing more than one component, create or update `design-system/STORYBOOK_COMPONENT_PLAN.md` and `design-system/STORYBOOK_COMPONENT_QUEUE.md`.
+- Update `design-system/STORYBOOK_IMPLEMENTATION_MAP.md` before code edits.
+- Stop after verification and checkpoint update.
+
+## Component Rules
+
+- Resolve source trace before implementation.
+- Implement components and pages with co-located stories unless existing product convention requires otherwise.
+- Prefer reuse or extension of existing product components.
+- Keep all visual values token-backed.
+- Add Storybook stories for documented variants and states.
+- Mark missing specs as `needs-extraction`; do not invent undocumented variants.
+
+## Figma Export Addon
+
+For React Storybook 10 projects, install and configure the bundled addon with the skill scripts:
+
+```sh
+node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json
+node <skill-root>/scripts/install_figma_export_addon.mjs <product-repo-root>
+node <skill-root>/scripts/generate_figma_export_config.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/generate_component_spec_modules.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/sync_story_source_parameters.mjs <design-system-package-root> --product-root <product-repo-root> --write
+node <skill-root>/scripts/validate_figma_export_setup.mjs <product-repo-root>
+```
+
+Configure `createFigmaExportReviewDecorator`, `review.css`, and `getFigmaSourceUrl` by default so review/Open source works. For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`. Verify the toolbar, review/Open source overlay, and Copy design SVG action before marking addon setup complete.

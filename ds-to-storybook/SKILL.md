@@ -39,6 +39,7 @@ If the user asks for "all components" or a full library, create the trace, depen
 - **Runtime constraints:** framework, package manager, styling system, existing Storybook setup, and test commands.
 - **Batch budget:** optional number of components to implement in the current pass.
 - **Extractor source evidence:** `DESIGN_EVIDENCE_MAP.md`, `SESSION_STATE.md`, component spec `Evidence` tables, component-review image links, and any Figma URLs/nodes, UI screenshots, rendered routes, or frontend folders listed there.
+- **Typographic component specs:** reusable text-composition specs from graphic design references, usually named `typographic-*`, including slot hierarchy, wrapping, alignment, content semantics, and component typography tokens.
 - **Bundled Figma export addon:** enabled by default for compatible React Storybook 10 projects.
 
 ## First Actions
@@ -61,6 +62,7 @@ Choose the smallest mode that satisfies the user request:
 
 - **Foundations:** import or mirror tokens and add Storybook docs for color, typography, spacing, radius, elevation, and motion.
 - **Component pass:** implement selected `extracted` or `planned` component specs as shared components with stories.
+- **Typographic component pass:** implement reusable text-composition specs such as hero lockups, section headings, metric pairs, price stacks, caption overlays, or pull quotes as token-backed shared components with focused stories.
 - **Library pass:** build or update a reusable component package from the full component inventory.
 - **Batch pass:** implement one dependency-aligned group from a large component queue.
 - **Adoption pass:** replace ad hoc product UI with documented shared components after the Storybook catalog exists.
@@ -122,6 +124,7 @@ node <skill-root>/scripts/plan_component_batches.mjs <design-system-package-root
 Default outputs are `design-system/STORYBOOK_COMPONENT_PLAN.md` and `design-system/STORYBOOK_COMPONENT_QUEUE.md`. Use them to decide which component should be built next. The planner reads `COMPONENT_INVENTORY.md`, component specs, and `STORYBOOK_SOURCE_TRACE.md`, then infers:
 
 - component category/tier: foundation, primitive, form-control, layout, navigation, data-display, feedback, overlay, composite, product-pattern, or unknown
+- typographic components: treat `typographic-*`, text lockups, headings, captions, metric pairs, price stacks, and pull quotes as primitive or low-level composition dependencies unless their spec explicitly marks them as page-only product patterns
 - dependencies from explicit dependency/composition/anatomy/slot sections
 - dependencies from component-name composition such as `IconButton` depending on `Button`
 - dependency phrases from component spec mentions, such as `uses`, `contains`, `renders`, `wraps`, or `depends on`
@@ -266,7 +269,7 @@ Create or update `design-system/STORYBOOK_COMPONENT_QUEUE.md` when the design-sy
 Plan before implementation:
 
 1. Start from `STORYBOOK_COMPONENT_PLAN.md`; do not manually invent the first batch while the planner output is available.
-2. Categorize components as foundations, primitives, form controls, navigation, data display, feedback, overlays, layout, composites, or product-specific patterns.
+2. Categorize components as foundations, primitives, typographic primitives, form controls, navigation, data display, feedback, overlays, layout, composites, or product-specific patterns.
 3. Build a dependency order: tokens first, primitives before composites, lower-level slots before containers, common variants before rare variants.
 4. Rank by dependency depth, reuse/dependent count, source confidence, implementation risk, token readiness, and whether an existing product component can be extended.
 5. Mark blocked items explicitly: `needs-extraction`, `needs-source`, `needs-token`, `needs-api-decision`, `needs-existing-component-review`, or `out-of-scope`.
@@ -319,6 +322,7 @@ Create or update foundations stories/docs for the token groups touched by this p
 
 - colors: reference palettes, semantic roles, foreground/background pairings
 - typography: font family, size, line-height, weight, display/body roles
+- typographic components: reusable text-composition slots, hierarchy, wrapping, alignment, and examples when `typographic-*` specs exist
 - spacing and layout density
 - radius and shape
 - elevation, borders, opacity
@@ -326,7 +330,7 @@ Create or update foundations stories/docs for the token groups touched by this p
 
 Use the project's existing docs style. If none exists, create the smallest useful Storybook docs page that displays token names, rendered examples, and usage notes.
 
-Foundation guides may use the product's Storybook docs folder, normally `stories/` or `src/stories/`. Keep these docs separate from component folders because they describe token systems rather than a single reusable component.
+Foundation guides may use the product's Storybook docs folder, normally `stories/` or `src/stories/`. Keep these docs separate from component folders because they describe token systems rather than a single reusable component. Do not implement `typographic-*` specs only as foundation docs; if the extractor created a component spec, create or update the shared component and its co-located story.
 
 ### 12. Component Implementation
 
@@ -347,6 +351,8 @@ For each selected component spec:
 9. Keep component styles token-backed. Do not reach directly into reference tokens from component CSS unless the extracted architecture explicitly allows it.
 10. Create or update the component in a co-located folder under the component root: `<ComponentName>.tsx`, `<ComponentName>.css`, and `<ComponentName>.stories.tsx`.
 11. Export the component through the repo's existing public API.
+
+For typographic components, implement named text slots instead of accepting one undifferentiated `children` blob unless the existing component API requires that pattern. Preserve the extracted hierarchy through tokens: slot type roles, color, line-height, gap, alignment, max width, wrapping, truncation, and responsive rules. Stories should include realistic short and long copy, localization-length stress cases, and any numeric/price formatting shown in the spec.
 
 If the extracted spec lacks a necessary state, mark it blocked or implement only the documented states. Do not invent undocumented visual variants as normative design-system behavior.
 
@@ -374,6 +380,7 @@ Every new or changed shared component needs Storybook coverage:
 - loading, empty, error, selected, expanded, or validation states when the spec defines them
 - responsive or density stories when layout changes by viewport
 - theme stories when the product supports multiple themes
+- long-copy and line-break stress stories for typographic components
 
 Every component story should carry the best source URL the trace can resolve. Prefer the sync script before manual edits:
 
@@ -452,6 +459,8 @@ Do not hardcode colors, spacing, radii, typography, shadows, or motion values in
 Do not create a new shared component before checking the product's existing components and stories. If a candidate is close to an existing component, extend the existing one or ask whether to make it a variant.
 
 Do not place new component stories in a detached root `stories/` or `src/stories/` folder. New shared components use `components/<ComponentName>/<ComponentName>.stories.*`; foundation docs are the only default exception.
+
+Do not downgrade an extracted `typographic-*` component into a static typography foundation example. Build it as a shared component when the spec defines slots, composition rules, and component tokens. If the product already has an equivalent text component, mark the extractor component `reused` and add matching stories instead.
 
 ### Dependency Order Gate
 

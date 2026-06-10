@@ -10,6 +10,7 @@ Act as a Design System Architect. Extract a reusable design-system package from 
 ## Supported Inputs
 
 - **Images / screenshots:** use all provided screenshots as source of truth. Prefer concrete observed regions over general style impressions.
+- **Graphic design references:** when inputs are flat visual references such as posters, banners, editorial layouts, ads, brand graphics, or social cards, extract reusable text compositions as typography evidence and as typographic component candidates when their structure can repeat in product UI.
 - **Figma URL / Figma exports:** use available Figma tools or exported screenshots/metadata. When Figma MCP is available, use it to inspect referenced files/nodes and preserve MCP-ready source targets. Treat selected nodes, variables, and component names as evidence, but still record where each decision came from.
 - **Project / prototype folder:** inspect rendered UI, screenshots, tokens, CSS, Storybook, and components. Treat prototype code as reference-only unless the user asks to migrate code.
 - **Mixed input:** rank evidence in this order unless user says otherwise: production Figma/component library, production screenshots, rendered project UI, prototype code, descriptive prompt.
@@ -70,7 +71,9 @@ If Figma MCP is unavailable during extraction, still record the URL, page/frame/
 
 Fill `design-system/DESIGN_PRINCIPLES.md` and `design-system/DESIGN_ELEMENTS.md`.
 
-Cover color proportions, typography, spacing, density, shape, elevation/depth, iconography, imagery, data display, and state language. Every principle must include evidence and an implementation rule.
+Cover color proportions, typography, text composition, spacing, density, shape, elevation/depth, iconography, imagery, data display, and state language. Every principle must include evidence and an implementation rule.
+
+For graphic design references, inspect typography as composed structures, not only individual type tokens. Capture repeated or reusable combinations such as headline + kicker, headline + deck, eyebrow + title + body, price + qualifier, metric + label, caption overlays, editorial pull quotes, CTA text clusters, and stacked brand statements. Record hierarchy, line breaks, alignment, rhythm, optical spacing, case, tracking, max line length, emphasis, and relationship to nearby imagery or containers.
 
 ### 4. Token Architecture
 
@@ -104,6 +107,8 @@ Fill `design-system/COMPONENT_INVENTORY.md`.
 
 Inventory repeated patterns from the references. Mark each component as `extracted`, `planned`, `blocked`, or `out-of-scope`. Include priority, observed sources, required token groups, missing states, and implementation notes.
 
+Treat reusable text compositions as component candidates even when they come from flat graphic references rather than app UI. Name them with `typographic-` or a clear product role, such as `typographic-hero-lockup`, `typographic-section-heading`, `typographic-metric-pair`, `typographic-price-stack`, `typographic-caption-overlay`, or `typographic-pull-quote`. Mark them `extracted` when the component spec and component tokens exist, `planned` when the visual structure is observed but implementation details need another pass, and `out-of-scope` only when the text treatment is clearly one-off artwork.
+
 Before finalizing inventory or adding a new component spec, run a component similarity review:
 
 1. Read existing `COMPONENT_INVENTORY.md`, `design-system/components/*.md`, and relevant component tokens.
@@ -117,7 +122,7 @@ Before finalizing inventory or adding a new component spec, run a component simi
 
 ### 6. Component Token Specs
 
-Extract at least one high-value component when the user did not specify one, usually the primary action component. Extract additional repeated shell/navigation components when they are central to the reference.
+Extract at least one high-value component when the user did not specify one, usually the primary action component for product UI or the most reusable typographic composition for graphic design references. Extract additional repeated shell/navigation components when they are central to the reference.
 
 For each extracted component, create `design-system/components/<component-name>.md` from `design-system/COMPONENT_SPEC_TEMPLATE.md` and update `tokens/tokens-comp.css`. Use lowercase hyphen-case filenames, such as `primary-button.md` or `bottom-navigation.md`.
 
@@ -126,6 +131,8 @@ For each component spec, fill `Source Trace` whenever source material exists. In
 When a component comes from Figma, do not treat a screenshot crop as a replacement for the Figma source trace. The crop is a visual reference; the Figma URL and MCP target are the handoff path for downstream implementation.
 
 Use `references/component-spec-rules.md` for anatomy, variants, state coverage, accessibility, and token naming.
+
+For typographic components, the spec must define text slots, hierarchy, responsive wrapping, line-count limits, alignment, spacing between text lines/groups, allowable emphasis, truncation rules, and content semantics. Component tokens should cover the composition slots, such as title, kicker, body, metadata, value, qualifier, divider, and caption, while mapping each slot back to system typography, color, spacing, and alignment tokens.
 
 ### 7. Composition, Interaction, And Anti-AI Rules
 

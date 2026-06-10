@@ -844,7 +844,7 @@ function inferCategory(name, specText, declaredCategory) {
 
 function inferCategoryFromText(text) {
   if (/\b(token|color|typography|spacing|radius|elevation|motion|foundation)\b/.test(text)) return "foundation";
-  if (/\b(icon|button|text|label|caption|avatar|divider|spinner|skeleton)\b/.test(text)) return "primitive";
+  if (/\b(icon|button|text|label|caption|avatar|divider|spinner|skeleton|typographic|headline|heading|lockup|kicker|eyebrow|subtitle|deck|pull quote|pullquote|price stack|metric pair)\b/.test(text)) return "primitive";
   if (/\b(input|field|form|checkbox|radio|switch|select|textarea|slider|stepper|segmented|search)\b/.test(text)) return "form-control";
   if (/\b(stack|grid|layout|container|spacer|section|row|column|split)\b/.test(text)) return "layout";
   if (/\b(nav|navigation|tabs|tab bar|breadcrumb|pagination|sidebar)\b/.test(text)) return "navigation";
@@ -859,7 +859,7 @@ function normalizeCategory(value) {
   const raw = normalizeKey(String(value || ""));
   if (!raw) return "unknown";
   if (/foundation|token/.test(raw)) return "foundation";
-  if (/primitive|base|core/.test(raw)) return "primitive";
+  if (/primitive|base|core|typographic|text|headline|heading|lockup/.test(raw)) return "primitive";
   if (/form|control|input/.test(raw)) return "form-control";
   if (/layout|container/.test(raw)) return "layout";
   if (/nav|tab|breadcrumb|pagination/.test(raw)) return "navigation";

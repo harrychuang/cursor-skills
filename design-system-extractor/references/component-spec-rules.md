@@ -6,11 +6,18 @@ Use these rules when extracting components from references.
 
 Extract components when a pattern is repeated, central to navigation or conversion, structurally reusable, or token-heavy enough to block implementation.
 
+For graphic design references, extract reusable text combinations as typographic components when they express a repeatable hierarchy or layout relationship, even if the source is a flat poster, banner, ad, editorial spread, social card, or brand graphic rather than an interactive UI. Do not reduce these to typography tokens only; tokens describe values, while typographic components describe how text slots combine.
+
 Common first components:
 
 - primary action button
 - secondary / inverse button
 - icon action button
+- typographic hero lockup
+- typographic section heading
+- typographic metric pair
+- typographic price stack
+- typographic caption overlay
 - bottom navigation
 - top app bar
 - list row
@@ -54,6 +61,21 @@ Before creating a new component spec, summarize the candidate as a fingerprint:
 | Similar components reviewed | matching existing components and final decision |
 
 Similarity review compares purpose and behavior first. Visual similarity alone is not enough to merge components; different behavior may require separate components or variants.
+
+## Typographic Components
+
+Use a `typographic-` filename prefix when the component's main job is a reusable text composition rather than a control or container. Examples include `typographic-hero-lockup.md`, `typographic-section-heading.md`, `typographic-metric-pair.md`, `typographic-price-stack.md`, `typographic-caption-overlay.md`, and `typographic-pull-quote.md`.
+
+Typographic component specs must capture:
+
+- text slots: kicker, eyebrow, headline, title, subtitle, deck, body, label, value, qualifier, metadata, caption, legal copy, or CTA text
+- hierarchy: relative size, weight, case, line-height, tracking, contrast, and emphasis between slots
+- composition: stacking order, inline vs stacked pairing, alignment, line-break behavior, max width, gap, indentation, baseline rhythm, and relationship to imagery or overlays
+- responsive rules: allowed wrapping, minimum/maximum lines, truncation, slot hiding rules, and how hierarchy changes across viewports
+- content rules: punctuation, casing, numeral formatting, line length, allowed emphasis, localization risk, and whether copy may be authored freely or must use a fixed pattern
+- accessibility: semantic heading level guidance, reading order, contrast, screen-reader wording for numbers/prices, and whether decorative text should be hidden
+
+Treat one-off lettering, logos, or artwork as imagery/brand assets unless the same text relationship should become a reusable product pattern.
 
 The audit script automatically compares component fingerprints from `COMPONENT_INVENTORY.md` and `design-system/components/*.md`. Similarity scoring weights purpose/behavior first, then anatomy, variants/states, token contract, and layout/density. Any automatic candidate must be resolved in the inventory similarity table before the extraction checkpoint passes strict audit.
 
@@ -111,6 +133,11 @@ List slots by visual and semantic role:
 - media
 - badge
 - amount / metadata
+- kicker / eyebrow
+- headline / title
+- deck / subtitle
+- value / qualifier
+- caption / legal copy
 
 Only include slots observed or clearly required by the component role.
 
@@ -137,6 +164,15 @@ Use a table:
 
 Component tokens must reference system tokens only. If no system role exists, add or propose a system role before defining the component slot.
 
+Typographic component token examples:
+
+- `--md-comp-typographic-hero-lockup-kicker-text-color`
+- `--md-comp-typographic-hero-lockup-headline-text-size`
+- `--md-comp-typographic-hero-lockup-headline-line-height`
+- `--md-comp-typographic-hero-lockup-deck-gap`
+- `--md-comp-typographic-metric-pair-value-text-weight`
+- `--md-comp-typographic-caption-overlay-container-color`
+
 ## Layout Rules
 
 Specify:
@@ -150,6 +186,8 @@ Specify:
 - border/radius/elevation behavior
 - responsive behavior
 - truncation behavior
+- line-count and wrapping behavior for each text slot
+- baseline or optical alignment for paired text such as value + qualifier
 
 ## Accessibility Rules
 

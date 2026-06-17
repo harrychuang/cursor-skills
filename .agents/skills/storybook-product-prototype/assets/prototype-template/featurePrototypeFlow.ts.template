@@ -1,0 +1,85 @@
+export const __FEATURE_CAMEL__RouteIds = [
+  "__ENTRY_ROUTE_ID__",
+] as const;
+
+export type __FEATURE_PASCAL__RouteId =
+  (typeof __FEATURE_CAMEL__RouteIds)[number];
+
+export const __FEATURE_CAMEL__FlowNodeIds = [] as const;
+
+export type __FEATURE_PASCAL__FlowNodeId =
+  (typeof __FEATURE_CAMEL__FlowNodeIds)[number];
+
+export type __FEATURE_PASCAL__FlowTargetId =
+  | __FEATURE_PASCAL__RouteId
+  | __FEATURE_PASCAL__FlowNodeId;
+
+export type __FEATURE_PASCAL__Route = {
+  id: __FEATURE_PASCAL__RouteId;
+  title: string;
+  navigationId: string;
+  component?: string;
+  description?: string;
+  flowGroup?: string;
+  flowPosition?: {
+    x: number;
+    y: number;
+  };
+};
+
+export type __FEATURE_PASCAL__FlowNode = {
+  id: __FEATURE_PASCAL__FlowNodeId;
+  title: string;
+  description?: string;
+  flowGroup?: string;
+  flowPosition?: {
+    x: number;
+    y: number;
+  };
+  shape: "decision" | "state";
+  tone?: "default" | "success" | "error" | "warning";
+};
+
+export type __FEATURE_PASCAL__Transition = {
+  from: __FEATURE_PASCAL__FlowTargetId;
+  to: __FEATURE_PASCAL__FlowTargetId;
+  trigger: string;
+  label: string;
+  flowLine?: "key" | "reference" | "hidden";
+  kind?:
+    | "primary"
+    | "return"
+    | "global"
+    | "secondary"
+    | "outcome"
+    | "condition";
+};
+
+export const __FEATURE_CAMEL__Routes = [
+  {
+    component: "__FEATURE_PASCAL__",
+    description: "Prototype entry route.",
+    flowGroup: "entry",
+    flowPosition: { x: 0, y: 0 },
+    id: "__ENTRY_ROUTE_ID__",
+    navigationId: "__ENTRY_ROUTE_ID__",
+    title: "__FEATURE_TITLE__",
+  },
+] satisfies __FEATURE_PASCAL__Route[];
+
+export const __FEATURE_CAMEL__FlowNodes = [] satisfies __FEATURE_PASCAL__FlowNode[];
+
+export const __FEATURE_CAMEL__Transitions = [] satisfies __FEATURE_PASCAL__Transition[];
+
+export const __FEATURE_CAMEL__Flow = {
+  nodes: __FEATURE_CAMEL__FlowNodes,
+  routes: __FEATURE_CAMEL__Routes,
+  transitions: __FEATURE_CAMEL__Transitions,
+};
+
+export function get__FEATURE_PASCAL__Route(routeId: __FEATURE_PASCAL__RouteId) {
+  return (
+    __FEATURE_CAMEL__Routes.find((route) => route.id === routeId) ??
+    __FEATURE_CAMEL__Routes[0]
+  );
+}

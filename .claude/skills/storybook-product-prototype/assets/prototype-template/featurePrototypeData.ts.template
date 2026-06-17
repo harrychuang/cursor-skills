@@ -1,0 +1,15 @@
+import type { __FEATURE_PASCAL__RouteId } from "./__FEATURE_CAMEL__Flow";
+
+export type __FEATURE_PASCAL__RouteContent = {
+  id: __FEATURE_PASCAL__RouteId;
+  title: string;
+  description: string;
+};
+
+export const __FEATURE_CAMEL__Routes = [
+  {
+    description: "Replace this fixture with product-specific route content.",
+    id: "__ENTRY_ROUTE_ID__",
+    title: "__FEATURE_TITLE__",
+  },
+] satisfies __FEATURE_PASCAL__RouteContent[];

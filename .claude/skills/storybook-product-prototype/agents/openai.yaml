@@ -1,0 +1,4 @@
+interface:
+  display_name: "Storybook Product Prototype"
+  short_description: "Create PRD-led prototype stories"
+  default_prompt: "Use $storybook-product-prototype to create PRD, data, UI Flow, and Storybook prototype files."

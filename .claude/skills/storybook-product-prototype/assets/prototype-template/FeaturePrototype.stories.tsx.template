@@ -1,0 +1,42 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { __FEATURE_PASCAL__ } from ".";
+import { __FEATURE_CAMEL__Meta } from "./__FEATURE_CAMEL__Meta";
+
+function getFlowPreviewFromLocation() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return new URLSearchParams(window.location.search).get("prototypeFlowPreview") === "true";
+}
+
+const meta = {
+  title: "Pages/Prototypes/__FEATURE_TITLE__",
+  component: __FEATURE_PASCAL__,
+  tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component: "__FEATURE_TITLE__ product prototype.",
+      },
+    },
+    layout: "fullscreen",
+    prototype: __FEATURE_CAMEL__Meta,
+  },
+  args: {
+    initialRouteId: "__ENTRY_ROUTE_ID__",
+    isFlowPreview: false,
+  },
+  render: (args) => {
+    const isFlowPreview = args.isFlowPreview || getFlowPreviewFromLocation();
+
+    return <__FEATURE_PASCAL__ {...args} isFlowPreview={isFlowPreview} />;
+  },
+} satisfies Meta<typeof __FEATURE_PASCAL__>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};

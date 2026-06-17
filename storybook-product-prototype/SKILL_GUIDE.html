@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storybook Product Prototype — Skill 說明文件</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --bg-soft: #171a21;
+    --panel: #1c2029;
+    --border: #2a2f3a;
+    --fg: #e6e9ef;
+    --fg-muted: #98a2b3;
+    --accent: #6ea8fe;
+    --accent-2: #7ee2b8;
+    --warn: #f3c969;
+    --danger: #f08c8c;
+    --code-bg: #11141b;
+    --radius: 10px;
+    --maxw: 980px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+      "Noto Sans TC", "Microsoft JhengHei", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre, .mono { font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+
+  /* Layout */
+  .wrap { display: grid; grid-template-columns: 268px 1fr; min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; align-self: start;
+    height: 100vh; overflow-y: auto;
+    background: var(--bg-soft);
+    border-right: 1px solid var(--border);
+    padding: 28px 20px;
+  }
+  nav.toc .brand { font-weight: 800; font-size: 15px; letter-spacing: .3px; margin-bottom: 4px; }
+  nav.toc .brand small { display:block; color: var(--fg-muted); font-weight: 500; font-size:12px; margin-top:4px; }
+  nav.toc ul { list-style: none; padding: 0; margin: 18px 0 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc a { color: var(--fg-muted); display: block; padding: 6px 10px; border-radius: 7px; font-size: 13.5px; }
+  nav.toc a:hover { background: var(--panel); color: var(--fg); text-decoration: none; }
+  nav.toc .grp { color: var(--fg); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; margin: 18px 0 6px 10px; }
+
+  main { padding: 56px 48px 120px; max-width: var(--maxw); }
+  section { margin-bottom: 56px; scroll-margin-top: 24px; }
+  h1 { font-size: 34px; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 24px; margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 17px; margin: 28px 0 10px; color: var(--accent-2); }
+  p { margin: 10px 0; }
+  .lede { font-size: 17px; color: var(--fg-muted); margin-bottom: 18px; }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 28px; }
+  .badge {
+    font-size: 12px; padding: 4px 11px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border); color: var(--fg-muted);
+  }
+  .badge.b-accent { color: var(--accent); border-color: #2c4a78; background: #15233b; }
+  .badge.b-green { color: var(--accent-2); border-color: #275848; background: #112a22; }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px; margin: 14px 0;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px){ .grid2 { grid-template-columns: 1fr; } }
+
+  .callout { border-left: 3px solid var(--accent); background: #141b26; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .callout.warn { border-color: var(--warn); background: #221d12; }
+  .callout.danger { border-color: var(--danger); background: #241313; }
+  .callout strong { color: var(--fg); }
+
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px; overflow-x: auto;
+    font-size: 13px; line-height: 1.6; margin: 14px 0;
+  }
+  code:not(pre code) {
+    background: var(--code-bg); border: 1px solid var(--border);
+    padding: 1.5px 6px; border-radius: 5px; font-size: 12.5px; color: #e0b0ff;
+  }
+  pre code { color: #d6deeb; }
+  .c-key { color: #c792ea; } .c-str { color: #c3e88d; } .c-com { color: #637777; font-style: italic; }
+  .c-fn { color: #82aaff; } .c-num { color: #f78c6c; } .c-typ { color: #ffcb6b; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--fg-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  td code { white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+
+  ol, ul { padding-left: 22px; }
+  li { margin: 5px 0; }
+
+  .step { display: flex; gap: 16px; margin: 14px 0; }
+  .step .n {
+    flex: 0 0 34px; height: 34px; border-radius: 50%;
+    background: #15233b; border: 1px solid #2c4a78; color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;
+  }
+  .step .body { flex: 1; }
+  .step .body h3 { margin-top: 4px; }
+
+  .filetree { font-size: 13px; line-height: 1.8; }
+  .filetree .dir { color: var(--accent); }
+  .filetree .gen { color: var(--accent-2); }
+  .filetree .cmt { color: var(--fg-muted); }
+
+  .pill { display:inline-block; font-size:11px; padding:1px 8px; border-radius:999px; background:#15233b; color:var(--accent); border:1px solid #2c4a78; margin-left:6px;}
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  footer { color: var(--fg-muted); font-size: 12.5px; border-top: 1px solid var(--border); padding-top: 20px; }
+  .kvs { font-size: 13.5px; }
+  .kvs b { color: var(--accent-2); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="toc">
+  <div class="brand">Storybook Product Prototype
+    <small>Skill 使用說明 · v1</small>
+  </div>
+  <ul>
+    <li class="grp">概覽</li>
+    <li><a href="#what">這是什麼</a></li>
+    <li><a href="#when">什麼時候用</a></li>
+    <li><a href="#prereq">前提條件</a></li>
+    <li class="grp">使用</li>
+    <li><a href="#invoke">如何觸發</a></li>
+    <li><a href="#workflow">六步工作流程</a></li>
+    <li><a href="#scripts">腳本指令</a></li>
+    <li class="grp">產出物</li>
+    <li><a href="#folder">資料夾契約</a></li>
+    <li><a href="#docs">六份文件</a></li>
+    <li><a href="#flow">UI Flow 契約</a></li>
+    <li><a href="#triggers">Trigger 命名</a></li>
+    <li><a href="#data">Data 契約</a></li>
+    <li><a href="#storybook">Storybook 整合</a></li>
+    <li class="grp">收尾</li>
+    <li><a href="#validate">驗證與品質門檻</a></li>
+    <li><a href="#refmap">參考檔索引</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<section id="top">
+  <h1>Storybook Product Prototype</h1>
+  <p class="lede">把一個「產品點子」用 PRD 主導的流程,逐步變成「可點擊的 Storybook 原型 + 一整套可交接文件」。產出的不是靜態截圖,而是有路由狀態、轉場觸發、確定性假資料的互動原型。</p>
+  <div class="badges">
+    <span class="badge b-accent">PRD-led</span>
+    <span class="badge">React + TypeScript</span>
+    <span class="badge">Storybook</span>
+    <span class="badge b-green">Project-agnostic</span>
+    <span class="badge">22 files · SKILL.md + references + scripts + templates</span>
+  </div>
+  <div class="callout">
+    這份說明由實際研讀 skill 內容產生,涵蓋 <code>SKILL.md</code>、5 份 <code>references/</code>、2 支 <code>scripts/</code>、<code>agents/openai.yaml</code> 與全部 <code>assets/prototype-template/</code> 模板。
+  </div>
+</section>
+
+<!-- ───────────── WHAT ───────────── -->
+<section id="what">
+  <h2>這是什麼</h2>
+  <p>這是一個<strong>工作流程型(workflow)skill</strong>——它不是一個函式庫,而是教 AI agent「怎麼把產品想法拆解成文件、流程模型、假資料,最後組成 Storybook 互動原型」的一套標準作業流程與模板。</p>
+  <p>核心理念:<strong>文件先行、流程先於 UI、資料確定且本地化</strong>。文件本身就是耐久的交接物——另一個 agent 不需要任何對話脈絡,只看資料夾裡的文件就能接手。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">會幫你做到</h3>
+      <ul style="margin:0">
+        <li>從產品點子產出 PRD / UI Flow / Data Spec / Acceptance</li>
+        <li>typed 的路由與轉場 metadata(<code>*Flow.ts</code>)</li>
+        <li>確定性、本地的假資料(<code>*Data.ts</code>)</li>
+        <li>可點擊的 React 原型 + Storybook story</li>
+        <li>把完整流程掛到 <code>parameters.prototype</code> 當審查契約</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">刻意不做</h3>
+      <ul style="margin:0">
+        <li>不呼叫真實產品 API(全部 mock)</li>
+        <li>不重建像素級截圖,而是做可互動流程</li>
+        <li>不保證目標專案已有 UI Flow viewer——只負責產出 metadata 契約</li>
+        <li>不在未經同意下偷偷加 Storybook 相依套件</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── WHEN ───────────── -->
+<section id="when">
+  <h2>什麼時候用</h2>
+  <table>
+    <tr><th>情境</th><th>是否適用</th></tr>
+    <tr><td>要把一個產品想法變成 PRD + 可點擊原型</td><td>✅ 主要用途</td></tr>
+    <tr><td>要 scaffold 一個全新的原型資料夾</td><td>✅</td></tr>
+    <tr><td>要驗證原型的文件與 metadata 是否一致</td><td>✅</td></tr>
+    <tr><td>純粹要做一個正式上線的 production 功能</td><td>⚠️ 這是原型工具,不是 production 流程</td></tr>
+    <tr><td>專案不是 React / 沒有 Storybook</td><td>⚠️ 需自行調整產出檔(skill 是 project-agnostic 但預期 React/TS Storybook)</td></tr>
+  </table>
+</section>
+
+<!-- ───────────── PREREQ ───────────── -->
+<section id="prereq">
+  <h2>前提條件</h2>
+  <div class="callout warn">
+    <strong>需要一個 React + TypeScript 的 Storybook 專案當目標。</strong>
+    這個 skill 集合所在的 repo(<code>~/.cursor/skills</code>)本身不是 Storybook app,所以要在你真正的<u>產品專案</u>裡使用它。
+  </div>
+  <ul>
+    <li>React / TypeScript 專案,或能改寫產出檔以適配的專案</li>
+    <li>Storybook(模板預設使用 <code>@storybook/react-vite</code>;story 用 <code>?raw</code> import markdown,需 Vite 環境)</li>
+    <li>Python 3(若要用 <code>scaffold_prototype.py</code> / <code>validate_prototype.py</code>)</li>
+    <li>(可選)專案若已有 prototype inspector / UI Flow viewer,skill 會自動對齊它的 <code>parameters</code> 命名與 preview-mode query 慣例</li>
+  </ul>
+</section>
+
+<!-- ───────────── INVOKE ───────────── -->
+<section id="invoke">
+  <h2>如何觸發</h2>
+
+  <h3>方式 A — 自然語言(最常用)</h3>
+  <p>在 React/Storybook 專案裡直接描述需求,agent 會自動套用這個 skill。它會<strong>先問關鍵問題</strong>(進入路由、有哪些頁面/分支、要 mock 什麼資料、驗收標準),需求清楚後才開始產檔。</p>
+  <pre><span class="c-com"># 範例對話</span>
+幫我做一個「投資組合提醒(Portfolio Alerts)」的 Storybook 原型,
+進入頁是提醒列表,可以點進去設定門檻,門檻送出後顯示成功或錯誤狀態。</pre>
+
+  <h3>方式 B — 直接叫 skill 立即 scaffold</h3>
+  <p>若你要跳過討論、先拉骨架再填內容:</p>
+  <pre>用 storybook-product-prototype scaffold 一個 Portfolio Alerts 原型</pre>
+
+  <h3>方式 C — Codex / OpenAI agent</h3>
+  <p>skill 附帶 <code>agents/openai.yaml</code>,在支援的環境用預設提示觸發:</p>
+  <pre><span class="c-key">default_prompt:</span> <span class="c-str">"Use $storybook-product-prototype to create PRD, data, UI Flow, and Storybook prototype files."</span></pre>
+</section>
+
+<!-- ───────────── WORKFLOW ───────────── -->
+<section id="workflow">
+  <h2>六步工作流程</h2>
+  <p class="lede">skill 內部遵循固定順序:文件 → 流程 → 資料 → UI → 驗證。每一步都不能跳過依賴關係。</p>
+
+  <div class="step"><div class="n">1</div><div class="body">
+    <h3>Frame The Product(界定產品)</h3>
+    <p>寫任何實作檔之前,先確認:產品名與 owner、主要用戶與問題、進入路由與初始狀態、需要的路由與分支狀態、使用者觸發的轉場、要重用的既有元件、每個路由需要的假資料、非目標與必須維持 mock 的外部系統、Storybook 審查的驗收標準。</p>
+    <p class="kvs"><b>原則:</b>只問會改變「路由模型、資料契約、驗收標準」的問題,一次問一題。</p>
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body">
+    <h3>Generate Docs First(先寫文件)</h3>
+    <p>在組 UI 之前,先建立六份文件(見 <a href="#docs">六份文件</a>)。這些文件是耐久交接物,必須具體到別的 agent 不需私下脈絡就能接手。</p>
+  </div></div>
+
+  <div class="step"><div class="n">3</div><div class="body">
+    <h3>Model UI Flow Before UI(先建流程模型)</h3>
+    <p>先寫 <code>&lt;feature&gt;Flow.ts</code> 再寫 React 畫面。用穩定 route id(不是顯示文字)、把每個可達畫面加進 route metadata、用 flow-only 節點表達 decision/success/error/loading/async 分支、每個會改變路由的動作都加進 transitions。</p>
+  </div></div>
+
+  <div class="step"><div class="n">4</div><div class="body">
+    <h3>Create Deterministic Data(建立確定性資料)</h3>
+    <p>寫 <code>&lt;feature&gt;Data.ts</code>:資料全部本地且確定,盡量用既有元件 prop 型別,涵蓋 branch / empty / loading / error 狀態,在 <code>DATA_SPEC.md</code> 記錄 fixture 歸屬與未來 API 替換點。<strong>絕不從原型呼叫真實 API。</strong></p>
+  </div></div>
+
+  <div class="step"><div class="n">5</div><div class="body">
+    <h3>Compose The Storybook Prototype(組原型)</h3>
+    <p>建立 React 原型、CSS、meta、story、index。優先重用既有 design-system 元件;路由狀態以 route id 顯式 typed;點擊透過 route mapping 與 transition trigger 串接(不靠 rendered text);prototype-only CSS 收斂在 feature 根 class 底下;把完整 meta 掛到 <code>parameters.prototype</code>。</p>
+  </div></div>
+
+  <div class="step"><div class="n">6</div><div class="body">
+    <h3>Validate(驗證)</h3>
+    <p>跑 <code>validate_prototype.py</code>、專案 typecheck(通常 <code>npm run typecheck</code>)、Storybook render/build。除非文件、flow metadata、fixture、story metadata、互動行為描述的是<u>同一個產品行為</u>,否則不算完成。</p>
+  </div></div>
+</section>
+
+<!-- ───────────── SCRIPTS ───────────── -->
+<section id="scripts">
+  <h2>腳本指令</h2>
+  <p>兩支腳本不一定要手動跑——agent 套用 skill 時會在對應步驟自動呼叫。手動使用方式如下。</p>
+
+  <h3>scaffold_prototype.py — 從模板拉骨架</h3>
+  <pre>python3 scripts/scaffold_prototype.py <span class="c-str">"Portfolio Alerts"</span> \
+  <span class="c-key">--target-root</span> src/pages/prototypes \
+  <span class="c-key">--owner</span> <span class="c-str">"Product Team"</span> \
+  <span class="c-key">--entry-route</span> portfolio-alerts</pre>
+  <p>會在 <code>&lt;target-root&gt;/&lt;feature-kebab&gt;-prototype/</code> 產生整個資料夾(例:<code>portfolio-alerts-prototype/</code>)。</p>
+  <table>
+    <tr><th>參數</th><th>說明</th><th>預設</th></tr>
+    <tr><td><code>feature_name</code></td><td>人類可讀功能名(必填位置參數)</td><td>—</td></tr>
+    <tr><td><code>--target-root</code></td><td>原型根目錄</td><td><code>src/pages/prototypes</code></td></tr>
+    <tr><td><code>--title</code></td><td>story 標題</td><td><code>&lt;Feature&gt; Prototype</code></td></tr>
+    <tr><td><code>--owner</code></td><td>owner 標籤</td><td><code>Product Team</code></td></tr>
+    <tr><td><code>--entry-route</code></td><td>初始 route id</td><td>feature kebab 名</td></tr>
+    <tr><td><code>--kebab / --pascal / --camel</code></td><td>覆寫各種命名</td><td>由 feature name 推導</td></tr>
+    <tr><td><code>--css-class</code></td><td>覆寫根 CSS class</td><td><code>&lt;prefix&gt;-&lt;kebab&gt;-prototype</code></td></tr>
+    <tr><td><code>--css-prefix</code></td><td>CSS class 前綴</td><td><code>cm</code></td></tr>
+    <tr><td><code>--force</code></td><td>覆寫已存在的模板檔</td><td>off</td></tr>
+  </table>
+  <p class="kvs">命名推導:<b>kebab</b> <code>portfolio-alerts</code> · <b>PascalCase</b> <code>PortfolioAlertsPrototype</code> · <b>camelCase</b> <code>portfolioAlertsPrototype</code> · <b>title</b> <code>Portfolio Alerts Prototype</code>。</p>
+
+  <h3>validate_prototype.py — 驗證資料夾契約</h3>
+  <pre>python3 scripts/validate_prototype.py src/pages/prototypes/portfolio-alerts-prototype</pre>
+  <p>通過印出 <code>Prototype validation passed.</code>;失敗會列出缺漏項並回傳非零 exit code。檢查內容見 <a href="#validate">驗證與品質門檻</a>。</p>
+</section>
+
+<!-- ───────────── FOLDER ───────────── -->
+<section id="folder">
+  <h2>資料夾契約</h2>
+  <p>每個原型住在自己的資料夾。若專案用 <code>src/screens</code>、<code>app</code>、<code>packages/ui</code> 或不同 story 慣例,根路徑可調整。</p>
+  <pre class="filetree"><span class="dir">src/pages/prototypes/&lt;feature&gt;-prototype/</span>
+  <span class="gen">&lt;Feature&gt;Prototype.tsx</span>          <span class="cmt"># React 原型畫面</span>
+  <span class="gen">&lt;Feature&gt;Prototype.stories.tsx</span>  <span class="cmt"># Storybook story(掛 parameters.prototype)</span>
+  <span class="gen">&lt;feature&gt;PrototypeData.ts</span>        <span class="cmt"># 確定性假資料</span>
+  <span class="gen">&lt;feature&gt;PrototypeFlow.ts</span>        <span class="cmt"># typed 路由/節點/轉場 metadata</span>
+  <span class="gen">&lt;feature&gt;PrototypeMeta.ts</span>        <span class="cmt"># 匯入 docs + 組出 parameters.prototype</span>
+  <span class="gen">&lt;feature&gt;-prototype.css</span>          <span class="cmt"># scoped 在 feature 根 class 下的樣式</span>
+  <span class="gen">index.ts</span>                          <span class="cmt"># re-export 元件與型別</span>
+  <span class="dir">docs/</span>
+    PRD.md  FLOW_SPEC.md  UI_SPEC.md
+    DATA_SPEC.md  ACCEPTANCE.md  IMPLEMENTATION_GUIDE.md</pre>
+
+  <h3>實作順序(Implementation Order)</h3>
+  <ol>
+    <li>草擬 <code>PRD.md</code></li>
+    <li>草擬 <code>FLOW_SPEC.md</code></li>
+    <li>建立 typed <code>*Flow.ts</code></li>
+    <li>建立確定性 <code>*Data.ts</code></li>
+    <li>組 <code>&lt;Feature&gt;Prototype.tsx</code></li>
+    <li>加 scoped 原型 CSS</li>
+    <li>建 <code>*Meta.ts</code>(匯入 docs、輸出 <code>parameters.prototype</code> 資料)</li>
+    <li>建 <code>*.stories.tsx</code></li>
+    <li>驗證文件、UI Flow metadata、互動行為、typecheck</li>
+  </ol>
+</section>
+
+<!-- ───────────── DOCS ───────────── -->
+<section id="docs">
+  <h2>六份文件</h2>
+  <table>
+    <tr><th>文件</th><th>責任</th><th>必備標題(被 validator 檢查)</th></tr>
+    <tr><td><code>PRD.md</code></td><td>產品問題、用戶、目標、非目標、旅程、AI 實作範圍、相依</td><td>Product Summary · Problem · Users · Goals · Non-Goals · Core Journeys</td></tr>
+    <tr><td><code>FLOW_SPEC.md</code></td><td>route id、flow-only 節點、轉場、trigger、狀態規則、導覽對應</td><td>Source Of Truth · Route Map · Transitions</td></tr>
+    <tr><td><code>UI_SPEC.md</code></td><td>外殼佈局、組成、視覺狀態、互動規則、RWD、無障礙、design-system 限制</td><td>Design Principle · Interaction · Accessibility</td></tr>
+    <tr><td><code>DATA_SPEC.md</code></td><td>確定性 fixture、欄位意義、資料不變量、API 替換點</td><td>Source Of Truth · Fixture Inventory · API Replacement Points</td></tr>
+    <tr><td><code>ACCEPTANCE.md</code></td><td>可測試的完成標準:Storybook、metadata、互動、視覺一致性、無障礙、可實作性</td><td>Storybook · Interaction · Engineering</td></tr>
+    <tr><td><code>IMPLEMENTATION_GUIDE.md</code></td><td>實作順序、要建立的檔、限制、驗證指令</td><td>Implementation Order · Required Verification</td></tr>
+  </table>
+  <div class="callout">
+    <strong>PRD 寫作規則:</strong>寫可觀察的產品行為而非只列實作任務;當審查者可能誤以為有真 API/auth/持久化時,務必寫進 Non-Goals;Core Journeys 要具體到能對應成 route transition。
+  </div>
+</section>
+
+<!-- ───────────── FLOW ───────────── -->
+<section id="flow">
+  <h2>UI Flow 契約</h2>
+  <p>流程的「真實來源」是 typed 的 <code>*Flow.ts</code>;<code>FLOW_SPEC.md</code> 是同一份契約給人看的版本。三種核心型別:</p>
+
+  <h3>Route — 產品畫面</h3>
+  <pre><span class="c-key">type</span> <span class="c-typ">Route</span> = {
+  id: <span class="c-typ">RouteId</span>;        <span class="c-com">// 穩定 route id(React state + 流程圖共用)</span>
+  title: <span class="c-typ">string</span>;       <span class="c-com">// 審查標籤</span>
+  navigationId: <span class="c-typ">string</span>;
+  component?: <span class="c-typ">string</span>;   <span class="c-com">// 主要元件 / 組合畫面</span>
+  description?: <span class="c-typ">string</span>; <span class="c-com">// 這個 route 證明的行為</span>
+  flowGroup?: <span class="c-typ">string</span>;
+  flowPosition?: { x: <span class="c-typ">number</span>; y: <span class="c-typ">number</span> }; <span class="c-com">// 穩定座標(可選)</span>
+};</pre>
+
+  <h3>FlowNode — 非畫面的分支邏輯</h3>
+  <p>用於 API 成功/失敗、async/queued、權限決策、驗證結果、背景狀態等「不是完整產品畫面」的分支。</p>
+  <pre><span class="c-key">type</span> <span class="c-typ">FlowNode</span> = {
+  id: <span class="c-typ">FlowNodeId</span>;
+  title: <span class="c-typ">string</span>;
+  description?: <span class="c-typ">string</span>;
+  shape: <span class="c-str">"decision"</span> | <span class="c-str">"state"</span>;
+  tone?: <span class="c-str">"default"</span> | <span class="c-str">"success"</span> | <span class="c-str">"error"</span> | <span class="c-str">"warning"</span>;
+  flowPosition?: { x: <span class="c-typ">number</span>; y: <span class="c-typ">number</span> };
+};</pre>
+
+  <h3>Transition — 使用者觸發的路由變更</h3>
+  <pre><span class="c-key">type</span> <span class="c-typ">Transition</span> = {
+  from: <span class="c-typ">FlowTargetId</span>;   <span class="c-com">// 來源 route 或 flow-node id</span>
+  to: <span class="c-typ">FlowTargetId</span>;     <span class="c-com">// 目標 route 或 flow-node id</span>
+  trigger: <span class="c-typ">string</span>;       <span class="c-com">// 穩定事件名,如 submitButton.click</span>
+  label: <span class="c-typ">string</span>;         <span class="c-com">// 邊線的人類可讀標籤</span>
+  kind?: <span class="c-str">"primary"</span> | <span class="c-str">"return"</span> | <span class="c-str">"global"</span> | <span class="c-str">"secondary"</span> | <span class="c-str">"outcome"</span> | <span class="c-str">"condition"</span>;
+  flowLine?: <span class="c-str">"key"</span> | <span class="c-str">"reference"</span> | <span class="c-str">"hidden"</span>; <span class="c-com">// key = 畫在簡化畫布上</span>
+};</pre>
+  <div class="callout">
+    <strong>畫布 vs 索引:</strong>UI Flow 簡化畫布只畫 <code>flowLine: "key"</code> 的轉場;完整轉場清單仍保留在 metadata(Transition Index 用)。
+  </div>
+
+  <h3>驗收條件</h3>
+  <ul>
+    <li>每個可見 route 都出現在 route metadata</li>
+    <li>每個有記錄的點擊都出現在 transition metadata</li>
+    <li>每個 transition 的 target 都存在(是 route 或 flow-only node)</li>
+  </ul>
+</section>
+
+<!-- ───────────── TRIGGERS ───────────── -->
+<section id="triggers">
+  <h2>Trigger 命名</h2>
+  <p>用穩定、面向實作的名稱當作路由邏輯——<strong>不要</strong>用畫面上顯示的文字當邏輯。</p>
+  <div class="grid2">
+    <div class="card kvs">
+      <b>動作類</b>
+      <pre style="margin-top:8px"><span class="c-str">quoteRow.click</span>
+<span class="c-str">submitButton.click</span>
+<span class="c-str">topAction.search</span>
+<span class="c-str">settingsSheet.dismiss</span>
+<span class="c-str">bottomNavigation.watchlist</span></pre>
+    </div>
+    <div class="card kvs">
+      <b>結果/分支類</b>
+      <pre style="margin-top:8px"><span class="c-str">orderSubmit.success</span>
+<span class="c-str">orderSubmit.error</span></pre>
+      <p style="margin:8px 0 0">先建立 mapping 物件(bottom nav id → route id、top action id → route id、tab/menu/sheet action id → route id)再串 handler。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── DATA ───────────── -->
+<section id="data">
+  <h2>Data 契約</h2>
+  <h3>Fixture 規則</h3>
+  <ul>
+    <li>fixture 本地且確定;盡量用既有元件 prop 型別</li>
+    <li>以 route 或 domain 命名 fixture 群組</li>
+    <li>流程含 branch 節點時要有對應 branch fixture</li>
+    <li>狀態在範圍內時要有 empty / loading / disabled / error fixture</li>
+    <li class="kvs" style="color:var(--danger)"><b>絕不</b>從原型呼叫真實產品 API</li>
+  </ul>
+  <h3>DATA_SPEC.md 區段</h3>
+  <p class="mono" style="color:var(--fg-muted)">Source Of Truth · Fixture Inventory · Route Data Requirements · Data Schemas · API Replacement Points · State And Branch Fixtures · AI Update Rules</p>
+  <h3>API 替換點(每個未來 API/服務都記錄)</h3>
+  <p class="kvs">endpoint/服務名 · method · request shape · response shape · owning team/來源 · 哪些 route 消費它 · 目前用哪個 fixture 群組 mock。</p>
+  <h3>資料不變量(UI 與測試依賴的)</h3>
+  <ul>
+    <li>當 route key 用的穩定 id</li>
+    <li>每張卡/列的必填欄位</li>
+    <li>控制視覺狀態的 direction / status 值</li>
+    <li>觸發 success / error 流程的 branch fixture 值</li>
+  </ul>
+</section>
+
+<!-- ───────────── STORYBOOK ───────────── -->
+<section id="storybook">
+  <h2>Storybook 整合</h2>
+  <h3>Story 需求</h3>
+  <ul>
+    <li>渲染完整產品畫面時用 <code>layout: "fullscreen"</code></li>
+    <li>渲染可點擊原型(非靜態截圖)</li>
+    <li>把 meta 物件掛到 <code>parameters.prototype</code></li>
+    <li>若目標專案的 UI Flow viewer 用 iframe,支援 route preview 模式(模板用 <code>?prototypeFlowPreview=true</code> query 偵測)</li>
+  </ul>
+  <pre><span class="c-key">const</span> meta = {
+  title: <span class="c-str">"Pages/Prototypes/&lt;Title&gt;"</span>,
+  component: <span class="c-typ">FeaturePrototype</span>,
+  tags: [<span class="c-str">"autodocs"</span>],
+  parameters: {
+    layout: <span class="c-str">"fullscreen"</span>,
+    prototype: <span class="c-typ">featurePrototypeMeta</span>,   <span class="c-com">// ← 審查契約</span>
+  },
+} <span class="c-key">satisfies</span> <span class="c-typ">Meta</span>&lt;<span class="c-key">typeof</span> <span class="c-typ">FeaturePrototype</span>&gt;;</pre>
+
+  <h3>Meta 物件形狀</h3>
+  <p>欄位:<code>id · title · description · owner · status · docs · flow · data</code>。</p>
+  <p><b>docs</b> 以 <code>?raw</code> 匯入六份 markdown;<b>flow</b> 暴露 <code>routes / nodes / transitions</code>;<b>data</b> 摘要 fixture 清單、route 資料需求、API 替換點、來源歸屬。</p>
+
+  <div class="callout warn">
+    <strong>UI Flow Viewer 邊界:</strong>這個 skill 只產出 metadata 契約,<u>不保證</u>目標 Storybook 已有 prototype inspector。若沒有:仍產出 <code>parameters.prototype</code>、在文件說明 Docs/Data/UI Flow 的審查需要某個 addon 或專案自備 viewer、未經要求不要默默加相依套件。若已有 inspector,則對齊它的 parameter 名與 preview-mode query 慣例。
+  </div>
+</section>
+
+<!-- ───────────── VALIDATE ───────────── -->
+<section id="validate">
+  <h2>驗證與品質門檻</h2>
+  <h3><code>validate_prototype.py</code> 會檢查</h3>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">檔案存在</h3>
+      <ul style="margin:0">
+        <li><code>*Prototype.tsx</code>(component)</li>
+        <li><code>*Prototype.stories.tsx</code>(story)</li>
+        <li><code>*PrototypeFlow.ts</code>(flow)</li>
+        <li><code>*PrototypeData.ts</code>(data)</li>
+        <li><code>*PrototypeMeta.ts</code>(meta)</li>
+        <li><code>*-prototype.css</code>(css)</li>
+        <li><code>index.ts</code></li>
+        <li><code>docs/</code> 六份 + 必備標題</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">內容契約</h3>
+      <ul style="margin:0">
+        <li>story 含 <code>parameters</code>、<code>prototype:</code>、fullscreen layout</li>
+        <li>meta 含六份 docs 的 raw import、<code>flow:</code>、<code>data:</code>、<code>docs:</code></li>
+        <li>flow 含 <code>RouteIds</code>、<code>Routes</code>、<code>Transitions</code>,且至少一個穩定 route id 字串</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>還要跑(依目標 repo)</h3>
+  <ul>
+    <li>專案 typecheck — 通常 <code>npm run typecheck</code></li>
+    <li>Storybook render / build — 通常 <code>npm run storybook</code> 或 <code>npm run storybook:build</code></li>
+    <li>若專案有 prototype inspector,手動審查 Story / Docs / Data / UI Flow</li>
+  </ul>
+
+  <h3>品質門檻(Quality Bar)</h3>
+  <ul>
+    <li>原型是可點擊的產品流程,不是靜態截圖重建</li>
+    <li>PRD / UI Spec / Flow Spec / Data Spec / Acceptance / Storybook metadata 彼此一致</li>
+    <li>UI Flow 由 route + flow-node + transition metadata 生成</li>
+    <li>fixture 確定且本地</li>
+    <li><code>parameters.prototype</code> 是審查契約</li>
+  </ul>
+  <div class="callout danger">
+    除非文件、flow metadata、fixture、story metadata、互動行為描述的是<strong>同一個產品行為</strong>,否則不標記為完成。
+  </div>
+</section>
+
+<!-- ───────────── REF MAP ───────────── -->
+<section id="refmap">
+  <h2>參考檔索引</h2>
+  <p>agent 只在當前步驟需要時讀取對應 reference(避免一次載入全部)。</p>
+  <table>
+    <tr><th>步驟 / 主題</th><th>讀哪份 reference</th></tr>
+    <tr><td>產品探索與文件結構</td><td><code>references/prototype-standard.md</code></td></tr>
+    <tr><td>PRD 對話與需求塑形</td><td><code>references/prd-workshop.md</code></td></tr>
+    <tr><td>route / node / transition / trigger 規則</td><td><code>references/ui-flow-contract.md</code></td></tr>
+    <tr><td>Storybook story 與 metadata 整合</td><td><code>references/storybook-integration.md</code></td></tr>
+    <tr><td>fixture 與 API 替換規則</td><td><code>references/data-contract.md</code></td></tr>
+  </table>
+  <h3>整個 skill 結構</h3>
+  <pre class="filetree"><span class="dir">storybook-product-prototype/</span>
+  SKILL.md                       <span class="cmt"># 進入點:工作流程 + 規則</span>
+  <span class="dir">references/</span>                   <span class="cmt"># 5 份深入契約(按需讀取)</span>
+  <span class="dir">scripts/</span>
+    scaffold_prototype.py        <span class="cmt"># 從模板拉骨架</span>
+    validate_prototype.py        <span class="cmt"># 驗證資料夾契約</span>
+  <span class="dir">assets/prototype-template/</span>     <span class="cmt"># .template 檔 + docs/ 樣板</span>
+  <span class="dir">agents/</span>openai.yaml             <span class="cmt"># Codex/OpenAI agent 介面</span></pre>
+</section>
+
+<hr>
+<footer>
+  <p>本說明文件由研讀 <code>storybook-product-prototype</code> skill 全部內容後產生 · 自包含單一 HTML,可直接用瀏覽器開啟。</p>
+  <p>來源 skill:<code>/Users/HarryChuang/.cursor/skills/storybook-product-prototype</code></p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

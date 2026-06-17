@@ -1,0 +1,47 @@
+import acceptance from "./docs/ACCEPTANCE.md?raw";
+import dataSpec from "./docs/DATA_SPEC.md?raw";
+import flowSpec from "./docs/FLOW_SPEC.md?raw";
+import implementationGuide from "./docs/IMPLEMENTATION_GUIDE.md?raw";
+import prd from "./docs/PRD.md?raw";
+import uiSpec from "./docs/UI_SPEC.md?raw";
+import { __FEATURE_CAMEL__Routes } from "./__FEATURE_CAMEL__Data";
+import { __FEATURE_CAMEL__Flow } from "./__FEATURE_CAMEL__Flow";
+
+export const __FEATURE_CAMEL__Meta = {
+  data: {
+    fixtures: {
+      routeCount: __FEATURE_CAMEL__Routes.length,
+      routes: __FEATURE_CAMEL__Routes.map((route) => ({
+        id: route.id,
+        title: route.title,
+      })),
+    },
+    overview: {
+      contract:
+        "Data tab documents the local fixtures and future API replacement points for this prototype.",
+      owner: "__OWNER__",
+      status: "Draft data contract",
+    },
+    routeDataRequirements: [
+      {
+        requiredData: ["__FEATURE_CAMEL__Routes"],
+        route: "__ENTRY_ROUTE_ID__",
+        state: "entry route",
+      },
+    ],
+  },
+  description: "__FEATURE_TITLE__ product prototype.",
+  docs: {
+    acceptance,
+    dataSpec,
+    flowSpec,
+    implementationGuide,
+    prd,
+    uiSpec,
+  },
+  flow: __FEATURE_CAMEL__Flow,
+  id: "__FEATURE_KEBAB__",
+  owner: "__OWNER__",
+  status: "draft",
+  title: "__FEATURE_TITLE__",
+};

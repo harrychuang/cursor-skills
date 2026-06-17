@@ -1,0 +1,83 @@
+import { useMemo, useState } from "react";
+
+import "./__FEATURE_KEBAB__.css";
+import {
+  __FEATURE_CAMEL__Routes,
+  type __FEATURE_PASCAL__RouteContent,
+} from "./__FEATURE_CAMEL__Data";
+import {
+  get__FEATURE_PASCAL__Route,
+  __FEATURE_CAMEL__RouteIds,
+  type __FEATURE_PASCAL__RouteId,
+} from "./__FEATURE_CAMEL__Flow";
+
+export type __FEATURE_PASCAL__Props = {
+  initialRouteId?: __FEATURE_PASCAL__RouteId;
+  isFlowPreview?: boolean;
+};
+
+function RoutePanel({
+  route,
+}: {
+  route: __FEATURE_PASCAL__RouteContent;
+}) {
+  return (
+    <section className="__FEATURE_CSS_CLASS____panel" aria-labelledby={`${route.id}-title`}>
+      <p className="__FEATURE_CSS_CLASS____eyebrow">{route.id}</p>
+      <h2 id={`${route.id}-title`}>{route.title}</h2>
+      <p>{route.description}</p>
+    </section>
+  );
+}
+
+export function __FEATURE_PASCAL__({
+  initialRouteId = "__ENTRY_ROUTE_ID__",
+  isFlowPreview = false,
+}: __FEATURE_PASCAL__Props) {
+  const [routeId, setRouteId] = useState<__FEATURE_PASCAL__RouteId>(initialRouteId);
+  const activeRoute = get__FEATURE_PASCAL__Route(routeId);
+  const routeContent = useMemo(
+    () =>
+      __FEATURE_CAMEL__Routes.find((route) => route.id === activeRoute.id) ??
+      __FEATURE_CAMEL__Routes[0],
+    [activeRoute.id],
+  );
+
+  return (
+    <main
+      className={[
+        "__FEATURE_CSS_CLASS__",
+        isFlowPreview ? "__FEATURE_CSS_CLASS__--flow-preview" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      data-route={routeId}
+      aria-label="__FEATURE_TITLE__"
+    >
+      <header className="__FEATURE_CSS_CLASS____header">
+        <div>
+          <p className="__FEATURE_CSS_CLASS____eyebrow">Prototype</p>
+          <h1>{activeRoute.title}</h1>
+        </div>
+      </header>
+
+      <nav className="__FEATURE_CSS_CLASS____nav" aria-label="Prototype routes">
+        {__FEATURE_CAMEL__RouteIds.map((id) => {
+          const route = get__FEATURE_PASCAL__Route(id);
+          return (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={routeId === id}
+              onClick={() => setRouteId(id)}
+            >
+              {route.title}
+            </button>
+          );
+        })}
+      </nav>
+
+      <RoutePanel route={routeContent} />
+    </main>
+  );
+}

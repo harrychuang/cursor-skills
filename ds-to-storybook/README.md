@@ -152,6 +152,22 @@ The implementation map records:
 - verification log
 - checkpoint and next prompt
 
+## Storybook Starter
+
+For greenfield projects, bootstrap a generic Storybook workspace from:
+
+```txt
+assets/storybook-starter/
+```
+
+Install it into an empty target directory:
+
+```sh
+node <skill-root>/scripts/install_storybook_starter.mjs /path/to/target-project
+```
+
+The starter includes Storybook 10, the bundled Figma export addon, prototype UI flow inspector, placeholder `--ds-*` tokens, and empty `src/components/` / `design-system/components/` scaffolds. Use `--force` only when you intend to overwrite an existing starter-shaped project.
+
 ## Figma Export Addon
 
 This skill vendors `@harrychuang/storybook-addon-figma-export` under:

@@ -1,0 +1,22 @@
+<script>
+  (() => {
+    const marker = "__prototypeInspectorResizeObserverLoopGuard";
+    const message = "ResizeObserver loop completed with undelivered notifications";
+
+    if (window[marker]) {
+      return;
+    }
+
+    window[marker] = true;
+    window.addEventListener(
+      "error",
+      (event) => {
+        if (typeof event.message === "string" && event.message.includes(message)) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      },
+      true,
+    );
+  })();
+</script>

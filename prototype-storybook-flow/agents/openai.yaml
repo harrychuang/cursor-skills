@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prototype Storybook Flow"
+  short_description: "Build PRD-led Storybook prototypes"
+  default_prompt: "Use $prototype-storybook-flow to create a PRD-led Storybook prototype with UI Flow metadata."

@@ -503,7 +503,8 @@ Do not rewrite product screens to use the new library until the relevant shared 
 - `scripts/generate_figma_export_config.mjs`: infers product-specific addon settings and writes `.storybook/figma-export.config.ts`.
 - `scripts/generate_component_spec_modules.mjs`: writes `.storybook/figma-component-specs.ts` for Open source fallback.
 - `scripts/install_figma_export_addon.mjs`: copies the bundled Figma export addon into a product repo and installs it as a local `file:` dependency.
+- `scripts/install_storybook_starter.mjs`: copies the generic Storybook starter (`assets/storybook-starter/`) into a new or empty project directory.
 - `scripts/inspect_storybook_project.mjs` and `scripts/validate_figma_export_setup.mjs`: inspect target Storybook compatibility and validate addon wiring.
 - `references/agent-installation.md`: target paths and verification checklist for Claude Code, Codex, and Cursor installation.
 - `references/figma-export-review-setup.md`: troubleshooting and required wiring for the review overlay and Open source action.
-- `assets/storybook-component-queue-template.md`, `assets/storybook-implementation-map-template.md`, and `assets/figma-export-addon/`: templates and vendored addon package.
+- `assets/storybook-component-queue-template.md`, `assets/storybook-implementation-map-template.md`, `assets/figma-export-addon/`, and `assets/storybook-starter/`: templates, vendored addon package, and generic Storybook workspace.

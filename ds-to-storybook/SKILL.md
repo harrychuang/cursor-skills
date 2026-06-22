@@ -8,19 +8,22 @@ description: >-
   URLs/nodes, UI images, rendered routes, and frontend folders, infer component
   dependency order so core primitives are built before composed components, map
   component specs into a product repo, create or update Storybook docs, plan
-  component batches, and verify implementation with the bundled Figma export
-  addon without bypassing tokens.
+  component batches, structure stories and DOM for reliable Figma export, and
+  verify implementation with the bundled Figma export addon without bypassing
+  tokens.
 ---
 
 # Design System to Storybook
 
-Use this skill to turn an already extracted design-system package into a product repo's Storybook implementation. The design-system documentation and tokens are the normative source of truth. Original Figma nodes, UI images, rendered routes, and frontend folders recorded by `design-system-extractor` are supporting evidence for implementation details, Storybook parity, and visual verification.
+Use this skill to turn an already extracted design-system package into a product repo's Storybook implementation. The design-system documentation and tokens are the normative source of truth. Original Figma nodes, UI images, rendered routes, and frontend folders recorded by `design-system-extractor` are supporting evidence for implementation details, Storybook parity, visual verification, and Figma export fidelity.
 
 This is a downstream implementation skill. Do not re-extract a design system here. If the required design-system docs, token architecture, source evidence, or component specs are missing, ask to run or continue `design-system-extractor` first.
 
 ## Operating Principle
 
 Work in short, resumable passes. Each pass must start from the extracted design-system docs, source trace, and dependency plan; implement only the selected scope; verify it; update the implementation map and queue; then stop with the next recommended pass. Do not keep expanding scope because more components are visible.
+
+Treat Storybook as the authored source for Figma design output, not only as a developer catalog. When creating or changing a component, page, or story, prioritize a token-backed, stable, semantic DOM structure that the bundled Figma export addon can turn into cleanly named Figma frames, text nodes, graphics, and variable bindings.
 
 The default pass budget is:
 
@@ -41,6 +44,7 @@ If the user asks for "all components" or a full library, create the trace, depen
 - **Extractor source evidence:** `DESIGN_EVIDENCE_MAP.md`, `SESSION_STATE.md`, component spec `Evidence` tables, component-review image links, and any Figma URLs/nodes, UI screenshots, rendered routes, or frontend folders listed there.
 - **Typographic component specs:** reusable text-composition specs from graphic design references, usually named `typographic-*`, including slot hierarchy, wrapping, alignment, content semantics, and component typography tokens.
 - **Bundled Figma export addon:** enabled by default for compatible React Storybook 10 projects.
+- **Figma export contract:** project-local addon config, stable component class prefixes, root/variant data attributes, source URL parameters, and known absolute-fidelity exceptions.
 
 ## First Actions
 
@@ -53,8 +57,9 @@ If the user asks for "all components" or a full library, create the trace, depen
 7. Run product discovery: `node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --json`.
 8. Record an implementation map before code changes. Prefer `design-system/STORYBOOK_IMPLEMENTATION_MAP.md` when the design-system package lives in the product repo; otherwise use `docs/design-system/storybook-implementation.md`. Use `assets/storybook-implementation-map-template.md` when starting a new map.
 9. Install the bundled Figma export addon, generate project-local addon config, configure Storybook, and validate wiring when the product has a compatible React Storybook 10 setup.
-10. If implementing more than one component, create or update a component queue before reading every spec or editing code.
-11. If the product has explicit design-system governance instructions, follow them. Otherwise apply the gates in this skill.
+10. Decide the Figma export structure for the selected scope before component code: root element, stable class prefix, `data-component`, variant/state markers, token CSS variables, source URL parameters, and any absolute-fidelity exceptions.
+11. If implementing more than one component, create or update a component queue before reading every spec or editing code.
+12. If the product has explicit design-system governance instructions, follow them. Otherwise apply the gates in this skill.
 
 ## Scope Modes
 
@@ -172,6 +177,21 @@ Use folder co-location for new implementation files. Do not create a separate ro
 
 If the product has an established component or page root, use that root while preserving the co-located folder shape. When editing existing files, avoid moving unrelated stories unless the current component/page needs cleanup for this rollout.
 
+### Figma-Exportable Structure
+
+The Storybook-rendered DOM is the Figma import source. For every new component, page, or composed story, shape the implementation so the export addon can infer useful Figma structure:
+
+- Render one visible, deterministic story root when practical. If a story intentionally contains multiple components, wrap them in a stable layout element that should become the top-level Figma frame.
+- Add a stable `data-component="<component-slug>"` to the exported root of shared components and reusable page sections. Use `data-variant="<variant-or-state>"` when a visual variant should appear in the imported Figma node name.
+- Use `data-icon="<icon-name>"` for icon elements that should be named as icons. For exported SVG/image graphics, prefer `data-component="graphic"` plus `data-graphic="<asset-key>"` when the addon config provides embedded SVG text.
+- Keep at least one stable, human-readable class name on exported roots and key slots. If the product uses CSS Modules, CSS-in-JS, or generated class names, add stable data attributes and a non-hashed root class as export anchors.
+- Align component class prefixes with `.storybook/figma-export.config.ts` `componentClassPrefixes`; update the config when the product uses a different prefix convention.
+- Express visual styles through normal DOM/CSS that the exporter can measure: flex or block layout, width/height, padding, gap, uniform borders, radius, opacity, background, text styles, and inline SVG/images.
+- Use CSS variables for token-backed colors, spacing, radius, typography, opacity, and dimensions so the addon can collect variable bindings. Do not replace token variables with baked literal values just to match a screenshot.
+- Avoid making essential design structure depend only on canvas, pseudo-elements, CSS masks, filters, backdrop filters, complex transforms, animated runtime positions, or portaled overlay content. If one is unavoidable, record it as an export risk or `absoluteFidelityComponents` decision.
+- Keep stories deterministic: fixed args, stable example content, loaded fonts/assets, no random data, no unresolved async state, and explicit viewport/background constraints when layout depends on them.
+- Prefer separate named stories for materially different visual variants or states so each Figma import has a stable, reviewable node name.
+
 ### 6. Figma Export Addon
 
 Install and configure the bundled `@harrychuang/storybook-addon-figma-export` by default when all requirements are met:
@@ -250,6 +270,7 @@ Also record:
 - Storybook version or catalog alternative
 - target layout roots for co-located components, foundation docs, and pages
 - Figma export addon status and options
+- Figma export structure decisions: root markers, variant markers, class prefixes, token bindings, unsupported CSS/DOM risks, and absolute-fidelity exceptions
 - bundled addon vendor path in the product repo
 - generated `.storybook/figma-export.config.ts` path and inferred project-specific values
 - source trace path and per-component source IDs
@@ -275,7 +296,7 @@ Plan before implementation:
 5. Mark blocked items explicitly: `needs-extraction`, `needs-source`, `needs-token`, `needs-api-decision`, `needs-existing-component-review`, or `out-of-scope`.
 6. Pick the next batch from adjacent dependencies. Default to 3-5 simple components, 1-2 complex composites, or one cross-cutting foundation pass.
 7. Read only the selected batch specs and their direct dependencies. Do not load every component spec into context unless generating or repairing the queue.
-8. Finish token integration, co-located component/page code, co-located stories, source URL parameters, queue updates, and verification for each component before starting the next component.
+8. Finish token integration, exportable DOM structure, co-located component/page code, co-located stories, source URL parameters, queue updates, and verification for each component before starting the next component.
 
 Each batch should produce a clean resumable state:
 
@@ -290,7 +311,7 @@ Use this protocol for every multi-component implementation pass and every resume
 1. Re-read `STORYBOOK_COMPONENT_PLAN.md`, `STORYBOOK_COMPONENT_QUEUE.md`, `STORYBOOK_IMPLEMENTATION_MAP.md`, and `git status --short` before editing.
 2. Select exactly one next component: the earliest unfinished queue row whose dependencies are `done`, `reused`, or accepted blocked decisions.
 3. Mark that component `in-progress` in the queue before code edits.
-4. Complete the component through the full sequence: source inspection, existing-component review, token decision, co-located component/page implementation, story coverage, story source URL parameters, verification, and documentation updates.
+4. Complete the component through the full sequence: source inspection, existing-component review, token decision, Figma export structure decision, co-located component/page implementation, story coverage, story source URL parameters, verification, and documentation updates.
 5. Update the queue, dependency plan status, implementation map, and verification log immediately after that component.
 6. Only then select the next component. Do not keep building from memory after a component is complete.
 
@@ -346,11 +367,12 @@ For each selected component spec:
    - Rendered route/story for measured layout and states when runnable.
 5. Search for an existing shared component with matching purpose, anatomy, behavior, and states.
 6. Prefer reuse or extension over creating a new component.
-7. Implement props, slots, variants, states, accessibility behavior, and responsive behavior from the spec.
-8. Resolve the story source URL from `STORYBOOK_SOURCE_TRACE.md` for the component.
-9. Keep component styles token-backed. Do not reach directly into reference tokens from component CSS unless the extracted architecture explicitly allows it.
-10. Create or update the component in a co-located folder under the component root: `<ComponentName>.tsx`, `<ComponentName>.css`, and `<ComponentName>.stories.tsx`.
-11. Export the component through the repo's existing public API.
+7. Decide the exported DOM contract: root element, root class, `data-component`, variant/state attributes, key slot classes, token variables, and any unsupported CSS/DOM risks.
+8. Implement props, slots, variants, states, accessibility behavior, and responsive behavior from the spec.
+9. Resolve the story source URL from `STORYBOOK_SOURCE_TRACE.md` for the component.
+10. Keep component styles token-backed. Do not reach directly into reference tokens from component CSS unless the extracted architecture explicitly allows it.
+11. Create or update the component in a co-located folder under the component root: `<ComponentName>.tsx`, `<ComponentName>.css`, and `<ComponentName>.stories.tsx`.
+12. Export the component through the repo's existing public API.
 
 For typographic components, implement named text slots instead of accepting one undifferentiated `children` blob unless the existing component API requires that pattern. Preserve the extracted hierarchy through tokens: slot type roles, color, line-height, gap, alignment, max width, wrapping, truncation, and responsive rules. Stories should include realistic short and long copy, localization-length stress cases, and any numeric/price formatting shown in the spec.
 
@@ -366,7 +388,8 @@ Use this section only when the user asks for product pages, composed screens, or
 2. Place each new page in a dedicated page folder, normally `src/pages/<PageName>/`.
 3. Keep the page source, styles, and Storybook story co-located: `<PageName>.tsx`, `<PageName>.css`, and `<PageName>.stories.tsx`.
 4. Compose the page from shared components and page-level layout only. Promote reusable subparts back into `components/<ComponentName>/` before using them in multiple pages.
-5. Record page dependencies and verification separately from shared components in the implementation map and queue.
+5. Give the page story a stable exported root and preserve each reusable section/component as a meaningful Figma frame through `data-component`, stable classes, and token-backed layout CSS.
+6. Record page dependencies and verification separately from shared components in the implementation map and queue.
 
 Do not place page stories in the root `stories/` folder unless the existing product uses that folder exclusively for page docs and the implementation map records the exception.
 
@@ -381,6 +404,7 @@ Every new or changed shared component needs Storybook coverage:
 - responsive or density stories when layout changes by viewport
 - theme stories when the product supports multiple themes
 - long-copy and line-break stress stories for typographic components
+- deterministic Figma export stories with stable root dimensions, loaded assets/fonts, source URL parameters, and no random or unresolved async content
 
 Every component story should carry the best source URL the trace can resolve. Prefer the sync script before manual edits:
 
@@ -417,7 +441,7 @@ Run the cheapest reliable checks available:
 - visual screenshot checks for high-risk components against the best resolved original source
 - token audit or CSS variable scan when available
 
-If Storybook is runnable, open the relevant stories and inspect rendered states before calling the pass done. When the selected component has Figma evidence, compare against a Figma MCP screenshot or exported frame when available. When the Figma export addon is installed, confirm the Storybook toolbar loads without console errors, the `figmaExport` toolbar can be toggled on, the review overlay appears, Open source is available for at least one component story with a resolved source URL, and Copy design can place SVG design output on the clipboard.
+If Storybook is runnable, open the relevant stories and inspect rendered states before calling the pass done. When the selected component has Figma evidence, compare against a Figma MCP screenshot or exported frame when available. When the Figma export addon is installed, confirm the Storybook toolbar loads without console errors, the `figmaExport` toolbar can be toggled on, the review overlay appears, Open source is available for at least one component story with a resolved source URL, and Copy design can place SVG design output on the clipboard. Inspect at least one copied/exported payload or imported frame for meaningful node names from `data-component`, variant naming from `data-variant`, token collection, and visible bounds that match the story root.
 
 For large inventories, verify per batch and keep the full-library check for milestone boundaries. Do not wait until dozens of components are complete before running Storybook build or typecheck if those checks are available.
 
@@ -432,6 +456,7 @@ Report:
 - dependency plan path and current completed/blocked component order
 - product files changed
 - co-located component/page folders created or updated
+- Figma export structure decisions and any unsupported DOM/CSS risks
 - tokens reused or added
 - bundled Figma export addon installed/configured or blocked reason
 - components reused, extended, or created
@@ -461,6 +486,12 @@ Do not create a new shared component before checking the product's existing comp
 Do not place new component stories in a detached root `stories/` or `src/stories/` folder. New shared components use `components/<ComponentName>/<ComponentName>.stories.*`; foundation docs are the only default exception.
 
 Do not downgrade an extracted `typographic-*` component into a static typography foundation example. Build it as a shared component when the spec defines slots, composition rules, and component tokens. If the product already has an equivalent text component, mark the extractor component `reused` and add matching stories instead.
+
+### Figma Export Structure Gate
+
+Do not mark a component or page story complete until it has a stable export root, meaningful `data-component` naming where applicable, variant/state naming for materially different visuals, token-backed CSS variables for exported visual values, and a deterministic story render. If product conventions prevent one of these, record the exception and expected export impact in the implementation map.
+
+Do not rely on anonymous `div` trees, hashed classes, pseudo-element-only content, canvas-only rendering, or runtime animation state as the primary Figma design source. Refactor to an exportable DOM structure or mark the item blocked with an export-risk reason.
 
 ### Dependency Order Gate
 

@@ -30,10 +30,11 @@ If component specs or token contracts are missing, stop and ask to run `design-s
 6. Resolve each component through `COMPONENT_INVENTORY.md` -> component spec -> evidence IDs -> `STORYBOOK_SOURCE_TRACE.md`.
 7. Inspect existing product components and stories before creating new shared components.
 8. Integrate tokens before components.
-9. Implement only the selected batch with co-located component/page stories.
-10. Add or update stories for documented variants and states, including the best source URL parameter.
-11. Run available verification.
-12. Update the implementation map and queue, then stop.
+9. Structure component/page DOM for Figma export with stable roots, `data-component`, variant markers, class prefixes, and token CSS variables.
+10. Implement only the selected batch with co-located component/page stories.
+11. Add or update stories for documented variants and states, including the best source URL parameter.
+12. Run available verification.
+13. Update the implementation map and queue, then stop.
 
 ## Batch Discipline
 
@@ -67,4 +68,6 @@ Configure `.storybook/preview.*` with:
 - `@harrychuang/storybook-addon-figma-export/review.css`
 
 For stories, prefer `parameters.figmaSourceUrl` for Figma sources and `parameters.design.url` for other web sources from `STORYBOOK_SOURCE_TRACE.md`. Verify the toolbar, review/Open source overlay, and Copy design SVG action before marking addon setup complete.
+
+For exported components and pages, keep a stable visible root, meaningful `data-component`/`data-variant` naming, stable class prefixes from `.storybook/figma-export.config.ts`, and token-backed CSS variables. Record exceptions for canvas, pseudo-elements, masks, filters, transforms, animation-only layout, or portaled content in the implementation map before marking the item done.
 ~~~

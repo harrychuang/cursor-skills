@@ -27,6 +27,7 @@ Use `.claude/skills/design-system-to-storybook/SKILL.md` when turning an extract
 - Keep component and page stories co-located with their implementation folders unless the product convention requires otherwise.
 - Prefer extending existing product components before creating new shared components.
 - Keep component styles token-backed.
+- Structure the rendered Storybook DOM for Figma export with stable roots, `data-component`, variant/state markers, stable class prefixes, and token CSS variables.
 - Add or update Storybook stories for every implemented component.
 - Verify the pass, update the queue/map, then stop at the checkpoint.
 
@@ -44,4 +45,6 @@ node <skill-root>/scripts/validate_figma_export_setup.mjs <product-repo-root>
 ```
 
 Adjust the path if the skill is stored elsewhere. Configure `createFigmaExportReviewDecorator`, `review.css`, and `getFigmaSourceUrl` by default so review/Open source works. Write the best resolved source URL to story parameters, preferring `parameters.figmaSourceUrl` for Figma and `parameters.design.url` for other web sources. Verify the toolbar, review/Open source overlay, and Copy design SVG action before marking addon setup complete.
+
+Record Figma export structure decisions and exceptions in the implementation map. Do not mark a component/page done when its design source is only anonymous DOM, hashed classes, pseudo-element-only content, canvas-only rendering, or unresolved runtime animation state.
 ~~~

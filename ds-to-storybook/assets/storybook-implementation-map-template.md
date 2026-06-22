@@ -12,6 +12,7 @@
 - Component build plan:
 - Component queue:
 - Target layout: components in `src/components/<ComponentName>/`, pages in `src/pages/<PageName>/`, foundation docs in `stories/` or `src/stories/`
+- Figma export structure: root markers, class prefixes, variant markers, token bindings, and exceptions tracked per component
 - Current pass:
 - Pass budget:
 - Stop condition:
@@ -50,6 +51,7 @@
 | Source inspected |  |
 | Existing component review |  |
 | Token decision |  |
+| Figma export structure |  |
 | Product files |  |
 | Story files |  |
 | Target layout |  |
@@ -77,6 +79,12 @@
 | `.storybook/preview.*` decorator/globals |  |  |  |
 | Review helper / status API |  |  |  |
 | Token prefix/options |  |  |  |
+
+## Figma Export Structure
+
+| Component or story | Root marker | Variant/state markers | Stable class prefix | Token bindings | Unsupported CSS/DOM risks | Export verification | Status |
+|---|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  | planned |
 
 ## Verification Log
 

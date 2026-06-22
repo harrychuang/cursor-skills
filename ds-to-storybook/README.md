@@ -15,6 +15,7 @@ Use this skill when you want to:
 - trace extractor source evidence into `STORYBOOK_SOURCE_TRACE.md`
 - infer component dependency order into `STORYBOOK_COMPONENT_PLAN.md`
 - install and configure the bundled Figma export addon for compatible React Storybook 10 projects
+- structure component/page DOM and stories so Storybook output can export cleanly into Figma design frames
 - keep component implementation work split into short, resumable batches
 
 Do not use it to infer a design system from screenshots or Figma from scratch. Run or continue `design-system-extractor` first.
@@ -90,9 +91,10 @@ node <skill-root>/scripts/inspect_storybook_project.mjs <product-repo-root> --js
 ```
 
 9. Integrate tokens before components.
-10. Implement the selected components with co-located stories.
-11. Run the cheapest reliable verification.
-12. Update the implementation map and queue, then stop.
+10. Decide the Figma export structure for the selected scope: stable root, `data-component`, `data-variant`, class prefix, token variables, source URL, and any unsupported CSS/DOM risks.
+11. Implement the selected components with co-located stories.
+12. Run the cheapest reliable verification, including Copy design/export checks when the addon is installed.
+13. Update the implementation map and queue, then stop.
 
 ## Bounded Passes
 
@@ -116,6 +118,7 @@ Every pass should leave durable state:
 - selected batch
 - dependency plan status
 - source trace status
+- Figma export structure status
 - story source URL status
 - product target files
 - Storybook story target files
@@ -145,6 +148,7 @@ The implementation map records:
 - source trace records
 - dependency decisions
 - co-located component/page target layout
+- Figma export root markers, variant markers, class prefixes, token bindings, and export risks
 - token decisions
 - component target files
 - story target files
@@ -317,6 +321,17 @@ Use `scripts/sync_story_source_parameters.mjs` to report or write these paramete
 
 If the toolbar appears but review/Open source does not, see `references/figma-export-review-setup.md`.
 
+## Figma-Exportable Component Structure
+
+When creating components or pages, treat the rendered story as the source for Figma import:
+
+- Use a stable visible root for each exportable component or story.
+- Add `data-component="<component-slug>"` to exported component roots and `data-variant="<variant-or-state>"` for meaningful visual variants.
+- Keep stable non-hashed root/slot class names that match `.storybook/figma-export.config.ts` `componentClassPrefixes`.
+- Use token-backed CSS variables for exported visual values so the addon can collect Figma variable bindings.
+- Keep essential structure in normal DOM, flex/block layout, text, inline SVG, or images. Record risks for canvas, pseudo-element-only content, masks, filters, transforms, runtime animation state, or portaled content.
+- Keep stories deterministic: fixed args, stable example content, loaded assets/fonts, and explicit viewport/background constraints when layout depends on them.
+
 ## Recommended Prompts
 
 Foundations pass:
@@ -427,6 +442,7 @@ Regardless of agent, keep these constraints:
 - Resolve evidence and source trace before code.
 - Start multi-component work from `STORYBOOK_COMPONENT_PLAN.md`.
 - Use tokens before component CSS values.
+- Structure component/page stories for Figma export with stable roots, data attributes, class prefixes, and token variables.
 - Implement one bounded pass.
 - Update the implementation map and queue before stopping.
 - Install the Figma export addon with the bundled installer, not GitHub.

@@ -1,7 +1,7 @@
 interface:
   display_name: "Design System to Storybook"
   short_description: "Build traced components in Storybook"
-  default_prompt: "Use $design-system-to-storybook to trace extractor source evidence, inspect the target Storybook project, infer component dependency order including typographic text-composition components, install and validate the bundled Figma export addon, sync story source URLs, and build token-backed Storybook components with co-located component/page stories."
+  default_prompt: "Use $design-system-to-storybook to trace extractor source evidence, inspect the target Storybook project, infer component dependency order including typographic text-composition components, install and validate the bundled Figma export addon, sync story source URLs, and build token-backed Storybook components with co-located component/page stories structured for reliable Figma export."
 
 policy:
   allow_implicit_invocation: true

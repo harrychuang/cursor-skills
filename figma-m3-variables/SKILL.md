@@ -3,11 +3,12 @@ name: figma-m3-variables
 description: >-
   Create, apply, audit, and understand Variables in Figma using Google Material Design's
   three-tier token inheritance (Ref → Sys → Comp).
-  Use when: creating Variables for components or screens, applying existing Variables to nodes,
-  auditing token naming and structure for compliance, or having AI read existing Variables
-  to reverse-engineer design components.
+  Use when: creating Variables for components or screens, applying existing Variables to one
+  node, selected nodes, a component set, or the current page, auditing token naming and structure
+  for compliance, or having AI read existing Variables to reverse-engineer design components.
   Triggers: create Variables, apply Variables, Figma variables, M3 token, design token,
-  token inheritance, token audit, audit variables, design component from variables, three-tier token.
+  token inheritance, token audit, audit variables, design component from variables,
+  batch apply variables, bind variables to component, three-tier token.
 ---
 
 # Figma M3 Variables
@@ -28,7 +29,19 @@ three-tier inheritance (Ref → Sys → Comp).
 4. **Return all IDs** — Every create/modify script must `return` all affected variable IDs and node IDs.
 5. **Token prefix is fixed once confirmed** — Use the same prefix throughout the entire session; mixing prefixes is not allowed.
 6. **`use_figma` calls are strictly sequential** — Never run two `use_figma` calls in parallel.
-7. On error, stop and read the error message, fix it, then retry — never retry blindly.
+7. **Prefer Comp bindings** — Bind design nodes to `comp` tokens when a matching component token exists. Use `sys` only for shared page-level primitives or when no component token exists yet; never bind `ref` directly.
+8. **Dry-run before broad writes** — For any operation touching more than one node, first return a binding plan and wait for confirmation unless the user explicitly says to auto-apply without review.
+9. On error, stop and read the error message, fix it, then retry — never retry blindly.
+
+### Automation boundary
+
+This skill can bind Variables through the Figma Plugin API, but it is **not** a background sync service.
+
+- Single target: If the user provides a URL/node-id or a current selection and asks to apply Variables, run Workflow A and bind after presenting the proposed mapping.
+- Created target: If Workflow B or D creates Variables/components, bind the new target nodes as part of that workflow after the mapping is known.
+- Batch target: If the user asks to apply Variables to a selection, component set, page, or many components, run Workflow E. Batch work defaults to dry-run plus confirmation.
+- No target: If the user only asks whether Variables exist or whether naming is correct, inspect or audit only. Do not bind anything.
+- Ambiguous target: Ask for the node-id, selection scope, component set, page, or batch scope before writing.
 
 ### Layer naming philosophy (Ref / Sys / Comp)
 
@@ -71,11 +84,11 @@ Detailed naming patterns, WEB examples, and the Filled Button walkthrough with c
 
 ## Workflow A: Apply Existing Variables to a Component
 
-**Trigger**: User provides a Figma URL + node-id and requests Variables to be applied.
+**Trigger**: User provides a Figma URL + node-id, current selection, or one component and requests Variables to be applied.
 
 ### Steps
 
-1. **Inspect** — List all variable collections and variables in the file:
+1. **Inspect variables and target anatomy** — List all variable collections and variables in the file, then inspect the target node tree names, node types, fills, strokes, radius, layout, text children, and existing `boundVariables`:
    ```js
    const cols = await figma.variables.getLocalVariableCollectionsAsync();
    const result = [];
@@ -90,20 +103,31 @@ Detailed naming patterns, WEB examples, and the Filled Button walkthrough with c
    return result;
    ```
 
-2. **Evaluate**:
+2. **Evaluate tokens and target**:
    - Variables exist and naming follows M3 three-tier structure → proceed to Step 3
    - Variables are missing or incomplete → switch to **Workflow B**
+   - Target is an instance → bind only instance-supported overrides; prefer binding the main component when the user wants library-wide changes
+   - Target already has bindings → preserve correct bindings and only propose replacements for mismatches
 
-3. **Match component requirements** — Based on the component type (Button, Card, etc.), find the corresponding tokens from the Comp layer, list the proposed bindings, and present them to the user for confirmation.
+3. **Match component requirements** — Based on component type and anatomy, find corresponding tokens from the Comp layer using [token-spec.md §4-§5](references/token-spec.md). Return a binding plan with:
+   - Node ID and node name
+   - Property to bind
+   - Current value / existing bound variable
+   - Proposed variable name and ID
+   - Confidence (`exact`, `inferred`, `needs-review`)
+   Present the plan for confirmation unless the user explicitly requested immediate apply.
 
 4. **Bind** — Execute:
    - Background / foreground color: `figma.variables.setBoundVariableForPaint(paint, "color", variable)` → assign the resulting paint back to the node
+   - Stroke color: same helper on each solid stroke paint, then assign the resulting strokes back to the node
    - Corner radius: `node.setBoundVariable("topLeftRadius", variable)` × all 4 corners
    - Padding: `node.setBoundVariable("paddingLeft" | "paddingRight" | "paddingTop" | "paddingBottom", variable)`
    - Gap: `node.setBoundVariable("itemSpacing", variable)`
    - Text color: same as above (`setBoundVariableForPaint` on the text node's fills)
+   - Typography: `node.setBoundVariable("fontFamily" | "fontSize" | "fontWeight" | "lineHeight" | "letterSpacing", variable)` when matching text tokens exist
+   - Width / height / opacity: bind only when the token semantics are explicit and the node property is intended to be tokenized
 
-5. **Validate** — Call `get_screenshot` to confirm visual correctness.
+5. **Validate** — Inspect `boundVariables`, return affected variable IDs and node IDs, then call `get_screenshot` to confirm visual correctness.
 
 ---
 
@@ -148,7 +172,7 @@ Ref layer variables must not appear in the designer's picker. Their scope must b
 
 1. **Inspect** — Read all collections, variables, scopes, code syntax, and valuesByMode.
 
-2. **Apply [audit-rules.md](references/audit-rules.md)** — Check each violation type (including Ref/Sys naming in §7) and compile a list of issues.
+2. **Apply [audit-rules.md](references/audit-rules.md)** — Check each violation type, including alias direction, scope, WEB syntax, modes, type/property compatibility, and Ref/Sys naming, then compile a list of issues.
 
 3. **Report** — Present as a table or list:
    - Violating variable names
@@ -256,12 +280,52 @@ Ref layer variables must not appear in the designer's picker. Their scope must b
 
 ---
 
+## Workflow E: Batch Apply Variables to Existing Components
+
+**Trigger**: User asks to apply Variables to multiple selected nodes, a component set, a page, or all matching components.
+
+### Steps
+
+1. **Define scope** — Confirm the batch scope before writing:
+   - Current selection
+   - One Component Set
+   - Current page
+   - Components matching a name pattern
+   If the scope is broad or ambiguous, ask before continuing.
+
+2. **Inspect batch candidates** — Read all candidate nodes and existing local Variables. For each candidate, collect node type, component/variant names, visible children, layout properties, paint/stroke/radius/text properties, and existing `boundVariables`.
+
+3. **Classify components** — Match candidates to known component families from [token-spec.md §5](references/token-spec.md):
+   - Exact: name and anatomy match a known component pattern
+   - Inferred: anatomy suggests a pattern but naming is imperfect
+   - Unknown: no reliable token mapping
+
+4. **Build a dry-run plan** — Return a table grouped by component:
+   - `bind`: safe exact matches
+   - `review`: inferred matches requiring confirmation
+   - `skip`: unknown nodes, missing tokens, type mismatches, or already-correct bindings
+   Include counts for nodes scanned, bindings proposed, already-correct bindings, skipped nodes, and missing tokens.
+
+5. **Confirm** — Ask before applying unless the user explicitly said to auto-apply. Never silently bind `review` items in batch mode; only bind exact matches automatically after confirmation.
+
+6. **Apply** — Run one sequential `use_figma` write script that:
+   - Re-fetches each node and variable by ID
+   - Verifies the node and variable still exist
+   - Verifies variable type is compatible with the target property
+   - Preserves correct existing bindings
+   - Applies supported bindings only
+   - Returns applied, skipped, and failed items with node IDs and variable IDs
+
+7. **Validate** — Re-inspect `boundVariables` for changed nodes and call `get_screenshot`. Report any failures with the exact reason and suggested next action.
+
+---
+
 ## Division of Responsibility with Other Skills
 
 | Skill | Responsibility |
 |-------|----------------|
 | `figma-use` | Underlying Plugin API rules (colors 0–1, return, page switching, etc.) — **must be read first** |
-| `figma-m3-variables` (this skill) | Creating, applying, auditing, and reverse-engineering M3 Variables in Figma |
+| `figma-m3-variables` (this skill) | Creating, applying, batch-binding, auditing, and reverse-engineering M3 Variables in Figma |
 | `design-system-governance` | Code-side token governance (CSS/SCSS tokens) — complements this skill |
 | `figma-generate-library` | Full multi-phase design system build; refer to its Phase 3 when Workflow D involves component creation |
 

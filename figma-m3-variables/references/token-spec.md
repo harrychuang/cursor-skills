@@ -95,6 +95,8 @@ Rule: Layers are separated by `-` (not `/`), all lowercase, spaces replaced with
 
 ## 3. Variable Scope Reference Table
 
+Scopes control where Variables appear in Figma's picker UI. They do not by themselves prevent the Plugin API from binding a variable elsewhere, so this skill treats explicit scopes as a design-system hygiene rule and still validates type/property compatibility before binding.
+
 | Token Role | Figma Scope |
 |-----------|------------|
 | Ref layer (all tokens) | `[]` (empty array, hidden from picker) |
@@ -102,15 +104,43 @@ Rule: Layers are separated by `-` (not `/`), all lowercase, spaces replaced with
 | Text color (Sys / Comp) | `["TEXT_FILL"]` |
 | Graphic / general fill (Sys / Comp) | `["ALL_FILLS"]` |
 | Border color | `["STROKE_COLOR"]` |
+| Effect color | `["EFFECT_COLOR"]` |
 | Corner radius | `["CORNER_RADIUS"]` |
 | Padding / gap (spacing) | `["GAP"]` |
 | Width / height | `["WIDTH_HEIGHT"]` |
 | Opacity | `["OPACITY"]` |
+| Stroke width or stroke-style float | `["STROKE_FLOAT"]` |
+| Effect radius / spread / offset float | `["EFFECT_FLOAT"]` |
+| Text content | `["TEXT_CONTENT"]` |
 | Font Family | `["FONT_FAMILY"]` |
+| Font Style | `["FONT_STYLE"]` |
 | Font Size | `["FONT_SIZE"]` |
 | Font Weight | `["FONT_WEIGHT"]` |
 | Line Height | `["LINE_HEIGHT"]` |
 | Letter Spacing | `["LETTER_SPACING"]` |
+| Paragraph Spacing | `["PARAGRAPH_SPACING"]` |
+| Paragraph Indent | `["PARAGRAPH_INDENT"]` |
+
+### 3-1 Bindable Property Map
+
+Use this map when building Workflow A or Workflow E binding plans.
+
+| Node property | Required variable type | Preferred token layer | Notes |
+|--------------|------------------------|-----------------------|-------|
+| `fills[*].color` | COLOR | Comp | Use `figma.variables.setBoundVariableForPaint`, then assign the paint array back to the node. |
+| `strokes[*].color` | COLOR | Comp | Bind only solid strokes; skip gradients/images and report them. |
+| `topLeftRadius`, `topRightRadius`, `bottomRightRadius`, `bottomLeftRadius` | FLOAT | Comp | Bind all four corners unless asymmetric shape tokens exist. |
+| `paddingLeft`, `paddingRight`, `paddingTop`, `paddingBottom` | FLOAT | Comp | Requires auto-layout-capable nodes. |
+| `itemSpacing` | FLOAT | Comp | Use component gap tokens, e.g. `with-icon/icon-label-gap`. |
+| `width`, `height`, `minWidth`, `maxWidth`, `minHeight`, `maxHeight` | FLOAT | Comp or Sys | Bind only if size is intentionally tokenized. |
+| `opacity` | FLOAT | Comp or Sys | Prefer opacity variables for disabled state rather than baking alpha into colors. |
+| Text `fills[*].color` | COLOR | Comp | Use label/icon/content text color tokens. |
+| `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing` | STRING / FLOAT | Sys or Comp | Use typography tokens only when the file already models type with Variables. |
+
+Do not bind:
+- MIXED values without resolving which children should receive the binding.
+- Gradient/image paints, unless a future API supports the exact binding target.
+- `ref` tokens directly to nodes.
 
 ---
 
@@ -177,29 +207,66 @@ Only **primitives and scales** — no `button`, `bar`, `card`, or other componen
 
 ---
 
-## 5. Other Components (reserved for extension)
+## 5. Component Binding Patterns
 
-The following components can be extended using the same three-tier structure. Token naming follows the rules in Section 1:
+Use these patterns to classify nodes and build dry-run plans. If a component is not listed, extend it with the same Ref → Sys → Comp rules instead of binding ad hoc Sys or Ref tokens.
 
-| Component | Comp Token Prefix |
-|-----------|------------------|
-| Outlined Button | `{p}/comp/outlined-button/...` |
-| Text Button | `{p}/comp/text-button/...` |
-| Elevated Button | `{p}/comp/elevated-button/...` |
-| Tonal Button | `{p}/comp/filled-tonal-button/...` |
-| Card | `{p}/comp/card/...` |
-| Input / Text Field | `{p}/comp/text-field/...` |
-| Chip | `{p}/comp/chip/...` |
-| Dialog | `{p}/comp/dialog/...` |
-| Navigation Bar | `{p}/comp/navigation-bar/...` |
-| Top App Bar | `{p}/comp/top-app-bar/...` |
+### 5-1 Component Prefixes
+
+| Component | Comp Token Prefix | Typical anatomy names |
+|-----------|------------------|-----------------------|
+| Filled Button | `{p}/comp/filled-button/...` | `container`, `label-text`, `leading-icon`, `trailing-icon`, `state-layer` |
+| Outlined Button | `{p}/comp/outlined-button/...` | `container`, `outline`, `label-text`, `leading-icon`, `state-layer` |
+| Text Button | `{p}/comp/text-button/...` | `label-text`, `leading-icon`, `state-layer` |
+| Elevated Button | `{p}/comp/elevated-button/...` | `container`, `label-text`, `leading-icon`, `shadow` |
+| Tonal Button | `{p}/comp/filled-tonal-button/...` | `container`, `label-text`, `leading-icon`, `state-layer` |
+| Card | `{p}/comp/card/...` | `container`, `outline`, `content`, `media`, `state-layer` |
+| Input / Text Field | `{p}/comp/text-field/...` | `container`, `input-text`, `label-text`, `supporting-text`, `outline`, `cursor` |
+| Chip | `{p}/comp/chip/...` | `container`, `label-text`, `leading-icon`, `trailing-icon`, `outline` |
+| Dialog | `{p}/comp/dialog/...` | `container`, `headline`, `supporting-text`, `actions` |
+| Navigation Bar | `{p}/comp/navigation-bar/...` | `container`, `active-indicator`, `label-text`, `icon` |
+| Top App Bar | `{p}/comp/top-app-bar/...` | `container`, `headline`, `navigation-icon`, `action-icon` |
+
+### 5-2 Common Comp Token Names
+
+| Visual property | Default Comp token suffix |
+|----------------|---------------------------|
+| Container fill | `container/background-color` |
+| Content fill | `content/background-color` |
+| Text fill | `label-text/color`, `input-text/color`, `supporting-text/color`, `headline/color` |
+| Icon fill | `icon/color`, `leading-icon/color`, `trailing-icon/color`, `navigation-icon/color`, `action-icon/color` |
+| Outline stroke | `outline/color` |
+| Shape / radius | `container/shape` |
+| Horizontal padding | `container/padding-horizontal` |
+| Vertical padding | `container/padding-vertical` |
+| Internal gap | `container/gap`, `with-icon/icon-label-gap`, `actions/gap` |
+| State layer color | `state-layer/color` |
+| Disabled opacity | `container/opacity/disabled`, `label-text/opacity/disabled`, `icon/opacity/disabled` |
+
+### 5-3 Node Binding Examples
+
+| Component | Node / property | Bound Comp token |
+|-----------|-----------------|------------------|
+| Card | Container `fills` | `…/card/container/background-color` |
+| Card | Container corner radii | `…/card/container/shape` |
+| Card | Outline `strokes` | `…/card/outline/color` |
+| Text Field | Container `fills` | `…/text-field/container/background-color` |
+| Text Field | Outline `strokes` | `…/text-field/outline/color` |
+| Text Field | Input text `fills` | `…/text-field/input-text/color` |
+| Text Field | Label text `fills` | `…/text-field/label-text/color` |
+| Chip | Container `fills` | `…/chip/container/background-color` |
+| Chip | Label text `fills` | `…/chip/label-text/color` |
+| Navigation Bar | Container `fills` | `…/navigation-bar/container/background-color` |
+| Navigation Bar | Active indicator `fills` | `…/navigation-bar/active-indicator/background-color` |
+| Top App Bar | Container `fills` | `…/top-app-bar/container/background-color` |
+| Top App Bar | Headline text `fills` | `…/top-app-bar/headline/color` |
 
 Extension process:
-1. Identify the visual properties of the design node (color, corner radius, spacing)
+1. Identify the visual properties of the design node (color, stroke, corner radius, spacing, text)
 2. Add **Ref** tokens only as primitives (`ref/spacing/16`, `ref/radius/12`, …) — reuse existing Ref when the numeric value already exists
 3. Add or reuse **Sys** tokens with **generic** semantics (`inset-horizontal-md`, not `button-padding-h`)
 4. Add **Comp** tokens for the component’s anatomy, aliasing Sys
-5. Run Workflow A Step 4 to bind to component nodes
+5. Run Workflow A for one component or Workflow E for multiple components
 
 ---
 

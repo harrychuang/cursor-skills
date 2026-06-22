@@ -844,6 +844,7 @@
               <li><a href="#workflow-b">B · 建立 Variables</a></li>
               <li><a href="#workflow-c">C · 稽核 Variables</a></li>
               <li><a href="#workflow-d">D · 從 Variables 設計元件</a></li>
+              <li><a href="#workflow-e">E · 批次套用 Variables</a></li>
             </ul>
           </div>
           <div class="nav-group">
@@ -940,7 +941,7 @@
         <section id="rules">
           <div class="section-head">
             <h3>通用規則</h3>
-            <p>適用於所有工作流程（A / B / C / D）的七項強制規則。</p>
+            <p>適用於所有工作流程（A / B / C / D / E）的強制規則，批次寫入必須先 dry-run。</p>
           </div>
 
           <div class="panel">
@@ -954,7 +955,7 @@
               <li>
                 <div>
                   <strong>ALL_SCOPES 禁止使用</strong>
-                  <span>必須依 Token 角色設定明確的 scope，不可使用 ALL_SCOPES 或留空（Ref 層除外）。</span>
+                  <span>必須依 Token 角色設定明確的 scope，不可使用 ALL_SCOPES 或非 Ref 空 scope。</span>
                 </div>
               </li>
               <li>
@@ -979,6 +980,18 @@
                 <div>
                   <strong>use_figma 嚴格依序</strong>
                   <span>絕不可同時平行執行兩個 <code>use_figma</code> 呼叫。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>優先綁定 Comp Token</strong>
+                  <span>元件節點應優先綁定 <code>comp</code> token；只有頁面級共用語意或缺少 comp token 時才使用 <code>sys</code>，不得直接綁定 <code>ref</code>。</span>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>批次寫入先 Dry-run</strong>
+                  <span>任何超過一個 node 的綁定都必須先回傳 binding plan，除非使用者明確要求直接 auto-apply。</span>
                 </div>
               </li>
               <li>
@@ -1113,7 +1126,7 @@
         <section id="scopes">
           <div class="section-head">
             <h3>Variable Scope 對照表</h3>
-            <p>依 Token 角色設定 Figma scope。Ref 層必須設為空陣列以隱藏於 picker。</p>
+            <p>依 Token 角色設定 Figma scope。Scope 主要控制 picker 可見性；Plugin API 綁定仍需另外驗證型別與屬性相容性。</p>
           </div>
 
           <div class="panel">
@@ -1147,6 +1160,10 @@
                     <td><code>["STROKE_COLOR"]</code></td>
                   </tr>
                   <tr>
+                    <td>Effect 顏色</td>
+                    <td><code>["EFFECT_COLOR"]</code></td>
+                  </tr>
+                  <tr>
                     <td>圓角半徑</td>
                     <td><code>["CORNER_RADIUS"]</code></td>
                   </tr>
@@ -1163,8 +1180,20 @@
                     <td><code>["OPACITY"]</code></td>
                   </tr>
                   <tr>
-                    <td>Font Family / Size / Weight / Line Height / Letter Spacing</td>
-                    <td><code>["FONT_FAMILY"]</code> 等對應 scope</td>
+                    <td>Stroke / Effect 數值</td>
+                    <td><code>["STROKE_FLOAT"]</code> / <code>["EFFECT_FLOAT"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>文字內容</td>
+                    <td><code>["TEXT_CONTENT"]</code></td>
+                  </tr>
+                  <tr>
+                    <td>Font Family / Style / Size / Weight / Line Height / Letter Spacing</td>
+                    <td><code>["FONT_FAMILY"]</code> / <code>["FONT_STYLE"]</code> 等對應 scope</td>
+                  </tr>
+                  <tr>
+                    <td>Paragraph Spacing / Indent</td>
+                    <td><code>["PARAGRAPH_SPACING"]</code> / <code>["PARAGRAPH_INDENT"]</code></td>
                   </tr>
                 </tbody>
               </table>
@@ -1175,7 +1204,7 @@
         <!-- Workflows -->
         <section id="workflows">
           <div class="section-head">
-            <h3>四大工作流程</h3>
+            <h3>五大工作流程</h3>
             <p>依觸發情境選擇對應流程。所有流程共享上方的通用規則。</p>
           </div>
 
@@ -1185,15 +1214,15 @@
                 <div class="workflow-letter">A</div>
                 <div>
                   <h4>套用現有 Variables 到元件</h4>
-                  <p>觸發：使用者提供 Figma URL + node-id，要求套用 Variables</p>
+                  <p>觸發：使用者提供 Figma URL + node-id、目前 selection 或單一元件，要求套用 Variables</p>
                 </div>
               </div>
               <ol class="workflow-steps">
-                <li><strong>Inspect</strong> — 列出所有 variable collections 與 variables</li>
+                <li><strong>Inspect</strong> — 列出 variable collections、variables 與目標 node anatomy</li>
                 <li><strong>Evaluate</strong> — 確認命名符合 M3 三層結構；若缺失則切換至 Workflow B</li>
                 <li><strong>Match</strong> — 依元件類型找出 Comp 層 token，列出綁定提案供使用者確認</li>
-                <li><strong>Bind</strong> — 執行綁定（fills、corner radius、padding、gap、text color）</li>
-                <li><strong>Validate</strong> — 呼叫 <code>get_screenshot</code> 確認視覺正確性</li>
+                <li><strong>Bind</strong> — 執行綁定（fills、strokes、radius、padding、gap、text、typography）</li>
+                <li><strong>Validate</strong> — 檢查 <code>boundVariables</code> 並呼叫 <code>get_screenshot</code></li>
               </ol>
             </article>
 
@@ -1226,7 +1255,7 @@
               </div>
               <ol class="workflow-steps">
                 <li><strong>Inspect</strong> — 讀取所有 collections、variables、scopes、codeSyntax、valuesByMode</li>
-                <li><strong>Apply audit-rules</strong> — 依七種違規類型（含 Ref/Sys 命名 §7）編列問題清單</li>
+                <li><strong>Apply audit-rules</strong> — 依 alias、scope、syntax、mode、型別與命名規則編列問題清單</li>
                 <li><strong>Report</strong> — 以表格呈現：違規變數名稱、違規類型、建議修正</li>
                 <li><strong>Ask</strong> — 詢問是否自動修正</li>
                 <li><strong>Validate</strong> — 修正後再次 inspect，確認零違規</li>
@@ -1249,6 +1278,24 @@
                 <li><strong>Plan state tokens</strong> — 確認現有 Comp token 是否涵蓋各狀態，不足則新增</li>
                 <li><strong>Build</strong> — 建立 Component 或 Component Set，綁定 variables</li>
                 <li><strong>Validate</strong> — 截圖確認視覺正確且各狀態可區分</li>
+              </ol>
+            </article>
+
+            <article class="workflow-card" id="workflow-e">
+              <div class="workflow-header">
+                <div class="workflow-letter">E</div>
+                <div>
+                  <h4>批次套用 Variables 到既有元件</h4>
+                  <p>觸發：使用者要求套用到多個 selected nodes、Component Set、目前 page 或符合名稱的元件</p>
+                </div>
+              </div>
+              <ol class="workflow-steps">
+                <li><strong>Define scope</strong> — 確認 selection、Component Set、page 或 name pattern</li>
+                <li><strong>Inspect candidates</strong> — 讀取 anatomy、layout、paint、text 與既有 <code>boundVariables</code></li>
+                <li><strong>Classify</strong> — 依 token-spec component patterns 標記 exact / inferred / unknown</li>
+                <li><strong>Dry-run plan</strong> — 回報 bind / review / skip 與 missing tokens 統計</li>
+                <li><strong>Confirm</strong> — 使用者確認後才批次寫入；review 項目不得靜默套用</li>
+                <li><strong>Apply &amp; Validate</strong> — 重新抓取 IDs、驗證型別、套用、再 inspect 與截圖</li>
               </ol>
             </article>
           </div>
@@ -1425,7 +1472,7 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
         <!-- Audit -->
         <section id="audit">
           <div class="section-head">
-            <h3>稽核規則 — 七種違規類型</h3>
+            <h3>稽核規則 — 十一種違規類型</h3>
             <p>Workflow C 使用的完整違規偵測清單。零違規時回報「All Variables comply」。</p>
           </div>
 
@@ -1440,15 +1487,15 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
             <div class="violation-item">
               <div class="violation-num">2</div>
               <div>
-                <h4>Scope 使用 ALL_SCOPES</h4>
-                <p>scopes 包含 ALL_SCOPES 或非 Ref 層的空 scope。修正：依 scope 對照表設定明確 scope。</p>
+                <h4>Scope 使用 ALL_SCOPES 或非 Ref 空 scope</h4>
+                <p>scopes 包含 ALL_SCOPES 或非 Ref 層的空 scope。Scope 是 picker 治理規則，修正時依 scope 對照表設定明確 scope。</p>
               </div>
             </div>
             <div class="violation-item">
               <div class="violation-num">3</div>
               <div>
-                <h4>缺少 WEB Code Syntax</h4>
-                <p>codeSyntax.WEB 為空或不存在。修正：從 variable 名稱自動推導 CSS 名稱。</p>
+                <h4>缺少或不正確的 WEB Code Syntax</h4>
+                <p>codeSyntax.WEB 為空、不存在，或與 canonical <code>var(--prefix-layer-name)</code> 不一致。修正：從 variable 名稱自動推導並覆寫。</p>
               </div>
             </div>
             <div class="violation-item">
@@ -1479,6 +1526,34 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
                 <p>Ref/Sys 名稱包含 button、bottom-bar 等僅屬 Comp 的詞彙。修正：Ref 改為 primitive 路徑，Sys 改為通用語意，Comp 新增 alias。</p>
               </div>
             </div>
+            <div class="violation-item">
+              <div class="violation-num">8</div>
+              <div>
+                <h4>Alias 方向不合法</h4>
+                <p>Ref 必須存 raw value，Sys 只能 alias Ref，Comp 只能 alias Sys。修正：重建正確 Ref → Sys → Comp 鏈。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">9</div>
+              <div>
+                <h4>缺少 Mode 值</h4>
+                <p>Variable 在 collection 的某些 mode 中沒有 valuesByMode。修正：為缺值 mode 設定 raw value 或正確 alias。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">10</div>
+              <div>
+                <h4>綁定型別與節點屬性不相容</h4>
+                <p>例如 FLOAT 綁到 fill color 或 COLOR 綁到 radius。修正：重新綁定到 resolvedType 相容的 variable。</p>
+              </div>
+            </div>
+            <div class="violation-item">
+              <div class="violation-num">11</div>
+              <div>
+                <h4>元件節點略過既有 Comp Token</h4>
+                <p>Component node 直接綁 Sys，但已存在對應 Comp token。修正：改綁 matching Comp token，保留元件層控制。</p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1505,7 +1580,7 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
                   </tr>
                   <tr>
                     <td><code>figma-m3-variables</code></td>
-                    <td>在 Figma 中建立、套用、稽核與逆向工程 M3 Variables（本 skill）</td>
+                    <td>在 Figma 中建立、套用、批次綁定、稽核與逆向工程 M3 Variables（本 skill）</td>
                   </tr>
                   <tr>
                     <td><code>design-system-governance</code></td>

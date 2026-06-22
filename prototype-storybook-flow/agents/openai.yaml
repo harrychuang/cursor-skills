@@ -1,4 +1,4 @@
 interface:
   display_name: "Prototype Storybook Flow"
-  short_description: "Build PRD-led Storybook prototypes"
-  default_prompt: "Use $prototype-storybook-flow to create a PRD-led Storybook prototype with UI Flow metadata."
+  short_description: "Build draggable UI Flow prototypes"
+  default_prompt: "Use $prototype-storybook-flow to create a PRD-led Storybook prototype with typed UI Flow metadata, real route UI previews, animated dashed arrow connections, draggable flow nodes, zoom/fit controls, and a Figma-exportable flow story that can be imported with storybook-to-figma."

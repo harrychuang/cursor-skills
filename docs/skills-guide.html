@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cursor Skills 使用說明</title>
+<style>
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --ink: #16150f;
+  --ink-2: #3b3830;
+  --muted: #6c6759;
+  --faint: #948f81;
+  --rule: #e1ddd4;
+  --rule-strong: #c4bfb2;
+  --code-bg: #efece5;
+  --bar: rgba(250, 249, 247, 0.88);
+
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+          "Hiragino Sans", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --measure: 44rem;
+  --wide: 62rem;
+
+  --w-body: 400;
+  --w-strong: 600;
+  --w-head: 650;
+}
+
+html[lang="ja"] {
+  --sans: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+          "Yu Gothic", "Noto Sans JP", "Segoe UI", sans-serif;
+}
+html[lang="en"] {
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --bg: #121110;
+    --surface: #1b1a18;
+    --ink: #f0ede6;
+    --ink-2: #cbc7bd;
+    --muted: #97917f;
+    --faint: #726d61;
+    --rule: #302e2a;
+    --rule-strong: #47443d;
+    --code-bg: #24221f;
+    --bar: rgba(18, 17, 16, 0.88);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #121110;
+  --surface: #1b1a18;
+  --ink: #f0ede6;
+  --ink-2: #cbc7bd;
+  --muted: #97917f;
+  --faint: #726d61;
+  --rule: #302e2a;
+  --rule-strong: #47443d;
+  --code-bg: #24221f;
+  --bar: rgba(18, 17, 16, 0.88);
+}
+
+:root[data-theme="light"] {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --ink: #16150f;
+  --ink-2: #3b3830;
+  --muted: #6c6759;
+  --faint: #948f81;
+  --rule: #e1ddd4;
+  --rule-strong: #c4bfb2;
+  --code-bg: #efece5;
+  --bar: rgba(250, 249, 247, 0.88);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: var(--w-body);
+  line-height: 1.8;
+  letter-spacing: 0.005em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .15s linear, color .15s linear;
+}
+
+.wrap {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 5vw, 3.5rem);
+}
+
+.col { max-width: var(--measure); }
+
+a { color: inherit; text-decoration-color: var(--rule-strong); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+
+strong, b { font-weight: var(--w-strong); color: var(--ink); }
+
+code, .mono { font-family: var(--mono); font-size: 0.85em; letter-spacing: 0; }
+
+code {
+  background: var(--code-bg);
+  padding: 0.12em 0.42em;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+/* ---------- top bar ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bar);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.5rem;
+  flex-wrap: wrap;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.seg button {
+  appearance: none;
+  border: 0;
+  border-left: 1px solid var(--rule-strong);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 0.38rem 0.8rem;
+  cursor: pointer;
+  line-height: 1.5;
+  transition: background-color .12s, color .12s;
+  white-space: nowrap;
+}
+
+.seg button:first-child { border-left: 0; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+/* ---------- header ---------- */
+
+header.masthead {
+  padding: clamp(4.5rem, 13vh, 9rem) 0 clamp(4rem, 10vh, 7rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 2.5rem;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 5.6vw, 3.4rem);
+  line-height: 1.24;
+  letter-spacing: -0.018em;
+  font-weight: var(--w-head);
+  margin: 0 0 1.75rem;
+  max-width: 21ch;
+}
+
+.lede {
+  font-size: clamp(1.1rem, 2.1vw, 1.3rem);
+  line-height: 1.78;
+  font-weight: 400;
+  color: var(--ink-2);
+  margin: 0 0 2.5rem;
+  max-width: 40rem;
+}
+
+.meta {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--faint);
+  letter-spacing: 0.06em;
+}
+
+/* ---------- toc ---------- */
+
+nav.toc { padding: 3rem 0; border-bottom: 1px solid var(--rule); }
+
+nav.toc ol {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.5rem 2.5rem;
+}
+
+nav.toc li { display: flex; gap: 0.9rem; align-items: baseline; }
+
+nav.toc .n { font-family: var(--mono); font-size: 0.76rem; font-weight: 500; color: var(--faint); }
+nav.toc a { text-decoration: none; color: var(--ink-2); font-size: 1rem; font-weight: 500; }
+nav.toc a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- sections ---------- */
+
+section { padding: clamp(4.5rem, 11vh, 8rem) 0; border-bottom: 1px solid var(--rule); }
+section:last-of-type { border-bottom: none; }
+
+.sec-num {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--faint);
+  margin: 0 0 1.5rem;
+}
+
+h2 {
+  font-size: clamp(1.65rem, 3.4vw, 2.15rem);
+  line-height: 1.36;
+  letter-spacing: -0.012em;
+  font-weight: var(--w-head);
+  margin: 0 0 1.5rem;
+  max-width: 24ch;
+}
+
+h3 { font-size: 1.16rem; font-weight: var(--w-strong); line-height: 1.55; margin: 0 0 0.75rem; }
+
+p { margin: 0 0 1.4rem; }
+p:last-child { margin-bottom: 0; }
+
+.intro { color: var(--ink-2); max-width: var(--measure); margin-bottom: 3.5rem; font-size: 1.05rem; }
+
+/* ---------- pipeline ---------- */
+
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin: 0 0 2rem;
+}
+
+.stage { background: var(--bg); padding: 1.6rem 1.35rem 1.8rem; }
+
+.stage .k {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.14em; color: var(--faint); display: block; margin-bottom: 0.9rem;
+}
+
+.stage .t { font-size: 1.02rem; font-weight: var(--w-strong); margin-bottom: 0.7rem; line-height: 1.5; }
+
+.stage .s {
+  font-family: var(--mono); font-size: 0.78rem; font-weight: 500;
+  line-height: 1.9; color: var(--muted); word-break: break-word;
+}
+
+.caption { font-size: 0.95rem; color: var(--muted); max-width: var(--measure); line-height: 1.75; }
+
+/* ---------- table ---------- */
+
+.tablewrap { overflow-x: auto; margin: 0 0 1.5rem; border: 1px solid var(--rule); }
+
+table { border-collapse: collapse; width: 100%; min-width: 36rem; font-size: 1rem; }
+
+th, td {
+  text-align: left; vertical-align: top;
+  padding: 1.05rem 1.3rem;
+  border-bottom: 1px solid var(--rule);
+  line-height: 1.7;
+}
+
+th {
+  font-weight: var(--w-strong);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+td.skill { white-space: nowrap; }
+td.skill code { background: none; padding: 0; color: var(--ink); font-weight: 600; font-size: 0.92em; }
+
+/* ---------- skill entries ---------- */
+
+.group-label {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--rule-strong);
+  margin: 4.5rem 0 0;
+}
+
+.group-label.first { margin-top: 0; }
+
+.skill-entry {
+  padding: 2.85rem 0;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: 1rem 3rem;
+}
+
+@media (max-width: 48rem) {
+  .skill-entry { grid-template-columns: 1fr; gap: 1.25rem; }
+}
+
+.skill-name {
+  font-family: var(--mono);
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.skill-tag {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.skill-body > p:first-child { margin-top: 0; }
+
+dl.facts {
+  margin: 1.6rem 0 0;
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.6rem 1.5rem;
+  font-size: 0.98rem;
+}
+
+dl.facts dt {
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--faint);
+  padding-top: 0.24rem;
+}
+
+dl.facts dd { margin: 0; color: var(--ink-2); line-height: 1.72; }
+dl.facts dd code { font-size: 0.85em; }
+
+@media (max-width: 32rem) {
+  dl.facts { grid-template-columns: 1fr; gap: 0.15rem; }
+  dl.facts dt { padding-top: 0.7rem; }
+}
+
+/* ---------- journeys ---------- */
+
+.journey { padding: 3.25rem 0; border-bottom: 1px solid var(--rule); }
+.journey:last-child { border-bottom: none; padding-bottom: 0; }
+
+.journey-head { display: flex; gap: 1.5rem; align-items: baseline; margin-bottom: 1.25rem; }
+
+.journey-num { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--faint); flex: none; }
+
+.journey h3 { margin-bottom: 0.4rem; font-size: 1.28rem; }
+
+.journey .situation { color: var(--ink-2); max-width: var(--measure); margin-bottom: 2rem; font-size: 1.02rem; }
+
+ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; max-width: 48rem; }
+
+ol.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 1.7rem 3.25rem;
+  border-left: 1px solid var(--rule);
+  margin-left: 0.5rem;
+}
+
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: -0.9rem;
+  top: 0.2rem;
+  width: 1.8rem; height: 1.8rem;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+
+ol.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+ol.steps .step-title {
+  font-weight: var(--w-strong);
+  display: block;
+  margin-bottom: 0.35rem;
+  line-height: 1.6;
+  font-size: 1.04rem;
+}
+
+ol.steps .step-title code { font-weight: 600; background: none; padding: 0; font-size: 0.9em; }
+ol.steps p { font-size: 1rem; color: var(--ink-2); margin: 0 0 0.55rem; }
+ol.steps p:last-child { margin-bottom: 0; }
+
+.outcome {
+  margin-top: 1.85rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  font-size: 0.99rem;
+  color: var(--ink-2);
+  max-width: 48rem;
+}
+
+.outcome b {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+/* ---------- rules / pitfalls ---------- */
+
+ol.rules { list-style: none; margin: 0; padding: 0; max-width: 50rem; counter-reset: rule; }
+
+ol.rules > li {
+  counter-increment: rule;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.7rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+ol.rules > li:last-child { border-bottom: none; }
+
+ol.rules > li::before {
+  content: counter(rule, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--faint);
+  padding-top: 0.32rem;
+}
+
+ol.rules b { display: block; font-weight: var(--w-strong); margin-bottom: 0.35rem; font-size: 1.06rem; }
+ol.rules span { color: var(--ink-2); font-size: 1rem; }
+
+.pitfall { padding: 1.7rem 0; border-bottom: 1px solid var(--rule); max-width: 50rem; }
+.pitfall:last-child { border-bottom: none; }
+
+.pitfall .bad, .pitfall .good {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 1rem;
+  font-size: 1rem;
+  line-height: 1.72;
+}
+
+.pitfall .bad { margin-bottom: 0.55rem; }
+
+.pitfall .lbl {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  padding-top: 0.3rem;
+}
+
+.pitfall .bad div:last-child { color: var(--ink); font-weight: 500; }
+.pitfall .good div:last-child { color: var(--ink-2); }
+
+/* ---------- install ---------- */
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  padding: 1.3rem 1.45rem;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.85;
+  margin: 0 0 1.5rem;
+  color: var(--ink-2);
+}
+
+pre code { background: none; padding: 0; font-size: 1em; }
+
+.examples { color: var(--muted); font-size: 1rem; }
+
+footer {
+  padding: 5rem 0 7rem;
+  border-top: 1px solid var(--rule);
+  color: var(--faint);
+  font-size: 0.95rem;
+}
+
+footer p { max-width: var(--measure); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap bar">
+    <div class="seg" id="langSeg" role="group" aria-label="Language"></div>
+    <div class="seg" id="themeSeg" role="group" aria-label="Theme"></div>
+  </div>
+</div>
+
+<main id="app"></main>
+
+<script>
+/* =========================================================================
+   Content — one object per language. Structure is shared; only strings vary.
+   Limited inline HTML (<code>, <strong>, <br>) is allowed in string values.
+   ========================================================================= */
+
+const SKILL_ORDER = [
+  'workspace', 'extractor', 'storybook', 'governance', 'parity', 'figma', 'proto', 'protoflow'
+];
+
+const I18N = {
+
+/* ------------------------------------------------------------------ 繁中 */
+zh: {
+  htmlLang: 'zh-Hant',
+  docTitle: 'Cursor Skills 使用說明',
+  ui: { langLabel: '繁中', themes: { auto: '自動', light: '淺色', dark: '深色' } },
+
+  eyebrow: 'Cursor Agent Skills',
+  h1: '把設計變成程式碼的八個 Skill，以及它們怎麼串起來',
+  lede: '這個 repo 裡的 skill 不是八個各自獨立的工具，而是一條流水線上的八個工位。理解它們的位置，比記住它們的名字有用。這份說明告訴你：每個 skill 負責哪一段、該按什麼順序用、以及五種常見情境下實際的操作步驟。',
+  meta: '8 SKILLS · 5 USER JOURNEYS · UPDATED 2026-07-30',
+
+  toc: ['一分鐘理解全貌', '我現在該用哪一個', '八個 Skill 逐一說明', '五個使用者旅程', '搭配時的六條原則', '常見誤用', '安裝與觸發方式'],
+
+  overview: {
+    h2: '一分鐘理解全貌',
+    intro: [
+      '所有 skill 都掛在同一條主線上：<strong>設計來源 → 設計系統規格 → Storybook 元件 → 產品畫面 → 視覺校正</strong>。每個 skill 只負責其中一段，而且刻意不越界——例如萃取設計系統的那個不會幫你寫產品程式碼，落地實作的那個也不會回頭重新萃取設計。',
+      '這種「刻意不越界」是設計上的選擇。它讓每一段都有明確的產出物，中斷後可以續做，也讓你能只用其中一段而不用被整條流程綁架。'
+    ],
+    stages: [
+      { t: '建立工作區', s: 'create-design-<br>workspace' },
+      { t: '萃取設計系統', s: 'design-system-<br>extractor<br>figma-m3-variables' },
+      { t: '實作元件', s: 'ds-to-storybook' },
+      { t: '組出畫面', s: 'storybook-product-<br>prototype<br>prototype-<br>storybook-flow' },
+      { t: '校正視覺', s: 'ui-visual-parity' }
+    ],
+    caption: '<code>design-system-governance</code> 不在這條線上——它是一組全程生效的規則，從 Stage 2 到 Stage 5 都會在你寫死顏色、憑空建元件時把你攔下來。'
+  },
+
+  picker: {
+    h2: '我現在該用哪一個',
+    intro: '從你手上有什麼、想得到什麼開始判斷，不要從 skill 名字開始。',
+    th: ['我的情況', '用這個'],
+    rows: [
+      ['手上有幾張 UI 截圖或一個 Figma URL，要從零開始做一個新專案', 'create-design-workspace'],
+      ['有設計參考（截圖 / Figma / 既有 App），想先整理出 token 與元件清單，還不想寫程式', 'design-system-extractor'],
+      ['設計系統規格已經有了，要把它變成真的 Storybook 元件', 'ds-to-storybook'],
+      ['正在寫 UI，希望有人盯著我不要寫死樣式、不要重複造元件', 'design-system-governance'],
+      ['畫面做出來了，但跟設計稿不太像，要找出並修掉落差', 'ui-visual-parity'],
+      ['要在 Figma 裡建立／套用／稽核 Ref → Sys → Comp 三層 Variables', 'figma-m3-variables'],
+      ['有一個產品想法，想快速做成可點擊的原型來驗證流程', 'storybook-product-prototype'],
+      ['同上，但還需要一張可拖曳、可縮放、能匯進 Figma 的流程圖', 'prototype-storybook-flow']
+    ]
+  },
+
+  skills: {
+    h2: '八個 Skill 逐一說明',
+    intro: '每個 skill 看四件事就夠了：它做什麼、什麼時候用、產出什麼、以及<strong>它刻意不做什麼</strong>。最後一項最容易被忽略，卻是決定你要不要再搭一個 skill 的關鍵。',
+    groups: ['起點', '主線', '全程規則', '校正', 'Figma 那一端', '原型支線'],
+    entries: {
+      workspace: {
+        group: 0, tag: '一次性鷹架',
+        body: ['從截圖或 Figma URL 生出一整個前端交付工作區：目錄結構、Storybook 設定、設計基礎頁、任務清單，以及 Cursor / Claude Code / Codex 三種工具的進入點。鷹架完成後它不會停手，會接著帶你跑完整條建置流程。'],
+        facts: [
+          ['輸入', '截圖檔案、Figma URL、可選的 <code>FIGMA_PAT</code>'],
+          ['產出', '<code>start-here/</code>、<code>design/</code>、<code>skills/</code>、Storybook 10 專案骨架'],
+          ['不做', '不能用在已有程式碼的現有專案根目錄——它會擋下來要你換一個空資料夾'],
+          ['注意', '鷹架後一定要跑 <code>npm run workspace:init</code>。若走 Figma 路線但沒設 <code>FIGMA_PAT</code> 或 <code>FIGMA_AUTH_MODE=connector</code>，<code>workspace:check</code> 會直接失敗']
+        ]
+      },
+      extractor: {
+        group: 1, tag: '規格萃取',
+        body: ['扮演設計系統架構師，從視覺與程式參考中萃取出一包可重用的設計系統規格。它的核心觀念是<strong>證據</strong>：每一條設計原則、每一個 token、每一個元件，都要在 evidence map 裡標明來自哪張截圖的哪個區域、哪個 Figma node、哪條路由。沒有證據的規則會被標成低信心度或直接來問你。'],
+        facts: [
+          ['輸入', '截圖、平面設計稿、Figma URL / Variables、既有專案資料夾、原型程式碼'],
+          ['產出', '<code>design-system/*.md</code>（原則、證據表、token 架構、元件清單、元件規格）、<code>tokens/tokens-ref|sys|comp.css</code>、<code>docs/design-system/index.html</code> 靜態文件'],
+          ['會攔你', '發現重複來源、相近 token、相似元件時會停下來問「合併還是保持獨立」，並把決定寫進文件'],
+          ['不做', 'checkpoint 前不寫任何產品 UI 程式碼、Storybook 實作或路由。要落地請接 <code>ds-to-storybook</code>']
+        ]
+      },
+      storybook: {
+        group: 1, tag: '落地實作',
+        body: ['把萃取好的設計系統包實作成產品 repo 裡的 Storybook 元件。它會先追溯每個元件規格回到原始的 Figma node 或截圖，再推算元件的相依順序（基礎元件先於組合元件），然後<strong>分批</strong>實作。Storybook 在這裡不只是元件目錄，而是可以反向匯出回 Figma 的設計來源，所以它對 DOM 結構有額外要求。'],
+        facts: [
+          ['前提', '必須先有 extractor 產出的設計系統包，缺了會要你先回去補'],
+          ['產出', 'co-located 的 <code>components/&lt;Name&gt;/</code> 元件 + 樣式 + story、實作對照表、元件佇列、Figma export addon 設定'],
+          ['批次上限', '一次 3–5 個簡單元件，或 1–2 個複雜組合元件。就算你說「全部做完」，它也只會完成第一批然後把其餘排進佇列'],
+          ['不做', '不重新萃取設計；不在這裡改設計決策。發現規格與 Figma 衝突時會停下來問你']
+        ]
+      },
+      governance: {
+        group: 2, tag: '不是流程，是規則',
+        body: ['這個 skill 沒有「跑完」的概念。它會先掃描專案摸清你的 token 命名慣例、格線系統、動畫 keyframe 前綴與現有共用元件，然後在你之後每一次寫 UI 時套用同一套規則。'],
+        facts: [
+          ['兩道閘門', '<strong>Token Gate</strong>——找不到對應 token 時停下來問，不准用寫死的 fallback 值。<strong>Composition Gate</strong>——現有元件組不出來時停下來問，不准偷偷做 inline 子元件'],
+          ['硬性禁止', 'component code 裡的 <code>#hex</code> / <code>rgb()</code>、寫死的間距與圓角、comp token 直接引用 ref token、寫死的 <code>ms</code> 與 <code>cubic-bezier</code>、寫死在 template 裡的顯示文字'],
+          ['搭配', '可以和任何其他 skill 同時開著，尤其建議在 <code>ds-to-storybook</code> 期間全程生效']
+        ]
+      },
+      parity: {
+        group: 3, tag: '單獨可用',
+        body: ['比對參考截圖與實際實作，找出視覺落差並修掉。關鍵在於它<strong>不是直接改畫面</strong>——每個落差都要先判斷「這是誰的責任」，然後從最可重用的那一層開始修。'],
+        facts: [
+          ['修復順序', 'token / theme → 共用元件與 primitive → 元件 variant → 畫面組版 → 最後才是單一頁面的 one-off CSS'],
+          ['輸入彈性', '截圖＋URL、截圖＋路由、截圖＋檔案、只給截圖、只給路由，甚至什麼都不給（它會自己配對整個 repo 的截圖與頁面）'],
+          ['要求證據', '每個修改要有依據：截圖觀察、算出來的 computed style、token 值、元件原始碼或呼叫端。不接受「看起來怪怪的」'],
+          ['會停下來', '參考太模糊、目標渲染不出來、多個目標同樣合理、或修改會動到產品行為 / 文案 / 資料流 / 無障礙語意時']
+        ]
+      },
+      figma: {
+        group: 4, tag: '五種工作流',
+        body: ['在 Figma 檔案裡處理 Material Design 3 的三層 Variables。和 <code>design-system-governance</code> 是一體兩面——同一套 Ref / Sys / Comp 分層哲學，一個管 Figma 端，一個管程式碼端。'],
+        facts: [
+          ['A', '把既有 Variables 套到指定元件'],
+          ['B', '檔案裡沒有 Variables 時，從零建立三層結構'],
+          ['C', '稽核既有 Variables 的命名、scope、alias 方向與 WEB 語法'],
+          ['D', '讀懂既有 Variables，反過來用它們生出元件與 Component Set'],
+          ['E', '批次套用到多個節點／整個 Component Set／整頁（預設 dry-run 後才寫入）'],
+          ['前置', '每次呼叫 <code>use_figma</code> 前必須先讀 <code>figma-use</code> skill；呼叫必須依序執行，不可平行']
+        ]
+      },
+      proto: {
+        group: 5, tag: '輕量、專案無關',
+        body: ['把一個產品想法變成可點擊的 Storybook 原型。順序是刻意的：先談清楚產品，再寫文件，再定義流程，再造假資料，最後才組 UI。文件是耐久的交接物——另一個 agent 不需要看過你們的對話也能接手。'],
+        facts: [
+          ['產出', '<code>docs/PRD.md</code>、<code>FLOW_SPEC.md</code>、<code>UI_SPEC.md</code>、<code>DATA_SPEC.md</code>、<code>ACCEPTANCE.md</code>、<code>IMPLEMENTATION_GUIDE.md</code>，加上 flow 定義、固定假資料、React 原型與 story'],
+          ['原則', '路由用穩定 id 不用顯示文字；點擊接的是 transition trigger 不是畫面上的字；資料全部本地且固定，不打真的 API'],
+          ['選它', '當你只需要一個能點的流程，UI Flow 用 metadata 描述就夠']
+        ]
+      },
+      protoflow: {
+        group: 5, tag: '加強版',
+        body: ['上一個的進階版本，多做兩件事：一是在 Storybook 裡提供真正的<strong>視覺化 UI Flow 檢視器</strong>，二是產出<strong>可匯入 Figma 的流程圖</strong>。'],
+        facts: [
+          ['檢視器', '節點卡片內嵌真實路由 UI 預覽、虛線動畫連接線與方向箭頭、可拖曳節點、縮放與 fit-to-view、完整 transition 索引'],
+          ['Figma 匯出', '另外做一個獨立的 export story，用一般 DOM 與 inline SVG 畫流程圖（不能用 iframe），讓 Figma export addon 能抓到完整結構'],
+          ['選它', '當你要拿流程圖去跟人開會、或要把流程帶回 Figma 繼續設計'],
+          ['注意', '綁定 <code>src/pages/prototypes/</code> 的專案慣例，會參考 inventory-prototype 作為範本']
+        ]
+      }
+    }
+  },
+
+  journeys: {
+    h2: '五個使用者旅程',
+    intro: '以下是五種實際會遇到的情境，以及每一步該說什麼、會得到什麼。你不需要照抄指令——skill 是靠描述觸發的，講清楚你的處境就會被叫起來。',
+    outcomeLabel: '你會得到',
+    items: [
+      {
+        n: 'A', h3: '從幾張截圖做一個全新產品',
+        situation: '你有一組 App 截圖，沒有 Figma 檔，沒有既有程式碼，想從零把它做出來。這是最完整的一條路，四個 skill 依序接力。',
+        steps: [
+          { t: '<code>create-design-workspace</code> — 開一個新的空資料夾', p: ['把截圖放進去，說「用這些截圖建立一個新的前端工作區」。它會鷹架整個專案結構，跑完 <code>workspace:init</code> 與 <code>workspace:check</code>。', '先讀 <code>start-here/ACCURACY_CONTRACT.md</code>。只有截圖的情況下，隱藏狀態、響應式行為、真實資料行為都是推測不出來的，先把期待對齊。'] },
+          { t: '<code>design-system-extractor</code> — 先萃取，不要急著寫元件', p: ['讓它逐張分析截圖，建立證據表，整理出 ref / sys / comp 三層 token 與元件清單。過程中它會問你要不要合併相近的顏色與相似的元件——這些問題值得認真回答，因為之後整個系統都建立在這些決定上。', '結束時會產出一份可以在瀏覽器打開的 HTML 文件，拿它跟設計師對一次。'] },
+          { t: '<code>ds-to-storybook</code> — 分批把元件做出來', p: ['它會自己算出相依順序，Button 這類基礎元件會排在 Card、Header 之類的組合元件前面。第一批做完會停下來報告，你確認後再叫下一批。', '同時讓 <code>design-system-governance</code> 全程生效，避免實作時偷偷寫死值。'] },
+          { t: '<code>ui-visual-parity</code> — 用原始截圖驗收', p: ['把最初那組截圖拿回來，一張一張對。它會分區比對，判斷每個落差屬於 token、共用元件還是頁面組版，然後從最上游修起。'] }
+        ],
+        outcome: '一個有完整 token 架構、Storybook 元件庫、設計系統文件，而且視覺上對得起原始截圖的專案。重點是每個決定都有據可循，之後接手的人（或 agent）看文件就能繼續。'
+      },
+      {
+        n: 'B', h3: '已經有 Figma 設計檔，要建立設計系統',
+        situation: '設計師交了一份 Figma，你想確保 Figma 端和程式碼端用的是同一套 token。這條路的重點是先把 Figma 整理乾淨，再往下游走。',
+        steps: [
+          { t: '<code>figma-m3-variables</code> — 先確認 Figma 端的 Variables', p: ['檔案裡已經有 Variables 就跑 Workflow C 稽核（命名分層對不對、alias 方向有沒有錯、scope 設了沒）。完全沒有就跑 Workflow B 從零建立三層結構。', '接著用 Workflow E 批次把 Variables 綁到既有元件上。它預設會先給你一份 dry-run 計畫，確認後才真的寫入。'] },
+          { t: '<code>design-system-extractor</code> — 把 Figma 萃取成規格包', p: ['給它 Figma URL。因為 Figma MCP 可用，它能讀到結構化的 layout、variables 與元件名稱，這是所有輸入來源裡精確度最高的一種。', '特別留意它產出的 <strong>Figma MCP handoff</strong> 資訊——file key、node id、建議的 MCP 呼叫。下一步會直接用到，別讓它留空。'] },
+          { t: '<code>ds-to-storybook</code> — 實作時回頭看原始 node', p: ['它會用上一步留下的 handoff 資訊，透過 Figma MCP 直接讀取原始節點的設計脈絡與截圖，而不是憑規格文字猜。', '它也會裝上 Figma export addon，讓 Storybook 元件可以反向匯回 Figma。'] },
+          { t: '<code>ui-visual-parity</code> — 對 Figma 截圖收尾', p: ['用 Figma 匯出的畫面當參考截圖，跑最後一輪校正。'] }
+        ],
+        outcome: 'Figma 的 Variables 與程式碼的 CSS token 在同一套 Ref → Sys → Comp 分層下對齊，而且每個元件都留著回溯到原始 Figma node 的路徑。'
+      },
+      {
+        n: 'C', h3: '既有專案樣式長歪了，想補上設計系統',
+        situation: '專案已經跑了一陣子，到處是寫死的顏色和複製貼上的元件。你不能砍掉重練，只能一邊維護一邊收斂。這條路<strong>不要</strong>用 <code>create-design-workspace</code>。',
+        steps: [
+          { t: '<code>design-system-extractor</code> — 對著自己的專案萃取', p: ['把既有專案資料夾當作輸入來源。它會檢查渲染出來的 UI、現有 CSS、Storybook 與元件，整理出「你實際上正在用的」設計系統，而不是「你以為的」。', '這一步的價值在元件清單：它會標出哪些元件其實是重複的、哪些顏色差 2% 卻各自存在。'] },
+          { t: '<code>design-system-governance</code> — 從今天起止血', p: ['先讓它掃描專案摸清現有慣例，之後每次寫新 UI 都會被兩道閘門檔著。舊的爛攤子慢慢清，但至少不再增加。'] },
+          { t: '<code>ds-to-storybook</code> — 一次收斂一批', p: ['用它的元件佇列，按相依順序一批批把散落的實作收斂成共用元件。它會優先找既有元件重用或擴充，而不是新增一個。'] },
+          { t: '<code>ui-visual-parity</code> — 確認收斂沒有改壞畫面', p: ['每收斂一批就跑一次。它的 regression guardrail 會在你改動共用預設值前，先去看代表性的呼叫端與 story，確認不會波及其他畫面。'] }
+        ],
+        outcome: '一份誠實反映現況的設計系統文件、一道防止繼續劣化的閘門，以及一個可以慢慢推進的收斂佇列。'
+      },
+      {
+        n: 'D', h3: '驗證一個產品想法，還不確定要不要做',
+        situation: '腦中有個功能構想，想先做成能點的東西給人看，再決定要不要真的投入。這條路是獨立支線，不需要先有設計系統。',
+        steps: [
+          { t: '先想清楚要不要流程圖', p: ['只需要能點的畫面 → <code>storybook-product-prototype</code>。還要一張能開會用、能匯進 Figma 的流程圖 → <code>prototype-storybook-flow</code>。兩者的文件與資料規則一樣，差別在檢視器與匯出。'] },
+          { t: '讓它一次問一個產品問題', p: ['它不會馬上開檔案。會先確認主要使用者、進入路由、需要哪些分支狀態、哪些外部系統要 mock、驗收標準是什麼。回答這些的過程本身就在幫你想清楚產品。'] },
+          { t: '文件先於 UI，流程先於畫面', p: ['順序固定：六份文件 → flow 定義（路由、節點、transition）→ 固定假資料 → 才是 React 元件。這個順序讓原型是「一個產品流程」，不是「幾張靜態畫面」。'] },
+          { t: '驗證後再決定要不要進主線', p: ['原型如果值得做下去，把它的畫面截圖丟給 <code>design-system-extractor</code>，就接回了旅程 A。原型的 CSS 不要直接當正式實作用。'] }
+        ],
+        outcome: '一個可點擊的 Storybook 原型，加上一份完整到別人能接手的產品文件。如果想法被否決，你損失的只是幾小時，而且文件會告訴你為什麼否決。'
+      },
+      {
+        n: 'E', h3: '日常維護：只想修一個畫面 / 加一個元件',
+        situation: '不是每次都要動用整條流水線。大部分的日常工作只需要一到兩個 skill。',
+        steps: [
+          { t: '畫面跟設計稿不像 → 只用 <code>ui-visual-parity</code>', p: ['直接說「這張截圖跟 <code>/dashboard</code> 不一樣，幫我修」。它會自己找到實作檔、渲染畫面、分區比對，並在動手前先給你一張落差表。'] },
+          { t: '要加一個新元件 → <code>design-system-governance</code> 打底', p: ['它會先逼你確認：現有元件能不能滿足？需要的 token 存在嗎？兩個問題都過了才開始寫，而且寫完要補齊 Default / Hover / FocusVisible / Disabled 四種 story。'] },
+          { t: '元件已在設計系統清單裡 → 加上 <code>ds-to-storybook</code>', p: ['如果這個元件在 <code>COMPONENT_INVENTORY.md</code> 裡標著 <code>planned</code>，用 ds-to-storybook 跑一次單元件的 pass，它會把規格、原始來源、token 契約與 story 一次補齊。'] },
+          { t: 'Figma 上新增了元件 → <code>figma-m3-variables</code> Workflow A', p: ['把新元件的 node 丟給它，套上既有的 comp token。它會先給綁定計畫再執行，最後截圖驗證。'] }
+        ],
+        outcomeLabel: '原則',
+        outcome: '一次只叫需要的那個。這些 skill 的閘門設計是為了在真的需要時擋你，不是為了讓每個小改動都變成一場儀式。'
+      }
+    ]
+  },
+
+  rules: {
+    h2: '搭配時的六條原則',
+    intro: '這些原則從各 skill 的 gate 設計裡歸納出來。理解它們，就能預期 agent 什麼時候會停下來問你。',
+    items: [
+      ['先萃取，再實作', '<code>ds-to-storybook</code> 會明確拒絕從沒被記錄過的 Figma node 或截圖直接做元件，它會把那個元件標成 <code>needs-extraction</code>。想跳過萃取只會多繞一圈。'],
+      ['證據優先於直覺', 'extractor 要 evidence map，visual-parity 要 computed style 與 token 值。當你給的理由是「感覺不太對」時，它們會去找更硬的依據，或停下來問你。'],
+      ['從最可重用的那一層開始修', 'token → 共用元件 → variant → 組版 → 單頁樣式。這個順序在 governance 和 visual-parity 裡是一致的，也是為什麼它們不會直接幫你在頁面上蓋一段 CSS。'],
+      ['分批，不要一次做完', '就算你說「把整個元件庫做完」，<code>ds-to-storybook</code> 也只會完成第一批。這不是偷懶——每批之間會更新佇列與實作對照表，讓你隨時能中斷再續。'],
+      ['三層分層在 Figma 與程式碼是同一套', 'ref 只放原始值、sys 只放跨元件的語意、comp 才能出現元件名稱。<code>figma-m3-variables</code> 與 <code>design-system-governance</code> 用的是同一套規則，所以兩端才能對得起來。'],
+      ['文件是交接物，不是副產品', 'SESSION_STATE、實作對照表、元件佇列、PRD——這些檔案的存在是為了讓下一次對話（可能是另一個人、另一個 agent）不需要看過先前的聊天記錄也能接手。']
+    ]
+  },
+
+  pitfalls: {
+    h2: '常見誤用',
+    intro: '這幾個情況會讓 skill 直接擋下來，或是產出不如預期。事先知道可以少走冤枉路。',
+    badLabel: '誤用', goodLabel: '改成',
+    items: [
+      ['在既有 App 的根目錄跑 <code>create-design-workspace</code>', '它會偵測到不相關的程式碼並停下來。既有專案請走旅程 C，從 <code>design-system-extractor</code> 開始。'],
+      ['跳過 extractor，直接叫 <code>ds-to-storybook</code> 做元件', '缺少設計系統包時它會拒絕，並要你先跑或續跑 extractor。至少要有 token 檔與元件規格。'],
+      ['只給一張截圖，卻期待完整的 hover / disabled / 響應式行為', '單一靜態圖只能做到第一版近似。多給幾張不同狀態與斷點的圖，或改用 Figma 來源。'],
+      ['用 <code>ui-visual-parity</code> 順便改文案或資料流', '它會停下來拒絕。視覺校正就只做視覺，產品行為的改動請另外開一個需求。'],
+      ['把原型的 CSS 直接當成正式實作', '原型 CSS 刻意 scope 在 feature root class 底下。要正式化請走 extractor → ds-to-storybook。'],
+      ['在 Figma 的 ref 層建立 <code>ref/spacing/bottom-bar/padding</code> 這種 token', 'ref 層的名字只能反映「值是多少」，不能反映「用在哪」。帶元件名或版面區域的請放 comp 層。']
+    ]
+  },
+
+  install: {
+    h2: '安裝與觸發方式',
+    h3a: '安裝到個人 Cursor（所有專案都能用）',
+    h3b: '安裝到專案（整個團隊透過 repo 共用）',
+    after: '複製完成後重新啟動 Cursor。',
+    h3c: '怎麼觸發',
+    trigger: '不需要記指令。Skill 是靠 <code>SKILL.md</code> 開頭的 description 與你的敘述做關鍵字比對，符合時 agent 會自動讀取並遵循。所以<strong>描述你的處境和想要的產出</strong>比呼叫名字有效：',
+    examples: ['「幫我從這幾張截圖整理出一套設計系統」', '「這個頁面跟設計稿不一樣，幫我對一下」', '「幫 Figma 這個元件套上現有的 Variables」'],
+    explicit: '要明確指定時，直接講 skill 名字也可以：「用 design-system-extractor 分析這個資料夾」。',
+    h3d: '其他工具',
+    other: '<code>ds-to-storybook</code> 內建安裝腳本，可以把自己裝到 Claude Code 或 Codex；<code>create-design-workspace</code> 產出的工作區則同時保留三種工具的進入點（<code>CLAUDE.md</code>、<code>.cursorrules</code>、<code>AGENTS.md</code>）。'
+  },
+
+  footer: '每個 skill 的完整規則都寫在各自的 <code>SKILL.md</code> 裡。這份說明只涵蓋怎麼選、怎麼搭、怎麼串——遇到細節爭議時，以 <code>SKILL.md</code> 為準。'
+},
+
+/* ------------------------------------------------------------------- 日本語 */
+ja: {
+  htmlLang: 'ja',
+  docTitle: 'Cursor Skills 利用ガイド',
+  ui: { langLabel: '日本語', themes: { auto: '自動', light: 'ライト', dark: 'ダーク' } },
+
+  eyebrow: 'Cursor Agent Skills',
+  h1: 'デザインをコードに変える 8 つの Skill と、その組み合わせ方',
+  lede: 'このリポジトリの skill は、独立した 8 つのツールではなく、1 本のパイプライン上の 8 つの工程です。名前を覚えるより、どの位置にあるかを理解するほうが役に立ちます。このガイドでは、各 skill が担当する範囲、使う順番、そして 5 つの典型的なシナリオでの具体的な手順を説明します。',
+  meta: '8 SKILLS · 5 USER JOURNEYS · UPDATED 2026-07-30',
+
+  toc: ['全体像を 1 分で', 'いま使うべき skill', '8 つの Skill', '5 つのユーザージャーニー', '組み合わせの 6 原則', 'よくある誤用', 'インストールと呼び出し方'],
+
+  overview: {
+    h2: '全体像を 1 分で',
+    intro: [
+      'すべての skill は同じ 1 本の線の上にあります：<strong>デザインソース → デザインシステム仕様 → Storybook コンポーネント → プロダクト画面 → ビジュアル調整</strong>。各 skill は 1 区間だけを担当し、意図的に越境しません。たとえばデザインシステムを抽出する skill はプロダクトコードを書きませんし、実装する skill はデザインを抽出し直しません。',
+      'この「意図的に越境しない」設計は選択の結果です。各区間に明確な成果物が生まれ、中断しても再開でき、パイプライン全体に縛られずに一部だけを使えます。'
+    ],
+    stages: [
+      { t: 'ワークスペース作成', s: 'create-design-<br>workspace' },
+      { t: 'デザインシステム抽出', s: 'design-system-<br>extractor<br>figma-m3-variables' },
+      { t: 'コンポーネント実装', s: 'ds-to-storybook' },
+      { t: '画面の組み立て', s: 'storybook-product-<br>prototype<br>prototype-<br>storybook-flow' },
+      { t: 'ビジュアル調整', s: 'ui-visual-parity' }
+    ],
+    caption: '<code>design-system-governance</code> はこの線上にありません。Stage 2 から Stage 5 まで常時有効なルールセットで、色をハードコードしたり、勝手に新しいコンポーネントを作ろうとすると止めに入ります。'
+  },
+
+  picker: {
+    h2: 'いま使うべき skill',
+    intro: 'skill の名前からではなく、「いま何を持っていて、何が欲しいか」から判断してください。',
+    th: ['状況', 'これを使う'],
+    rows: [
+      ['UI スクリーンショットや Figma URL があり、新規プロジェクトをゼロから始めたい', 'create-design-workspace'],
+      ['デザイン参照（スクリーンショット / Figma / 既存アプリ）から、まず token とコンポーネント一覧を整理したい。まだコードは書かない', 'design-system-extractor'],
+      ['デザインシステム仕様はある。これを実際の Storybook コンポーネントにしたい', 'ds-to-storybook'],
+      ['UI を書いている最中で、スタイルのハードコードや車輪の再発明を監視してほしい', 'design-system-governance'],
+      ['画面はできたが、デザインカンプと少し違う。差分を見つけて直したい', 'ui-visual-parity'],
+      ['Figma で Ref → Sys → Comp の 3 層 Variables を作成／適用／監査したい', 'figma-m3-variables'],
+      ['プロダクトのアイデアを、クリックできるプロトタイプにして検証したい', 'storybook-product-prototype'],
+      ['上記に加えて、ドラッグ・ズームができ Figma に取り込めるフロー図も欲しい', 'prototype-storybook-flow']
+    ]
+  },
+
+  skills: {
+    h2: '8 つの Skill',
+    intro: '各 skill について見るべきは 4 点だけです：何をするか、いつ使うか、何を出力するか、そして<strong>意図的に何をしないか</strong>。最後の 1 点は見落とされがちですが、次にどの skill を足すべきかを決める鍵になります。',
+    groups: ['出発点', 'メインライン', '全工程のルール', '調整', 'Figma 側', 'プロトタイプ支線'],
+    entries: {
+      workspace: {
+        group: 0, tag: '一度きりの足場',
+        body: ['スクリーンショットまたは Figma URL から、フロントエンド開発ワークスペース一式を生成します：ディレクトリ構造、Storybook 設定、デザイン基礎ページ、タスクリスト、そして Cursor / Claude Code / Codex 3 つのツールのエントリポイント。足場を組んで終わりではなく、そのままビルドフロー全体を進めます。'],
+        facts: [
+          ['入力', 'スクリーンショット、Figma URL、任意の <code>FIGMA_PAT</code>'],
+          ['出力', '<code>start-here/</code>、<code>design/</code>、<code>skills/</code>、Storybook 10 のプロジェクト骨格'],
+          ['やらない', '既存コードのあるプロジェクトルートでは使えません。空のディレクトリを使うよう促して停止します'],
+          ['注意', '足場作成後は必ず <code>npm run workspace:init</code> を実行。Figma ルートで <code>FIGMA_PAT</code> も <code>FIGMA_AUTH_MODE=connector</code> も未設定なら <code>workspace:check</code> は失敗します']
+        ]
+      },
+      extractor: {
+        group: 1, tag: '仕様の抽出',
+        body: ['デザインシステムアーキテクトとして振る舞い、視覚・コードの参照から再利用可能なデザインシステム仕様を抽出します。中核にあるのは<strong>エビデンス</strong>です。すべてのデザイン原則、token、コンポーネントについて、どのスクリーンショットのどの領域か、どの Figma node か、どのルートかを evidence map に記録します。根拠のないルールは低信頼度としてマークされるか、確認を求められます。'],
+        facts: [
+          ['入力', 'スクリーンショット、グラフィックデザイン、Figma URL / Variables、既存プロジェクト、プロトタイプコード'],
+          ['出力', '<code>design-system/*.md</code>（原則、エビデンス表、token アーキテクチャ、コンポーネント一覧、コンポーネント仕様）、<code>tokens/tokens-ref|sys|comp.css</code>、<code>docs/design-system/index.html</code>'],
+          ['止める', '重複ソース、近すぎる token、類似コンポーネントを検出すると「統合するか、別として保つか」を尋ね、決定を文書に残します'],
+          ['やらない', 'checkpoint 前にプロダクト UI コード、Storybook 実装、ルートを書きません。実装は <code>ds-to-storybook</code> へ']
+        ]
+      },
+      storybook: {
+        group: 1, tag: '実装',
+        body: ['抽出済みのデザインシステムパッケージを、プロダクトリポジトリの Storybook コンポーネントとして実装します。まず各コンポーネント仕様を元の Figma node やスクリーンショットまで遡り、依存順（基礎コンポーネントを組み合わせコンポーネントより先に）を算出してから、<strong>バッチ単位</strong>で実装します。ここでの Storybook は単なるカタログではなく、Figma へ書き戻せるデザインソースなので、DOM 構造に追加要件があります。'],
+        facts: [
+          ['前提', 'extractor が生成したデザインシステムパッケージが必須。無ければ先に戻るよう促します'],
+          ['出力', 'co-located な <code>components/&lt;Name&gt;/</code> のコンポーネント + スタイル + story、実装マップ、コンポーネントキュー、Figma export addon の設定'],
+          ['バッチ上限', '1 回に簡単なコンポーネント 3〜5 個、または複雑な複合コンポーネント 1〜2 個。「全部作って」と言っても最初のバッチだけ完了し、残りはキューに入ります'],
+          ['やらない', 'デザインの再抽出はしません。仕様と Figma が矛盾したら停止して確認します']
+        ]
+      },
+      governance: {
+        group: 2, tag: 'フローではなくルール',
+        body: ['この skill に「完了」はありません。まずプロジェクトをスキャンして token の命名規則、グリッドシステム、アニメーション keyframe の接頭辞、既存の共有コンポーネントを把握し、以降 UI を書くたびに同じルールを適用します。'],
+        facts: [
+          ['2 つのゲート', '<strong>Token Gate</strong> — 対応する token が無ければ停止して確認。ハードコードのフォールバック値は禁止。<strong>Composition Gate</strong> — 既存コンポーネントで組めない場合は停止して確認。勝手に inline のサブコンポーネントを作るのは禁止'],
+          ['禁止事項', 'コンポーネントコード内の <code>#hex</code> / <code>rgb()</code>、ハードコードされた余白と角丸、comp token から ref token への直接参照、ハードコードされた <code>ms</code> と <code>cubic-bezier</code>、テンプレート内に直書きされた表示テキスト'],
+          ['組み合わせ', '他のどの skill とも同時に有効にできます。特に <code>ds-to-storybook</code> の実行中は常時有効を推奨']
+        ]
+      },
+      parity: {
+        group: 3, tag: '単独で使える',
+        body: ['参照スクリーンショットと実装を比較し、視覚的な差分を修正します。重要なのは<strong>画面を直接いじらない</strong>ことです。差分ごとに「これは誰の責任か」を判断し、最も再利用性の高い層から修正します。'],
+        facts: [
+          ['修正順序', 'token / theme → 共有コンポーネントと primitive → コンポーネント variant → 画面の組版 → 最後に単一ページの one-off CSS'],
+          ['入力の柔軟さ', 'スクリーンショット＋URL、＋ルート、＋ファイル、スクリーンショットのみ、ルートのみ、何も指定しない（リポジトリ全体のスクリーンショットとページを自動でペアリング）'],
+          ['エビデンス必須', '修正の根拠が必要です。スクリーンショットの観察、computed style、token 値、コンポーネントのソース、呼び出し箇所。「なんとなく変」は受け付けません'],
+          ['停止条件', '参照が曖昧、対象がレンダリングできない、候補が同程度に妥当、修正がプロダクトの挙動 / 文言 / データフロー / アクセシビリティに及ぶ場合']
+        ]
+      },
+      figma: {
+        group: 4, tag: '5 つのワークフロー',
+        body: ['Figma ファイル内で Material Design 3 の 3 層 Variables を扱います。<code>design-system-governance</code> とは表裏一体で、同じ Ref / Sys / Comp の階層哲学を、一方は Figma 側、もう一方はコード側で担当します。'],
+        facts: [
+          ['A', '既存 Variables を指定コンポーネントに適用'],
+          ['B', 'Variables が無いファイルで、3 層構造をゼロから作成'],
+          ['C', '既存 Variables の命名、scope、alias 方向、WEB 構文を監査'],
+          ['D', '既存 Variables を読み取り、そこからコンポーネントと Component Set を生成'],
+          ['E', '複数ノード／Component Set 全体／ページ全体へ一括適用（既定は dry-run 後に書き込み）'],
+          ['前提', '<code>use_figma</code> の呼び出し前に必ず <code>figma-use</code> skill を読むこと。呼び出しは逐次実行で、並列は不可']
+        ]
+      },
+      proto: {
+        group: 5, tag: '軽量・プロジェクト非依存',
+        body: ['プロダクトのアイデアを、クリックできる Storybook プロトタイプにします。順序は意図的です：まずプロダクトを詰め、次にドキュメント、次にフロー、次に固定データ、最後に UI。ドキュメントは耐久性のある引き継ぎ物です。別の agent が会話履歴を見なくても続きを進められます。'],
+        facts: [
+          ['出力', '<code>docs/PRD.md</code>、<code>FLOW_SPEC.md</code>、<code>UI_SPEC.md</code>、<code>DATA_SPEC.md</code>、<code>ACCEPTANCE.md</code>、<code>IMPLEMENTATION_GUIDE.md</code> に加えて、フロー定義、決定論的なフィクスチャ、React プロトタイプと story'],
+          ['原則', 'ルートは表示文字列でなく安定した id で扱う。クリックは画面の文字ではなく transition trigger に紐づける。データはすべてローカルかつ固定で、実 API は叩かない'],
+          ['選ぶ基準', 'クリックできる画面だけが必要で、UI Flow はメタデータの記述で十分な場合']
+        ]
+      },
+      protoflow: {
+        group: 5, tag: '強化版',
+        body: ['上記の発展版で、2 つを追加します。1 つは Storybook 上の本格的な<strong>ビジュアル UI Flow ビューア</strong>、もう 1 つは <strong>Figma に取り込めるフロー図</strong>です。'],
+        facts: [
+          ['ビューア', 'ノードカードに実際のルート UI プレビューを埋め込み、破線アニメーションのコネクタと方向矢印、ドラッグ可能なノード、ズームと fit-to-view、完全な transition インデックス'],
+          ['Figma エクスポート', '独立した export story を用意し、通常の DOM と inline SVG でフロー図を描画（iframe 不可）。Figma export addon が構造全体を取得できるようにします'],
+          ['選ぶ基準', 'フロー図を会議で使いたい、またはフローを Figma に戻して設計を続けたい場合'],
+          ['注意', '<code>src/pages/prototypes/</code> のプロジェクト規約に依存し、inventory-prototype をリファレンスとして参照します']
+        ]
+      }
+    }
+  },
+
+  journeys: {
+    h2: '5 つのユーザージャーニー',
+    intro: '実際に遭遇する 5 つのシナリオと、各ステップで何を伝え、何が得られるかを示します。コマンドを丸暗記する必要はありません。skill は記述で起動するので、自分の状況を明確に伝えれば呼び出されます。',
+    outcomeLabel: '得られるもの',
+    items: [
+      {
+        n: 'A', h3: '数枚のスクリーンショットから新規プロダクトを作る',
+        situation: 'App のスクリーンショットが数枚あるだけで、Figma も既存コードもない状態からゼロで作る。最も完全な経路で、4 つの skill がリレーします。',
+        steps: [
+          { t: '<code>create-design-workspace</code> — 新しい空ディレクトリを用意', p: ['スクリーンショットを置き、「これらのスクリーンショットで新しいフロントエンドワークスペースを作って」と伝えます。プロジェクト構造の足場を組み、<code>workspace:init</code> と <code>workspace:check</code> まで実行します。', '先に <code>start-here/ACCURACY_CONTRACT.md</code> を読んでください。スクリーンショットだけでは、隠れた状態、レスポンシブ挙動、実データの挙動は推測できません。期待値を先に合わせます。'] },
+          { t: '<code>design-system-extractor</code> — 急いでコンポーネントを書かず、まず抽出', p: ['1 枚ずつ分析させ、エビデンス表を作り、ref / sys / comp の 3 層 token とコンポーネント一覧を整理します。途中で「近い色を統合するか」「似たコンポーネントをまとめるか」を聞かれます。この回答は真剣に。以降のシステム全体がこの決定の上に建ちます。', '最後にブラウザで開ける HTML ドキュメントが生成されます。これを持ってデザイナーと一度すり合わせてください。'] },
+          { t: '<code>ds-to-storybook</code> — バッチでコンポーネントを実装', p: ['依存順は自動で算出されます。Button のような基礎コンポーネントが Card や Header より先に来ます。1 バッチ終わると報告して止まるので、確認してから次を指示します。', '同時に <code>design-system-governance</code> を有効にしておき、実装中のハードコードを防ぎます。'] },
+          { t: '<code>ui-visual-parity</code> — 元のスクリーンショットで検収', p: ['最初のスクリーンショットを持ち出して 1 枚ずつ照合します。領域ごとに比較し、差分が token / 共有コンポーネント / 画面組版のどれに属するかを判断して、上流から直します。'] }
+        ],
+        outcome: '完全な token アーキテクチャ、Storybook コンポーネントライブラリ、デザインシステムのドキュメント、そして元のスクリーンショットに見合うビジュアルを備えたプロジェクト。重要なのはすべての決定に根拠があることで、後任（人でも agent でも）がドキュメントだけで続けられます。'
+      },
+      {
+        n: 'B', h3: 'Figma のデザインファイルからデザインシステムを作る',
+        situation: 'デザイナーから Figma が来た。Figma 側とコード側で同じ token を使っていることを保証したい。この経路の要点は、先に Figma を整えてから下流へ進むことです。',
+        steps: [
+          { t: '<code>figma-m3-variables</code> — まず Figma 側の Variables を確認', p: ['すでに Variables があるなら Workflow C で監査（階層の命名は正しいか、alias の向きは、scope は設定済みか）。無ければ Workflow B で 3 層構造をゼロから作成します。', '続いて Workflow E で既存コンポーネントへ一括バインド。既定でまず dry-run 計画が提示され、承認後に書き込まれます。'] },
+          { t: '<code>design-system-extractor</code> — Figma を仕様パッケージへ', p: ['Figma URL を渡します。Figma MCP が使えるため、構造化された layout、variables、コンポーネント名を読めます。入力ソースの中で最も精度が高い経路です。', '生成される <strong>Figma MCP handoff</strong> 情報（file key、node id、推奨 MCP 呼び出し）に注意してください。次のステップで直接使うので、空のまま残さないこと。'] },
+          { t: '<code>ds-to-storybook</code> — 実装時に元 node を参照', p: ['前ステップの handoff 情報を使い、Figma MCP で元ノードのデザインコンテキストとスクリーンショットを直接読みます。仕様の文字から推測しません。', 'Figma export addon も導入され、Storybook コンポーネントを Figma へ書き戻せるようになります。'] },
+          { t: '<code>ui-visual-parity</code> — Figma の書き出しで仕上げ', p: ['Figma から書き出した画面を参照スクリーンショットとして、最後の調整を回します。'] }
+        ],
+        outcome: 'Figma の Variables とコードの CSS token が同じ Ref → Sys → Comp 階層で揃い、各コンポーネントから元の Figma node へ遡る経路が残ります。'
+      },
+      {
+        n: 'C', h3: '既存プロジェクトにデザインシステムを後付けする',
+        situation: 'プロジェクトはしばらく走っていて、ハードコードされた色とコピペのコンポーネントだらけ。作り直せないので、運用しながら収束させる。この経路では <code>create-design-workspace</code> を<strong>使わない</strong>でください。',
+        steps: [
+          { t: '<code>design-system-extractor</code> — 自分のプロジェクトを対象に抽出', p: ['既存プロジェクトのフォルダを入力ソースにします。レンダリングされた UI、現行 CSS、Storybook、コンポーネントを調べ、「思っているもの」ではなく「実際に使われている」デザインシステムを整理します。', '価値はコンポーネント一覧にあります。実は重複しているコンポーネント、2% しか違わないのに別々に存在する色が可視化されます。'] },
+          { t: '<code>design-system-governance</code> — 今日から止血', p: ['先にプロジェクトをスキャンさせて既存の規約を把握させます。以降、新しい UI を書くたびに 2 つのゲートが働きます。過去の負債は少しずつ返し、少なくとも増やさない状態にします。'] },
+          { t: '<code>ds-to-storybook</code> — 1 バッチずつ収束', p: ['コンポーネントキューを使い、依存順に散らばった実装を共有コンポーネントへ収束させます。新規追加より既存の再利用・拡張を優先します。'] },
+          { t: '<code>ui-visual-parity</code> — 収束で壊していないか確認', p: ['1 バッチごとに実行します。共有のデフォルト値を変える前に、代表的な呼び出し箇所と story を確認する regression guardrail が働き、他画面への波及を防ぎます。'] }
+        ],
+        outcome: '現状を正直に反映したデザインシステムのドキュメント、これ以上の劣化を防ぐゲート、そして少しずつ進められる収束キュー。'
+      },
+      {
+        n: 'D', h3: 'プロダクトのアイデアを検証する',
+        situation: '機能の構想があり、まず動くものを見せてから投資を判断したい。独立した支線で、デザインシステムは不要です。',
+        steps: [
+          { t: 'フロー図が要るかを先に決める', p: ['クリックできる画面だけなら <code>storybook-product-prototype</code>。会議で使えて Figma に取り込めるフロー図も要るなら <code>prototype-storybook-flow</code>。ドキュメントとデータのルールは同じで、違いはビューアとエクスポートです。'] },
+          { t: 'プロダクトの質問に 1 つずつ答える', p: ['すぐにファイルは作りません。主要ユーザー、入口ルート、必要な分岐状態、mock する外部システム、受け入れ基準を先に確認します。答える過程そのものがプロダクトを整理してくれます。'] },
+          { t: 'ドキュメントが UI より先、フローが画面より先', p: ['順序は固定です：6 つのドキュメント → フロー定義（ルート、ノード、transition）→ 固定フィクスチャ → 最後に React。この順序があるから、プロトタイプが「数枚の静止画」ではなく「1 つのプロダクトフロー」になります。'] },
+          { t: '検証してからメインラインへ', p: ['進める価値があると分かったら、画面のスクリーンショットを <code>design-system-extractor</code> に渡せばジャーニー A に接続します。プロトタイプの CSS をそのまま本実装にしないこと。'] }
+        ],
+        outcome: 'クリックできる Storybook プロトタイプと、他人が引き継げる水準のプロダクトドキュメント。アイデアが却下されても失うのは数時間で、なぜ却下されたかがドキュメントに残ります。'
+      },
+      {
+        n: 'E', h3: '日常メンテナンス：画面 1 つ、コンポーネント 1 つ',
+        situation: '毎回パイプライン全体を動かす必要はありません。日常業務のほとんどは skill 1〜2 個で足ります。',
+        steps: [
+          { t: '画面がカンプと違う → <code>ui-visual-parity</code> だけ', p: ['「このスクリーンショットと <code>/dashboard</code> が違うので直して」と言うだけです。実装ファイルを探し、画面をレンダリングし、領域ごとに比較して、着手前に差分表を出します。'] },
+          { t: '新しいコンポーネントを追加 → <code>design-system-governance</code> を土台に', p: ['先に確認を迫られます：既存コンポーネントで足りるか、必要な token はあるか。両方通ってから書き始め、書き終えたら Default / Hover / FocusVisible / Disabled の 4 つの story を揃えます。'] },
+          { t: 'コンポーネント一覧に載っている → <code>ds-to-storybook</code> を追加', p: ['<code>COMPONENT_INVENTORY.md</code> で <code>planned</code> になっているなら、単一コンポーネントの pass を回します。仕様、元ソース、token 契約、story を一度に揃えます。'] },
+          { t: 'Figma に新コンポーネント → <code>figma-m3-variables</code> Workflow A', p: ['新コンポーネントの node を渡して既存の comp token を適用します。バインド計画を提示してから実行し、最後にスクリーンショットで検証します。'] }
+        ],
+        outcomeLabel: '原則',
+        outcome: '必要なものだけを 1 つ呼ぶこと。これらの skill のゲートは、本当に必要なときに止めるための仕組みであって、小さな変更を儀式にするためのものではありません。'
+      }
+    ]
+  },
+
+  rules: {
+    h2: '組み合わせの 6 原則',
+    intro: '各 skill の gate 設計から導かれた原則です。理解しておくと、agent がどこで止まって確認してくるかを予測できます。',
+    items: [
+      ['抽出が先、実装が後', '<code>ds-to-storybook</code> は記録されていない Figma node やスクリーンショットから直接コンポーネントを作ることを明確に拒否し、<code>needs-extraction</code> とマークします。抽出を飛ばしても遠回りになるだけです。'],
+      ['直感よりエビデンス', 'extractor は evidence map を、visual-parity は computed style と token 値を求めます。「なんとなく変」と言うと、より硬い根拠を探すか、確認を求めてきます。'],
+      ['最も再利用性の高い層から直す', 'token → 共有コンポーネント → variant → 組版 → 単一ページのスタイル。この順序は governance と visual-parity で一貫しており、だからこそページに CSS を被せる直し方をしません。'],
+      ['一度に全部やらない', '「コンポーネントライブラリを全部作って」と言っても <code>ds-to-storybook</code> は最初のバッチだけ完了します。手抜きではなく、バッチ間でキューと実装マップを更新し、いつでも中断・再開できるようにするためです。'],
+      ['3 層構造は Figma とコードで同一', 'ref は生の値のみ、sys はコンポーネント横断の意味のみ、comp で初めてコンポーネント名が使えます。<code>figma-m3-variables</code> と <code>design-system-governance</code> が同じルールを使うから、両端が揃います。'],
+      ['ドキュメントは副産物ではなく引き継ぎ物', 'SESSION_STATE、実装マップ、コンポーネントキュー、PRD。これらは次の対話（別の人、別の agent かもしれない）が過去のチャットを読まずに続けられるために存在します。']
+    ]
+  },
+
+  pitfalls: {
+    h2: 'よくある誤用',
+    intro: '以下のケースでは skill に止められるか、期待どおりの出力が得られません。事前に知っておくと遠回りを避けられます。',
+    badLabel: '誤用', goodLabel: 'こうする',
+    items: [
+      ['既存アプリのルートで <code>create-design-workspace</code> を実行', '無関係なコードを検出して停止します。既存プロジェクトはジャーニー C、<code>design-system-extractor</code> から始めてください。'],
+      ['extractor を飛ばして <code>ds-to-storybook</code> を呼ぶ', 'デザインシステムパッケージが無いと拒否され、extractor を先に回すよう促されます。最低でも token ファイルとコンポーネント仕様が必要です。'],
+      ['スクリーンショット 1 枚で hover / disabled / レスポンシブまで期待する', '静止画 1 枚では初版の近似が限界です。状態やブレークポイントの異なる画像を複数渡すか、Figma を使ってください。'],
+      ['<code>ui-visual-parity</code> のついでに文言やデータフローを変える', '停止して拒否します。ビジュアル調整はビジュアルのみ。プロダクト挙動の変更は別の要求として立ててください。'],
+      ['プロトタイプの CSS をそのまま本実装にする', 'プロトタイプ CSS は意図的に feature root class 配下に scope されています。正式化は extractor → ds-to-storybook を通してください。'],
+      ['Figma の ref 層に <code>ref/spacing/bottom-bar/padding</code> のような token を作る', 'ref 層の名前は「値がいくつか」だけを表し、「どこで使うか」を含められません。コンポーネント名や領域名を含むものは comp 層へ。']
+    ]
+  },
+
+  install: {
+    h2: 'インストールと呼び出し方',
+    h3a: '個人の Cursor にインストール（全プロジェクトで使用可能）',
+    h3b: 'プロジェクトにインストール（リポジトリ経由でチーム共有）',
+    after: 'コピー後は Cursor を再起動してください。',
+    h3c: '呼び出し方',
+    trigger: 'コマンドを覚える必要はありません。skill は <code>SKILL.md</code> 冒頭の description とあなたの記述をキーワードで照合し、一致すると agent が自動的に読み込んで従います。つまり名前を呼ぶより<strong>状況と欲しい成果物を説明する</strong>ほうが有効です：',
+    examples: ['「このスクリーンショットからデザインシステムを整理して」', '「このページがカンプと違うので照合して」', '「Figma のこのコンポーネントに既存の Variables を適用して」'],
+    explicit: '明示的に指定したいときは名前を直接言っても構いません：「design-system-extractor でこのフォルダを分析して」。',
+    h3d: '他のツール',
+    other: '<code>ds-to-storybook</code> にはインストールスクリプトが同梱されており、自分自身を Claude Code や Codex に導入できます。<code>create-design-workspace</code> が生成するワークスペースは 3 つのツールのエントリポイント（<code>CLAUDE.md</code>、<code>.cursorrules</code>、<code>AGENTS.md</code>）を同時に保持します。'
+  },
+
+  footer: '各 skill の完全なルールはそれぞれの <code>SKILL.md</code> にあります。このガイドが扱うのは選び方・組み合わせ方・つなぎ方だけです。細部で食い違う場合は <code>SKILL.md</code> を正とします。'
+},
+
+/* ------------------------------------------------------------------ English */
+en: {
+  htmlLang: 'en',
+  docTitle: 'Cursor Skills — Usage Guide',
+  ui: { langLabel: 'EN', themes: { auto: 'Auto', light: 'Light', dark: 'Dark' } },
+
+  eyebrow: 'Cursor Agent Skills',
+  h1: 'Eight skills that turn design into code — and how they fit together',
+  lede: 'The skills in this repo are not eight independent tools. They are eight stations on one pipeline. Understanding where each sits is more useful than memorising its name. This guide covers what each skill owns, the order to use them in, and the concrete steps for five common situations.',
+  meta: '8 SKILLS · 5 USER JOURNEYS · UPDATED 2026-07-30',
+
+  toc: ['The whole picture in a minute', 'Which one do I need', 'The eight skills', 'Five user journeys', 'Six rules for combining them', 'Common misuses', 'Install and trigger'],
+
+  overview: {
+    h2: 'The whole picture in a minute',
+    intro: [
+      'Every skill sits on one line: <strong>design source → design-system spec → Storybook components → product screens → visual parity</strong>. Each skill owns exactly one segment and deliberately refuses to cross into the next. The extractor will not write product code; the implementer will not re-extract the design.',
+      'That refusal is a design choice. It gives every segment a concrete deliverable, makes the work resumable after an interruption, and lets you use one segment without being locked into the whole pipeline.'
+    ],
+    stages: [
+      { t: 'Scaffold workspace', s: 'create-design-<br>workspace' },
+      { t: 'Extract design system', s: 'design-system-<br>extractor<br>figma-m3-variables' },
+      { t: 'Build components', s: 'ds-to-storybook' },
+      { t: 'Compose screens', s: 'storybook-product-<br>prototype<br>prototype-<br>storybook-flow' },
+      { t: 'Fix visual drift', s: 'ui-visual-parity' }
+    ],
+    caption: '<code>design-system-governance</code> is not on this line. It is a rule set that stays active throughout — from Stage 2 to Stage 5 it will stop you the moment you hardcode a colour or invent a component out of thin air.'
+  },
+
+  picker: {
+    h2: 'Which one do I need',
+    intro: 'Start from what you have and what you want out, not from the skill names.',
+    th: ['My situation', 'Use this'],
+    rows: [
+      ['I have a few UI screenshots or a Figma URL and want to start a new project from scratch', 'create-design-workspace'],
+      ['I have design references (screenshots / Figma / an existing app) and want tokens and a component inventory before writing any code', 'design-system-extractor'],
+      ['The design-system spec exists. I want it turned into real Storybook components', 'ds-to-storybook'],
+      ['I am writing UI and want something watching that I do not hardcode styles or rebuild existing components', 'design-system-governance'],
+      ['The screen is built but does not match the design. I need the drift found and fixed', 'ui-visual-parity'],
+      ['I need to create, apply, or audit Ref → Sys → Comp Variables in Figma', 'figma-m3-variables'],
+      ['I have a product idea and want a clickable prototype to validate the flow', 'storybook-product-prototype'],
+      ['Same, plus a draggable, zoomable flow diagram I can import into Figma', 'prototype-storybook-flow']
+    ]
+  },
+
+  skills: {
+    h2: 'The eight skills',
+    intro: 'Four things per skill are enough: what it does, when to use it, what it produces, and <strong>what it deliberately refuses to do</strong>. That last one is the easiest to overlook and the one that tells you whether you need to reach for another skill.',
+    groups: ['Starting point', 'Main line', 'Always-on rules', 'Correction', 'The Figma side', 'Prototype branch'],
+    entries: {
+      workspace: {
+        group: 0, tag: 'One-time scaffold',
+        body: ['Generates a complete frontend delivery workspace from screenshots or a Figma URL: directory structure, Storybook setup, design foundation pages, a task list, and entry points for Cursor, Claude Code, and Codex. It does not stop at scaffolding — it carries on and drives the full build workflow.'],
+        facts: [
+          ['Input', 'Screenshot files, a Figma URL, optionally <code>FIGMA_PAT</code>'],
+          ['Output', '<code>start-here/</code>, <code>design/</code>, <code>skills/</code>, a Storybook 10 project skeleton'],
+          ['Refuses', 'Running in the root of an existing project with unrelated code — it stops and asks you to use an empty directory'],
+          ['Watch out', 'Always run <code>npm run workspace:init</code> after scaffolding. On the Figma path, <code>workspace:check</code> fails outright until <code>FIGMA_PAT</code> or <code>FIGMA_AUTH_MODE=connector</code> is set']
+        ]
+      },
+      extractor: {
+        group: 1, tag: 'Spec extraction',
+        body: ['Acts as a design-system architect, extracting a reusable design-system package from visual and code references. Its central idea is <strong>evidence</strong>: every principle, token, and component has to record in the evidence map which region of which screenshot, which Figma node, or which route it came from. Rules without evidence get marked low-confidence or come back to you as a question.'],
+        facts: [
+          ['Input', 'Screenshots, graphic design references, Figma URLs / Variables, an existing project folder, prototype code'],
+          ['Output', '<code>design-system/*.md</code> (principles, evidence map, token architecture, component inventory, component specs), <code>tokens/tokens-ref|sys|comp.css</code>, static docs at <code>docs/design-system/index.html</code>'],
+          ['Stops you', 'On duplicate sources, near-identical tokens, or similar components it asks "merge or keep distinct" and writes the decision into the docs'],
+          ['Refuses', 'Any product UI code, Storybook implementation, or routes before the checkpoint. For implementation, hand off to <code>ds-to-storybook</code>']
+        ]
+      },
+      storybook: {
+        group: 1, tag: 'Implementation',
+        body: ['Turns an extracted design-system package into Storybook components inside your product repo. It first traces each component spec back to its original Figma node or screenshot, then works out the dependency order (primitives before composites), then implements in <strong>batches</strong>. Storybook here is not just a catalogue — it is a design source that can be exported back to Figma, which puts extra requirements on the DOM structure.'],
+        facts: [
+          ['Requires', 'An extracted design-system package. Without one it sends you back to the extractor'],
+          ['Output', 'Co-located <code>components/&lt;Name&gt;/</code> component + styles + story, an implementation map, a component queue, Figma export addon setup'],
+          ['Batch cap', '3–5 simple components, or 1–2 complex composites, per pass. Even if you ask for "all of them" it completes only the first batch and queues the rest'],
+          ['Refuses', 'Re-extracting the design, or changing design decisions here. When a spec conflicts with Figma it stops and asks']
+        ]
+      },
+      governance: {
+        group: 2, tag: 'Rules, not a workflow',
+        body: ['This skill has no notion of "finishing". It first scans the project to learn your token naming conventions, grid system, animation keyframe prefixes, and existing shared components, then applies the same rules every time you write UI afterwards.'],
+        facts: [
+          ['Two gates', '<strong>Token Gate</strong> — stops and asks when no matching token exists; hardcoded fallback values are not allowed. <strong>Composition Gate</strong> — stops and asks when existing components cannot compose the requirement; no quietly inlined subcomponents'],
+          ['Hard bans', '<code>#hex</code> / <code>rgb()</code> in component code, hardcoded spacing and radii, comp tokens referencing ref tokens directly, hardcoded <code>ms</code> and <code>cubic-bezier</code>, display text written into templates'],
+          ['Pairs with', 'Anything. Keeping it active for the whole of a <code>ds-to-storybook</code> run is especially recommended']
+        ]
+      },
+      parity: {
+        group: 3, tag: 'Works standalone',
+        body: ['Compares a reference screenshot against the actual implementation and fixes the visual drift. The key is that it <strong>does not just edit the screen</strong> — every difference is first assigned an owner, and the fix starts at the most reusable layer that owns it.'],
+        facts: [
+          ['Fix order', 'token / theme → shared components and primitives → component variants → screen composition → and only then page-only CSS'],
+          ['Flexible input', 'Screenshot + URL, + route, + file; screenshot only; route only; or nothing at all (it will pair the repo’s screenshots with its pages itself)'],
+          ['Demands evidence', 'Every change needs a basis: screenshot observation, computed styles, token values, component source, or representative call sites. "Looks a bit off" is not accepted'],
+          ['Will stop', 'When the reference is too ambiguous, the target will not render, several targets are equally plausible, or the fix would touch product behaviour, copy, data flow, or accessibility semantics']
+        ]
+      },
+      figma: {
+        group: 4, tag: 'Five workflows',
+        body: ['Handles Material Design 3 three-tier Variables inside a Figma file. It is the mirror image of <code>design-system-governance</code> — the same Ref / Sys / Comp philosophy, one governing the Figma side, the other the code side.'],
+        facts: [
+          ['A', 'Apply existing Variables to a given component'],
+          ['B', 'Build the three-tier structure from scratch when the file has none'],
+          ['C', 'Audit existing Variables for naming, scope, alias direction, and WEB syntax'],
+          ['D', 'Read existing Variables and use them to generate components and Component Sets'],
+          ['E', 'Batch-apply across nodes, a Component Set, or a whole page (dry-run first by default)'],
+          ['Prerequisite', 'Read the <code>figma-use</code> skill before any <code>use_figma</code> call; calls must run sequentially, never in parallel']
+        ]
+      },
+      proto: {
+        group: 5, tag: 'Lightweight, project-agnostic',
+        body: ['Turns a product idea into a clickable Storybook prototype. The order is deliberate: settle the product, then write docs, then define the flow, then build fixtures, and only then compose UI. The docs are the durable handoff — another agent can pick it up without having seen your conversation.'],
+        facts: [
+          ['Output', '<code>docs/PRD.md</code>, <code>FLOW_SPEC.md</code>, <code>UI_SPEC.md</code>, <code>DATA_SPEC.md</code>, <code>ACCEPTANCE.md</code>, <code>IMPLEMENTATION_GUIDE.md</code>, plus flow definitions, deterministic fixtures, the React prototype, and its story'],
+          ['Principles', 'Routes use stable ids, never display labels. Clicks wire to transition triggers, not to rendered text. All data is local and deterministic — no live APIs'],
+          ['Pick it when', 'You need a clickable flow and describing the UI Flow in metadata is enough']
+        ]
+      },
+      protoflow: {
+        group: 5, tag: 'Enhanced version',
+        body: ['The advanced version of the above, adding two things: a real <strong>visual UI Flow viewer</strong> inside Storybook, and a <strong>flow diagram that imports into Figma</strong>.'],
+        facts: [
+          ['Viewer', 'Node cards embedding real route UI previews, animated dashed connectors with directional arrowheads, draggable nodes, zoom and fit-to-view, and a full transition index'],
+          ['Figma export', 'A separate export story that draws the flow with ordinary DOM and inline SVG — no iframes — so the Figma export addon can capture the whole structure'],
+          ['Pick it when', 'You need the flow diagram for a meeting, or want to take the flow back into Figma to keep designing'],
+          ['Watch out', 'Tied to the <code>src/pages/prototypes/</code> project convention and references inventory-prototype as its template']
+        ]
+      }
+    }
+  },
+
+  journeys: {
+    h2: 'Five user journeys',
+    intro: 'Five situations you will actually hit, with what to say at each step and what you get back. You do not need to copy commands verbatim — skills trigger on description, so describing your situation clearly is enough to invoke them.',
+    outcomeLabel: 'What you get',
+    items: [
+      {
+        n: 'A', h3: 'Build a new product from a handful of screenshots',
+        situation: 'You have a set of app screenshots, no Figma file, no existing code, and want to build it from zero. This is the most complete path — four skills in sequence.',
+        steps: [
+          { t: '<code>create-design-workspace</code> — start in a new empty directory', p: ['Drop the screenshots in and say "build a new frontend workspace from these screenshots". It scaffolds the project structure and runs <code>workspace:init</code> and <code>workspace:check</code>.', 'Read <code>start-here/ACCURACY_CONTRACT.md</code> first. With screenshots alone, hidden states, responsive behaviour, and real data behaviour cannot be recovered — align expectations before you start.'] },
+          { t: '<code>design-system-extractor</code> — extract first, resist writing components', p: ['Have it analyse the screenshots one by one, build the evidence map, and produce the ref / sys / comp token layers plus a component inventory. Along the way it will ask whether to merge near-identical colours and similar components. Answer those carefully — the whole system is built on those decisions.', 'It finishes by generating HTML docs you can open in a browser. Use them for one round of review with the designer.'] },
+          { t: '<code>ds-to-storybook</code> — implement in batches', p: ['It works out the dependency order itself: primitives like Button come before composites like Card or Header. It reports and stops after the first batch; confirm, then ask for the next.', 'Keep <code>design-system-governance</code> active throughout so nothing gets hardcoded during implementation.'] },
+          { t: '<code>ui-visual-parity</code> — sign off against the original screenshots', p: ['Bring the original screenshots back and go through them one at a time. It compares region by region, decides whether each gap belongs to a token, a shared component, or the page composition, and fixes from the most upstream owner.'] }
+        ],
+        outcome: 'A project with a complete token architecture, a Storybook component library, design-system documentation, and visuals that hold up against the original screenshots. The point is that every decision is traceable, so whoever picks it up next — person or agent — can continue from the docs alone.'
+      },
+      {
+        n: 'B', h3: 'You have a Figma file and want a design system',
+        situation: 'The designer handed over a Figma file and you want to guarantee that the Figma side and the code side use the same tokens. The key here is to clean up Figma before moving downstream.',
+        steps: [
+          { t: '<code>figma-m3-variables</code> — settle the Figma-side Variables first', p: ['If Variables already exist, run Workflow C to audit them (is the layer naming right, are alias directions correct, are scopes set). If there are none, run Workflow B to build the three tiers from scratch.', 'Then use Workflow E to batch-bind them to existing components. By default it gives you a dry-run plan first and only writes after you confirm.'] },
+          { t: '<code>design-system-extractor</code> — extract Figma into a spec package', p: ['Give it the Figma URL. With Figma MCP available it can read structured layout, variables, and component names — the highest-fidelity input source available.', 'Pay attention to the <strong>Figma MCP handoff</strong> it produces: file key, node id, suggested MCP calls. The next step uses these directly, so do not let them go blank.'] },
+          { t: '<code>ds-to-storybook</code> — consult the original node while implementing', p: ['It uses the handoff information from the previous step to read the original node’s design context and screenshot through Figma MCP, instead of guessing from the spec text.', 'It also installs the Figma export addon so Storybook components can be exported back into Figma.'] },
+          { t: '<code>ui-visual-parity</code> — finish against Figma exports', p: ['Use frames exported from Figma as reference screenshots for a final parity pass.'] }
+        ],
+        outcome: 'Figma Variables and CSS tokens aligned under the same Ref → Sys → Comp hierarchy, with every component keeping a traceable path back to its original Figma node.'
+      },
+      {
+        n: 'C', h3: 'An existing project has drifted and needs a design system',
+        situation: 'The project has been running a while and is full of hardcoded colours and copy-pasted components. You cannot rewrite it, so you converge while maintaining. Do <strong>not</strong> use <code>create-design-workspace</code> on this path.',
+        steps: [
+          { t: '<code>design-system-extractor</code> — extract from your own project', p: ['Use the existing project folder as the input source. It inspects the rendered UI, current CSS, Storybook, and components to produce the design system you are <em>actually</em> using — not the one you think you are.', 'The value is in the component inventory: it surfaces which components are duplicates and which colours differ by 2% yet exist separately.'] },
+          { t: '<code>design-system-governance</code> — stop the bleeding today', p: ['Let it scan the project to learn the existing conventions first. From then on, every new piece of UI runs into the two gates. The old mess gets cleaned gradually, but at least it stops growing.'] },
+          { t: '<code>ds-to-storybook</code> — converge one batch at a time', p: ['Use its component queue to fold scattered implementations into shared components in dependency order. It prefers reusing or extending an existing component over adding a new one.'] },
+          { t: '<code>ui-visual-parity</code> — confirm convergence broke nothing', p: ['Run it after each batch. Its regression guardrail checks representative call sites and stories before you change a shared default, so the change does not leak into unrelated screens.'] }
+        ],
+        outcome: 'Design-system documentation that honestly reflects reality, a gate that prevents further decay, and a convergence queue you can push forward gradually.'
+      },
+      {
+        n: 'D', h3: 'Validate a product idea before committing',
+        situation: 'You have a feature idea and want something clickable to show people before deciding whether to invest. This is an independent branch — no design system needed first.',
+        steps: [
+          { t: 'Decide up front whether you need the flow diagram', p: ['Clickable screens only → <code>storybook-product-prototype</code>. Also need a diagram for meetings that imports into Figma → <code>prototype-storybook-flow</code>. Their docs and data rules are identical; the difference is the viewer and the export.'] },
+          { t: 'Let it ask one product question at a time', p: ['It will not open files immediately. It first confirms the primary user, entry route, required branch states, which external systems stay mocked, and the acceptance criteria. Answering those is itself the work of clarifying the product.'] },
+          { t: 'Docs before UI, flow before screens', p: ['The order is fixed: six docs → flow definition (routes, nodes, transitions) → deterministic fixtures → and only then React. That order is what makes the prototype a product flow rather than a few static screens.'] },
+          { t: 'Validate, then decide whether to join the main line', p: ['If the prototype is worth pursuing, hand its screenshots to <code>design-system-extractor</code> and you rejoin Journey A. Do not promote prototype CSS into production implementation.'] }
+        ],
+        outcome: 'A clickable Storybook prototype plus product documentation complete enough for someone else to take over. If the idea gets killed, you lost a few hours — and the docs record why.'
+      },
+      {
+        n: 'E', h3: 'Everyday maintenance: one screen, one component',
+        situation: 'You do not need the whole pipeline every time. Most day-to-day work needs one or two skills.',
+        steps: [
+          { t: 'Screen does not match the design → <code>ui-visual-parity</code> alone', p: ['Just say "this screenshot does not match <code>/dashboard</code>, fix it". It finds the implementation file, renders the screen, compares region by region, and gives you a drift table before touching anything.'] },
+          { t: 'Adding a new component → build on <code>design-system-governance</code>', p: ['It forces two confirmations first: can an existing component satisfy this, and do the required tokens exist? Only after both pass does writing start — and afterwards you owe Default / Hover / FocusVisible / Disabled stories.'] },
+          { t: 'Component is already in the inventory → add <code>ds-to-storybook</code>', p: ['If the component is marked <code>planned</code> in <code>COMPONENT_INVENTORY.md</code>, run a single-component pass. It fills in the spec, original source, token contract, and story in one go.'] },
+          { t: 'New component appeared in Figma → <code>figma-m3-variables</code> Workflow A', p: ['Hand it the new component’s node and apply the existing comp tokens. It presents a binding plan before executing and verifies with a screenshot afterwards.'] }
+        ],
+        outcomeLabel: 'Principle',
+        outcome: 'Invoke only what you need. The gates in these skills exist to stop you when it genuinely matters — not to turn every small change into a ceremony.'
+      }
+    ]
+  },
+
+  rules: {
+    h2: 'Six rules for combining them',
+    intro: 'These are generalised from the gate designs across the skills. Understanding them lets you predict when the agent will stop and ask.',
+    items: [
+      ['Extract before you implement', '<code>ds-to-storybook</code> explicitly refuses to build a component from an unrecorded Figma node or screenshot; it marks it <code>needs-extraction</code> instead. Skipping extraction only adds a detour.'],
+      ['Evidence over intuition', 'The extractor wants an evidence map; visual-parity wants computed styles and token values. When your reason is "it feels off", they go looking for harder evidence or stop and ask.'],
+      ['Fix at the most reusable layer', 'token → shared component → variant → composition → page-only style. This order is consistent across governance and visual-parity, and it is why neither will simply paste CSS onto your page.'],
+      ['Batch it; do not do it all at once', 'Even if you say "build the whole component library", <code>ds-to-storybook</code> completes only the first batch. That is not laziness — between batches it updates the queue and implementation map so you can interrupt and resume at any point.'],
+      ['The three tiers are identical in Figma and in code', 'ref holds raw values only, sys holds cross-component semantics only, and comp is the only layer where component names may appear. <code>figma-m3-variables</code> and <code>design-system-governance</code> share the rule, which is what lets the two sides line up.'],
+      ['Docs are the handoff, not a by-product', 'SESSION_STATE, the implementation map, the component queue, the PRD — these exist so the next conversation (possibly another person, possibly another agent) can continue without reading the previous chat.']
+    ]
+  },
+
+  pitfalls: {
+    h2: 'Common misuses',
+    intro: 'These situations either get blocked outright or produce something less useful than you expected. Knowing them in advance saves a detour.',
+    badLabel: 'Misuse', goodLabel: 'Instead',
+    items: [
+      ['Running <code>create-design-workspace</code> in the root of an existing app', 'It detects the unrelated code and stops. For existing projects take Journey C, starting from <code>design-system-extractor</code>.'],
+      ['Skipping the extractor and calling <code>ds-to-storybook</code> directly', 'Without a design-system package it refuses and sends you back to run or resume the extractor. You need at least token files and component specs.'],
+      ['Giving one screenshot but expecting full hover / disabled / responsive behaviour', 'A single static image only supports a first-pass approximation. Provide several images across states and breakpoints, or switch to a Figma source.'],
+      ['Using <code>ui-visual-parity</code> to also change copy or data flow', 'It stops and declines. Visual parity stays visual; product behaviour changes belong in a separate request.'],
+      ['Promoting prototype CSS straight into production', 'Prototype CSS is deliberately scoped under a feature root class. To productionise, go through extractor → ds-to-storybook.'],
+      ['Creating a token like <code>ref/spacing/bottom-bar/padding</code> in Figma’s ref layer', 'A ref-layer name may only express "what value is this", never "where is it used". Anything carrying a component or region name belongs in comp.']
+    ]
+  },
+
+  install: {
+    h2: 'Install and trigger',
+    h3a: 'Install to your personal Cursor (available in every project)',
+    h3b: 'Install into a project (shared with the team through the repo)',
+    after: 'Restart Cursor after copying.',
+    h3c: 'How triggering works',
+    trigger: 'There are no commands to memorise. A skill is matched by keyword between the description at the top of its <code>SKILL.md</code> and what you write; on a match the agent reads it and follows it automatically. So <strong>describing your situation and the output you want</strong> works better than naming the skill:',
+    examples: ['"Pull a design system out of these screenshots for me"', '"This page does not match the design — compare them"', '"Apply the existing Variables to this Figma component"'],
+    explicit: 'When you want to be explicit, naming it directly works too: "use design-system-extractor to analyse this folder".',
+    h3d: 'Other tools',
+    other: '<code>ds-to-storybook</code> ships an installer script that can install itself into Claude Code or Codex. The workspace generated by <code>create-design-workspace</code> keeps entry points for all three tools at once (<code>CLAUDE.md</code>, <code>.cursorrules</code>, <code>AGENTS.md</code>).'
+  },
+
+  footer: 'The complete rules for each skill live in its own <code>SKILL.md</code>. This guide only covers how to choose, combine, and sequence them — where the details disagree, <code>SKILL.md</code> wins.'
+}
+
+}; /* end I18N */
+
+/* Shell commands are language-independent. */
+const CODE_A = 'git clone https://github.com/harrychuang/cursor-skills.git /tmp/cursor-skills-install\ncp -r /tmp/cursor-skills-install/&lt;skill-name&gt; ~/.cursor/skills/';
+const CODE_B = 'cp -r /tmp/cursor-skills-install/&lt;skill-name&gt; /your-project/.cursor/skills/';
+
+const SECTION_IDS = ['overview', 'picker', 'skills', 'journeys', 'rules', 'pitfalls', 'install'];
+
+/* ========================================================================= */
+
+const el = (tag, cls, html) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (html != null) n.innerHTML = html;
+  return n;
+};
+
+const wrapIn = (parent) => { const w = el('div', 'wrap'); parent.appendChild(w); return w; };
+const pad = (i) => String(i + 1).padStart(2, '0');
+
+function render(lang) {
+  const t = I18N[lang];
+  const app = document.getElementById('app');
+  app.textContent = '';
+
+  document.documentElement.lang = t.htmlLang;
+  document.title = t.docTitle;
+
+  /* --- masthead --- */
+  const head = el('header', 'masthead');
+  const hw = wrapIn(head);
+  hw.append(
+    el('p', 'eyebrow', t.eyebrow),
+    el('h1', null, t.h1),
+    el('p', 'lede', t.lede),
+    el('p', 'meta', t.meta)
+  );
+  app.appendChild(head);
+
+  /* --- toc --- */
+  const nav = el('nav', 'toc');
+  const nw = wrapIn(nav);
+  const ol = el('ol');
+  t.toc.forEach((label, i) => {
+    const li = el('li');
+    li.append(el('span', 'n', pad(i)));
+    const a = el('a', null, label);
+    a.href = '#' + SECTION_IDS[i];
+    li.append(a);
+    ol.appendChild(li);
+  });
+  nw.appendChild(ol);
+  app.appendChild(nav);
+
+  const section = (id, i, h2, introHtml) => {
+    const s = el('section');
+    s.id = id;
+    const w = wrapIn(s);
+    w.append(el('p', 'sec-num', pad(i)), el('h2', null, h2));
+    if (introHtml) w.append(el('div', 'intro col', introHtml));
+    app.appendChild(s);
+    return w;
+  };
+
+  /* --- 01 overview --- */
+  {
+    const w = section('overview', 0, t.overview.h2, t.overview.intro.map(p => '<p>' + p + '</p>').join(''));
+    const pipe = el('div', 'pipeline');
+    t.overview.stages.forEach((st, i) => {
+      const d = el('div', 'stage');
+      d.append(el('span', 'k', 'STAGE ' + (i + 1)), el('div', 't', st.t), el('div', 's', st.s));
+      pipe.appendChild(d);
+    });
+    w.append(pipe, el('p', 'caption', t.overview.caption));
+  }
+
+  /* --- 02 picker --- */
+  {
+    const w = section('picker', 1, t.picker.h2, '<p>' + t.picker.intro + '</p>');
+    const tw = el('div', 'tablewrap');
+    const table = el('table');
+    table.innerHTML =
+      '<thead><tr><th style="width:44%">' + t.picker.th[0] + '</th><th>' + t.picker.th[1] + '</th></tr></thead>' +
+      '<tbody>' + t.picker.rows.map(r =>
+        '<tr><td>' + r[0] + '</td><td class="skill"><code>' + r[1] + '</code></td></tr>').join('') + '</tbody>';
+    tw.appendChild(table);
+    w.appendChild(tw);
+  }
+
+  /* --- 03 skills --- */
+  {
+    const w = section('skills', 2, t.skills.h2, '<p>' + t.skills.intro + '</p>');
+    let shownGroup = -1;
+    SKILL_ORDER.forEach(key => {
+      const e = t.skills.entries[key];
+      if (e.group !== shownGroup) {
+        shownGroup = e.group;
+        const gl = el('p', 'group-label' + (w.querySelector('.group-label') ? '' : ' first'), t.skills.groups[e.group]);
+        w.appendChild(gl);
+      }
+      const row = el('div', 'skill-entry');
+      const name = el('div', 'skill-name', key === 'workspace' ? 'create-design-workspace'
+        : key === 'extractor' ? 'design-system-extractor'
+        : key === 'storybook' ? 'ds-to-storybook'
+        : key === 'governance' ? 'design-system-governance'
+        : key === 'parity' ? 'ui-visual-parity'
+        : key === 'figma' ? 'figma-m3-variables'
+        : key === 'proto' ? 'storybook-product-prototype'
+        : 'prototype-storybook-flow');
+      name.appendChild(el('span', 'skill-tag', e.tag));
+      const body = el('div', 'skill-body', e.body.map(p => '<p>' + p + '</p>').join(''));
+      const dl = el('dl', 'facts');
+      e.facts.forEach(([k, v]) => { dl.append(el('dt', null, k), el('dd', null, v)); });
+      body.appendChild(dl);
+      row.append(name, body);
+      w.appendChild(row);
+    });
+  }
+
+  /* --- 04 journeys --- */
+  {
+    const w = section('journeys', 3, t.journeys.h2, '<p>' + t.journeys.intro + '</p>');
+    t.journeys.items.forEach(j => {
+      const box = el('div', 'journey');
+      const head = el('div', 'journey-head');
+      head.append(el('span', 'journey-num', j.n));
+      const hb = el('div');
+      hb.appendChild(el('h3', null, j.h3));
+      head.appendChild(hb);
+      box.append(head, el('p', 'situation', j.situation));
+      const steps = el('ol', 'steps');
+      j.steps.forEach(s => {
+        const li = el('li');
+        li.appendChild(el('span', 'step-title', s.t));
+        s.p.forEach(p => li.appendChild(el('p', null, p)));
+        steps.appendChild(li);
+      });
+      box.appendChild(steps);
+      const out = el('div', 'outcome');
+      out.append(el('b', null, j.outcomeLabel || t.journeys.outcomeLabel));
+      out.append(el('span', null, j.outcome));
+      box.appendChild(out);
+      w.appendChild(box);
+    });
+  }
+
+  /* --- 05 rules --- */
+  {
+    const w = section('rules', 4, t.rules.h2, '<p>' + t.rules.intro + '</p>');
+    const list = el('ol', 'rules');
+    t.rules.items.forEach(([b, s]) => {
+      const li = el('li');
+      li.appendChild(el('div', null, '<b>' + b + '</b><span>' + s + '</span>'));
+      list.appendChild(li);
+    });
+    w.appendChild(list);
+  }
+
+  /* --- 06 pitfalls --- */
+  {
+    const w = section('pitfalls', 5, t.pitfalls.h2, '<p>' + t.pitfalls.intro + '</p>');
+    t.pitfalls.items.forEach(([bad, good]) => {
+      const d = el('div', 'pitfall');
+      d.innerHTML =
+        '<div class="bad"><div class="lbl">' + t.pitfalls.badLabel + '</div><div>' + bad + '</div></div>' +
+        '<div class="good"><div class="lbl">' + t.pitfalls.goodLabel + '</div><div>' + good + '</div></div>';
+      w.appendChild(d);
+    });
+  }
+
+  /* --- 07 install --- */
+  {
+    const w = section('install', 6, t.install.h2, null);
+    w.appendChild(el('div', 'col', '<h3>' + t.install.h3a + '</h3>'));
+    w.appendChild(el('pre', null, '<code>' + CODE_A + '</code>'));
+    w.appendChild(el('div', 'col', '<h3>' + t.install.h3b + '</h3>'));
+    w.appendChild(el('pre', null, '<code>' + CODE_B + '</code>'));
+    w.appendChild(el('div', 'col',
+      '<p>' + t.install.after + '</p>' +
+      '<h3>' + t.install.h3c + '</h3>' +
+      '<p>' + t.install.trigger + '</p>' +
+      '<p class="examples">' + t.install.examples.join('<br>') + '</p>' +
+      '<p>' + t.install.explicit + '</p>' +
+      '<h3>' + t.install.h3d + '</h3>' +
+      '<p>' + t.install.other + '</p>'
+    ));
+  }
+
+  /* --- footer --- */
+  const f = el('footer');
+  wrapIn(f).appendChild(el('p', null, t.footer));
+  app.appendChild(f);
+}
+
+/* ------------------------------- controls ------------------------------- */
+
+const LANGS = ['zh', 'ja', 'en'];
+const THEMES = ['auto', 'light', 'dark'];
+
+let currentLang = localStorage.getItem('guide-lang');
+if (!LANGS.includes(currentLang)) {
+  const nav = (navigator.language || 'en').toLowerCase();
+  currentLang = nav.startsWith('ja') ? 'ja' : nav.startsWith('zh') ? 'zh' : 'en';
+}
+
+let currentTheme = localStorage.getItem('guide-theme');
+if (!THEMES.includes(currentTheme)) currentTheme = 'auto';
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  [...document.querySelectorAll('#themeSeg button')].forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.theme === currentTheme)));
+}
+
+function buildControls() {
+  const ls = document.getElementById('langSeg');
+  ls.textContent = '';
+  LANGS.forEach(code => {
+    const b = el('button', null, I18N[code].ui.langLabel);
+    b.dataset.lang = code;
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(code === currentLang));
+    b.addEventListener('click', () => {
+      if (code === currentLang) return;
+      currentLang = code;
+      localStorage.setItem('guide-lang', code);
+      const hash = location.hash;
+      render(currentLang);
+      buildControls();
+      applyTheme();
+      if (hash) { const target = document.querySelector(hash); if (target) target.scrollIntoView(); }
+    });
+    ls.appendChild(b);
+  });
+
+  const ts = document.getElementById('themeSeg');
+  ts.textContent = '';
+  const labels = I18N[currentLang].ui.themes;
+  THEMES.forEach(code => {
+    const b = el('button', null, labels[code]);
+    b.dataset.theme = code;
+    b.type = 'button';
+    b.addEventListener('click', () => {
+      currentTheme = code;
+      localStorage.setItem('guide-theme', code);
+      applyTheme();
+    });
+    ts.appendChild(b);
+  });
+}
+
+render(currentLang);
+buildControls();
+applyTheme();
+
+if (location.hash) {
+  const target = document.querySelector(location.hash);
+  if (target) requestAnimationFrame(() => target.scrollIntoView());
+}
+</script>
+
+</body>
+</html>

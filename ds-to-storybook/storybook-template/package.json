@@ -1,0 +1,35 @@
+{
+  "name": "storybook-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/patch-figma-export-addon.mjs",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "init-template": "node scripts/init-storybook-template.mjs",
+    "build:figma-plugin": "node scripts/build-figma-plugin.mjs",
+    "build": "storybook build",
+    "typecheck": "tsc --noEmit",
+    "check:storybook-catalog": "node scripts/check-storybook-catalog.mjs",
+    "check:figma-plugin": "node scripts/build-figma-plugin.mjs --check",
+    "check:tokens": "node scripts/check-token-inheritance.mjs",
+    "check": "npm run check:tokens && npm run check:storybook-catalog && npm run check:figma-plugin && npm run typecheck"
+  },
+  "devDependencies": {
+    "@harrychuang/storybook-addon-figma-export": "file:.storybook/vendor/figma-export-addon",
+    "@storybook/addon-docs": "10.4.1",
+    "@storybook/icons": "^1.6.0",
+    "@storybook/react-vite": "10.4.1",
+    "@types/node": "^25.9.1",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "storybook": "10.4.1",
+    "storybook-addons": "github:harrychuang/storybook-addons#main",
+    "typescript": "6.0.3",
+    "vite": "8.0.14"
+  }
+}

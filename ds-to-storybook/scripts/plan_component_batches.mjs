@@ -22,15 +22,16 @@ const targetRoot = path.resolve(positional[0] || process.cwd());
 const CATEGORY_TIERS = [
   ["foundation", 0],
   ["primitive", 1],
-  ["form-control", 2],
-  ["layout", 3],
-  ["navigation", 4],
-  ["data-display", 5],
-  ["feedback", 6],
-  ["overlay", 7],
-  ["composite", 8],
-  ["product-pattern", 9],
-  ["unknown", 10],
+  ["typographic", 2],
+  ["form-control", 3],
+  ["layout", 4],
+  ["navigation", 5],
+  ["data-display", 6],
+  ["feedback", 7],
+  ["overlay", 8],
+  ["composite", 9],
+  ["product-pattern", 10],
+  ["unknown", 11],
 ];
 const CATEGORY_TIER_MAP = new Map(CATEGORY_TIERS);
 const BLOCKED_STATUS_RE = /\b(blocked|deferred|out[- ]of[- ]scope|needs[- ]extraction)\b/i;
@@ -135,6 +136,11 @@ function parseComponentInventory(file) {
   let tableHeaders = [];
 
   lines.forEach((line, index) => {
+    if (/^##\s+Component Similarity Review\b/i.test(line.trim())) {
+      tableHeaders = [];
+      return;
+    }
+
     const cells = splitMarkdownRow(line);
     if (!cells) return;
     if (cells.every((cellValue) => /^:?-{3,}:?$/.test(cellValue))) return;
@@ -354,7 +360,8 @@ function createBatch(index, components) {
 function buildBatchRationale(components) {
   const firstTier = components[0]?.category || "unknown";
   const hasCore = components.some((component) => categoryTier(component.category) <= 2);
-  const hasComposite = components.some((component) => categoryTier(component.category) >= 8);
+  const compositeTier = categoryTier("composite");
+  const hasComposite = components.some((component) => categoryTier(component.category) >= compositeTier);
 
   if (hasCore && !hasComposite) return `Establish ${firstTier} components before composed patterns.`;
   if (hasComposite) return "Build composed patterns after their lower-level dependencies are available.";
@@ -527,6 +534,7 @@ function renderMarkdown(data) {
   lines.push("");
   lines.push("- Implement components in the recommended order unless product discovery proves an existing component can be reused first.");
   lines.push("- Do not build a composed component before its listed dependencies are implemented, reused, or explicitly marked blocked with a reason.");
+  lines.push("- Implement typographic/text-lockup components as editable, token-backed display components; do not flatten them into generic heading/subheading styles.");
   lines.push("- After each component, update the queue/implementation map before starting the next component.");
   lines.push("- Put new component stories beside their component files; reserve root `stories/` or `src/stories/` for foundation guides/docs.");
   lines.push("- Put requested page/screen implementations in dedicated page folders with co-located page stories.");
@@ -609,6 +617,7 @@ function renderQueueMarkdown(data, existing) {
   lines.push("- Package manager:");
   lines.push("- Token import strategy:");
   lines.push("- Target layout: components in `src/components/<ComponentName>/`, pages in `src/pages/<PageName>/`, foundation docs in `stories/` or `src/stories/`");
+  lines.push("- Typographic components: implement text lockups as editable shared components in `src/components/<ComponentName>/` unless the extraction explicitly requires raster artwork");
   lines.push(data.batches[0] ? `- Current batch: ${data.batches[0].id}` : "- Current batch:");
   lines.push("");
   lines.push("## Status Values");
@@ -843,8 +852,9 @@ function inferCategory(name, specText, declaredCategory) {
 }
 
 function inferCategoryFromText(text) {
+  if (/\b(text[- ]?lockup|type[- ]?lockup|lockup|typographic|heading stack|title stack|title lockup|hero title|editorial heading|quote lockup|label\s*\/\s*value|label value|kicker|eyebrow|headline|subhead)\b/.test(text)) return "typographic";
   if (/\b(token|color|typography|spacing|radius|elevation|motion|foundation)\b/.test(text)) return "foundation";
-  if (/\b(icon|button|text|label|caption|avatar|divider|spinner|skeleton|typographic|headline|heading|lockup|kicker|eyebrow|subtitle|deck|pull quote|pullquote|price stack|metric pair)\b/.test(text)) return "primitive";
+  if (/\b(icon|button|text|label|caption|avatar|divider|spinner|skeleton)\b/.test(text)) return "primitive";
   if (/\b(input|field|form|checkbox|radio|switch|select|textarea|slider|stepper|segmented|search)\b/.test(text)) return "form-control";
   if (/\b(stack|grid|layout|container|spacer|section|row|column|split)\b/.test(text)) return "layout";
   if (/\b(nav|navigation|tabs|tab bar|breadcrumb|pagination|sidebar)\b/.test(text)) return "navigation";
@@ -858,8 +868,9 @@ function inferCategoryFromText(text) {
 function normalizeCategory(value) {
   const raw = normalizeKey(String(value || ""));
   if (!raw) return "unknown";
+  if (/typographic|text-lockup|type-lockup|lockup|heading-stack|title-lockup/.test(raw)) return "typographic";
   if (/foundation|token/.test(raw)) return "foundation";
-  if (/primitive|base|core|typographic|text|headline|heading|lockup/.test(raw)) return "primitive";
+  if (/primitive|base|core/.test(raw)) return "primitive";
   if (/form|control|input/.test(raw)) return "form-control";
   if (/layout|container/.test(raw)) return "layout";
   if (/nav|tab|breadcrumb|pagination/.test(raw)) return "navigation";

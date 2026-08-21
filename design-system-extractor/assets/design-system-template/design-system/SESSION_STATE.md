@@ -7,10 +7,12 @@ Update this file at every checkpoint.
 - Stage: Not started
 - Last updated:
 - AI tool / model:
+- Report Language:
 
 ## Completed Outputs
 
 - [ ] DESIGN_EVIDENCE_MAP.md
+- [ ] INTEGRATION_REVIEW.md
 - [ ] DESIGN_PRINCIPLES.md
 - [ ] DESIGN_ELEMENTS.md
 - [ ] TOKEN_ARCHITECTURE.md
@@ -42,12 +44,40 @@ Update this file at every checkpoint.
 - Developer decisions recorded in `DESIGN_EVIDENCE_MAP.md`:
 - Source fingerprints recorded:
 
-## Figma MCP Handoff
+## Vibe Project Intake
 
-- Figma sources found:
-- Figma source rows with original URL:
-- Figma source rows with MCP-ready target:
-- Unresolved Figma targets and reasons:
+- Applies:
+- Route/state manifest:
+- Rendered UI capture pass:
+- App / Storybook command:
+- Local URL:
+- Rendered routes or stories covered:
+- Screenshots captured or supplied:
+- Capture assets path:
+- Capture blockers:
+- DOM/CSS inspection result:
+- Keep/ignore decisions recorded in `DESIGN_EVIDENCE_MAP.md`:
+- Demo-only / unused / dead-code / capture-blocked / auth-blocked / contradictory sources found:
+- Confidence impact:
+
+## Native App Intake
+
+- Applies:
+- Platforms/frameworks:
+- App targets/modules inspected:
+- Native design-system modules found:
+- Native screen/state manifest:
+- Native UI Capture Pass:
+- Capture commands:
+- Devices / OS/API levels covered:
+- Screens, previews, screenshot tests, or supplied captures covered:
+- Capture assets path:
+- Capture blockers:
+- Native token/resource files inspected:
+- Native component usage verification:
+- Keep/ignore decisions recorded in `DESIGN_EVIDENCE_MAP.md`:
+- Native source-only / capture-blocked / contradictory sources found:
+- Confidence impact:
 
 ## Token Review
 
@@ -59,6 +89,14 @@ Update this file at every checkpoint.
 - Similar component candidates found:
 - Developer decisions recorded in `COMPONENT_INVENTORY.md`:
 - Visual comparison assets:
+
+## Collaboration Review
+
+- Active branches / PRs:
+- Integrator / reviewer:
+- Integration decisions recorded in `INTEGRATION_REVIEW.md`:
+- Blocked items:
+- Final integration result:
 
 ## Open Questions
 
@@ -74,6 +112,7 @@ Update this file at every checkpoint.
 ## Generated Documentation
 
 - HTML docs:
+- HTML docs UI locale:
 - Review queue:
 
 ## Recommended Next Prompt

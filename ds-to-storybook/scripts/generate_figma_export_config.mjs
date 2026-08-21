@@ -8,11 +8,9 @@ const args = process.argv.slice(2);
 const writeConfig = args.includes("--write");
 const jsonOnly = args.includes("--json");
 const productRootFlagIndex = args.indexOf("--product-root");
-const storyRootArgs = readRepeatedFlag("--story-root");
 const positional = args.filter((arg, index) => {
-  if (arg === "--write" || arg === "--json" || arg === "--product-root" || arg === "--story-root") return false;
+  if (arg === "--write" || arg === "--json" || arg === "--product-root") return false;
   if (productRootFlagIndex >= 0 && index === productRootFlagIndex + 1) return false;
-  if (isFlagValueIndex(args, "--story-root", index)) return false;
   return !arg.startsWith("--");
 });
 const designSystemRoot = path.resolve(positional[0] || process.cwd());
@@ -34,10 +32,7 @@ const storyRows = fs.existsSync(sourceTracePath) ? parseStorySourceRows(sourceTr
 const planRows = fs.existsSync(componentPlanPath) ? parseBuildPlanRows(componentPlanPath) : [];
 const inventoryRows = fs.existsSync(componentInventoryPath) ? parseInventoryRows(componentInventoryPath) : [];
 const tokenPrefix = detectTokenPrefix(packageRoot, productRoot);
-const storyRoots = storyRootArgs.length
-  ? storyRootArgs.map((root) => path.resolve(productRoot, root))
-  : detectStoryRoots(productRoot);
-const storyTitlePrefix = detectStoryTitlePrefixes(storyRoots);
+const storyTitlePrefix = detectStoryTitlePrefixes(productRoot);
 const existingConfig = readExistingProjectConfig(configPath);
 const componentClassPrefixes = existingConfig.addon.componentClassPrefixes.length
   ? existingConfig.addon.componentClassPrefixes
@@ -61,6 +56,18 @@ const nodeOverrides = {
   ...existingConfig.source.nodeOverrides,
 };
 const absoluteFidelityComponents = inferAbsoluteFidelityComponents(planRows, inventoryRows);
+const commentsApiPath = resolveMirroredValue({
+  label: "comments API path",
+  preview: existingConfig.review.visualComments?.apiPath,
+  server: existingConfig.review.commentsApiPath,
+  fallback: "/__figma_export_review_comments",
+});
+const commentsEnabled = resolveMirroredValue({
+  label: "comments enabled flag",
+  preview: existingConfig.review.visualComments?.enabled,
+  server: existingConfig.review.commentsEnabled,
+  fallback: true,
+});
 
 const config = {
   addon: {
@@ -69,11 +76,30 @@ const config = {
       ...existingConfig.addon.absoluteFidelityComponents,
     ]),
     componentClassPrefixes,
-    storyTitlePrefix: existingConfig.addon.storyTitlePrefix ?? storyTitlePrefix,
+    embeddedSvgByDataGraphic: existingConfig.addon.embeddedSvgByDataGraphic,
+    // Prefer an existing project value, but always collapse deep paths like
+    // "Components/Examples/" down to the top-level namespace "Components/".
+    // Without this, regenerating a config that was produced by the old detector
+    // would keep silently excluding sibling subcategories.
+    storyTitlePrefix: resolveStoryTitlePrefix(
+      existingConfig.addon.storyTitlePrefix,
+      storyTitlePrefix,
+    ),
     tokenPrefix: existingConfig.addon.tokenPrefix ?? tokenPrefix,
   },
   review: {
     apiPath: existingConfig.review.apiPath ?? "/__figma_export_review_status",
+    commentsApiPath,
+    commentsDir: existingConfig.review.commentsDir ?? "design-system/figma-export-review",
+    commentsEnabled,
+    visualComments: {
+      enabled: commentsEnabled,
+      apiPath: commentsApiPath,
+      captureSelector:
+        existingConfig.review.visualComments?.captureSelector ?? "#storybook-root",
+      authorStorageKey:
+        existingConfig.review.visualComments?.authorStorageKey ?? "sbfx:review-author",
+    },
     enabled: existingConfig.review.enabled ?? true,
     pluginName: existingConfig.review.pluginName ?? "figma-export-review-status-api",
     statusFilePath: existingConfig.review.statusFilePath ?? "design-system/figma-export-review-status.json",
@@ -85,37 +111,24 @@ const config = {
   },
 };
 
-if (writeConfig) {
-  writeProjectConfig();
+function resolveMirroredValue({ label, preview, server, fallback }) {
+  if (preview !== undefined && server !== undefined && preview !== server) {
+    throw new Error(
+      `Figma export ${label} mismatch: preview resolves ${JSON.stringify(preview)} while server resolves ${JSON.stringify(server)}. Update .storybook/figma-export.config.ts so both values match.`,
+    );
+  }
+  return server ?? preview ?? fallback;
 }
 
 if (jsonOnly) {
-  process.stdout.write(`${JSON.stringify({ config, configPath, storyRoots }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ config, configPath }, null, 2)}\n`);
 } else {
   const source = renderConfig(config);
+  if (writeConfig) {
+    fs.mkdirSync(storybookDir, { recursive: true });
+    fs.writeFileSync(configPath, source);
+  }
   process.stdout.write(source);
-}
-
-function writeProjectConfig() {
-  fs.mkdirSync(storybookDir, { recursive: true });
-  fs.writeFileSync(configPath, renderConfig(config));
-}
-
-function readRepeatedFlag(name) {
-  const values = [];
-  args.forEach((arg, index) => {
-    if (arg !== name) return;
-    const value = args[index + 1];
-    if (!value || value.startsWith("--")) {
-      throw new Error(`${name} requires a value.`);
-    }
-    values.push(value);
-  });
-  return values;
-}
-
-function isFlagValueIndex(values, flagName, index) {
-  return values[index - 1] === flagName;
 }
 
 function resolveDesignSystemDir(root) {
@@ -189,6 +202,11 @@ function parseInventoryRows(file) {
   const rows = [];
 
   for (const line of lines) {
+    if (/^##\s+Component Similarity Review\b/i.test(line.trim())) {
+      headers = [];
+      continue;
+    }
+
     const cells = splitMarkdownRow(line);
     if (!cells) continue;
     if (cells.every((cellValue) => /^:?-{3,}:?$/.test(cellValue))) continue;
@@ -229,29 +247,23 @@ function detectTokenPrefix(...roots) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "";
 }
 
-function detectStoryRoots(root) {
-  const candidates = [
-    "src",
-    "stories",
-    "components",
-    "lib",
-    "app",
-    "apps",
-    "packages",
-  ].map((candidate) => path.join(root, candidate));
-  const existing = candidates.filter((candidate) => fs.existsSync(candidate));
-  return existing.length ? existing : [root];
-}
-
-function detectStoryTitlePrefixes(roots) {
-  const storyFiles = uniqueSorted(roots.flatMap((root) => walkSafe(root)))
+// Derive the addon's storyTitlePrefix filter from existing story titles.
+// Only the TOP-LEVEL namespace is emitted ("Components/", "Foundations/",
+// "Pages/"), never a deeper path such as "Components/Examples/": prefixes are
+// matched with startsWith, so a deep prefix silently excludes every sibling
+// subcategory ("Components/Actions/...") and the export overlay never mounts
+// for those stories. Titles without a "/" are ignored, and when no titled
+// story can be detected at all the function returns false, which the addon
+// treats as "include every story".
+function detectStoryTitlePrefixes(root) {
+  const storyFiles = walkSafe(path.join(root, "src"))
     .filter((file) => /\.stories\.[cm]?[jt]sx?$/.test(file));
   const prefixes = new Set();
 
   for (const file of storyFiles) {
     const text = fs.readFileSync(file, "utf8");
-    for (const match of text.matchAll(/title\s*:\s*["'`]([^"'`]+\/)[^"'`]*["'`]/g)) {
-      prefixes.add(match[1]);
+    for (const match of text.matchAll(/title\s*:\s*["'`]([^"'`/]+)\/[^"'`]*["'`]/g)) {
+      prefixes.add(`${match[1].trim()}/`);
     }
   }
 
@@ -259,10 +271,32 @@ function detectStoryTitlePrefixes(roots) {
   return values.length ? values : false;
 }
 
+function normalizeStoryTitlePrefixes(value) {
+  if (value === false) return false;
+  if (!Array.isArray(value) || value.length === 0) return undefined;
+
+  const prefixes = new Set();
+  for (const item of value) {
+    if (typeof item !== "string") continue;
+    const first = item.trim().split("/").filter(Boolean)[0];
+    if (first) prefixes.add(`${first}/`);
+  }
+
+  const values = [...prefixes].sort();
+  return values.length ? values : false;
+}
+
+function resolveStoryTitlePrefix(existing, detected) {
+  if (existing === false) return false;
+  const normalizedExisting = normalizeStoryTitlePrefixes(existing);
+  if (normalizedExisting !== undefined) return normalizedExisting;
+  return detected;
+}
+
 function inferAbsoluteFidelityComponents(planRows, inventoryRows) {
   const rows = planRows.length ? planRows : inventoryRows;
   return rows
-    .filter((row) => /page|screen|composite|product-pattern/i.test(`${row.category} ${row.component}`))
+    .filter((row) => /page|screen|composite|product-pattern|typographic|text[- ]?lockup|type[- ]?lockup|lockup|heading stack|title lockup|hero title|editorial heading|quote lockup/i.test(`${row.category} ${row.component}`))
     .map((row) => componentSlug(row.component))
     .filter(Boolean)
     .sort();
@@ -340,11 +374,16 @@ function readExistingProjectConfig(file) {
     addon: {
       absoluteFidelityComponents: [],
       componentClassPrefixes: [],
+      embeddedSvgByDataGraphic: {},
       storyTitlePrefix: undefined,
       tokenPrefix: undefined,
     },
     review: {
       apiPath: undefined,
+      commentsApiPath: undefined,
+      commentsDir: undefined,
+      commentsEnabled: undefined,
+      visualComments: undefined,
       enabled: undefined,
       pluginName: undefined,
       statusFilePath: undefined,
@@ -358,15 +397,34 @@ function readExistingProjectConfig(file) {
   if (!fs.existsSync(file)) return empty;
 
   const text = fs.readFileSync(file, "utf8");
+  const visualCommentsBlock = extractObjectBlock(text, "visualComments");
   return {
     addon: {
       absoluteFidelityComponents: extractStringArray(text, "absoluteFidelityComponents"),
       componentClassPrefixes: extractStringArray(text, "componentClassPrefixes"),
+      embeddedSvgByDataGraphic: extractObjectStringMap(text, "embeddedSvgByDataGraphic"),
       storyTitlePrefix: extractStoryTitlePrefix(text),
       tokenPrefix: extractStringProperty(text, "tokenPrefix"),
     },
     review: {
       apiPath: extractStringProperty(text, "apiPath"),
+      commentsApiPath: extractStringProperty(text, "commentsApiPath"),
+      commentsDir: extractStringProperty(text, "commentsDir"),
+      commentsEnabled: extractBooleanProperty(text, "commentsEnabled"),
+      visualComments: visualCommentsBlock
+        ? {
+            enabled: extractBooleanProperty(visualCommentsBlock, "enabled") ?? true,
+            apiPath:
+              extractStringProperty(visualCommentsBlock, "apiPath") ??
+              "/__figma_export_review_comments",
+            captureSelector:
+              extractStringProperty(visualCommentsBlock, "captureSelector") ??
+              "#storybook-root",
+            authorStorageKey:
+              extractStringProperty(visualCommentsBlock, "authorStorageKey") ??
+              "sbfx:review-author",
+          }
+        : undefined,
       enabled: extractBooleanProperty(text, "enabled"),
       pluginName: extractStringProperty(text, "pluginName"),
       statusFilePath: extractStringProperty(text, "statusFilePath"),
@@ -377,6 +435,34 @@ function readExistingProjectConfig(file) {
       nodeOverrides: extractObjectStringMap(text, "nodeOverrides"),
     },
   };
+}
+
+function extractObjectBlock(text, propertyName) {
+  const property = new RegExp(
+    `["']?${escapeRegExp(propertyName)}["']?\\s*:\\s*{`,
+  ).exec(text);
+  if (!property) return "";
+  const start = property.index + property[0].length;
+  let depth = 1;
+  let quote = "";
+  let escaped = false;
+  for (let index = start; index < text.length; index += 1) {
+    const character = text[index];
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (character === "\\") escaped = true;
+      else if (character === quote) quote = "";
+      continue;
+    }
+    if (character === '"' || character === "'" || character === "`") {
+      quote = character;
+      continue;
+    }
+    if (character === "{") depth += 1;
+    if (character === "}") depth -= 1;
+    if (depth === 0) return text.slice(start, index);
+  }
+  return "";
 }
 
 function extractStringProperty(text, propertyName) {
@@ -408,8 +494,8 @@ function extractObjectStringMap(text, propertyName) {
   if (!match) return {};
 
   return Object.fromEntries(
-    [...match[1].matchAll(/["']([^"']+)["']\s*:\s*["']([^"']+)["']/g)]
-      .map((item) => [item[1], item[2]]),
+    [...match[1].matchAll(/(?:["']([^"']+)["']|([A-Za-z_$][\w$-]*))\s*:\s*["']([^"']*)["']/g)]
+      .map((item) => [item[1] ?? item[2], item[3]]),
   );
 }
 
@@ -422,11 +508,21 @@ function renderConfig(value) {
   addon: {
     absoluteFidelityComponents: string[];
     componentClassPrefixes: string[];
+    embeddedSvgByDataGraphic: Record<string, string>;
     storyTitlePrefix: string[] | false;
     tokenPrefix?: string;
   };
   review: {
     apiPath: string;
+    commentsApiPath: string;
+    commentsDir: string;
+    commentsEnabled: boolean;
+    visualComments: {
+      enabled: boolean;
+      apiPath: string;
+      captureSelector: string;
+      authorStorageKey: string;
+    };
     enabled: boolean;
     pluginName: string;
     statusFilePath: string;
@@ -453,25 +549,10 @@ function walkSafe(dir) {
   const files = [];
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory() && !shouldSkipDirectory(entry.name)) files.push(...walkSafe(fullPath));
+    if (entry.isDirectory()) files.push(...walkSafe(fullPath));
     if (entry.isFile()) files.push(fullPath);
   }
   return files;
-}
-
-function shouldSkipDirectory(name) {
-  return [
-    ".git",
-    ".next",
-    ".nuxt",
-    ".output",
-    ".storybook-static",
-    "build",
-    "coverage",
-    "dist",
-    "node_modules",
-    "storybook-static",
-  ].includes(name);
 }
 
 function sectionLines(lines, heading) {

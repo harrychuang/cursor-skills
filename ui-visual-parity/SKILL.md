@@ -1,143 +1,170 @@
 ---
-name: ui-visual-parity
+name: ui-compare-to-reference
 description: >-
-  Compare a UI implementation against one or more reference screenshots using
-  automatic target discovery or an explicitly paired live URL, route, page, or
-  component file. Use when auditing visual parity, fixing layout/token drift, or
-  aligning implemented UI with screenshot references across any frontend project.
-  Enforces component-first, token-first visual fixes before page-level style
-  overrides.
+  Compare an implemented UI against a reference and apply the visual fixes. The
+  reference can be a Figma file or frame, a design export or screenshot, or
+  another platform's source code — a web implementation used as the truth for an
+  app, or an app implementation used as the truth for web. Use when an app or web
+  UI does not match its design, when porting a screen between web and
+  React Native / Flutter / iOS / Android, or when auditing and repairing layout
+  and token drift. Enforces token-first and component-first repair, and refuses
+  to "fix" legitimate platform adaptations.
 ---
 
-# UI Visual Parity
+# UI Compare to Reference
 
-Use this skill to compare a reference UI screenshot with the current implementation, then apply focused visual fixes. It is intentionally project-agnostic: discover the repository's screenshot locations, routing conventions, component structure, styling system, and design tokens before changing code.
+Compare a reference UI with the current implementation, then apply focused visual fixes. Project-agnostic: discover the repository's screenshot locations, routing conventions, component structure, styling system, and design tokens before changing code.
 
-Treat visual repair as a design-system exercise: trace the UI back to its tokens, theme, shared primitives, and composed components before editing the screen. Do not patch visual differences with one-off CSS unless the difference is truly unique to the selected screen and no shared abstraction owns it.
+Treat visual repair as a design-system exercise. Trace the UI back to its tokens, theme, shared primitives, and composed components before editing the screen. Do not patch differences with one-off styles unless the difference is truly unique to the selected screen and no shared abstraction owns it.
 
-The reference can be paired with:
+To produce a reviewable evidence report instead of (or before) fixing, use `ui-pixel-align-report`.
 
-- a running page URL, such as `http://localhost:3000/dashboard`;
-- an app route, such as `/dashboard`;
-- a source file, such as `src/pages/Dashboard.tsx`;
-- a component or story file, such as `Dashboard.tsx` or `Dashboard.stories.tsx`;
-- an automatically inferred implementation target.
+## What can be compared
+
+| Reference | Implementation | Typical ask |
+|---|---|---|
+| Figma frame or node URL | web | "設計稿跟網頁對不上，幫我修" |
+| Figma frame or node URL | app (RN / Flutter / iOS / Android) | "App 跟設計稿差很多" |
+| Web source or live URL | app | "照著網頁版把 App 修對" |
+| App source or running app | web | "Web 版要跟 App 一致" |
+| Screenshot / design export | web or app | no Figma access |
+| App on one OS | app on the other OS | iOS ↔ Android parity |
 
 ## Inputs
 
-Accept any of these target forms from the user message:
+Accept any of these from the user message:
 
-- **Empty target:** compare all discoverable reference screenshots against likely pages.
-- **Screenshot only:** `screen-2`, `screen-2.png`, `reference/screen-2.png`, `designs/dashboard.png`.
-- **Screenshot + URL:** `screen-2.png http://localhost:3000/dashboard`.
-- **Screenshot + route:** `screen-2.png /dashboard`.
-- **Screenshot + file:** `screen-2.png src/pages/Dashboard.tsx`.
-- **URL or route only:** `http://localhost:3000/dashboard`, `/dashboard`.
-- **File only:** `src/pages/Dashboard.tsx`, `Dashboard.tsx`, `Dashboard.stories.tsx`.
+- **A findings file:** `reports/design-pixel-align/wallet/findings.json` — the strongest input. Skip straight to the fix loop.
+- **Figma + target:** `https://figma.com/design/...?node-id=1-234 src/screens/WalletHome.tsx`, or with a URL, route, or story.
+- **Reference code + target:** `apps/web/src/pages/Wallet.tsx apps/mobile/src/screens/WalletHome.tsx`, or two repo paths, or a reference URL plus an app screen.
+- **Screenshot + target:** `screen-2.png http://localhost:3000/dashboard`, `screen-2.png /dashboard`, `screen-2.png src/pages/Dashboard.tsx`.
+- **Screenshot only:** `screen-2`, `designs/dashboard.png`.
+- **Target only:** `http://localhost:3000/dashboard`, `/dashboard`, `Dashboard.stories.tsx`.
+- **Empty target:** compare all discoverable reference/implementation pairs.
+- **Design-system package (optional but strongly preferred when present):** token files, `TOKEN_ARCHITECTURE.md` with `a11y-remap` records, and evidence/source-trace docs from `design-system-extractor`. Token names accelerate ownership tracing, and the remap records prevent "fixing" sanctioned accessibility values back to the reference.
 
-Treat a screenshot + URL/file pair as the strongest signal. Do not override an explicit pair with auto-discovery unless the target cannot be found or loaded.
-
-## Target Selection Modes
-
-Support both manual and automatic target selection:
-
-1. **Manual pairing:** If the user provides an explicit screenshot + URL, route, page file, component file, or story file, use that pairing as authoritative. Use discovery only to understand dependencies and verify the target can render.
-2. **Automatic discovery:** If the user provides only a screenshot, only a route/file, or no target at all, actively infer likely screenshot-to-implementation pairs before comparing. Search by screenshot filename, nearby docs, visible text, route names, component names, story names, asset names, and page structure.
-3. **Mixed mode:** If the user provides partial context, such as a screenshot folder plus a route prefix, use the provided context as constraints and auto-discover within those boundaries.
-
-For automatic discovery, produce a short ranked candidate list when more than one plausible pairing exists. Proceed without asking only when there is a clear best match; otherwise ask the user to choose before applying fixes.
+An explicit reference + target pair is authoritative. Do not override it with auto-discovery unless a side cannot be found or loaded.
 
 ## Discovery
 
-Before comparing or editing, discover project conventions:
+Before comparing or editing:
 
-1. Find reference screenshots. Check explicit paths first, then common folders such as `reference/`, `references/`, `screenshots/`, `design/`, `designs/`, `mockups/`, `spec/`, `specs/`, and `public/`.
-2. Find UI entry points. Check explicit files first, then common locations such as `src/pages/`, `src/screens/`, `src/app/`, `app/`, `pages/`, `src/routes/`, `src/components/`, `components/`, and Storybook stories.
-3. Identify the styling system: Tailwind, CSS modules, vanilla CSS, Sass, styled-components, CSS-in-JS, design tokens, theme files, or component libraries.
-4. Identify available design guidance in files such as `README.md`, `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, theme files, token files, Storybook docs, or component documentation.
-5. If a live URL is provided, verify whether an app server is already running before starting one. Use the browser tools to inspect the page and capture the current implementation visually.
+1. **Identify both platforms.** Web, React Native, Flutter, iOS, Android, or Figma — for the reference and for the target. Everything downstream depends on this pair.
+2. **Find the reference.** Explicit paths first, then `reference/`, `references/`, `screenshots/`, `design/`, `designs/`, `mockups/`, `spec/`, `specs/`, `public/`. For a monorepo, the reference implementation is often a sibling workspace (`apps/web`, `apps/mobile`, `packages/ui`).
+3. **Find the implementation entry point.** Explicit files first, then `src/pages/`, `src/screens/`, `src/app/`, `app/`, `pages/`, `src/routes/`, `src/components/`, `components/`, `lib/`, and Storybook stories.
+4. **Identify the styling system** on the target: Tailwind, CSS modules, vanilla CSS, Sass, styled-components, CSS-in-JS, StyleSheet, ThemeData, MaterialTheme, SwiftUI constants, or a component library.
+5. **Identify design guidance:** `README.md`, `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, theme files, token files, Storybook docs, component documentation.
+6. **Check what can be rendered.** If a URL is provided, verify whether a server is already running before starting one. For app targets, check for a running simulator, an Expo/Metro process, or a Storybook.
 
 ## Target Resolution
 
-Resolve targets in this order:
+1. **findings.json:** use it as-is. Only re-derive when a finding is stale against the current code.
+2. **Reference + target pair:** compare exactly that pair.
+3. **Reference + route:** find the route's implementation, then compare.
+4. **Reference only:** match by filename, nearby docs, route names, component names, story names, visible copy, and visual intent.
+5. **Target only:** capture the current UI, then find the closest reference.
+6. **Empty target:** compare all plausible pairs, but ask before editing when multiple matches are ambiguous.
 
-1. **Screenshot + URL:** compare the screenshot to the rendered URL. Use source inspection only to understand and fix the implementation.
-2. **Screenshot + file:** compare the screenshot to the component/page represented by the file. If possible, find or run the route/story that renders it; otherwise compare against the code structure and styles.
-3. **Screenshot + route:** find the route's implementation file, then compare the screenshot to that route.
-4. **Screenshot only:** automatically match by filename, nearby docs, route names, component names, story names, visible copy, assets, layout structure, and visual intent.
-5. **URL or route only:** capture the current UI, then find the closest reference screenshot.
-6. **File only:** find the rendered URL/story if possible, then match the closest reference screenshot.
-7. **Empty target:** automatically discover plausible screenshot/page pairs across the repository, but ask before editing if there are multiple ambiguous matches.
+If either side is ambiguous, list the likely candidates and ask before applying fixes.
 
-If the screenshot or implementation target is ambiguous, list the likely candidates and ask the user to choose before applying fixes.
+## Comparison
 
-## Comparison Workflow
+When a `findings.json` from `ui-pixel-align-report` exists, skip to **Fix Strategy** — the diagnosis is done.
 
-For each selected screen:
+Without one, run the **measured pipeline** whenever both sides can produce concrete values — a rendered surface, Figma via MCP (no rendering needed), or readable source code (`inspected` fidelity per the sibling's `references/extract-code.md`). That covers almost every real case, and it is the default, not the thorough option. A condensed eyeball pass under-enumerates, and the differences it misses are exactly what forces a second run:
 
-1. Inspect the reference screenshot and describe the intended visual structure: layout regions, hierarchy, spacing, alignment, typography, colors, borders, radii, shadows, imagery, and interactive states visible in the image.
-2. Inspect the implementation source and its imported components.
-3. Trace component ownership before editing: identify whether each visible block comes from a shared component, design-system primitive, third-party library wrapper, local page composition, or ad hoc markup.
-4. If a URL or story can be rendered, compare the live UI against the reference visually. Use screenshots when helpful.
-5. Cross-reference colors, spacing, typography, radius, elevation, and animation choices against the project's tokens or theme files when they exist.
-6. Classify each discrepancy by likely source: token/theme, shared component, component variant/props, page composition, or one-off page style.
-7. List visual discrepancies before editing.
+1. **Align the font environment first.** Before measuring anything, confirm the rendering environment loads the same fonts as the source platform and record what actually loaded into `surface.fonts` (`requested`, `loaded`, `aligned`) on each spec. A fallback font shifts ink height by up to ~30% and fabricates type-size and box-height drift. If fonts cannot be aligned, set `aligned: false` — the diff downgrades type metrics to untrusted, and you must not fix them.
+2. **Extract both sides into UI Specs** using `ui-pixel-align-report`'s `references/ui-spec.md`, `references/extract-figma.md`, and `references/extract-code.md`. Populate `tokenRefs` — a finding that names a token is half-located already.
+3. **Collect accessibility remaps.** If the project's design system records `a11y-remap` decisions (in `TOKEN_ARCHITECTURE.md` or token CSS comments), copy them into `accessibilityRemaps` so sanctioned replacements classify as `required-adaptation` instead of drift you would wrongly "fix".
+4. **Diff mechanically:**
 
-Use this report format:
+   ```sh
+   node <ui-pixel-align-report-root>/scripts/diff_spec.mjs \
+     --reference spec/reference.json --implementation spec/implementation.json \
+     --output findings.candidates.json
+   ```
 
-`| Block | Expected (reference) | Actual (implementation) | Difference | Owner | Fix |`
+   Note the reported **field convergence** percentage — it is the progress meter for the fix loop.
+5. **Review the candidates** (drop false positives, classify per Parity Rules below), then continue to Fix Strategy with the surviving findings.
 
-## Precision Workflow
+Fall back to the **condensed comparison** only when a side offers nothing to measure *or* read — an image-only reference with no Figma access, a binary-only or third-party implementation — or when the user explicitly asks for a quick single-block spot fix where writing spec files costs more than it saves:
 
-Make visual repair as measurable as practical before editing:
+1. **Read the reference into concrete values.**
+   - Figma: use the Figma MCP tools — node metadata for the tree, variable definitions for token names, design context for layout/typography/fills/radii/effects, a screenshot for visual confirmation. Exact numbers and variable names come from here; do not estimate off a PNG when MCP is available.
+   - Reference source code: read the layout and style declarations, resolving the theme layer. Convert units to CSS-equivalent px at 1x — RN dp, Flutter logical px, iOS pt, and Android dp are all 1:1 with CSS px; `rem` needs the root font size; `sp` scales with user settings.
+   - Screenshot only: establish scale from one element of known size, measure relative to it, round spacing to 4px and type to 1px, and say the values are approximate.
+2. **Read the implementation the same way.** Prefer measuring a rendered surface (`getComputedStyle`, layout inspector, widget inspector) over reading source. Source reading misses inherited and themed values.
+3. **Compare viewports first.** A reference frame that is an exact 2x or 3x multiple of the target viewport is a scale error, not drift — fix the capture instead of filing findings.
+4. **Trace ownership** for each differing block: shared component, design-system primitive, third-party wrapper, page composition, or ad hoc markup. Use `references/locate-owner.md` to go from a rendered difference to the owning declaration mechanically.
+5. **Classify each difference** before touching code — see Parity Rules below.
+6. **List the differences** before editing:
 
-1. **Stabilize render conditions:** When rendering a live URL or story, keep viewport size, device scale factor, browser, color scheme, locale, font loading, mock data, auth state, and animation state consistent between captures.
-2. **Compare by region first:** Break the screen into blocks such as header, sidebar, hero, card, form, table, navigation, and footer. Compare region-level structure before making page-wide changes.
-3. **Measure visible differences:** For each block, record expected vs actual spacing, alignment, dimensions, typography, color, border, radius, shadow, and responsive behavior when these can be observed or inferred.
-4. **Inspect computed styles:** For renderable targets, inspect DOM and computed styles for key elements before editing. Check `font-size`, `line-height`, `font-weight`, `color`, `background`, `padding`, `margin`, `gap`, `width`, `height`, `border`, `border-radius`, `box-shadow`, and relevant layout properties.
-5. **Map measurements to tokens:** Cross-reference measured values against design tokens, CSS variables, theme scales, Tailwind config, component variants, or style dictionaries. Prefer token names over raw values in the discrepancy report.
-6. **Use screenshot diff when practical:** After fixes, capture the implementation again and compare it against the reference. Use full-page diff for broad regressions and cropped region diff for precise blocks whose small shifts would distort a full-page diff.
-7. **Set an explicit tolerance:** Treat tiny anti-aliasing, font rendering, subpixel rounding, and image compression differences as acceptable when they do not affect layout or perceived visual hierarchy. Investigate repeated or structured differences.
-8. **Re-check ownership after diff:** If differences remain after token and component fixes, confirm whether they belong to page composition or page-only styling before editing the screen.
+   `| Block | Expected (reference) | Actual (implementation) | Class | Owner | Fix |`
 
-Do not rely only on subjective visual judgment when computed styles, token values, screenshots, or region measurements are available.
+Condensed results are estimated: do not apply sub-2px fixes from them, and say so in the report-back.
 
-## Evidence Requirements
+When the implementation is a Storybook with the design system's `fidelity` toolbar (authored | accessible), capture in **accessible** mode — that is the shipped state — and record which mode was active. Authored mode is for design review, not for driving fixes.
 
-For each planned fix, cite the evidence that justifies it: reference screenshot observation, rendered screenshot, computed style, token/theme value, component source, story, or representative call site. Do not make visual changes from intuition alone when stronger evidence is available.
+## Parity Rules
 
-## Component-First Fix Strategy
+Cross-platform repair fails when every difference is treated as a defect. Classify before fixing:
 
-Prefer the same layered repair model used by mature design systems such as Material Design 3:
+- **Drift** — must match, does not. Fix it. Covers color, radius, border, font weight, structure, reading order, copy, and — at the same form factor — spacing, sizing, and font size.
+- **Adaptation** — the platform or form factor justifies the difference. Leave it. Covers sanctioned font substitution (Inter → SF Pro Text on iOS, Roboto on Android), shadow rendering across engines, and density differences between a desktop reference and a phone target.
+- **Required adaptation** — the implementation copied the reference where it should have diverged. Fix it by *diverging further*: raise touch targets to 44pt on iOS / 48dp on Android, respect safe-area insets on top of the design's padding, let text containers grow under Dynamic Type, add `:hover` and `:focus-visible` when porting native → web, and add `pressed` when porting web → native. Recorded accessibility remaps (`a11y-remap` in the design system) also live here: the accessible value is the sanctioned state — never "fix" it back to the authored reference value, no matter how much closer that looks to Figma. If the implementation shows the *authored* value, the fix is to apply the accessible one.
+- **Ignored** — OS chrome, status bars, home indicators, scrollbars, absolute positions, hover states on touch-only surfaces.
+- **Untrusted** — type-size, line-height, letter-spacing, and text-box dimensions measured under a mismatched font environment (`fontEnvironment: mismatched`). These are measurement artifacts, not drift. Align the fonts and re-measure; never change tokens or sizes from them.
 
-Before changing code, confirm whether each visual mismatch is owned by a design token, theme value, shared primitive, component variant, composition API, or the selected screen itself. Start at the most reusable owner and move toward the page only when earlier layers do not own the mismatch.
+Form factor is the deciding axis. Same viewport class → compare absolute values strictly. Desktop reference vs phone target → preserve ratio, rhythm, and hierarchy, not absolute pixels.
 
-1. **Token/theme layer:** If the mismatch is a repeated color, spacing, typography, radius, shadow, elevation, breakpoint, or motion value, update or use the existing token/theme value first.
-2. **Primitive/shared component layer:** If the UI block has a corresponding primitive, design-system component, shared component, or component variant, fix that owner instead of styling the page instance.
-3. **Composition/layout layer:** After token and component fixes are correct, adjust the selected screen's composition: layout, ordering, spacing between sections, responsive structure, wrappers, slots, and props.
-4. **Page-only style layer:** Use page-level CSS, utility classes, or inline style only when the visual difference is unique to the selected target and no shared token, primitive, variant, or composition API owns it.
+State which class each planned fix falls into. Never silently "fix" an adaptation.
 
-Before editing, state which layer owns each planned fix. If ownership is ambiguous, inspect nearby stories, docs, component call sites, and token/theme files before choosing. Only directly modify the screen's style definitions when the screen has no corresponding reusable component or token owner, or when the mismatch is inherently page-specific.
+## Fix Strategy
 
-## Regression Guardrails
+Use the layered repair model of mature design systems:
 
-When changing tokens, themes, primitives, component variants, or shared components, inspect representative call sites or stories before and after the change. If changing a shared default would unintentionally affect unrelated screens, prefer a variant, prop, slot, or composition-level adjustment.
+1. **Token/theme layer.** A repeated color, spacing, typography, radius, shadow, elevation, breakpoint, or motion value → update or apply the existing token first.
+2. **Primitive/shared component layer.** Multiple screens would expect the same behavior → fix the shared primitive or component variant, not the page instance.
+3. **Composition layer.** Correct components composed incorrectly → adjust layout, props, slots, wrappers, or responsive structure at the screen level.
+4. **Page-only layer.** Only when the difference is unique to this target and no token, primitive, variant, or composition API owns it.
 
-Keep public component APIs stable unless the user asks for a broader refactor. Avoid product behavior, copy, data flow, accessibility semantics, or interaction changes when the task is visual parity.
+State which layer owns each planned fix before editing. If ownership is ambiguous, use `references/locate-owner.md` to trace the rendered difference to its owning declaration mechanically, and inspect nearby stories, docs, call sites, and token files.
 
-## Stop Conditions
+`references/apply-to-platform.md` covers how to express each correction idiomatically per platform — where tokens live, how gap/padding/radius/typography/elevation are written in web, React Native, Flutter, SwiftUI, and Compose, how to implement the required adaptations, and the layout traps that break naive ports.
 
-Stop and ask the user before editing when the reference is too ambiguous, the implementation target cannot be rendered, required auth/data is unavailable, multiple target matches are equally plausible, or the fix would require changing product behavior, copy, data, accessibility semantics, or shared component defaults with unclear blast radius.
+### Convergence loop
+
+Do not apply every fix in one flat pass and measure once at the end — that is what makes a second manual run necessary. Fix in layer order, re-measuring between layers, because an upstream fix closes and invalidates downstream findings:
+
+1. **Token/theme fixes first.** Apply only this layer, re-render, re-extract the implementation spec, re-diff. One token fix typically closes many findings at once — re-diffing now prevents patching symptoms the token already cured.
+2. **Primitive/shared component fixes.** Apply, re-measure, re-diff.
+3. **Composition and page-only fixes.** Apply, re-measure, re-diff.
+4. **Exit check.** The loop is done when every remaining finding is one of: an adaptation, a *satisfied* accessibility remap (the informational `required-adaptation` whose recommended fix says no fix is needed), or explicitly accepted with a recorded reason. Open `drift` findings are work; so are `required-adaptation` **defects** — touch targets, safe areas, Dynamic Type, or an authored value the implementation copied where the remap demands the accessible one. Track the diff script's **field convergence** percentage per cycle — it should rise monotonically; a drop means a fix regressed something.
+5. **Cycle cap.** If three full cycles have not converged, stop and report the residuals with their blockers (missing token, design-system decision needed, untrusted font environment) instead of thrashing.
+
+The measured re-diff between layers is cheap — the reference spec is already extracted; only the implementation side is re-captured.
+
+On the condensed path (no specs, nothing to re-diff mechanically), keep the same layer cadence: apply one layer, re-measure with the same instruments used to compare (computed styles, layout/widget inspectors), and update the difference table. The convergence percentage is unavailable — the exit check is the table instead: every row ends `closed`, `sanctioned`, or `blocked` with a reason.
 
 ## Fixing Rules
 
 - Apply fixes only for the selected target.
-- Prefer existing components, design tokens, utility classes, theme variables, and project conventions.
-- Do not introduce one-off hardcoded styles when a token or shared primitive exists.
-- Do not bypass shared components by restyling their rendered markup from the page. Update the component, variant, props, or token that owns the visual behavior.
-- Do not fix component-owned visual differences from the screen file. First repair the relevant token, primitive, shared component, or component variant; then return to the screen for layout and page-specific adjustments.
+- Prefer existing components, tokens, utility classes, theme variables, and project conventions.
+- Do not introduce one-off hardcoded values when a token or shared primitive exists. When the reference calls for a value that has no token and it recurs, propose adding the token rather than inlining it.
+- Do not bypass shared components by restyling their rendered markup from the page. Update the component, variant, props, or token that owns the behavior.
 - If a shared component change may affect other screens, inspect representative call sites or stories and keep the change compatible with existing intended variants.
-- When a one-off screen style is unavoidable, keep it local, explain why no shared owner exists, and avoid hardcoded values when an existing token can express the same value.
+- When a one-off is unavoidable, keep it local, explain why no shared owner exists, and still avoid raw values an existing token can express.
+- Never port a value across platforms without converting it: line height is absolute in CSS/RN/Compose, a multiplier in Flutter, and extra leading in SwiftUI.
 - Keep changes scoped to visual parity unless the user asks for broader refactoring.
-- If a URL was provided, verify the result against that URL after editing whenever practical.
-- If a file was provided but no renderable URL/story is available, validate with typecheck, lint, tests, or the project's cheapest reliable check.
+
+## Verification
+
+A fix is not done until it is measured again. The convergence loop already re-measures between layers; this is the final gate.
+
+1. Re-render the changed surface on **its own platform** — reload the URL or story, hot reload the simulator, rebuild the preview.
+2. Re-measure the nodes you changed. Confirm each one now matches the reference value — or run the full re-diff and confirm the finding no longer appears.
+3. When working from a `findings.json`, update each finding's `status` to `fixed`, `open`, or `accepted` (for adaptations and recorded accessibility remaps), and say which ones remain.
+4. Run the project's cheapest reliable check: typecheck, lint, tests, or a build.
+5. Report honestly: the final field convergence percentage and open drift count when the measured pipeline ran, which differences were closed, which were left as adaptations, which were untrusted due to the font environment, and which could not be fixed without a design-system decision.
+
+If a URL was provided, verify against that URL. If a file was provided with no renderable target, validate with the project's cheapest reliable check and say that no visual confirmation was possible.

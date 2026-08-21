@@ -1,57 +1,604 @@
+/*
+ * Design-token alias block — the ONLY place raw color/size values may appear,
+ * and only as var() fallbacks. Re-point each alias to the project tokens
+ * recorded in docs/UI_SPEC.md "Token Binding" (for example
+ * var(--md-sys-color-primary, #2563eb)). The --sbt-* chain covers projects
+ * created by design-system-to-storybook/storybook-template; the literal is
+ * the neutral fallback for projects without a token system. Every rule below
+ * consumes --proto-* aliases only, so the interactive prototype and the
+ * Static Flow export theme identically.
+ */
+.__FEATURE_CSS_CLASS__,
+.__FEATURE_CSS_CLASS__-flow-export {
+  --proto-bg: var(--sbt-sys-color-background, #f6f7f9);
+  --proto-surface: var(--sbt-sys-color-surface, #ffffff);
+  --proto-surface-raised: var(--sbt-sys-color-surface-raised, #eff2f6);
+  --proto-border: var(--sbt-sys-color-outline, #d1d5db);
+  --proto-text: var(--sbt-sys-color-on-background, #111827);
+  --proto-text-muted: var(--sbt-sys-color-on-surface-medium, #6b7280);
+  --proto-accent: var(--sbt-sys-color-primary, #2563eb);
+  --proto-on-accent: var(--sbt-sys-color-on-primary, #ffffff);
+  --proto-accent-container: var(--sbt-sys-color-primary-container, #dbeafe);
+  --proto-success: var(--sbt-sys-color-success, #047857);
+  --proto-success-container: var(--sbt-sys-color-success-container, #ecfdf5);
+  --proto-warning: var(--sbt-sys-color-warning, #b45309);
+  --proto-warning-container: var(--sbt-sys-color-warning-container, #fffbeb);
+  --proto-danger: var(--sbt-sys-color-error, #dc2626);
+  --proto-danger-container: var(--sbt-sys-color-error-container, #fef2f2);
+  --proto-focus-ring: var(--sbt-sys-color-primary, #2563eb);
+  --proto-grid-dot: var(--sbt-sys-color-outline, #c8cfda);
+  --proto-shadow-soft: var(--sbt-sys-shadow-raised-surface, 0 10px 24px rgba(17, 24, 39, 0.12));
+  --proto-shadow-raised: var(--sbt-sys-shadow-raised-surface, 0 16px 34px rgba(17, 24, 39, 0.14));
+
+  --proto-space-1: 4px;
+  --proto-space-2: 8px;
+  --proto-space-3: 12px;
+  --proto-space-4: 16px;
+  --proto-space-5: 24px;
+  --proto-space-6: 32px;
+
+  --proto-font-xs-size: 12px;
+  --proto-font-xs-line: 16px;
+  --proto-font-sm-size: 14px;
+  --proto-font-sm-line: 22px;
+  --proto-font-md-size: 16px;
+  --proto-font-md-line: 24px;
+  --proto-font-lg-size: 20px;
+  --proto-font-lg-line: 28px;
+  --proto-font-xl-size: 24px;
+  --proto-font-xl-line: 32px;
+
+  --proto-radius-sm: 4px;
+  --proto-radius-md: 8px;
+  --proto-radius-pill: 999px;
+
+  --proto-motion-fast: 120ms;
+  --proto-motion-base: 180ms;
+}
+
 .__FEATURE_CSS_CLASS__ {
   min-block-size: 100vh;
-  padding: 24px;
-  background: var(--color-background, #f7f7f8);
-  color: var(--color-foreground, #111827);
+  padding: var(--proto-space-5);
+  background: var(--proto-bg);
+  color: var(--proto-text);
   font-family: inherit;
+  font-size: var(--proto-font-sm-size);
+  line-height: var(--proto-font-sm-line);
 }
 
 .__FEATURE_CSS_CLASS__--flow-preview {
-  min-block-size: 720px;
+  min-block-size: auto;
+  padding: 0;
+  background: var(--proto-surface);
+}
+
+.__FEATURE_CSS_CLASS____shell {
+  display: grid;
+  box-sizing: border-box;
+  gap: var(--proto-space-4);
+  inline-size: min(100%, var(--prototype-flow-route-preview-width, 375px));
+  min-block-size: var(--prototype-flow-route-preview-height, 812px);
+  margin-inline: auto;
+  padding: var(--proto-space-4);
+  background: var(--proto-surface);
+  border: 1px solid var(--proto-border);
+  border-radius: var(--proto-radius-md);
+}
+
+.__FEATURE_CSS_CLASS__--flow-preview .__FEATURE_CSS_CLASS____shell {
+  border-color: transparent;
+  border-radius: 0;
+}
+
+/* Type scale — every text role has an explicit size and line-height. */
+.__FEATURE_CSS_CLASS__ h1 {
+  margin: 0;
+  font-size: var(--proto-font-xl-size);
+  font-weight: 700;
+  line-height: var(--proto-font-xl-line);
+}
+
+.__FEATURE_CSS_CLASS__ h2 {
+  margin: 0;
+  font-size: var(--proto-font-lg-size);
+  font-weight: 700;
+  line-height: var(--proto-font-lg-line);
+}
+
+.__FEATURE_CSS_CLASS__ h3 {
+  margin: 0;
+  font-size: var(--proto-font-md-size);
+  font-weight: 600;
+  line-height: var(--proto-font-md-line);
+}
+
+.__FEATURE_CSS_CLASS__ p,
+.__FEATURE_CSS_CLASS__ li {
+  margin: 0;
+  font-size: var(--proto-font-sm-size);
+  line-height: var(--proto-font-sm-line);
+}
+
+.__FEATURE_CSS_CLASS__ small {
+  font-size: var(--proto-font-xs-size);
+  line-height: var(--proto-font-xs-line);
+  color: var(--proto-text-muted);
 }
 
 .__FEATURE_CSS_CLASS____header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-block-end: 16px;
+  gap: var(--proto-space-3);
+  margin-block-end: var(--proto-space-4);
 }
 
-.__FEATURE_CSS_CLASS____header h1,
-.__FEATURE_CSS_CLASS____panel h2,
 .__FEATURE_CSS_CLASS____eyebrow {
   margin: 0;
+  color: var(--proto-text-muted);
+  font-size: var(--proto-font-xs-size);
+  font-weight: 700;
+  line-height: var(--proto-font-xs-line);
+  text-transform: uppercase;
 }
 
-.__FEATURE_CSS_CLASS____eyebrow {
-  color: var(--color-muted, #6b7280);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
+/* Buttons — cursor, hover, active, focus-visible, and disabled ship by default. */
+.__FEATURE_CSS_CLASS__ button {
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.__FEATURE_CSS_CLASS__ button:focus-visible,
+.__FEATURE_CSS_CLASS__ input:focus-visible,
+.__FEATURE_CSS_CLASS__ select:focus-visible,
+.__FEATURE_CSS_CLASS__ a:focus-visible {
+  outline: 2px solid var(--proto-focus-ring);
+  outline-offset: 2px;
+}
+
+.__FEATURE_CSS_CLASS__ button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .__FEATURE_CSS_CLASS____nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-block-end: 16px;
+  gap: var(--proto-space-2);
+  margin-block-end: var(--proto-space-4);
 }
 
 .__FEATURE_CSS_CLASS____nav button {
-  border: 1px solid var(--color-border, #d1d5db);
-  border-radius: 8px;
-  padding: 8px 12px;
-  background: var(--color-surface, #ffffff);
-  color: inherit;
+  padding: var(--proto-space-2) var(--proto-space-3);
+  background: var(--proto-surface);
+  border: 1px solid var(--proto-border);
+  border-radius: var(--proto-radius-md);
+  font-size: var(--proto-font-sm-size);
+  line-height: var(--proto-font-sm-line);
+}
+
+.__FEATURE_CSS_CLASS____nav button:hover {
+  background: var(--proto-surface-raised);
+  border-color: var(--proto-accent);
+}
+
+.__FEATURE_CSS_CLASS____nav button:active {
+  background: var(--proto-accent-container);
 }
 
 .__FEATURE_CSS_CLASS____nav button[aria-pressed="true"] {
-  border-color: var(--color-accent, #2563eb);
+  background: var(--proto-accent);
+  border-color: var(--proto-accent);
+  color: var(--proto-on-accent);
+}
+
+.__FEATURE_CSS_CLASS____cta {
+  padding: var(--proto-space-2) var(--proto-space-4);
+  background: var(--proto-accent);
+  border: 1px solid var(--proto-accent);
+  border-radius: var(--proto-radius-md);
+  color: var(--proto-on-accent);
+  font-weight: 600;
+}
+
+.__FEATURE_CSS_CLASS____cta:hover {
+  filter: brightness(1.08);
+}
+
+.__FEATURE_CSS_CLASS____cta:active {
+  filter: brightness(0.94);
+}
+
+/* Inputs. */
+.__FEATURE_CSS_CLASS__ input,
+.__FEATURE_CSS_CLASS__ select,
+.__FEATURE_CSS_CLASS__ textarea {
+  box-sizing: border-box;
+  padding: var(--proto-space-2) var(--proto-space-3);
+  background: var(--proto-surface);
+  border: 1px solid var(--proto-border);
+  border-radius: var(--proto-radius-md);
+  color: inherit;
+  font: inherit;
+}
+
+.__FEATURE_CSS_CLASS__ input:disabled,
+.__FEATURE_CSS_CLASS__ select:disabled,
+.__FEATURE_CSS_CLASS__ textarea:disabled {
+  background: var(--proto-surface-raised);
+  color: var(--proto-text-muted);
+  cursor: not-allowed;
 }
 
 .__FEATURE_CSS_CLASS____panel {
-  border: 1px solid var(--color-border, #d1d5db);
-  border-radius: 8px;
-  padding: 20px;
-  background: var(--color-surface, #ffffff);
+  display: grid;
+  gap: var(--proto-space-3);
+  border: 1px solid var(--proto-border);
+  border-radius: var(--proto-radius-md);
+  padding: var(--proto-space-4) var(--proto-space-4) var(--proto-space-5);
+  background: var(--proto-surface);
+}
+
+.__FEATURE_CSS_CLASS____list {
+  display: grid;
+  gap: var(--proto-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.__FEATURE_CSS_CLASS____badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--proto-space-1) var(--proto-space-2);
+  border-radius: var(--proto-radius-pill);
+  background: var(--proto-accent-container);
+  color: var(--proto-text);
+  font-size: var(--proto-font-xs-size);
+  font-weight: 600;
+  line-height: var(--proto-font-xs-line);
+}
+
+.__FEATURE_CSS_CLASS____badge--success {
+  background: var(--proto-success-container);
+  color: var(--proto-success);
+}
+
+.__FEATURE_CSS_CLASS____badge--warning {
+  background: var(--proto-warning-container);
+  color: var(--proto-warning);
+}
+
+.__FEATURE_CSS_CLASS____badge--danger {
+  background: var(--proto-danger-container);
+  color: var(--proto-danger);
+}
+
+/* Loading, empty, and error states — reachable through fixture state fields. */
+.__FEATURE_CSS_CLASS____state {
+  display: grid;
+  gap: var(--proto-space-2);
+  padding: var(--proto-space-4);
+  border-radius: var(--proto-radius-md);
+}
+
+.__FEATURE_CSS_CLASS____state--loading {
+  background: var(--proto-surface-raised);
+}
+
+.__FEATURE_CSS_CLASS____state--empty {
+  background: var(--proto-surface-raised);
+  color: var(--proto-text-muted);
+  text-align: center;
+}
+
+.__FEATURE_CSS_CLASS____state--error {
+  background: var(--proto-danger-container);
+  border: 1px solid var(--proto-danger);
+  color: var(--proto-danger);
+}
+
+.__FEATURE_CSS_CLASS____skeleton {
+  display: block;
+  block-size: var(--proto-space-3);
+  border-radius: var(--proto-radius-pill);
+  background: var(--proto-border);
+}
+
+.__FEATURE_CSS_CLASS____skeleton:nth-child(2) {
+  inline-size: 72%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .__FEATURE_CSS_CLASS__ button,
+  .__FEATURE_CSS_CLASS____cta {
+    transition:
+      background var(--proto-motion-fast) ease,
+      border-color var(--proto-motion-fast) ease,
+      color var(--proto-motion-fast) ease,
+      transform var(--proto-motion-fast) ease;
+  }
+
+  .__FEATURE_CSS_CLASS__ button:active {
+    transform: translateY(1px);
+  }
+
+  .__FEATURE_CSS_CLASS____skeleton {
+    animation: __FEATURE_CAMEL__SkeletonPulse var(--proto-motion-base) ease-in-out
+      infinite alternate;
+  }
+}
+
+@keyframes __FEATURE_CAMEL__SkeletonPulse {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.45;
+  }
+}
+
+/* Responsive: widen the shell when the surface targets web. */
+@media (min-width: 768px) {
+  .__FEATURE_CSS_CLASS__:not(.__FEATURE_CSS_CLASS__--flow-preview)
+    .__FEATURE_CSS_CLASS____shell {
+    inline-size: min(100%, 720px);
+  }
+}
+
+/* Static Flow export — consumes the same --proto-* aliases as the prototype. */
+.__FEATURE_CSS_CLASS__-flow-export {
+  --prototype-flow-edge-color: var(--proto-accent);
+  --prototype-flow-edge-label-background: var(--proto-surface);
+
+  position: relative;
+  inline-size: var(--prototype-flow-width);
+  block-size: var(--prototype-flow-height);
+  min-inline-size: var(--prototype-flow-width);
+  min-block-size: var(--prototype-flow-height);
+  color: var(--proto-text);
+  background:
+    radial-gradient(circle, var(--proto-grid-dot) 1px, transparent 1px),
+    var(--proto-bg);
+  background-size: 32px 32px;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__lines polyline {
+  fill: none;
+  stroke: var(--prototype-flow-edge-color);
+  stroke-dasharray: 16 8;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 2;
+  opacity: 0.72;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__lines polygon {
+  fill: var(--prototype-flow-edge-color);
+  opacity: 0.72;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__lines [data-flow-color="secondary"],
+.__FEATURE_CSS_CLASS__-flow-export__edge-label[data-flow-color="secondary"] {
+  --prototype-flow-edge-color: var(--proto-success);
+  --prototype-flow-edge-label-background: var(--proto-success-container);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__lines [data-flow-color="tertiary"],
+.__FEATURE_CSS_CLASS__-flow-export__edge-label[data-flow-color="tertiary"] {
+  --prototype-flow-edge-color: var(--proto-warning);
+  --prototype-flow-edge-label-background: var(--proto-warning-container);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__lines [data-flow-color="quaternary"],
+.__FEATURE_CSS_CLASS__-flow-export__edge-label[data-flow-color="quaternary"] {
+  --prototype-flow-edge-color: var(--proto-danger);
+  --prototype-flow-edge-label-background: var(--proto-danger-container);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__edge-label {
+  position: absolute;
+  z-index: 4;
+  inset-inline-start: var(--prototype-flow-label-x);
+  inset-block-start: var(--prototype-flow-label-y);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--proto-space-1);
+  inline-size: max-content;
+  max-inline-size: none;
+  padding: var(--proto-space-1) var(--proto-space-3);
+  color: var(--proto-text);
+  background: var(--prototype-flow-edge-label-background);
+  border: 2px solid var(--prototype-flow-edge-color);
+  border-radius: var(--proto-radius-pill);
+  box-shadow: var(--proto-shadow-soft);
+  font-size: var(--proto-font-xs-size);
+  font-weight: 700;
+  line-height: var(--proto-font-xs-line);
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__edge-label span,
+.__FEATURE_CSS_CLASS__-flow-export__edge-label strong {
+  display: inline-block;
+  flex: 0 0 auto;
+  inline-size: max-content;
+  color: inherit;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__edge-label span {
+  color: var(--proto-text-muted);
+  text-transform: uppercase;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__edge-label strong {
+  font-weight: 700;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item {
+  position: absolute;
+  z-index: 3;
+  inset-inline-start: var(--prototype-flow-item-x);
+  inset-block-start: var(--prototype-flow-item-y);
+  display: grid;
+  box-sizing: border-box;
+  inline-size: var(--prototype-flow-item-width);
+  block-size: var(--prototype-flow-item-height);
+  overflow: hidden;
+  background: var(--proto-surface);
+  border: 1px solid var(--proto-border);
+  border-radius: var(--proto-radius-md);
+  box-shadow: var(--proto-shadow-raised);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-kind="node"] {
+  --prototype-flow-node-accent: var(--proto-accent);
+
+  place-items: center;
+  overflow: visible;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-tone="success"] {
+  --prototype-flow-node-accent: var(--proto-success);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-tone="error"] {
+  --prototype-flow-node-accent: var(--proto-danger);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-tone="warning"] {
+  --prototype-flow-node-accent: var(--proto-warning);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-kind="route"] {
+  grid-template-rows:
+    var(--prototype-flow-route-header-height)
+    var(--prototype-flow-route-preview-height);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__route-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  gap: var(--proto-space-3);
+  block-size: var(--prototype-flow-route-header-height);
+  padding: var(--proto-space-3) var(--proto-space-4);
+  background: var(--proto-bg);
+  border-block-end: 1px solid var(--proto-border);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__route-header div {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__route-header code {
+  color: var(--proto-text-muted);
+  font-size: var(--proto-font-xs-size);
+  line-height: var(--proto-font-xs-line);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__route-preview {
+  inline-size: var(--prototype-flow-route-preview-width);
+  block-size: var(--prototype-flow-route-preview-height);
+  overflow: hidden;
+  background: var(--proto-bg);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item span,
+.__FEATURE_CSS_CLASS__-flow-export__item h2,
+.__FEATURE_CSS_CLASS__-flow-export__item p {
+  margin: 0;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item span {
+  color: var(--proto-text-muted);
+  font-size: var(--proto-font-xs-size);
+  font-weight: 700;
+  line-height: var(--proto-font-xs-line);
+  text-transform: uppercase;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item h2 {
+  color: var(--proto-text);
+  font-size: var(--proto-font-md-size);
+  font-weight: 700;
+  line-height: var(--proto-font-md-line);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--proto-text-muted);
+  font-size: var(--proto-font-xs-size);
+  line-height: var(--proto-font-xs-line);
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__node-surface {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: var(--proto-space-4);
+  color: var(--proto-text);
+  background: var(--proto-surface);
+  border: 2px solid var(--prototype-flow-node-accent);
+  border-radius: var(--proto-radius-md);
+  box-shadow: var(--proto-shadow-raised);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-shape="decision"]
+  .__FEATURE_CSS_CLASS__-flow-export__node-surface {
+  inline-size: 72%;
+  block-size: 72%;
+  padding: var(--proto-space-3);
+  border-radius: var(--proto-radius-sm);
+  transform: rotate(45deg);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__node-copy {
+  display: grid;
+  gap: var(--proto-space-1);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  text-align: start;
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-shape="decision"]
+  .__FEATURE_CSS_CLASS__-flow-export__node-copy {
+  inline-size: 128%;
+  text-align: center;
+  transform: rotate(-45deg);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-shape="decision"] h2 {
+  font-size: var(--proto-font-sm-size);
+  line-height: var(--proto-font-sm-line);
+}
+
+.__FEATURE_CSS_CLASS__-flow-export__item[data-shape="decision"] p {
+  display: none;
 }

@@ -1,0 +1,11 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 1.333V5.333" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16 26.667V30.667" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1.333 16H5.333" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M26.667 16H30.667" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.633 5.633L8.461 8.461" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M23.539 23.539L26.367 26.367" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.633 26.367L8.461 23.539" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M23.539 8.461L26.367 5.633" stroke="white" stroke-width="2.667" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16 7.333C11.213 7.333 7.333 11.213 7.333 16C7.333 20.787 11.213 24.667 16 24.667C20.787 24.667 24.667 20.787 24.667 16C24.667 11.213 20.787 7.333 16 7.333ZM16 10C12.686 10 10 12.686 10 16C10 19.314 12.686 22 16 22C19.314 22 22 19.314 22 16C22 12.686 19.314 10 16 10Z" fill="white"/>
+</svg>

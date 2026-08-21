@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Product Implementation"
+  short_description: "Build products across frontend architectures"
+  default_prompt: "Use $frontend-product-implementation to resolve the target runtime architecture and implement this frontend product or feature with framework-native conventions and design-system governance."

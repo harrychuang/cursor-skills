@@ -1,0 +1,1655 @@
+{
+  "stories": {
+    "components-broker-import-menu--focus-visible": {
+      "componentTitle": "Broker Import Menu",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "exported",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Menu",
+      "updatedAt": "2026-06-04T09:16:57.571Z"
+    },
+    "components-bottom-navigation--all-variants": {
+      "componentTitle": "Bottom Navigation",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-31308",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Navigation",
+      "updatedAt": "2026-06-10T07:58:24.618Z"
+    },
+    "pages-inventory-realtime-quote-page--default": {
+      "componentTitle": "Inventory Realtime Quote Page",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=25668-74952",
+      "figmaReviewStatus": "needs-fix",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Pages/Inventory Realtime Quote Page",
+      "updatedAt": "2026-06-10T06:05:40.987Z"
+    },
+    "components-bottom-navigation--focus-visible": {
+      "componentTitle": "Bottom Navigation",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-31308",
+      "figmaReviewStatus": "approved",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Navigation",
+      "updatedAt": "2026-06-05T02:17:05.554Z"
+    },
+    "components-bottom-navigation--default": {
+      "componentTitle": "Bottom Navigation",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-31308",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Navigation",
+      "updatedAt": "2026-06-05T08:22:54.078Z"
+    },
+    "components-bottom-sheet--all-variants": {
+      "componentTitle": "Bottom Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224755",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Sheet",
+      "updatedAt": "2026-06-05T02:18:11.880Z"
+    },
+    "components-bottom-sheet--settings": {
+      "componentTitle": "Bottom Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224755",
+      "figmaReviewStatus": "needs-fix",
+      "name": "Settings",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Sheet",
+      "updatedAt": "2026-06-11T06:28:13.640Z"
+    },
+    "components-bottom-sheet--watchlist-add": {
+      "componentTitle": "Bottom Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224755",
+      "figmaReviewStatus": "exported",
+      "name": "Watchlist Add",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Sheet",
+      "updatedAt": "2026-06-05T02:17:29.364Z"
+    },
+    "components-bottom-sheet-cell--all-variants": {
+      "componentTitle": "Bottom Sheet Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224726",
+      "figmaReviewStatus": "exported",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Sheet Cell",
+      "updatedAt": "2026-06-05T02:18:29.809Z"
+    },
+    "components-bottom-sheet-footer-button--focus-visible": {
+      "componentTitle": "Bottom Sheet Footer Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224793",
+      "figmaReviewStatus": "approved",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Sheet Footer Button",
+      "updatedAt": "2026-06-05T02:19:11.110Z"
+    },
+    "components-bottom-sheet-header--all-variants": {
+      "componentTitle": "Bottom Sheet Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224712",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Bottom Sheet Header",
+      "updatedAt": "2026-06-05T02:19:43.539Z"
+    },
+    "components-broker-icon--all-variants": {
+      "componentTitle": "Broker Icon",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29213-87255",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Icon",
+      "updatedAt": "2026-06-05T02:41:10.289Z"
+    },
+    "components-broker-import-header--all-variants": {
+      "componentTitle": "Broker Import Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=8159-289815",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Header",
+      "updatedAt": "2026-06-05T03:00:51.899Z"
+    },
+    "components-broker-import-menu--default": {
+      "componentTitle": "Broker Import Menu",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=7033-249934",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Menu",
+      "updatedAt": "2026-06-05T03:20:50.461Z"
+    },
+    "components-broker-import-row--all-parts": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "approved",
+      "name": "All Parts",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Row",
+      "updatedAt": "2026-06-05T03:30:17.904Z"
+    },
+    "components-broker-import-row--default": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "exported",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Row",
+      "updatedAt": "2026-06-05T03:21:21.747Z"
+    },
+    "components-broker-import-row--without-promo": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "exported",
+      "name": "Without Promo",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Row",
+      "updatedAt": "2026-06-05T03:21:36.998Z"
+    },
+    "components-broker-import-row--focus-visible": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "exported",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Row",
+      "updatedAt": "2026-06-05T03:21:48.993Z"
+    },
+    "components-broker-import-row--without-switch-slot": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "exported",
+      "name": "Without Switch Slot",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Row",
+      "updatedAt": "2026-06-05T03:22:02.858Z"
+    },
+    "components-broker-import-row--custom-source": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "exported",
+      "name": "Custom Source",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Row",
+      "updatedAt": "2026-06-05T03:27:19.158Z"
+    },
+    "components-edge-status-toggle--default": {
+      "componentTitle": "Edge Status Toggle",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=25668-74952",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Edge Status Toggle",
+      "updatedAt": "2026-06-05T03:34:31.285Z"
+    },
+    "components-event-filter-dropdown--all-variants": {
+      "componentTitle": "Event Filter Dropdown",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187703",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Dropdown",
+      "updatedAt": "2026-06-05T03:57:38.924Z"
+    },
+    "components-event-filter-dropdown--all-events": {
+      "componentTitle": "Event Filter Dropdown",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187703",
+      "figmaReviewStatus": "approved",
+      "name": "All Events",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Dropdown",
+      "updatedAt": "2026-06-05T03:53:02.399Z"
+    },
+    "components-event-filter-option--event-category-examples": {
+      "componentTitle": "Event Filter Option",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187453",
+      "figmaReviewStatus": "needs-fix",
+      "name": "Event Category Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Option",
+      "updatedAt": "2026-06-05T03:58:04.170Z"
+    },
+    "components-event-filter-option--all-variants": {
+      "componentTitle": "Event Filter Option",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187453",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "container 一直無法正確 hub content，改由 cursor + figma mcp 來修正",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Option",
+      "updatedAt": "2026-06-05T06:33:48.452Z"
+    },
+    "components-event-filter-option--default": {
+      "componentTitle": "Event Filter Option",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187453",
+      "figmaReviewStatus": "exported",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Option",
+      "updatedAt": "2026-06-05T06:18:34.904Z"
+    },
+    "components-event-filter-sheet--interactive-multi-select": {
+      "componentTitle": "Event Filter Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187371",
+      "figmaReviewStatus": "exported",
+      "name": "Interactive Multi Select",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Sheet",
+      "updatedAt": "2026-06-05T06:51:51.538Z"
+    },
+    "components-event-filter-sheet--selected-options": {
+      "componentTitle": "Event Filter Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187371",
+      "figmaReviewStatus": "approved",
+      "name": "Selected Options",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Sheet",
+      "updatedAt": "2026-06-11T06:58:56.697Z"
+    },
+    "components-event-name-label--all-examples": {
+      "componentTitle": "Event Name Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187525",
+      "figmaReviewStatus": "exported",
+      "name": "All Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Name Label",
+      "updatedAt": "2026-06-05T07:21:49.698Z"
+    },
+    "components-event-name-label--default": {
+      "componentTitle": "Event Name Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187525",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Name Label",
+      "updatedAt": "2026-06-05T07:22:03.961Z"
+    },
+    "components-event-table-row--ex-right-and-dividend": {
+      "componentTitle": "Event Table Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187556",
+      "figmaReviewStatus": "exported",
+      "name": "Ex Right And Dividend",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Table Row",
+      "updatedAt": "2026-06-05T07:22:53.830Z"
+    },
+    "components-event-table-row--eps-values": {
+      "componentTitle": "Event Table Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187556",
+      "figmaReviewStatus": "exported",
+      "name": "Eps Values",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Table Row",
+      "updatedAt": "2026-06-05T07:23:38.836Z"
+    },
+    "components-event-table-row--all-variants": {
+      "componentTitle": "Event Table Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187556",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Table Row",
+      "updatedAt": "2026-06-05T07:36:27.039Z"
+    },
+    "components-floating-action-pill--all-variants": {
+      "componentTitle": "Floating Action Pill",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=25668-74952",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Floating Action Pill",
+      "updatedAt": "2026-06-05T09:49:48.889Z"
+    },
+    "components-graphic--all-variants": {
+      "componentTitle": "Graphic",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Graphic",
+      "updatedAt": "2026-06-05T09:50:08.422Z"
+    },
+    "components-icon--all-variants": {
+      "componentTitle": "Icon",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Icon",
+      "updatedAt": "2026-06-05T09:50:34.215Z"
+    },
+    "components-main-force-stock-row--all-variants": {
+      "componentTitle": "Main Force Stock Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-95615",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Main Force Stock Row",
+      "updatedAt": "2026-06-08T02:45:36.036Z"
+    },
+    "components-main-force-trade-tag--all-variants": {
+      "componentTitle": "Main Force Trade Tag",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-95624",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Main Force Trade Tag",
+      "updatedAt": "2026-06-08T02:46:04.895Z"
+    },
+    "components-main-force-weather-indicator--all-variants": {
+      "componentTitle": "Main Force Weather Indicator",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-97253",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Main Force Weather Indicator",
+      "updatedAt": "2026-06-08T02:46:41.491Z"
+    },
+    "components-market-filter-tab-strip--all-variants": {
+      "componentTitle": "Market Filter Tab Strip",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224755",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Filter Tab Strip",
+      "updatedAt": "2026-06-08T02:47:35.029Z"
+    },
+    "components-market-tab-strip--all-variants": {
+      "componentTitle": "Market Tab Strip",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29199-20518",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Tab Strip",
+      "updatedAt": "2026-06-08T02:48:13.089Z"
+    },
+    "components-new-badge--default": {
+      "componentTitle": "New Badge",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-103989",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/New Badge",
+      "updatedAt": "2026-06-08T02:48:33.677Z"
+    },
+    "components-portfolio-add-action-button--all-variants": {
+      "componentTitle": "Portfolio Add Action Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29213-89332",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Add Action Button",
+      "updatedAt": "2026-06-08T02:53:31.857Z"
+    },
+    "components-portfolio-add-action-section--all-variants": {
+      "componentTitle": "Portfolio Add Action Section",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-94535",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Add Action Section",
+      "updatedAt": "2026-06-08T03:09:02.519Z"
+    },
+    "components-portfolio-attribute-label--all-variants": {
+      "componentTitle": "Portfolio Attribute Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-159854",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Attribute Label",
+      "updatedAt": "2026-06-08T03:12:14.363Z"
+    },
+    "components-portfolio-fit-assessment-indicator--all-variants": {
+      "componentTitle": "Portfolio Fit Assessment Indicator",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-159887",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit Assessment Indicator",
+      "updatedAt": "2026-06-08T03:15:34.047Z"
+    },
+    "components-portfolio-fit-chart--all-observed-variants": {
+      "componentTitle": "Portfolio Fit Chart",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-160554",
+      "figmaReviewStatus": "approved",
+      "name": "All Observed Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit Chart",
+      "updatedAt": "2026-06-08T04:01:13.572Z"
+    },
+    "components-portfolio-fit-detail-table--value-examples": {
+      "componentTitle": "Portfolio Fit Detail Table",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-162730",
+      "figmaReviewStatus": "approved",
+      "name": "Value Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit Detail Table",
+      "updatedAt": "2026-06-08T06:10:31.585Z"
+    },
+    "components-portfolio-fit-list-header--all-columns": {
+      "componentTitle": "Portfolio Fit List Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29208-159790",
+      "figmaReviewStatus": "approved",
+      "name": "All Columns",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit List Header",
+      "updatedAt": "2026-06-08T06:19:09.850Z"
+    },
+    "components-portfolio-fit-stock-row--all-variants": {
+      "componentTitle": "Portfolio Fit Stock Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29208-159824",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit Stock Row",
+      "updatedAt": "2026-06-08T06:25:03.415Z"
+    },
+    "components-portfolio-fit-stock-sheet--with-more-detail-rows": {
+      "componentTitle": "Portfolio Fit Stock Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-162730",
+      "figmaReviewStatus": "approved",
+      "name": "With More Detail Rows",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit Stock Sheet",
+      "updatedAt": "2026-06-08T06:39:15.842Z"
+    },
+    "components-portfolio-health-check-cell--all-variants": {
+      "componentTitle": "Portfolio Health Check Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-173922",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Health Check Cell",
+      "updatedAt": "2026-06-08T08:31:53.357Z"
+    },
+    "components-portfolio-health-check-row--above-quarter-line": {
+      "componentTitle": "Portfolio Health Check Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-173935",
+      "figmaReviewStatus": "approved",
+      "name": "Above Quarter Line",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Health Check Row",
+      "updatedAt": "2026-06-08T08:32:18.953Z"
+    },
+    "components-portfolio-health-report-section--all-variants": {
+      "componentTitle": "Portfolio Health Report Section",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29210-26286",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Health Report Section",
+      "updatedAt": "2026-06-08T08:32:44.376Z"
+    },
+    "components-portfolio-manual-import-cell--all-variants": {
+      "componentTitle": "Portfolio Manual Import Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-89650",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Manual Import Cell",
+      "updatedAt": "2026-06-08T09:29:23.790Z"
+    },
+    "components-portfolio-manual-import-row--entered-values": {
+      "componentTitle": "Portfolio Manual Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-89662",
+      "figmaReviewStatus": "approved",
+      "name": "Entered Values",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Manual Import Row",
+      "updatedAt": "2026-06-08T09:50:31.321Z"
+    },
+    "components-portfolio-manual-import-value-field--all-variants": {
+      "componentTitle": "Portfolio Manual Import Value Field",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29214-89592",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Manual Import Value Field",
+      "updatedAt": "2026-06-08T09:51:06.304Z"
+    },
+    "components-portfolio-preference-header--all-variants": {
+      "componentTitle": "Portfolio Preference Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-159069",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preference Header",
+      "updatedAt": "2026-06-09T00:50:23.574Z"
+    },
+    "components-portfolio-preferred-stock-list-header--all-columns": {
+      "componentTitle": "Portfolio Preferred Stock List Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171392",
+      "figmaReviewStatus": "approved",
+      "name": "All Columns",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preferred Stock List Header",
+      "updatedAt": "2026-06-09T01:28:27.077Z"
+    },
+    "components-portfolio-preferred-stock-row--all-examples": {
+      "componentTitle": "Portfolio Preferred Stock Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171407",
+      "figmaReviewStatus": "approved",
+      "name": "All Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preferred Stock Row",
+      "updatedAt": "2026-06-09T02:42:43.567Z"
+    },
+    "components-portfolio-preferred-stock-title--default": {
+      "componentTitle": "Portfolio Preferred Stock Title",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171175",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preferred Stock Title",
+      "updatedAt": "2026-06-09T02:43:05.215Z"
+    },
+    "components-portfolio-preferred-stock-top-bar--default": {
+      "componentTitle": "Portfolio Preferred Stock Top Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171182",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preferred Stock Top Bar",
+      "updatedAt": "2026-06-09T03:56:28.966Z"
+    },
+    "components-portfolio-profit-summary--all-variants": {
+      "componentTitle": "Portfolio Profit Summary",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29199-89866",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Profit Summary",
+      "updatedAt": "2026-06-09T03:57:39.901Z"
+    },
+    "components-portfolio-stock-sheet-cell--all-variants": {
+      "componentTitle": "Portfolio Stock Sheet Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-162829",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Stock Sheet Cell",
+      "updatedAt": "2026-06-09T06:49:20.432Z"
+    },
+    "components-promotional-badge--all-variants": {
+      "componentTitle": "Promotional Badge",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=23517-229465",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Promotional Badge",
+      "updatedAt": "2026-06-09T07:46:51.485Z"
+    },
+    "components-quote-list-column-header--default": {
+      "componentTitle": "Quote List Column Header",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Quote List Column Header",
+      "updatedAt": "2026-06-09T07:47:22.249Z"
+    },
+    "components-realtime-quote-row--all-variants": {
+      "componentTitle": "Realtime Quote Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-31181",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Realtime Quote Row",
+      "updatedAt": "2026-06-09T09:50:14.241Z"
+    },
+    "components-relative-date-label--observed-examples": {
+      "componentTitle": "Relative Date Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187463",
+      "figmaReviewStatus": "approved",
+      "name": "Observed Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Relative Date Label",
+      "updatedAt": "2026-06-10T01:50:19.925Z"
+    },
+    "components-portfolio-preferred-stock-top-bar--right-action-focus-visible": {
+      "componentTitle": "Portfolio Preferred Stock Top Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171182",
+      "figmaReviewStatus": "exported",
+      "name": "Right Action Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preferred Stock Top Bar",
+      "updatedAt": "2026-06-10T00:41:22.791Z"
+    },
+    "components-return-today-button--focus-visible": {
+      "componentTitle": "Return Today Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187687",
+      "figmaReviewStatus": "exported",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Return Today Button",
+      "updatedAt": "2026-06-10T01:50:29.473Z"
+    },
+    "components-return-today-button--disabled": {
+      "componentTitle": "Return Today Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187687",
+      "figmaReviewStatus": "exported",
+      "name": "Disabled",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Return Today Button",
+      "updatedAt": "2026-06-10T01:50:43.606Z"
+    },
+    "components-return-today-button--all-variants": {
+      "componentTitle": "Return Today Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187687",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Return Today Button",
+      "updatedAt": "2026-06-10T01:58:45.333Z"
+    },
+    "components-selection-control--all-variants": {
+      "componentTitle": "Selection Control",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=22911-207990",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Selection Control",
+      "updatedAt": "2026-06-10T02:08:36.559Z"
+    },
+    "components-selection-control--indeterminate": {
+      "componentTitle": "Selection Control",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=22911-207990",
+      "figmaReviewStatus": "exported",
+      "name": "Indeterminate",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Selection Control",
+      "updatedAt": "2026-06-10T02:08:22.659Z"
+    },
+    "components-similar-stock-button--focus-visible": {
+      "componentTitle": "Similar Stock Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29210-28828",
+      "figmaReviewStatus": "exported",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Similar Stock Button",
+      "updatedAt": "2026-06-10T02:08:54.623Z"
+    },
+    "components-similar-stock-button--all-variants": {
+      "componentTitle": "Similar Stock Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29210-28828",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Similar Stock Button",
+      "updatedAt": "2026-06-10T02:20:26.569Z"
+    },
+    "components-switch--all-variants": {
+      "componentTitle": "Switch",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=8134-289037",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Switch",
+      "updatedAt": "2026-06-10T02:57:55.625Z"
+    },
+    "components-top-app-bar--default": {
+      "componentTitle": "Top App Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-30912",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Top App Bar",
+      "updatedAt": "2026-06-10T03:25:09.737Z"
+    },
+    "components-valuation-label--all-variants": {
+      "componentTitle": "Valuation Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-173791",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Valuation Label",
+      "updatedAt": "2026-06-10T03:58:13.726Z"
+    },
+    "components-top-app-bar--focus-visible": {
+      "componentTitle": "Top App Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-30912",
+      "figmaReviewStatus": "exported",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Top App Bar",
+      "updatedAt": "2026-06-11T03:33:51.185Z"
+    },
+    "components-portfolio-fit-chart--all-variants": {
+      "componentTitle": "Portfolio Fit Chart",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-160554",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Fit Chart",
+      "updatedAt": "2026-06-11T07:19:25.573Z"
+    },
+    "components-broker-import-menu--long-selected-label": {
+      "componentTitle": "Broker Import Menu",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=7033-249934",
+      "figmaReviewStatus": "approved",
+      "name": "Long Selected Label",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import Menu",
+      "updatedAt": "2026-06-11T06:43:55.836Z"
+    },
+    "components-event-filter-sheet--default": {
+      "componentTitle": "Event Filter Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187371",
+      "figmaReviewStatus": "exported",
+      "name": "Open Sheet",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Event Filter Sheet",
+      "updatedAt": "2026-06-11T06:44:41.431Z"
+    },
+    "components-portfolio-attribute-label--all-observed-variants": {
+      "componentTitle": "Portfolio Attribute Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-159854",
+      "figmaReviewStatus": "exported",
+      "name": "All Observed Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Attribute Label",
+      "updatedAt": "2026-06-11T07:06:53.257Z"
+    },
+    "components-portfolio-manual-import-row--default": {
+      "componentTitle": "Portfolio Manual Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-89662",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Manual Import Row",
+      "updatedAt": "2026-06-11T07:25:37.268Z"
+    },
+    "components-portfolio-preference-header--all-states": {
+      "componentTitle": "Portfolio Preference Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-159069",
+      "figmaReviewStatus": "approved",
+      "name": "All States",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preference Header",
+      "updatedAt": "2026-06-11T07:56:05.955Z"
+    },
+    "components-portfolio-preference-header--focus-visible": {
+      "componentTitle": "Portfolio Preference Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-159069",
+      "figmaReviewStatus": "exported",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Preference Header",
+      "updatedAt": "2026-06-11T07:26:20.627Z"
+    },
+    "components-actions-button--default": {
+      "componentTitle": "Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=1934-94",
+      "figmaReviewStatus": "exported",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Button",
+      "updatedAt": "2026-06-15T08:30:03.000Z"
+    },
+    "components-feedback-empty-state--complete": {
+      "componentTitle": "Empty State",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=5862-221812",
+      "figmaReviewStatus": "exported",
+      "name": "Complete",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Feedback/Empty State",
+      "updatedAt": "2026-06-15T08:30:03.000Z"
+    },
+    "pages-prototypes-inventory-prototype--default": {
+      "componentTitle": "Prototypes/Inventory Prototype",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "exported",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Pages/Prototypes/Inventory Prototype",
+      "updatedAt": "2026-06-12T09:10:11.863Z"
+    },
+    "components-feedback-empty-state--all-variants": {
+      "componentTitle": "Empty State",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=5862-221812",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Feedback/Empty State",
+      "updatedAt": "2026-06-17T08:47:53.299Z"
+    },
+    "components-actions-button--all-sizes": {
+      "componentTitle": "Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=1934-94",
+      "figmaReviewStatus": "approved",
+      "name": "All Sizes",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Button",
+      "updatedAt": "2026-06-15T09:03:13.601Z"
+    },
+    "components-actions-button--all-observed-states": {
+      "componentTitle": "Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=1934-94",
+      "figmaReviewStatus": "approved",
+      "name": "All Observed States",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Button",
+      "updatedAt": "2026-06-15T09:04:17.756Z"
+    },
+    "components-assets-quarter-line-status-icon--all-variants": {
+      "componentTitle": "Quarter Line Status Icon",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "exported",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Assets/Quarter Line Status Icon",
+      "updatedAt": "2026-06-15T09:59:52.000Z"
+    },
+    "components-assets-mystock-utility-icon--all-variants": {
+      "componentTitle": "MyStock Utility Icon",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "exported",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Assets/MyStock Utility Icon",
+      "updatedAt": "2026-06-15T09:59:52.000Z"
+    },
+    "components-badges-and-labels-stock-label--default": {
+      "componentTitle": "Stock Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=47327-64981",
+      "figmaReviewStatus": "exported",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/Stock Label",
+      "updatedAt": "2026-06-15T09:59:52.000Z"
+    },
+    "components-feedback-global-bubble--all-arrow-placements": {
+      "componentTitle": "Global Bubble",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29503-80044",
+      "figmaReviewStatus": "approved",
+      "name": "All Arrow Placements",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Feedback/Global Bubble",
+      "updatedAt": "2026-06-17T08:41:56.396Z"
+    },
+    "components-market-data-realtime-quote-tile--all-variants": {
+      "componentTitle": "Realtime Quote Tile",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=18095-175915",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Realtime Quote Tile",
+      "updatedAt": "2026-06-17T09:49:04.501Z"
+    },
+    "components-portfolio-management-portfolio-add-holding-sheet--all-variants": {
+      "componentTitle": "Portfolio Add Holding Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=7533-257724",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Management/Portfolio Add Holding Sheet",
+      "updatedAt": "2026-06-18T01:28:56.392Z"
+    },
+    "components-sheets-and-overlays-popup-dialog--all-variants": {
+      "componentTitle": "Popup Dialog",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=5906-218640",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Sheets And Overlays/Popup Dialog",
+      "updatedAt": "2026-06-17T09:06:10.350Z"
+    },
+    "components-market-data-stock-card--all-variants": {
+      "componentTitle": "Stock Card",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=51036-377157",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Stock Card",
+      "updatedAt": "2026-06-17T10:01:30.191Z"
+    },
+    "components-market-data-asset-trend-chart--default": {
+      "componentTitle": "Asset Trend Chart",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=51059-51227",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Asset Trend Chart",
+      "updatedAt": "2026-06-17T08:11:21.437Z"
+    },
+    "components-market-data-trend-analysis-header--default": {
+      "componentTitle": "Trend Analysis Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=51059-51226",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Trend Analysis Header",
+      "updatedAt": "2026-06-17T07:29:41.611Z"
+    },
+    "components-market-data-stock-calendar--default": {
+      "componentTitle": "Stock Calendar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=51054-298722",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Stock Calendar",
+      "updatedAt": "2026-06-17T09:21:59.268Z"
+    },
+    "components-market-data-stock-calendar--observed-states": {
+      "componentTitle": "Stock Calendar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=51054-298722",
+      "figmaReviewStatus": "exported",
+      "name": "Observed States",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Stock Calendar",
+      "updatedAt": "2026-06-16T10:06:58.000Z"
+    },
+    "components-actions-floating-action-pill--all-variants": {
+      "componentTitle": "Floating Action Pill",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=25668-74952",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Floating Action Pill",
+      "updatedAt": "2026-06-17T08:19:23.296Z"
+    },
+    "components-actions-similar-stock-button--all-variants": {
+      "componentTitle": "Similar Stock Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29210-28828",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Similar Stock Button",
+      "updatedAt": "2026-06-17T08:11:43.946Z"
+    },
+    "components-actions-return-today-button--all-variants": {
+      "componentTitle": "Return Today Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187687",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Return Today Button",
+      "updatedAt": "2026-06-17T08:11:58.927Z"
+    },
+    "components-actions-portfolio-add-action-button--all-variants": {
+      "componentTitle": "Portfolio Add Action Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29213-89332",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Actions/Portfolio Add Action Button",
+      "updatedAt": "2026-06-17T08:20:03.501Z"
+    },
+    "components-market-data-main-force-stock-row--all-variants": {
+      "componentTitle": "Main Force Stock Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-95615",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Main Force Stock Row",
+      "updatedAt": "2026-06-17T08:15:55.890Z"
+    },
+    "components-market-data-main-force-weather-indicator--all-variants": {
+      "componentTitle": "Main Force Weather Indicator",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-97253",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Main Force Weather Indicator",
+      "updatedAt": "2026-06-17T08:16:13.072Z"
+    },
+    "components-market-data-quote-list-column-header--default": {
+      "componentTitle": "Quote List Column Header",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Quote List Column Header",
+      "updatedAt": "2026-06-17T08:16:57.449Z"
+    },
+    "components-market-data-realtime-quote-row--all-variants": {
+      "componentTitle": "Realtime Quote Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-31181",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Realtime Quote Row",
+      "updatedAt": "2026-06-17T09:13:25.326Z"
+    },
+    "components-assets-broker-icon--all-variants": {
+      "componentTitle": "Broker Icon",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29213-87255",
+      "figmaReviewStatus": "needs-fix",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Assets/Broker Icon",
+      "updatedAt": "2026-06-17T08:19:03.283Z"
+    },
+    "components-assets-icon--all-variants": {
+      "componentTitle": "Icon",
+      "figmaNodeUrl": "",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Assets/Icon",
+      "updatedAt": "2026-06-17T08:31:09.487Z"
+    },
+    "components-badges-and-labels-main-force-trade-tag--all-variants": {
+      "componentTitle": "Main Force Trade Tag",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-95624",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/Main Force Trade Tag",
+      "updatedAt": "2026-06-17T08:31:30.527Z"
+    },
+    "components-badges-and-labels-new-badge--default": {
+      "componentTitle": "New Badge",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-103989",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/New Badge",
+      "updatedAt": "2026-06-17T08:31:47.330Z"
+    },
+    "components-badges-and-labels-portfolio-attribute-label--all-variants": {
+      "componentTitle": "Portfolio Attribute Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-159854",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/Portfolio Attribute Label",
+      "updatedAt": "2026-06-17T08:32:03.982Z"
+    },
+    "components-badges-and-labels-promotional-badge--all-variants": {
+      "componentTitle": "Promotional Badge",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=23517-229465",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/Promotional Badge",
+      "updatedAt": "2026-06-17T08:37:52.908Z"
+    },
+    "components-badges-and-labels-stock-label--long-name": {
+      "componentTitle": "Stock Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=47327-64981",
+      "figmaReviewStatus": "approved",
+      "name": "Long Name",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/Stock Label",
+      "updatedAt": "2026-06-17T08:41:25.706Z"
+    },
+    "components-badges-and-labels-valuation-label--all-variants": {
+      "componentTitle": "Valuation Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-173791",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Badges And Labels/Valuation Label",
+      "updatedAt": "2026-06-17T08:39:13.938Z"
+    },
+    "components-controls-edge-status-toggle--focus-visible": {
+      "componentTitle": "Edge Status Toggle",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=25668-74952",
+      "figmaReviewStatus": "approved",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Controls/Edge Status Toggle",
+      "updatedAt": "2026-06-17T08:39:33.895Z"
+    },
+    "components-controls-selection-control--all-variants": {
+      "componentTitle": "Selection Control",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=22911-207990",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Controls/Selection Control",
+      "updatedAt": "2026-06-17T08:39:45.736Z"
+    },
+    "components-controls-switch--all-variants": {
+      "componentTitle": "Switch",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=8134-289037",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Controls/Switch",
+      "updatedAt": "2026-06-17T09:02:30.712Z"
+    },
+    "components-navigation-bottom-navigation--all-variants": {
+      "componentTitle": "Bottom Navigation",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-31308",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Navigation/Bottom Navigation",
+      "updatedAt": "2026-06-17T08:49:49.999Z"
+    },
+    "components-navigation-market-filter-tab-strip--all-variants": {
+      "componentTitle": "Market Filter Tab Strip",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224755",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Navigation/Market Filter Tab Strip",
+      "updatedAt": "2026-06-17T08:50:14.663Z"
+    },
+    "components-navigation-market-tab-strip--all-variants": {
+      "componentTitle": "Market Tab Strip",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29199-20518",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Navigation/Market Tab Strip",
+      "updatedAt": "2026-06-17T08:50:39.250Z"
+    },
+    "components-navigation-top-app-bar--default": {
+      "componentTitle": "Top App Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-30912",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Navigation/Top App Bar",
+      "updatedAt": "2026-06-17T08:53:04.080Z"
+    },
+    "components-navigation-top-app-bar--discussion-active": {
+      "componentTitle": "Top App Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29202-30912",
+      "figmaReviewStatus": "exported",
+      "name": "Discussion Active",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Navigation/Top App Bar",
+      "updatedAt": "2026-06-17T08:52:50.460Z"
+    },
+    "components-sheets-and-overlays-bottom-sheet-cell--all-variants": {
+      "componentTitle": "Bottom Sheet Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224726",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Sheets And Overlays/Bottom Sheet Cell",
+      "updatedAt": "2026-06-17T08:59:23.159Z"
+    },
+    "components-sheets-and-overlays-bottom-sheet-footer-button--default": {
+      "componentTitle": "Bottom Sheet Footer Button",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224793",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Sheets And Overlays/Bottom Sheet Footer Button",
+      "updatedAt": "2026-06-17T08:59:40.175Z"
+    },
+    "components-sheets-and-overlays-bottom-sheet-header--all-variants": {
+      "componentTitle": "Bottom Sheet Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224712",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Sheets And Overlays/Bottom Sheet Header",
+      "updatedAt": "2026-06-17T09:00:00.259Z"
+    },
+    "components-sheets-and-overlays-bottom-sheet--all-variants": {
+      "componentTitle": "Bottom Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=16405-224755",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Sheets And Overlays/Bottom Sheet",
+      "updatedAt": "2026-06-17T09:00:50.314Z"
+    },
+    "components-events-event-filter-dropdown--all-variants": {
+      "componentTitle": "Event Filter Dropdown",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187703",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Events/Event Filter Dropdown",
+      "updatedAt": "2026-06-17T09:22:28.818Z"
+    },
+    "components-events-event-filter-option--all-variants": {
+      "componentTitle": "Event Filter Option",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187453",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Events/Event Filter Option",
+      "updatedAt": "2026-06-17T09:22:44.057Z"
+    },
+    "components-events-event-filter-sheet--selected-options": {
+      "componentTitle": "Event Filter Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187371",
+      "figmaReviewStatus": "approved",
+      "name": "Selected Options",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Events/Event Filter Sheet",
+      "updatedAt": "2026-06-17T09:23:02.469Z"
+    },
+    "components-events-event-name-label--all-examples": {
+      "componentTitle": "Event Name Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187525",
+      "figmaReviewStatus": "approved",
+      "name": "All Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Events/Event Name Label",
+      "updatedAt": "2026-06-17T09:23:18.246Z"
+    },
+    "components-events-event-table-row--all-variants": {
+      "componentTitle": "Event Table Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187556",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Events/Event Table Row",
+      "updatedAt": "2026-06-17T09:23:43.782Z"
+    },
+    "components-events-relative-date-label--observed-examples": {
+      "componentTitle": "Relative Date Label",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=19215-187463",
+      "figmaReviewStatus": "approved",
+      "name": "Observed Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Events/Relative Date Label",
+      "updatedAt": "2026-06-17T09:38:41.084Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-assessment-indicator--all-variants": {
+      "componentTitle": "Portfolio Fit Assessment Indicator",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-159887",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit Assessment Indicator",
+      "updatedAt": "2026-06-17T09:27:07.616Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-chart--all-variants": {
+      "componentTitle": "Portfolio Fit Chart",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-160554",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit Chart",
+      "updatedAt": "2026-06-18T00:58:05.549Z"
+    },
+    "components-broker-import-broker-import-header--all-variants": {
+      "componentTitle": "Broker Import Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=8159-289815",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import/Broker Import Header",
+      "updatedAt": "2026-06-17T09:42:32.713Z"
+    },
+    "components-broker-import-broker-import-menu--default": {
+      "componentTitle": "Broker Import Menu",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=7033-249934",
+      "figmaReviewStatus": "exported",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import/Broker Import Menu",
+      "updatedAt": "2026-06-17T09:42:39.419Z"
+    },
+    "components-broker-import-broker-import-row--all-parts": {
+      "componentTitle": "Broker Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=15937-219728",
+      "figmaReviewStatus": "approved",
+      "name": "All Parts",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import/Broker Import Row",
+      "updatedAt": "2026-06-18T01:22:55.996Z"
+    },
+    "components-market-data-realtime-quote-tile--realtime-with-event": {
+      "componentTitle": "Realtime Quote Tile",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=18095-175915",
+      "figmaReviewStatus": "exported",
+      "name": "Realtime With Event",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Market Data/Realtime Quote Tile",
+      "updatedAt": "2026-06-17T09:47:14.656Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-chart--default": {
+      "componentTitle": "Portfolio Fit Chart",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-160554",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit Chart",
+      "updatedAt": "2026-06-18T00:57:41.587Z"
+    },
+    "components-broker-import-broker-import-menu--focus-visible": {
+      "componentTitle": "Broker Import Menu",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=7033-249934",
+      "figmaReviewStatus": "approved",
+      "name": "Focus Visible",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Broker Import/Broker Import Menu",
+      "updatedAt": "2026-06-18T00:59:22.076Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-detail-table--value-examples": {
+      "componentTitle": "Portfolio Fit Detail Table",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-162730",
+      "figmaReviewStatus": "approved",
+      "name": "Value Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit Detail Table",
+      "updatedAt": "2026-06-18T01:01:03.846Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-list-header--all-columns": {
+      "componentTitle": "Portfolio Fit List Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29208-159790",
+      "figmaReviewStatus": "approved",
+      "name": "All Columns",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit List Header",
+      "updatedAt": "2026-06-18T01:01:19.174Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-stock-row--all-variants": {
+      "componentTitle": "Portfolio Fit Stock Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29208-159824",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit Stock Row",
+      "updatedAt": "2026-06-18T01:01:38.880Z"
+    },
+    "components-portfolio-analytics-portfolio-fit-stock-sheet--with-more-detail-rows": {
+      "componentTitle": "Portfolio Fit Stock Sheet",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-162730",
+      "figmaReviewStatus": "approved",
+      "name": "With More Detail Rows",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Fit Stock Sheet",
+      "updatedAt": "2026-06-18T01:11:57.378Z"
+    },
+    "components-portfolio-analytics-portfolio-health-check-cell--all-variants": {
+      "componentTitle": "Portfolio Health Check Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-173922",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Health Check Cell",
+      "updatedAt": "2026-06-18T01:03:36.125Z"
+    },
+    "components-portfolio-analytics-portfolio-health-check-row--above-quarter-line": {
+      "componentTitle": "Portfolio Health Check Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-173935",
+      "figmaReviewStatus": "approved",
+      "name": "Above Quarter Line",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Health Check Row",
+      "updatedAt": "2026-06-18T01:04:13.796Z"
+    },
+    "components-portfolio-analytics-portfolio-health-report-section--all-variants": {
+      "componentTitle": "Portfolio Health Report Section",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29210-26286",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Health Report Section",
+      "updatedAt": "2026-06-18T01:12:32.544Z"
+    },
+    "components-portfolio-analytics-portfolio-preference-header--all-states": {
+      "componentTitle": "Portfolio Preference Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29207-159069",
+      "figmaReviewStatus": "approved",
+      "name": "All States",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Preference Header",
+      "updatedAt": "2026-06-18T01:12:49.079Z"
+    },
+    "components-portfolio-analytics-portfolio-preferred-stock-list-header--all-columns": {
+      "componentTitle": "Portfolio Preferred Stock List Header",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171392",
+      "figmaReviewStatus": "approved",
+      "name": "All Columns",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Preferred Stock List Header",
+      "updatedAt": "2026-06-18T01:13:02.581Z"
+    },
+    "components-portfolio-analytics-portfolio-preferred-stock-row--all-examples": {
+      "componentTitle": "Portfolio Preferred Stock Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171407",
+      "figmaReviewStatus": "approved",
+      "name": "All Examples",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Preferred Stock Row",
+      "updatedAt": "2026-06-18T01:13:17.946Z"
+    },
+    "components-portfolio-analytics-portfolio-preferred-stock-title--default": {
+      "componentTitle": "Portfolio Preferred Stock Title",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171175",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Preferred Stock Title",
+      "updatedAt": "2026-06-18T01:13:29.856Z"
+    },
+    "components-portfolio-analytics-portfolio-preferred-stock-top-bar--default": {
+      "componentTitle": "Portfolio Preferred Stock Top Bar",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-171182",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Preferred Stock Top Bar",
+      "updatedAt": "2026-06-18T01:17:09.880Z"
+    },
+    "components-portfolio-analytics-portfolio-profit-summary--all-variants": {
+      "componentTitle": "Portfolio Profit Summary",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29199-89866",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Profit Summary",
+      "updatedAt": "2026-06-18T01:15:16.935Z"
+    },
+    "components-portfolio-analytics-portfolio-stock-sheet-cell--all-variants": {
+      "componentTitle": "Portfolio Stock Sheet Cell",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29209-162829",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Analytics/Portfolio Stock Sheet Cell",
+      "updatedAt": "2026-06-18T01:15:34.033Z"
+    },
+    "components-portfolio-management-portfolio-add-action-section--all-variants": {
+      "componentTitle": "Portfolio Add Action Section",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-94535",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Management/Portfolio Add Action Section",
+      "updatedAt": "2026-06-18T01:15:55.179Z"
+    },
+    "components-portfolio-management-portfolio-manual-import-row--default": {
+      "componentTitle": "Portfolio Manual Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-89662",
+      "figmaReviewStatus": "approved",
+      "name": "Default",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Management/Portfolio Manual Import Row",
+      "updatedAt": "2026-06-18T01:19:02.729Z"
+    },
+    "components-portfolio-management-portfolio-manual-import-row--entered-values": {
+      "componentTitle": "Portfolio Manual Import Row",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29215-89662",
+      "figmaReviewStatus": "approved",
+      "name": "Entered Values",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Management/Portfolio Manual Import Row",
+      "updatedAt": "2026-06-18T01:19:15.257Z"
+    },
+    "components-portfolio-management-portfolio-manual-import-value-field--all-variants": {
+      "componentTitle": "Portfolio Manual Import Value Field",
+      "figmaNodeUrl": "https://www.figma.com/design/vSr4NtEwPVs6wLpqCT5PtV/%E7%B1%8C%E7%A2%BC-K-%E7%B7%9A-ChipK--Design-System-Lab-?node-id=29214-89592",
+      "figmaReviewStatus": "approved",
+      "name": "All Variants",
+      "notes": "",
+      "notesOpen": false,
+      "storyTitle": "Components/Portfolio Management/Portfolio Manual Import Value Field",
+      "updatedAt": "2026-06-18T01:19:34.287Z"
+    }
+  },
+  "version": 1
+}

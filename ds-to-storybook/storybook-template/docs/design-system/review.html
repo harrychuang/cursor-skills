@@ -1,0 +1,2136 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design System Review Queue</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-subtle: #f5f6f3;
+      --text: #141414;
+      --muted: #60645f;
+      --border: #d7dbd3;
+      --border-strong: #aeb5aa;
+      --accent: #2f5d3a;
+      --warning: #8a4b00;
+      --issue: #9c2f21;
+      --code: #f0f2ee;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: var(--accent); }
+    .layout {
+      display: grid;
+      grid-template-columns: 284px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 28px 22px;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+    }
+    main {
+      width: min(1160px, 100%);
+      padding: 34px 32px 72px;
+    }
+    .brand {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    nav a {
+      display: block;
+      padding: 7px 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+      text-decoration: none;
+    }
+    nav a:hover { color: var(--text); }
+    .hero {
+      padding: 0 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+    h1 {
+      max-width: 800px;
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+    .hero p {
+      max-width: 840px;
+      margin: 0;
+      color: var(--muted);
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .metric {
+      padding: 14px 18px 16px 0;
+      border-right: 1px solid var(--border);
+    }
+    .metric + .metric { padding-left: 18px; }
+    .metric:last-child { border-right: 0; }
+    .metric strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    section {
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 23px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    .section-lead {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: var(--surface-subtle);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: 0; }
+    code {
+      border-radius: 5px;
+      background: var(--code);
+      padding: 2px 5px;
+      font-size: 0.92em;
+    }
+    .status {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status.needs-review { border-color: #d4a64d; color: var(--warning); }
+    .status.issue { border-color: #d89a92; color: var(--issue); }
+    .status.documented { border-color: var(--border-strong); color: var(--text); }
+    .swatch-pair {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      min-width: 180px;
+    }
+    .swatch {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+    }
+    .review-image {
+      display: block;
+      max-width: min(220px, 100%);
+      max-height: 160px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      object-fit: contain;
+    }
+    .empty {
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+    @media (max-width: 900px) {
+      .layout { display: block; }
+      aside {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      main { padding: 24px 16px 56px; }
+      .summary { grid-template-columns: 1fr; }
+      .metric,
+      .metric + .metric,
+      .metric:last-child {
+        border-right: 0;
+        border-top: 1px solid var(--border);
+        padding: 14px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <p class="brand">Review Queue</p>
+      <p class="subtitle">Generated 2026-06-17T09:46:00.242Z</p>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="index.html">Full Documentation</a>
+        <a href="#source-duplicates">Duplicate Sources</a>
+        <a href="#color-scale">Color Scale Issues</a>
+        <a href="#near-colors">Near Color Tokens</a>
+        <a href="#near-numbers">Near Number Tokens</a>
+        <a href="#components">Similar Components</a>
+      </nav>
+    </aside>
+    <main>
+      <section class="hero" id="overview">
+        <h1>Design System Review Queue</h1>
+        <p>這份文件彙整萃取時需要設計或開發者審查的候選項目：重複來源、相近 token、色階問題，以及外觀或功能相近的 component。</p>
+      </section>
+
+      <div class="summary" aria-label="Review summary">
+        <div class="metric"><strong>324</strong><span>Needs review</span></div>
+        <div class="metric"><strong>0</strong><span>Duplicate sources</span></div>
+        <div class="metric"><strong>0</strong><span>Color scale issues</span></div>
+        <div class="metric"><strong>1</strong><span>Near color pairs</span></div>
+        <div class="metric"><strong>342</strong><span>Near number pairs</span></div>
+        <div class="metric"><strong>17</strong><span>Component rows</span></div>
+      </div>
+
+      <section id="source-duplicates">
+        <h2>Duplicate Sources</h2>
+        <p class="section-lead">Rows come from <code>DESIGN_EVIDENCE_MAP.md</code>. Exact or likely duplicate screenshots, Figma nodes, and rendered states should be resolved before they count as separate evidence.</p>
+        <p class="empty">No duplicate source review rows found.</p>
+      </section>
+
+      <section id="color-scale">
+        <h2>Color Scale Issues</h2>
+        <p class="section-lead">Reference color steps should run from 100 lightest to 0 darkest.</p>
+        <p class="empty">No color scale ordering issues found.</p>
+      </section>
+
+      <section id="near-colors">
+        <h2>Near Color Tokens</h2>
+        <p class="section-lead">Pairs with deltaE at or below 3 are listed for merge or keep-distinct review.</p>
+        <div class="table-wrap"><table>
+    <thead><tr><th>Token A</th><th>Token B</th><th>deltaE</th><th>Status</th></tr></thead>
+    <tbody><tr>
+  <td><span class="swatch-pair"><span class="swatch" style="background:#4b4b4b"></span><code>--cm-ref-color-neutral-29: #4b4b4b</code></span></td>
+  <td><span class="swatch-pair"><span class="swatch" style="background:#515151"></span><code>--cm-ref-color-neutral-32: #515151</code></span></td>
+  <td><code>2.57</code></td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr></tbody>
+  </table></div>
+      </section>
+
+      <section id="near-numbers">
+        <h2>Near Number Tokens</h2>
+        <p class="section-lead">Spacing, type, radius, opacity, and motion values in the same family are listed when numerically close.</p>
+        <div class="table-wrap"><table>
+    <thead><tr><th>Token A</th><th>Token B</th><th>Difference</th><th>Status</th></tr></thead>
+    <tbody><tr>
+  <td><code>--cm-ref-size-1</code><br>1px</td>
+  <td><code>--cm-ref-size-2</code><br>2px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-1</code><br>1px</td>
+  <td><code>--cm-ref-size-3</code><br>3px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-2</code><br>2px</td>
+  <td><code>--cm-ref-size-3</code><br>3px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-2</code><br>2px</td>
+  <td><code>--cm-ref-size-4</code><br>4px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-3</code><br>3px</td>
+  <td><code>--cm-ref-size-4</code><br>4px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-3</code><br>3px</td>
+  <td><code>--cm-ref-size-5</code><br>5px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-4</code><br>4px</td>
+  <td><code>--cm-ref-size-5</code><br>5px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-4</code><br>4px</td>
+  <td><code>--cm-ref-size-5-6</code><br>5.6px</td>
+  <td><code>1.60</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-4</code><br>4px</td>
+  <td><code>--cm-ref-size-6</code><br>6px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-5</code><br>5px</td>
+  <td><code>--cm-ref-size-5-6</code><br>5.6px</td>
+  <td><code>0.60</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-5</code><br>5px</td>
+  <td><code>--cm-ref-size-6</code><br>6px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-5</code><br>5px</td>
+  <td><code>--cm-ref-size-7</code><br>7px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-5-6</code><br>5.6px</td>
+  <td><code>--cm-ref-size-6</code><br>6px</td>
+  <td><code>0.40</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-5-6</code><br>5.6px</td>
+  <td><code>--cm-ref-size-7</code><br>7px</td>
+  <td><code>1.40</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-6</code><br>6px</td>
+  <td><code>--cm-ref-size-7</code><br>7px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-6</code><br>6px</td>
+  <td><code>--cm-ref-size-8</code><br>8px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-7</code><br>7px</td>
+  <td><code>--cm-ref-size-8</code><br>8px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-7</code><br>7px</td>
+  <td><code>--cm-ref-size-9</code><br>9px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-8</code><br>8px</td>
+  <td><code>--cm-ref-size-9</code><br>9px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-8</code><br>8px</td>
+  <td><code>--cm-ref-size-10</code><br>10px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-9</code><br>9px</td>
+  <td><code>--cm-ref-size-10</code><br>10px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-9</code><br>9px</td>
+  <td><code>--cm-ref-size-11</code><br>11px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-10</code><br>10px</td>
+  <td><code>--cm-ref-size-11</code><br>11px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-10</code><br>10px</td>
+  <td><code>--cm-ref-size-12</code><br>12px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-11</code><br>11px</td>
+  <td><code>--cm-ref-size-12</code><br>12px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-11</code><br>11px</td>
+  <td><code>--cm-ref-size-13</code><br>13px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-12</code><br>12px</td>
+  <td><code>--cm-ref-size-13</code><br>13px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-12</code><br>12px</td>
+  <td><code>--cm-ref-size-14</code><br>14px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-13</code><br>13px</td>
+  <td><code>--cm-ref-size-14</code><br>14px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-13</code><br>13px</td>
+  <td><code>--cm-ref-size-15</code><br>15px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-14</code><br>14px</td>
+  <td><code>--cm-ref-size-15</code><br>15px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-14</code><br>14px</td>
+  <td><code>--cm-ref-size-16</code><br>16px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-15</code><br>15px</td>
+  <td><code>--cm-ref-size-16</code><br>16px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-15</code><br>15px</td>
+  <td><code>--cm-ref-size-17</code><br>17px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-16</code><br>16px</td>
+  <td><code>--cm-ref-size-17</code><br>17px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-16</code><br>16px</td>
+  <td><code>--cm-ref-size-18</code><br>18px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-17</code><br>17px</td>
+  <td><code>--cm-ref-size-18</code><br>18px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-17</code><br>17px</td>
+  <td><code>--cm-ref-size-19</code><br>19px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-18</code><br>18px</td>
+  <td><code>--cm-ref-size-19</code><br>19px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-18</code><br>18px</td>
+  <td><code>--cm-ref-size-20</code><br>20px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-19</code><br>19px</td>
+  <td><code>--cm-ref-size-20</code><br>20px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-19</code><br>19px</td>
+  <td><code>--cm-ref-size-21</code><br>21px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-20</code><br>20px</td>
+  <td><code>--cm-ref-size-21</code><br>21px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-20</code><br>20px</td>
+  <td><code>--cm-ref-size-22</code><br>22px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-21</code><br>21px</td>
+  <td><code>--cm-ref-size-22</code><br>22px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-21</code><br>21px</td>
+  <td><code>--cm-ref-size-23</code><br>23px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-22</code><br>22px</td>
+  <td><code>--cm-ref-size-23</code><br>23px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-22</code><br>22px</td>
+  <td><code>--cm-ref-size-24</code><br>24px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-23</code><br>23px</td>
+  <td><code>--cm-ref-size-24</code><br>24px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-23</code><br>23px</td>
+  <td><code>--cm-ref-size-25</code><br>25px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-24</code><br>24px</td>
+  <td><code>--cm-ref-size-25</code><br>25px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-24</code><br>24px</td>
+  <td><code>--cm-ref-size-26</code><br>26px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-25</code><br>25px</td>
+  <td><code>--cm-ref-size-26</code><br>26px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-25</code><br>25px</td>
+  <td><code>--cm-ref-size-27</code><br>27px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-26</code><br>26px</td>
+  <td><code>--cm-ref-size-27</code><br>27px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-26</code><br>26px</td>
+  <td><code>--cm-ref-size-28</code><br>28px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-27</code><br>27px</td>
+  <td><code>--cm-ref-size-28</code><br>28px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-27</code><br>27px</td>
+  <td><code>--cm-ref-size-29</code><br>29px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-28</code><br>28px</td>
+  <td><code>--cm-ref-size-29</code><br>29px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-28</code><br>28px</td>
+  <td><code>--cm-ref-size-30</code><br>30px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-29</code><br>29px</td>
+  <td><code>--cm-ref-size-30</code><br>30px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-29</code><br>29px</td>
+  <td><code>--cm-ref-size-31</code><br>31px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-30</code><br>30px</td>
+  <td><code>--cm-ref-size-31</code><br>31px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-30</code><br>30px</td>
+  <td><code>--cm-ref-size-32</code><br>32px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-31</code><br>31px</td>
+  <td><code>--cm-ref-size-32</code><br>32px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-31</code><br>31px</td>
+  <td><code>--cm-ref-size-33</code><br>33px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-32</code><br>32px</td>
+  <td><code>--cm-ref-size-33</code><br>33px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-32</code><br>32px</td>
+  <td><code>--cm-ref-size-34</code><br>34px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-33</code><br>33px</td>
+  <td><code>--cm-ref-size-34</code><br>34px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-34</code><br>34px</td>
+  <td><code>--cm-ref-size-36</code><br>36px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-36</code><br>36px</td>
+  <td><code>--cm-ref-size-37</code><br>37px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-36</code><br>36px</td>
+  <td><code>--cm-ref-size-38</code><br>38px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-37</code><br>37px</td>
+  <td><code>--cm-ref-size-38</code><br>38px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-38</code><br>38px</td>
+  <td><code>--cm-ref-size-40</code><br>40px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-40</code><br>40px</td>
+  <td><code>--cm-ref-size-41</code><br>41px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-40</code><br>40px</td>
+  <td><code>--cm-ref-size-42</code><br>42px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-41</code><br>41px</td>
+  <td><code>--cm-ref-size-42</code><br>42px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-41</code><br>41px</td>
+  <td><code>--cm-ref-size-43</code><br>43px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-42</code><br>42px</td>
+  <td><code>--cm-ref-size-43</code><br>43px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-42</code><br>42px</td>
+  <td><code>--cm-ref-size-44</code><br>44px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-43</code><br>43px</td>
+  <td><code>--cm-ref-size-44</code><br>44px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-43</code><br>43px</td>
+  <td><code>--cm-ref-size-45</code><br>45px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-44</code><br>44px</td>
+  <td><code>--cm-ref-size-45</code><br>45px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-44</code><br>44px</td>
+  <td><code>--cm-ref-size-46</code><br>46px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-45</code><br>45px</td>
+  <td><code>--cm-ref-size-46</code><br>46px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-46</code><br>46px</td>
+  <td><code>--cm-ref-size-48</code><br>48px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-48</code><br>48px</td>
+  <td><code>--cm-ref-size-49</code><br>49px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-48</code><br>48px</td>
+  <td><code>--cm-ref-size-50</code><br>50px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-48</code><br>48px</td>
+  <td><code>--cm-ref-size-51</code><br>51px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-49</code><br>49px</td>
+  <td><code>--cm-ref-size-50</code><br>50px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-49</code><br>49px</td>
+  <td><code>--cm-ref-size-51</code><br>51px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-49</code><br>49px</td>
+  <td><code>--cm-ref-size-52</code><br>52px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-50</code><br>50px</td>
+  <td><code>--cm-ref-size-51</code><br>51px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-50</code><br>50px</td>
+  <td><code>--cm-ref-size-52</code><br>52px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-51</code><br>51px</td>
+  <td><code>--cm-ref-size-52</code><br>52px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-51</code><br>51px</td>
+  <td><code>--cm-ref-size-54</code><br>54px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-52</code><br>52px</td>
+  <td><code>--cm-ref-size-54</code><br>54px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-52</code><br>52px</td>
+  <td><code>--cm-ref-size-55</code><br>55px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-54</code><br>54px</td>
+  <td><code>--cm-ref-size-55</code><br>55px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-54</code><br>54px</td>
+  <td><code>--cm-ref-size-57</code><br>57px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-55</code><br>55px</td>
+  <td><code>--cm-ref-size-57</code><br>57px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-55</code><br>55px</td>
+  <td><code>--cm-ref-size-58</code><br>58px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-57</code><br>57px</td>
+  <td><code>--cm-ref-size-58</code><br>58px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-57</code><br>57px</td>
+  <td><code>--cm-ref-size-59</code><br>59px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-57</code><br>57px</td>
+  <td><code>--cm-ref-size-60</code><br>60px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-58</code><br>58px</td>
+  <td><code>--cm-ref-size-59</code><br>59px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-58</code><br>58px</td>
+  <td><code>--cm-ref-size-60</code><br>60px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-58</code><br>58px</td>
+  <td><code>--cm-ref-size-61</code><br>61px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-59</code><br>59px</td>
+  <td><code>--cm-ref-size-60</code><br>60px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-59</code><br>59px</td>
+  <td><code>--cm-ref-size-61</code><br>61px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-59</code><br>59px</td>
+  <td><code>--cm-ref-size-62</code><br>62px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-60</code><br>60px</td>
+  <td><code>--cm-ref-size-61</code><br>61px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-60</code><br>60px</td>
+  <td><code>--cm-ref-size-62</code><br>62px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-60</code><br>60px</td>
+  <td><code>--cm-ref-size-63</code><br>63px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-61</code><br>61px</td>
+  <td><code>--cm-ref-size-62</code><br>62px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-61</code><br>61px</td>
+  <td><code>--cm-ref-size-63</code><br>63px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-61</code><br>61px</td>
+  <td><code>--cm-ref-size-64</code><br>64px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-62</code><br>62px</td>
+  <td><code>--cm-ref-size-63</code><br>63px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-62</code><br>62px</td>
+  <td><code>--cm-ref-size-64</code><br>64px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-62</code><br>62px</td>
+  <td><code>--cm-ref-size-65</code><br>65px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-63</code><br>63px</td>
+  <td><code>--cm-ref-size-64</code><br>64px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-63</code><br>63px</td>
+  <td><code>--cm-ref-size-65</code><br>65px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-63</code><br>63px</td>
+  <td><code>--cm-ref-size-66</code><br>66px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-64</code><br>64px</td>
+  <td><code>--cm-ref-size-65</code><br>65px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-64</code><br>64px</td>
+  <td><code>--cm-ref-size-66</code><br>66px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-64</code><br>64px</td>
+  <td><code>--cm-ref-size-68</code><br>68px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-65</code><br>65px</td>
+  <td><code>--cm-ref-size-66</code><br>66px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-65</code><br>65px</td>
+  <td><code>--cm-ref-size-68</code><br>68px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-65</code><br>65px</td>
+  <td><code>--cm-ref-size-69</code><br>69px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-66</code><br>66px</td>
+  <td><code>--cm-ref-size-68</code><br>68px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-66</code><br>66px</td>
+  <td><code>--cm-ref-size-69</code><br>69px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-66</code><br>66px</td>
+  <td><code>--cm-ref-size-70</code><br>70px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-68</code><br>68px</td>
+  <td><code>--cm-ref-size-69</code><br>69px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-68</code><br>68px</td>
+  <td><code>--cm-ref-size-70</code><br>70px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-68</code><br>68px</td>
+  <td><code>--cm-ref-size-71</code><br>71px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-69</code><br>69px</td>
+  <td><code>--cm-ref-size-70</code><br>70px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-69</code><br>69px</td>
+  <td><code>--cm-ref-size-71</code><br>71px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-69</code><br>69px</td>
+  <td><code>--cm-ref-size-73</code><br>73px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-70</code><br>70px</td>
+  <td><code>--cm-ref-size-71</code><br>71px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-70</code><br>70px</td>
+  <td><code>--cm-ref-size-73</code><br>73px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-70</code><br>70px</td>
+  <td><code>--cm-ref-size-74</code><br>74px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-71</code><br>71px</td>
+  <td><code>--cm-ref-size-73</code><br>73px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-71</code><br>71px</td>
+  <td><code>--cm-ref-size-74</code><br>74px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-73</code><br>73px</td>
+  <td><code>--cm-ref-size-74</code><br>74px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-73</code><br>73px</td>
+  <td><code>--cm-ref-size-76</code><br>76px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-73</code><br>73px</td>
+  <td><code>--cm-ref-size-77</code><br>77px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-74</code><br>74px</td>
+  <td><code>--cm-ref-size-76</code><br>76px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-74</code><br>74px</td>
+  <td><code>--cm-ref-size-77</code><br>77px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-74</code><br>74px</td>
+  <td><code>--cm-ref-size-78</code><br>78px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-76</code><br>76px</td>
+  <td><code>--cm-ref-size-77</code><br>77px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-76</code><br>76px</td>
+  <td><code>--cm-ref-size-78</code><br>78px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-76</code><br>76px</td>
+  <td><code>--cm-ref-size-79</code><br>79px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-76</code><br>76px</td>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-77</code><br>77px</td>
+  <td><code>--cm-ref-size-78</code><br>78px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-77</code><br>77px</td>
+  <td><code>--cm-ref-size-79</code><br>79px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-77</code><br>77px</td>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-78</code><br>78px</td>
+  <td><code>--cm-ref-size-79</code><br>79px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-78</code><br>78px</td>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-78</code><br>78px</td>
+  <td><code>--cm-ref-size-82</code><br>82px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-79</code><br>79px</td>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-79</code><br>79px</td>
+  <td><code>--cm-ref-size-82</code><br>82px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-79</code><br>79px</td>
+  <td><code>--cm-ref-size-83</code><br>83px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>--cm-ref-size-82</code><br>82px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>--cm-ref-size-83</code><br>83px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-80</code><br>80px</td>
+  <td><code>--cm-ref-size-84</code><br>84px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-82</code><br>82px</td>
+  <td><code>--cm-ref-size-83</code><br>83px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-82</code><br>82px</td>
+  <td><code>--cm-ref-size-84</code><br>84px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-82</code><br>82px</td>
+  <td><code>--cm-ref-size-86</code><br>86px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-83</code><br>83px</td>
+  <td><code>--cm-ref-size-84</code><br>84px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-83</code><br>83px</td>
+  <td><code>--cm-ref-size-86</code><br>86px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-84</code><br>84px</td>
+  <td><code>--cm-ref-size-86</code><br>86px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-84</code><br>84px</td>
+  <td><code>--cm-ref-size-88</code><br>88px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-86</code><br>86px</td>
+  <td><code>--cm-ref-size-88</code><br>88px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-86</code><br>86px</td>
+  <td><code>--cm-ref-size-90</code><br>90px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-88</code><br>88px</td>
+  <td><code>--cm-ref-size-90</code><br>90px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-88</code><br>88px</td>
+  <td><code>--cm-ref-size-91</code><br>91px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-90</code><br>90px</td>
+  <td><code>--cm-ref-size-91</code><br>91px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-90</code><br>90px</td>
+  <td><code>--cm-ref-size-93</code><br>93px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-90</code><br>90px</td>
+  <td><code>--cm-ref-size-94</code><br>94px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-91</code><br>91px</td>
+  <td><code>--cm-ref-size-93</code><br>93px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-91</code><br>91px</td>
+  <td><code>--cm-ref-size-94</code><br>94px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-91</code><br>91px</td>
+  <td><code>--cm-ref-size-95</code><br>95px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-93</code><br>93px</td>
+  <td><code>--cm-ref-size-94</code><br>94px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-93</code><br>93px</td>
+  <td><code>--cm-ref-size-95</code><br>95px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-93</code><br>93px</td>
+  <td><code>--cm-ref-size-96</code><br>96px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-94</code><br>94px</td>
+  <td><code>--cm-ref-size-95</code><br>95px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-94</code><br>94px</td>
+  <td><code>--cm-ref-size-96</code><br>96px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-94</code><br>94px</td>
+  <td><code>--cm-ref-size-98</code><br>98px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-95</code><br>95px</td>
+  <td><code>--cm-ref-size-96</code><br>96px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-95</code><br>95px</td>
+  <td><code>--cm-ref-size-98</code><br>98px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-96</code><br>96px</td>
+  <td><code>--cm-ref-size-98</code><br>98px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-96</code><br>96px</td>
+  <td><code>--cm-ref-size-100</code><br>100px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-98</code><br>98px</td>
+  <td><code>--cm-ref-size-100</code><br>100px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-98</code><br>98px</td>
+  <td><code>--cm-ref-size-101</code><br>101px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-98</code><br>98px</td>
+  <td><code>--cm-ref-size-102</code><br>102px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-100</code><br>100px</td>
+  <td><code>--cm-ref-size-101</code><br>101px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-100</code><br>100px</td>
+  <td><code>--cm-ref-size-102</code><br>102px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-100</code><br>100px</td>
+  <td><code>--cm-ref-size-103</code><br>103px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-101</code><br>101px</td>
+  <td><code>--cm-ref-size-102</code><br>102px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-101</code><br>101px</td>
+  <td><code>--cm-ref-size-103</code><br>103px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-101</code><br>101px</td>
+  <td><code>--cm-ref-size-105</code><br>105px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-102</code><br>102px</td>
+  <td><code>--cm-ref-size-103</code><br>103px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-102</code><br>102px</td>
+  <td><code>--cm-ref-size-105</code><br>105px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-102</code><br>102px</td>
+  <td><code>--cm-ref-size-106</code><br>106px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-103</code><br>103px</td>
+  <td><code>--cm-ref-size-105</code><br>105px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-103</code><br>103px</td>
+  <td><code>--cm-ref-size-106</code><br>106px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-105</code><br>105px</td>
+  <td><code>--cm-ref-size-106</code><br>106px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-105</code><br>105px</td>
+  <td><code>--cm-ref-size-108</code><br>108px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-105</code><br>105px</td>
+  <td><code>--cm-ref-size-109</code><br>109px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-106</code><br>106px</td>
+  <td><code>--cm-ref-size-108</code><br>108px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-106</code><br>106px</td>
+  <td><code>--cm-ref-size-109</code><br>109px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-106</code><br>106px</td>
+  <td><code>--cm-ref-size-110</code><br>110px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-108</code><br>108px</td>
+  <td><code>--cm-ref-size-109</code><br>109px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-108</code><br>108px</td>
+  <td><code>--cm-ref-size-110</code><br>110px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-108</code><br>108px</td>
+  <td><code>--cm-ref-size-112</code><br>112px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-109</code><br>109px</td>
+  <td><code>--cm-ref-size-110</code><br>110px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-109</code><br>109px</td>
+  <td><code>--cm-ref-size-112</code><br>112px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-110</code><br>110px</td>
+  <td><code>--cm-ref-size-112</code><br>112px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-112</code><br>112px</td>
+  <td><code>--cm-ref-size-116</code><br>116px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-116</code><br>116px</td>
+  <td><code>--cm-ref-size-117</code><br>117px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-116</code><br>116px</td>
+  <td><code>--cm-ref-size-119</code><br>119px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-116</code><br>116px</td>
+  <td><code>--cm-ref-size-120</code><br>120px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-117</code><br>117px</td>
+  <td><code>--cm-ref-size-119</code><br>119px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-117</code><br>117px</td>
+  <td><code>--cm-ref-size-120</code><br>120px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-117</code><br>117px</td>
+  <td><code>--cm-ref-size-121</code><br>121px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-119</code><br>119px</td>
+  <td><code>--cm-ref-size-120</code><br>120px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-119</code><br>119px</td>
+  <td><code>--cm-ref-size-121</code><br>121px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-119</code><br>119px</td>
+  <td><code>--cm-ref-size-122</code><br>122px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-120</code><br>120px</td>
+  <td><code>--cm-ref-size-121</code><br>121px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-120</code><br>120px</td>
+  <td><code>--cm-ref-size-122</code><br>122px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-120</code><br>120px</td>
+  <td><code>--cm-ref-size-124</code><br>124px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-121</code><br>121px</td>
+  <td><code>--cm-ref-size-122</code><br>122px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-121</code><br>121px</td>
+  <td><code>--cm-ref-size-124</code><br>124px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-121</code><br>121px</td>
+  <td><code>--cm-ref-size-125</code><br>125px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-122</code><br>122px</td>
+  <td><code>--cm-ref-size-124</code><br>124px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-122</code><br>122px</td>
+  <td><code>--cm-ref-size-125</code><br>125px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-122</code><br>122px</td>
+  <td><code>--cm-ref-size-126</code><br>126px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-124</code><br>124px</td>
+  <td><code>--cm-ref-size-125</code><br>125px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-124</code><br>124px</td>
+  <td><code>--cm-ref-size-126</code><br>126px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-124</code><br>124px</td>
+  <td><code>--cm-ref-size-128</code><br>128px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-125</code><br>125px</td>
+  <td><code>--cm-ref-size-126</code><br>126px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-125</code><br>125px</td>
+  <td><code>--cm-ref-size-128</code><br>128px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-126</code><br>126px</td>
+  <td><code>--cm-ref-size-128</code><br>128px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-126</code><br>126px</td>
+  <td><code>--cm-ref-size-130</code><br>130px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-128</code><br>128px</td>
+  <td><code>--cm-ref-size-130</code><br>130px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-128</code><br>128px</td>
+  <td><code>--cm-ref-size-131</code><br>131px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-128</code><br>128px</td>
+  <td><code>--cm-ref-size-132</code><br>132px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-130</code><br>130px</td>
+  <td><code>--cm-ref-size-131</code><br>131px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-130</code><br>130px</td>
+  <td><code>--cm-ref-size-132</code><br>132px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-130</code><br>130px</td>
+  <td><code>--cm-ref-size-134</code><br>134px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-131</code><br>131px</td>
+  <td><code>--cm-ref-size-132</code><br>132px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-131</code><br>131px</td>
+  <td><code>--cm-ref-size-134</code><br>134px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-132</code><br>132px</td>
+  <td><code>--cm-ref-size-134</code><br>134px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-132</code><br>132px</td>
+  <td><code>--cm-ref-size-136</code><br>136px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-134</code><br>134px</td>
+  <td><code>--cm-ref-size-136</code><br>136px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-134</code><br>134px</td>
+  <td><code>--cm-ref-size-137</code><br>137px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-134</code><br>134px</td>
+  <td><code>--cm-ref-size-138</code><br>138px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-136</code><br>136px</td>
+  <td><code>--cm-ref-size-137</code><br>137px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-136</code><br>136px</td>
+  <td><code>--cm-ref-size-138</code><br>138px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-136</code><br>136px</td>
+  <td><code>--cm-ref-size-140</code><br>140px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-137</code><br>137px</td>
+  <td><code>--cm-ref-size-138</code><br>138px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-137</code><br>137px</td>
+  <td><code>--cm-ref-size-140</code><br>140px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-138</code><br>138px</td>
+  <td><code>--cm-ref-size-140</code><br>140px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-147</code><br>147px</td>
+  <td><code>--cm-ref-size-148</code><br>148px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-148</code><br>148px</td>
+  <td><code>--cm-ref-size-152</code><br>152px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-152</code><br>152px</td>
+  <td><code>--cm-ref-size-154</code><br>154px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-154</code><br>154px</td>
+  <td><code>--cm-ref-size-157</code><br>157px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-157</code><br>157px</td>
+  <td><code>--cm-ref-size-161</code><br>161px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-161</code><br>161px</td>
+  <td><code>--cm-ref-size-161-5</code><br>161.5px</td>
+  <td><code>0.50</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-161</code><br>161px</td>
+  <td><code>--cm-ref-size-165</code><br>165px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-161-5</code><br>161.5px</td>
+  <td><code>--cm-ref-size-165</code><br>165px</td>
+  <td><code>3.50</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-170</code><br>170px</td>
+  <td><code>--cm-ref-size-171</code><br>171px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-176</code><br>176px</td>
+  <td><code>--cm-ref-size-177</code><br>177px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-184</code><br>184px</td>
+  <td><code>--cm-ref-size-187</code><br>187px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-187</code><br>187px</td>
+  <td><code>--cm-ref-size-189</code><br>189px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-187</code><br>187px</td>
+  <td><code>--cm-ref-size-191</code><br>191px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-189</code><br>189px</td>
+  <td><code>--cm-ref-size-191</code><br>191px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-191</code><br>191px</td>
+  <td><code>--cm-ref-size-195</code><br>195px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-210</code><br>210px</td>
+  <td><code>--cm-ref-size-211</code><br>211px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-210</code><br>210px</td>
+  <td><code>--cm-ref-size-212</code><br>212px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-211</code><br>211px</td>
+  <td><code>--cm-ref-size-212</code><br>212px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-211</code><br>211px</td>
+  <td><code>--cm-ref-size-215</code><br>215px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-212</code><br>212px</td>
+  <td><code>--cm-ref-size-215</code><br>215px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-212</code><br>212px</td>
+  <td><code>--cm-ref-size-216</code><br>216px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-215</code><br>215px</td>
+  <td><code>--cm-ref-size-216</code><br>216px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-215</code><br>215px</td>
+  <td><code>--cm-ref-size-217</code><br>217px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-215</code><br>215px</td>
+  <td><code>--cm-ref-size-218</code><br>218px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-216</code><br>216px</td>
+  <td><code>--cm-ref-size-217</code><br>217px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-216</code><br>216px</td>
+  <td><code>--cm-ref-size-218</code><br>218px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-217</code><br>217px</td>
+  <td><code>--cm-ref-size-218</code><br>218px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-218</code><br>218px</td>
+  <td><code>--cm-ref-size-222</code><br>222px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-222</code><br>222px</td>
+  <td><code>--cm-ref-size-224</code><br>224px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-222</code><br>222px</td>
+  <td><code>--cm-ref-size-226</code><br>226px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-224</code><br>224px</td>
+  <td><code>--cm-ref-size-226</code><br>226px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-224</code><br>224px</td>
+  <td><code>--cm-ref-size-227</code><br>227px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-226</code><br>226px</td>
+  <td><code>--cm-ref-size-227</code><br>227px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-226</code><br>226px</td>
+  <td><code>--cm-ref-size-230</code><br>230px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-227</code><br>227px</td>
+  <td><code>--cm-ref-size-230</code><br>230px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-230</code><br>230px</td>
+  <td><code>--cm-ref-size-234</code><br>234px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-247</code><br>247px</td>
+  <td><code>--cm-ref-size-248</code><br>248px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-262</code><br>262px</td>
+  <td><code>--cm-ref-size-266</code><br>266px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-292</code><br>292px</td>
+  <td><code>--cm-ref-size-293</code><br>293px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-292</code><br>292px</td>
+  <td><code>--cm-ref-size-294</code><br>294px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-292</code><br>292px</td>
+  <td><code>--cm-ref-size-295</code><br>295px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-293</code><br>293px</td>
+  <td><code>--cm-ref-size-294</code><br>294px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-293</code><br>293px</td>
+  <td><code>--cm-ref-size-295</code><br>295px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-294</code><br>294px</td>
+  <td><code>--cm-ref-size-295</code><br>295px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-294</code><br>294px</td>
+  <td><code>--cm-ref-size-298</code><br>298px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-295</code><br>295px</td>
+  <td><code>--cm-ref-size-298</code><br>298px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-295</code><br>295px</td>
+  <td><code>--cm-ref-size-299</code><br>299px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-298</code><br>298px</td>
+  <td><code>--cm-ref-size-299</code><br>299px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-304</code><br>304px</td>
+  <td><code>--cm-ref-size-307</code><br>307px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-307</code><br>307px</td>
+  <td><code>--cm-ref-size-309</code><br>309px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-307</code><br>307px</td>
+  <td><code>--cm-ref-size-310</code><br>310px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-309</code><br>309px</td>
+  <td><code>--cm-ref-size-310</code><br>310px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-323</code><br>323px</td>
+  <td><code>--cm-ref-size-324</code><br>324px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-332</code><br>332px</td>
+  <td><code>--cm-ref-size-335</code><br>335px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-335</code><br>335px</td>
+  <td><code>--cm-ref-size-339</code><br>339px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-339</code><br>339px</td>
+  <td><code>--cm-ref-size-343</code><br>343px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-355</code><br>355px</td>
+  <td><code>--cm-ref-size-356</code><br>356px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-355</code><br>355px</td>
+  <td><code>--cm-ref-size-359</code><br>359px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-356</code><br>356px</td>
+  <td><code>--cm-ref-size-359</code><br>359px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status documented">Documented</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-365</code><br>365px</td>
+  <td><code>--cm-ref-size-366</code><br>366px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-372</code><br>372px</td>
+  <td><code>--cm-ref-size-374</code><br>374px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-372</code><br>372px</td>
+  <td><code>--cm-ref-size-375</code><br>375px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-372</code><br>372px</td>
+  <td><code>--cm-ref-size-376</code><br>376px</td>
+  <td><code>4</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-374</code><br>374px</td>
+  <td><code>--cm-ref-size-375</code><br>375px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-374</code><br>374px</td>
+  <td><code>--cm-ref-size-376</code><br>376px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-375</code><br>375px</td>
+  <td><code>--cm-ref-size-376</code><br>376px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-382</code><br>382px</td>
+  <td><code>--cm-ref-size-385</code><br>385px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-393</code><br>393px</td>
+  <td><code>--cm-ref-size-396</code><br>396px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-415</code><br>415px</td>
+  <td><code>--cm-ref-size-416</code><br>416px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-520</code><br>520px</td>
+  <td><code>--cm-ref-size-521</code><br>521px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-556</code><br>556px</td>
+  <td><code>--cm-ref-size-557</code><br>557px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-size-602</code><br>602px</td>
+  <td><code>--cm-ref-size-605</code><br>605px</td>
+  <td><code>3</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-2</code><br>2px</td>
+  <td><code>--cm-ref-radius-4</code><br>4px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-4</code><br>4px</td>
+  <td><code>--cm-ref-radius-5</code><br>5px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-4</code><br>4px</td>
+  <td><code>--cm-ref-radius-6</code><br>6px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-5</code><br>5px</td>
+  <td><code>--cm-ref-radius-6</code><br>6px</td>
+  <td><code>1</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-6</code><br>6px</td>
+  <td><code>--cm-ref-radius-8</code><br>8px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-12</code><br>12px</td>
+  <td><code>--cm-ref-radius-14</code><br>14px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr><tr>
+  <td><code>--cm-ref-radius-14</code><br>14px</td>
+  <td><code>--cm-ref-radius-16</code><br>16px</td>
+  <td><code>2</code> length</td>
+  <td><span class="status needs-review">Needs review</span></td>
+</tr></tbody>
+  </table></div>
+      </section>
+
+      <section id="components">
+        <h2>Similar Components</h2>
+        <p class="section-lead">Rows come from <code>COMPONENT_INVENTORY.md</code> and should link source-based previews or screenshot crops when available.</p>
+        <div class="table-wrap"><table>
+    <thead><tr><th>Candidate</th><th>Similar existing</th><th>Visual reference</th><th>Reason</th><th>Suggested action</th><th>Developer decision</th><th>Rationale</th></tr></thead>
+    <tbody><tr>
+  <td>Switch</td>
+  <td>Bottom Sheet Cell switch slot, Broker Import Row switch slot, Edge Status Toggle</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#8134:289037</code>; get_screenshot captured 2026-06-02</td>
+  <td>Bottom Sheet Cell and Broker Import Row already reserve 43x26 switch slots, and Edge Status Toggle is a separate text toggle. Only E-078 proves standalone off/on geometry, platform variants, knob shadows, and track/knob colors.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as standalone Switch. Row components compose Switch as a slot; Edge Status Toggle remains an edge-attached text status control.</td>
+</tr><tr>
+  <td>Selection Control</td>
+  <td>Bottom Sheet Cell selection control slot, Bottom Sheet selection rows, Event Filter Option, Switch</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#22911:207990</code>; get_screenshot captured 2026-06-02</td>
+  <td>Bottom Sheet rows already reserve selection slots, Event Filter Option is a filled text option, and Switch is binary on/off. Only E-079 proves standalone 20px checkbox/radio geometry with gray outlines, orange selected states, white checkbox mark, and radio inner mark.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as standalone Selection Control. Row components compose it as a slot; Event Filter Option remains a text-filled category option and Switch remains a binary on/off control.</td>
+</tr><tr>
+  <td>Popup Dialog</td>
+  <td>Bottom Sheet, Event Filter Sheet, Portfolio Add Holding Sheet, Bottom Sheet Footer Button</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#5906:218640</code>; get_screenshot captured 2026-06-15</td>
+  <td>All are modal/overlay surfaces with action controls, but Popup Dialog is centered, 292px wide, has no bottom-sheet header/drag/safe-area chrome, supports optional media slot ordering, and uses a two-action footer rather than the bottom-sheet submit strip.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as standalone Popup Dialog. Bottom-sheet components remain bottom-anchored sheet patterns; Bottom Sheet Footer Button remains sheet-scoped and should not own generic dialog actions.</td>
+</tr><tr>
+  <td>Top App Bar stock-title variant</td>
+  <td>Top App Bar, Portfolio Preferred Stock Top Bar</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#594:2002</code>; get_screenshot captured 2026-06-15</td>
+  <td>The stock-title source uses the same dark top-bar shell, 44px context-row rhythm, 27px action icons, and centered context identity as existing top-bar language.</td>
+  <td>make variant</td>
+  <td>make variant<br><span class="status documented">Documented</span></td>
+  <td>Extend Top App Bar with a stock-title variant. Portfolio Preferred Stock Top Bar remains portfolio-domain because it centers an attribute pill/title pair and context-specific right action.</td>
+</tr><tr>
+  <td>Global Bubble</td>
+  <td>Popup Dialog, Event Filter Dropdown, Portfolio Profit Summary callouts, Promotional Badge, Event Filter Option</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#29503:80044</code>; get_screenshot captured 2026-06-15</td>
+  <td>The bubble is anchored to a target with directional arrows, amber fill, and low shadow. It is not centered/modal, not a trigger/dropdown, not a chart label, and not a promo/status badge.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as standalone Global Bubble for anchored contextual callouts.</td>
+</tr><tr>
+  <td>Button</td>
+  <td>Bottom Sheet Footer Button, Portfolio Add Action Button, Portfolio Add Holding Sheet action, Similar Stock Button, Return Today Button, Event Filter Option</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#1934:94</code>; get_screenshot captured 2026-06-15</td>
+  <td>The source is a full global action component set with size/type/state/icon matrix. Existing button-like components are sheet-scoped, domain-scoped, neutral navigation, or selection options.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract Button as the global primary primitive. Domain and sheet actions may compose or map to it later only when their scoped contracts match.</td>
+</tr><tr>
+  <td>Realtime Quote Tile</td>
+  <td>Realtime Quote Row, Main Force Stock Row, Main Force Weather Indicator, Event Table Row</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#18095:175915</code>; get_screenshot captured 2026-06-15</td>
+  <td>The tile shares market colors and some weather assets, but it owns 170x148 card/tile geometry, a bottom chart/weather region, and grid-scanning density unlike 375px list rows.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Realtime Quote Tile. Realtime Quote Row remains the full-width row pattern; Main Force Weather Indicator remains row-bound inside <code>主力籌碼</code>.</td>
+</tr><tr>
+  <td>Empty State</td>
+  <td>Popup Dialog, Button, Portfolio Fit Chart empty variant, Portfolio Profit Summary empty variant, Portfolio Add Action Section</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#5862:221812</code>; get_screenshot captured 2026-06-15</td>
+  <td>Empty State shares optional media/text/action anatomy with Popup Dialog and uses Button for its CTA, but it is a non-modal 375x563 page/section state. Existing chart/profit empty variants are domain-specific data states, not reusable no-content guidance compositions.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract Empty State as a new component. Compose the optional <code>查看教學</code> action from Button; Empty State owns the 266px action width, vertical rhythm, and optional slot matrix.</td>
+</tr><tr>
+  <td>Watchlist attached floating action</td>
+  <td>Floating Action Pill, Button, Bottom Sheet Cell action row, Floating Action Pill side-action set</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51034:5228</code>; get_screenshot captured 2026-06-15</td>
+  <td>Candidate shares floating quick-action purpose, 20px icon plus 14px label anatomy, and <code>下單</code>/<code>編輯</code> actions with Floating Action Pill, but adds an attached black two-action group, divider, shadow, and edit-only mode. It is not a global Button because it owns overlay grouping and not a sheet row because it floats over content.</td>
+  <td>make variant</td>
+  <td>make variant<br><span class="status documented">Documented</span></td>
+  <td>Extend Floating Action Pill with attached watchlist group tokens and variants. Preserve existing 68x30 orange/warm-gray single-pill contract for side action sets.</td>
+</tr><tr>
+  <td>Stock Label</td>
+  <td>Realtime Quote Row, Main Force Stock Row, Portfolio Stock Sheet Cell, Event Table Row, Main Force Trade Tag, Valuation Label</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#47327:64981</code>; get_screenshot captured 2026-06-15</td>
+  <td>Candidate shares stock identity text with row/sheet components and compact label geometry with tags/pills, but it has no row columns, price data, portfolio tabs, valuation state, trade-tag semantics, or action behavior.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Stock Label. It owns only the compact display-only stock identity label contract; list rows, sheet cells, valuation labels, and main-force tags retain their scoped semantics.</td>
+</tr><tr>
+  <td>Stock Card</td>
+  <td>Realtime Quote Row, Realtime Quote Tile, Event Table Row, Popup Dialog, Empty State, Global Bubble, Broker Import Row</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51036:377157</code>; get_screenshot captured 2026-06-15</td>
+  <td>Candidate shares stock identity with quote components and text-card anatomy with event rows/dialog-like surfaces, but it owns feed-specific author metadata, sentiment tag, View More affordance, and long commentary copy. It has no quote price/change/chart, no modal or empty-state role, no directional arrow, and no broker import switch/action structure.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Stock Card. It is the stock discussion/feed content unit; data rows, tiles, dialogs, empty states, callouts, and broker rows retain their scoped semantics.</td>
+</tr><tr>
+  <td>Similar Stock Card</td>
+  <td>Similar Stock Button, Stock Card, Realtime Quote Row, Realtime Quote Tile, Portfolio Fit Stock Sheet</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51090:288762</code>; get_screenshot captured 2026-06-17</td>
+  <td>Candidate shares similar-stock vocabulary with Similar Stock Button and stock identity/market values with quote and feed components, but it owns a 356x293 comparison result card, orange similarity chip, add-to-watchlist action, and a 230px three-section feature panel. It has no search CTA-only anatomy, author metadata, quote-row columns, tile chart/weather bottom region, or bottom-sheet chrome.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Similar Stock Card. Similar Stock Button remains the neutral navigation CTA; Stock Card remains feed/commentary; quote row/tile remain market quote components; Portfolio Fit Stock Sheet remains the explanatory bottom sheet.</td>
+</tr><tr>
+  <td>Stock Calendar</td>
+  <td>Relative Date Label, Event Table Row, Return Today Button, generic Calendar Header/Grid tokens</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51054:298722</code>; get_screenshot captured 2026-06-16</td>
+  <td>Candidate shares calendar/date vocabulary with relative date labels and event-list controls, and generic calendar tokens exist in CSS, but this source owns a full market-return module with month summary, five trading-day columns, weekly summary column, 57x62 numeric cells, market up/down wash fills, no-market cells, and weekly gain/loss summaries.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Stock Calendar. Relative Date Label remains a compact text marker, Event Table Row remains stock-event records, Return Today Button remains navigation, and generic Calendar Header/Grid tokens stay implementation-derived until separately evidenced.</td>
+</tr><tr>
+  <td>Stock Calendar Cell</td>
+  <td>Stock Calendar, Relative Date Label, Event Table Row, Return Today Button, Calendar Grid tokens</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#46882:50259</code>; get_screenshot captured 2026-06-17</td>
+  <td>Candidate shares the 57x62 daily-cell anatomy already observed inside Stock Calendar, but this source is the standalone cell component set and adds selected red/green/zero/no-market borders plus the zero/break-even state. Relative Date Label is text-only, Event Table Row is a stock-event record, Return Today Button is navigation, and generic Calendar Grid tokens do not own market-return semantics.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Stock Calendar Cell subcomponent. Stock Calendar composes it for day cells; weekly summary cells remain owned by Stock Calendar until a separate component source appears.</td>
+</tr><tr>
+  <td>Trend Analysis Header</td>
+  <td>Market Filter Tab Strip, Market Tab Strip, Portfolio Preference Header, Stock Calendar, Event Filter Option, Button</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51059:51226</code>; get_screenshot captured 2026-06-17</td>
+  <td>Candidate shares range/filter behavior with tabs/options and a title/info pattern with calendar/preference headers, but it owns a local <code>走勢分析</code> title row, share action, gray filled range selection, and separate <code>自訂</code> outline action. Its active state is neither orange label-only market filtering, white primary-tab selection, nor event-option orange fill.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Trend Analysis Header. Market tab/filter strips remain navigation/switching controls, Portfolio Preference Header remains portfolio-domain, Stock Calendar keeps return-calendar structure, Event Filter Option remains sheet option, and Button remains a global action primitive.</td>
+</tr><tr>
+  <td>Asset Trend Chart</td>
+  <td>Trend Analysis Header, Portfolio Profit Summary, Portfolio Fit Chart, Realtime Quote Tile, Global Bubble, Chart Card tokens</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51059:51227</code>; get_screenshot captured 2026-06-17</td>
+  <td>Candidate is visually adjacent to Trend Analysis Header and shares chart/data language with profit, fit, quote, and generic chart tokens, but it owns the asset-total/daily-P&amp;L summary plus 343px orange area-line chart, y/x-axis labels, selected-date cursor, and compact date marker. It has no range controls, raised summary surface, donut/panel anatomy, quote tile stock identity, or anchored bubble behavior.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Asset Trend Chart. It composes below Trend Analysis Header but owns the chart body; Profit Summary and Portfolio Fit Chart keep their domain-specific chart contracts, Realtime Quote Tile keeps mini quote-chart geometry, Global Bubble remains a callout, and Chart Card remains implementation-derived generic scaffolding.</td>
+</tr><tr>
+  <td>Trend Analysis Bar Chart</td>
+  <td>Asset Trend Chart, Portfolio Profit Summary, Realtime Quote Tile, Portfolio Fit Chart, Chart Card tokens</td>
+  <td>Figma node preview <code>figma:vSr4NtEwPVs6wLpqCT5PtV#51059:278139</code>; get_screenshot captured 2026-06-17</td>
+  <td>Candidate shares trend-analysis/chart language with Asset Trend Chart and shares red/green bar vocabulary with profit summaries, but it owns a 375x138 signed histogram with a 37px y-axis label column, 298px plot, three grid lines, and 8px square bars above/below a zero baseline. It has no summary metrics, orange area-line series, selected-date cursor, quote identity, raised summary surface, donut anatomy, or portfolio category table rows.</td>
+  <td>keep distinct</td>
+  <td>keep distinct<br><span class="status documented">Documented</span></td>
+  <td>Extract as Trend Analysis Bar Chart. Asset Trend Chart remains the total-asset area-line body, Portfolio Profit Summary owns realtime P/L expansion charts, Realtime Quote Tile owns tile mini charts, Portfolio Fit Chart owns category analysis, and Chart Card remains implementation-derived generic scaffolding.</td>
+</tr></tbody>
+  </table></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

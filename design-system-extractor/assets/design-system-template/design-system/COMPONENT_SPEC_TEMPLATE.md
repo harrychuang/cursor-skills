@@ -9,29 +9,17 @@ Copy this template to `design-system/components/<component-name>.md` for each ex
 | Evidence ID | Source | Region | Notes |
 |---|---|---|---|
 
-## Source Trace
-
-Use this section to help downstream implementation skills locate the original design and reference code without re-extracting the design system.
-
-| Trace type | Reference | What it proves | Confidence |
-|---|---|---|---|
-| Figma node / design URL |  | Original file/design URL, canonical node URL, selected node/frame/component set |  |
-| Figma MCP target |  | fileKey, MCP nodeId, page/frame/node names, suggested MCP calls; or unresolved reason |  |
-| Screenshot crop / export |  |  |  |
-| Rendered route / viewport / state |  |  |  |
-| Prototype or source files |  |  |  |
-| Existing product component candidates |  |  |  |
-
 ## Component Fingerprint
 
 | Dimension | Description |
 |---|---|
-| Purpose / behavior | |
+| Purpose / behavior / composition role | |
 | Anatomy | |
-| Variants / states | |
+| Variants / states / modes | |
 | Token contract summary | |
 | Layout / density | |
 | Visual reference | |
+| Native platform mapping | |
 | Similar components reviewed | |
 
 ## Anatomy
@@ -40,14 +28,16 @@ Use this section to help downstream implementation skills locate the original de
 
 ## States
 
-Default, hover, pressed, focus-visible, disabled, selected/active, loading, error as applicable.
+Default, hover, pressed, focus-visible, disabled, selected/active, loading, error as applicable. For display-only, graphic, or typographic components, mark interactive states as `not applicable` and document observed modes such as scale, emphasis, alignment, theme, responsive wrapping, or language/script behavior.
 
 ## Token Contract
 
-| Component token | Maps to system token | Purpose | State |
+| Component token | Maps to system token | Purpose | State / mode |
 |---|---|---|---|
 
 ## Layout Rules
+
+Include slot order, hierarchy ratio, alignment, line count, max line length, line-break behavior, gap, padding, and responsive behavior when this is a typographic component or text lockup.
 
 ## Content Rules
 
@@ -56,3 +46,5 @@ Default, hover, pressed, focus-visible, disabled, selected/active, loading, erro
 ## Do / Don't
 
 ## Implementation Notes
+
+For native iOS/Android sources, include SwiftUI/UIKit/Compose/Android View/XML names, resource files, preview/screenshot-test/capture evidence, and platform accessibility or dynamic type/font-scale notes when applicable.

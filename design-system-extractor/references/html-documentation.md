@@ -77,6 +77,32 @@ Behavior:
 - Markdown body content stays in the language used during extraction; only the documentation chrome is multilingual.
 - Selected locale persists in `localStorage` under `design-system-docs-lang`.
 
+### Default UI Locale (`--locale` flag)
+
+`generate_docs_html.mjs` accepts an optional `--locale` flag that sets the default UI locale of the generated page — both the statically rendered chrome labels and the embedded client default used on first load (before any `localStorage` preference exists):
+
+```sh
+node skills/design-system-extractor/scripts/generate_docs_html.mjs . --locale en
+```
+
+Flag behavior:
+
+- Accepted values are exactly `zh-Hant`, `en`, and `ja`.
+- Flag absent: the default stays `zh-Hant` (unchanged legacy behavior).
+- Unsupported value: print a warning to stderr, fall back to `zh-Hant`, and exit successfully — generation is never aborted by a bad locale value.
+
+The skill maps the recorded report language to the flag value; the script itself only validates the three accepted values:
+
+| Report language | `--locale` value |
+| --- | --- |
+| Traditional Chinese (zh-Hant) | `zh-Hant` |
+| Simplified Chinese (zh-Hans) | `zh-Hant` |
+| Japanese (ja) | `ja` |
+| English (en) | `en` |
+| any other language | `en` |
+
+The appended-annotation report format (`## Source Inventory（來源清單）`) relies on the audit scripts matching English canonical text by substring. If audit matching ever changes to exact-equality comparison, re-check the annotation rules in `SKILL.md` at the same time.
+
 When changing UI strings or adding new chrome labels, update `scripts/generate_docs_html.mjs` and keep all three locales in sync.
 
 ## Validation

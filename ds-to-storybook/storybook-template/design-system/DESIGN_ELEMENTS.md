@@ -1,0 +1,371 @@
+# Design Elements
+
+## Color
+
+- The dominant environment is dark: `background` `#1E1E1E`, `surface` `#252525`, `surface-raised` `#333333`, and `scrim` black.
+- Primary action is orange `#FF7800`; secondary/event status is amber `#F9A516`.
+- Market data uses Taiwan stock semantics: red `#EA272D` for up, green `#39B54A` for down.
+- Main-force stock rows use red `#EA272D` for buy signal values such as `大買` and `3,767`, warm `#FFD98A` for `隔日沖`, pink-red `#FF8A91` for `短沖`, and `#C0C0C0` for empty `-` tags; these are main-force semantics, not generic error/success or portfolio labels.
+- Portfolio analysis uses a separate classification palette: blue `#36A9EA` for `長期存股`, amber `#F9A516` for `波段價值`, rose `#D73152` for `短線價差`, and gray `#808080` for `無特徵`.
+- Portfolio attribute labels use category-color fills for active `亮燈` states, transparent containers with category-color text for inactive `沒燈` states, and gray text for `無特徵`.
+- Portfolio fit assessment uses red check/white label for `速配` and green X/gray label for `不速配`; these colors communicate fit assessment, not price movement.
+- Portfolio fit stock sheets use the same `#252525` surface as the analytics area, a subtle `#3D3D3D` similar-stock action fill, warm `#FFD98A` metric values, and red `#EA272D` high scores.
+- Portfolio stock sheet cells keep portfolio attribute fills blue/amber/rose for active tabs, use muted gray `#808080` for inactive tab labels, and use health-check yellow/red values only inside the health-check summary variant.
+- Preferred-stock discovery reuses `#252525` section surfaces, `#333333` context/header bars, `#1E1E1E` rows, `#C0C0C0` metrics, and orange `#FF7800` for accent/action affordances.
+- Valuation labels use a separate palette: orange for `昂貴`, peach `#FFE2D4` for `合理偏高`, pale blue `#E5F9FF` for `合理偏低`, blue `#36A9EA` for `便宜`, and dark gray `#252525`/gray for `無法評估`.
+- Portfolio health-check rows use `#1E1E1E` cells, normalized `#3D3D3D` dividers, green `#39B54A` for `注意` and no-quarter-line X, yellow `#FEF769` for note/rank values, red `#EA272D` for high change values and above-quarter-line check, and orange for report actions.
+- Portfolio health report sections use `#252525` surfaces, orange title accents, gray `#808080` valuation body copy, muted `#999999` labels/descriptions, white values, red `#EA272D` quality-high states, green `#39B54A` attention states, `#FEF769` detected counts, and pale yellow `#FBEEB9` exception titles.
+- Portfolio profit summaries use `#252525` raised summary surfaces over `#1E1E1E` expanded chart bodies; red `#EA272D` means gain/positive, green `#39B54A` means loss/negative, empty values are white, and chart grid lines use `#3D3D3D`.
+- Holding allocation uses a separate chart series palette: `#FFA902`, `#E95B33`, `#9F5EBB`, `#3196C1`, and `#FF3465`; do not merge this with the portfolio attribute palette.
+- Temporal date labels use warm pale yellow `#FFEEB1` for today and future-relative text, and `#C0C0C0` for past-relative text.
+- Event name labels use primary orange `#FF7800` as event metadata text, not as a filled action surface.
+- Event table rows use goose yellow `#FBEEB9` for stock names, amber `#F9A516` for estimated dividend/stock distribution text, and market red/green for change-like values.
+- Compact calendar controls use amber `#F9A516` for active outline buttons and gray `#808080` for disabled outline buttons.
+- Event filter sheets use `#252525` as the sheet surface; filter options use `#3D3D3D`/`#C0C0C0` by default and `#FF7800`/white when selected.
+- Bottom-sheet headers and cells use `#252525` as the shared sheet surface, `#C0C0C0` for sheet titles/drag handles, white for utility icons and cell labels, white-8 dividers, `#3D3D3D` for gray action surfaces, amber `#F9A516` and orange `#FF7800` for right-side status text, and red `#F93951` only for the small New Badge.
+- Switch controls use platform-specific color roles: Android off uses a white 30% track and light neutral knob, Android on uses orange 50% track and orange knob, iOS off uses a dark neutral track with white knob, and iOS on uses an orange track with white knob. The source `#BDBDBD` knob and `#4C4C4C` track values are normalized to the existing neutral ramp.
+- Selection controls use gray `#999999` outlines for unchecked checkbox/radio states, orange `#FF7800` for checked checkbox fill and selected radio outline/mark, and white for the checked checkbox mark.
+- Bottom-sheet composite selectors use `#1E1E1E` preview option tiles, `#3D3D3D` preview image borders and scroll thumbs, orange `#FF7800` for selected preview outlines, selected check/radio marks, `新增清單`, and the `完成` footer action.
+- Bottom Sheet Footer Button uses a `#252525` footer strip and a single orange `#FF7800` submit action with white label text.
+- Popup Dialog uses the same `#252525` core surface as sheets but remains centered; media blocks use `#333333`, body text uses `#D9D9D9`, empty-media text uses `#808080`, primary actions use `#FF7800` with white labels, and the observed `#414141` secondary/empty artwork strokes are normalized to the existing `#3D3D3D` control-outline step.
+- Empty State uses `#252525` as a full section/page surface, `#333333` for optional media placeholders, white for optional titles, `#C0C0C0` for body copy, and primary orange only through its optional composed Button action.
+- Global Bubble uses amber `#F9A516` with dark `#1E1E1E` text, keeping callouts bright but compact.
+- Button uses primary orange `#FF7800` for default fill/outline, darker orange `#CC6102` for pressed fill, deep brown `#3F1D00` for pressed outline fill, pale orange `#EBC09A` for pressed fill labels, and gray `#808080` for disabled borders/labels.
+- Stock Label uses `#333333` raised fill, white code text, and `#C0C0C0` company/security name text; it is identity context, not a valuation or trade-status color language.
+- Stock Card uses `#1E1E1E` feed surfaces, orange stock code, white stock name/body, `#A7A7A7` View More and author metadata, white-20 header divider, neutral sentiment tag `#333333`/`#D9D9D9`, bullish sentiment tag `rgba(231, 0, 0, 0.2)`/`#EA272D`, and small avatar identity fills `#006FFF` and `#8000FF`.
+- Similar Stock Card uses `#333333` as the raised result-card root, `#252525` as the feature panel, white stock/feature text, `#999999` stock code, market red for the observed up price/change, warm `#FFD98A` for feature section titles, and primary orange for both `加入自選` and the `相似度` chip.
+- Stock Calendar uses `#252525` as its module surface, `#333333` for empty/no-market cells, normalized `#414141` through existing neutral roles for zero cells and weekly summary borders/corners, and translucent red/green market washes for return cells. Stock Calendar Cell selected state is a 1px border: market red/green for red/green cells and white for zero/no-market cells. These red/green fills are market-return semantics, not success/error or validation states.
+- Trend Analysis Header uses `#252525` as the local module surface, `#333333` as the range group fill, `#808080` as the selected range fill plus inactive/custom label and outline color, white for title/share/selected text, and `#C0C0C0` for the info icon. This gray selected range state is not a market filter orange state or a disabled state.
+- Asset Trend Chart uses `#252525` as the chart body surface, white for the total-asset label/value, `#C0C0C0` for the secondary daily-P&L label, red `#EA272D` for the observed positive daily P&L value, muted `#999999` for axis labels and cursor structure, primary orange `#FF7800` for the area-line series, and normalized neutral-24 for the selected-date marker fill. This orange chart series is data visualization, not a CTA.
+- Trend Analysis Bar Chart uses `#252525` as the local chart surface, subtle chart-grid lines, white y-axis labels, red `rgba(234, 39, 45, 0.5)` for positive bars above zero, and green `rgba(57, 181, 74, 0.5)` for negative bars below zero. These red/green fills follow market-style signed-data semantics, not generic error/success or portfolio category colors.
+- Floating Action Pill attached watchlist variants use black `#000000` containers, white icons/labels, and a gray `#808080` divider; this is an overlay quick-action treatment, not a neutral side-action color.
+- Realtime Quote Tile uses `#1E1E1E` tile fill, white stock identity, market red/green for price and weather labels, amber event markers, and muted gray `#999999` for neutral weather labels.
+- Market filter strips use `#333333` for every option item, orange `#FF7800` for the active label, and gray `#808080` for inactive labels.
+- Primary inventory tab strips use `#252525` as the flat strip surface, white for the active tab label, `#808080` for inactive labels, orange for the active `看盤/盤後` chevron, gray for its inactive chevron, and white-8 for the bottom divider.
+- Broker/source icons are container-led 46px identities; most labels render white over source-colored rounded containers, while the `我的` holding source uses dark `#1E1E1E` label text over amber.
+- Promotional badges use a yellow gradient from `#FFB800` to `#FFE55E`, normalized `#FFD98A` outline, and dark `#252525` label text.
+- Broker import headers and rows use the `#252525` surface; header labels use white `#FFFFFF`, helper copy uses dim gray `#757575`, row dividers use normalized `#3D3D3D`, and the compact `查看庫存` outline combines primary orange text with a deeper orange `#B95700` stroke.
+- Broker import menus use `#1E1E1E` background, a deeper orange `#B95700` dropdown outline, primary orange for sync/edit outlines/icons/labels, white dropdown text, and `#909090` for last-update metadata.
+- Portfolio add-holding actions use orange `#FF7800` for outline, label, and icon on a flat `#252525` section surface.
+- Portfolio add holding sheets use `#252525` for the sheet, header, warning block, and rows; orange for outlines, selected stock type, active tab underline, and enabled confirm fill; white for enabled confirm label; `#808080` for disabled confirm and cost placeholder; `#C0C0C0` for inactive tab labels; and `#FF4F4F` only for duplicate-stock warning copy.
+- Portfolio manual import rows use `#252525` cells, `#333333` header/value-field fills, white-8 dividers, pale orange `#FFD7B2` for missing required value outlines, gray `#999999` for placeholder text, white for entered/dash values, and amber `#F9A516` for the `現股` stock type label.
+- Muted text uses `#999999` and inactive navigation uses `#808080`.
+- Row dividers on `#1E1E1E` use `#4B4B4B`.
+
+## Typography
+
+- Typeface: PingFang TC regular.
+- Quote names: 18px / 24px.
+- Stock codes: 14px / 20px.
+- Price values: 18px / 24px.
+- Change values: 16px / 22px.
+- Main-force weather labels use 22px regular text; main-force row volumes use 18px / 24px, rates use 14px / 20px, and trade tags use 14px compact labels.
+- Bottom navigation labels: 15px / 16px.
+- Event metadata: 11px, normal line height.
+- Portfolio fit score: 22px / 26px with 12px label and percent unit.
+- Portfolio analysis rows: 13px / 18px.
+- Portfolio preference header labels: 14px compact line height.
+- Portfolio fit list headers: 12px / 18px muted labels.
+- Portfolio fit stock row names: 18px / 24px; codes: 14px / 20px; percentage value: 16px / 24px; market value: 14px / 20px.
+- Portfolio attribute labels use 14px medium compact text.
+- Portfolio fit assessment indicators use 14px compact labels.
+- Portfolio fit stock sheets use 20px stock names, 18px stock codes, 14px table headers, and 18px detail values.
+- Portfolio stock sheet cells use 20px identity stock names, 18px identity stock codes, 14px medium attribute labels, 12px health-check headers, 18px health stock names, 14px health stock codes, and 16px health values.
+- Preferred-stock title uses 16px title text and 14px update text.
+- Preferred-stock context top bar uses a 16px medium attribute tag and 18px title text.
+- Preferred-stock list headers use 12px / 18px muted labels; rows use 18px / 24px metrics and 14px / 20px stock codes.
+- Valuation labels use 14px medium centered text.
+- Portfolio health-check stock cells use 18px stock names and 14px codes; diagnostic cells use 16px compact text; report action uses 12px text.
+- Portfolio health report sections use 18px titles/summaries, 16px body and metric text, and 14px exception descriptions.
+- Portfolio profit summaries use 16px muted PingFang labels, 22px SF Pro Text numeric values, 14px rates, 12px cost metadata, 10px chart axis labels, and 13px allocation legend rows.
+- Relative date labels use 18px date text and 16px relative-day text with normal line height.
+- Event name labels use 16px PingFang TC regular with normal line height.
+- Event table rows use 16px stock names, 13px stock codes, 15px event details, and 11px compact stock code text only for overflow cases.
+- Return-today buttons and event filter dropdowns use 14px compact labels; return-today uses PingFang TC medium, dropdown labels use regular.
+- Event filter sheet titles use 18px centered text; event filter options use 16px centered labels.
+- Bottom-sheet headers use 18px centered title text; bottom-sheet cells use 18px regular labels and status text.
+- Bottom-sheet preview option labels use 15px regular centered text; `新增清單` uses 16px regular orange text; `完成` uses 18px medium white text.
+- Popup Dialog titles use compact centered 16px medium text, body copy uses 14px regular text, and footer action labels use 14px medium text.
+- Empty State uses centered 18px regular title text and 16px regular body copy, both with normal line height and a low text shadow. The optional action uses the existing Button label typography.
+- Global Bubble uses 16px medium title text and 14px medium body text.
+- Button labels are medium weight and scale with size: 14px for tiny/small, 16px for medium, 18px for large, and 20px for giant.
+- Floating Action Pill labels use 14px PingFang TC medium with 22px line height in both 68x30 single pills and 38px attached variants.
+- Stock-title Top App Bar uses 17px title text by default, 13px for extreme long titles, 14px stock code text, and 12px previous/next arrows.
+- Realtime Quote Tile uses 18px stock name, 16px stock code, 28px price text with 34px line height, 14px change text, 11px event/weather labels, and 40px `大買` signal text in the one-day after-hours variant.
+- Stock Label uses 14px PingFang TC medium text for both code and name in one compact line.
+- Stock Card uses 16px medium stock header text, 14px regular View More/sentiment/metadata text with medium author names, 10px semibold avatar initials, and 16px regular body copy at a normalized 22px line height.
+- Similar Stock Card uses 18px regular stock name text, 14px stock code/action/change/similarity text, 18px medium price text, and 13px feature title/body text. Feature titles are medium and warm; feature body copy remains regular white text.
+- Stock Calendar uses PingFang TC for title, month selector, summary, and column labels, while daily/weekly numeric cell content uses Roboto 12px with compact 14px line height. Stock Calendar Cell confirms regular day/rate text in default cells, semibold amount values, and bold emphasis only for selected zero day/rate text.
+- Trend Analysis Header uses 18px semibold PingFang TC for `走勢分析`, 13px medium text for the selected range label, and 14px regular text for inactive range labels and the `自訂` action.
+- Asset Trend Chart uses PingFang TC regular for 16px `總資產`, 14px `當日損益`, and 12px axis/date labels, with 18px medium summary values. Axis and date-marker labels use a compact 12px/16px treatment rather than the smaller 10px portfolio-profit chart axis style.
+- Trend Analysis Bar Chart uses Roboto regular 12px y-axis labels with a 16px line-height for compact numeric K-unit values such as `30.6K`, `0K`, and `-45.3K`.
+- Similar Stock Button uses 18px regular white label text next to a search icon.
+- New Badge uses white Play Bold 14px text, not PingFang TC.
+- Market filter strip labels use 14px PingFang TC regular with normal compact line height.
+- Primary inventory tab labels use 16px PingFang TC regular with normal line height.
+- Broker/source icon labels use normalized 16px PingFang TC semibold with normal line height; the source observed 16.1px is treated as a Figma export artifact.
+- Promotional badge labels use 12px text; the default import promo is medium, while fee/VIP emphasis labels use semibold.
+- Broker import headers use 16px regular labels; broker import rows use 18px regular titles, 16px helper copy, and compact action labels normalized from observed 14.063px to 14px.
+- Broker import menus use 16px regular dropdown labels, 13px sync/edit action labels, and 12px / 14px timestamp metadata.
+- Portfolio add action labels use 16px PingFang TC medium with normal line height.
+- Portfolio add holding sheets use 18px title/tab/action labels, 16px field labels and control text, 15px duplicate warning text, and 22px quantity stepper symbols.
+- Portfolio manual import headers use 12px / 18px muted PingFang text; stock names use 16px / 22px, stock codes use 12px / 14px, stock type labels use 10px / 12px medium text, and value fields use 16px right-aligned text with PingFang placeholder text or SF Pro Text numeric values.
+
+## Spacing And Density
+
+- Mobile viewport baseline is 375px wide.
+- Row horizontal gutter is 16px.
+- Dense control spacing uses 2px, 4px, 6px, and 8px.
+- Quote rows are 61px standard and 79px when event metadata is present.
+- Enlarged realtime quote rows stay 79px high with a 1x27 candlestick wick, 9x7 candlestick body, 64px price/change columns, and 76x36 chart slot.
+- Main-force stock rows are 375x61 with 8px padding, 4px gaps, a 98px weather column, 79px value column, and 76px trade-tag slot.
+- Main-force weather indicators stay 98px wide; one-day weather is 31px high with a 30px icon plus label, and three-day weather is 30px high with three 30px icons.
+- Main-force trade tags are 50x24 with 4x2 padding and remain visible even when empty.
+- Control bars stack directly without card wrappers.
+- Portfolio analysis module uses 8px horizontal padding, 12px vertical padding, and 12px row rhythm inside the detail panel.
+- Portfolio preference header is 32px high with a 12px left inset, 4px internal gaps, and a compact right action.
+- Portfolio fit list header is 34px high and stock rows are 61px high.
+- Portfolio fit list uses stable 94 / 68 / 105 / 80 column widths.
+- Portfolio attribute labels are 105x24 with 4px horizontal padding, 2px vertical padding, and a 4px category/percent gap.
+- Portfolio fit assessment indicators are 68x20 with 4px horizontal padding, 4px icon/label gap, and a 14px icon.
+- Portfolio fit stock sheets are 375x605 with a 20px top spacer, 16px stock-row padding, 8px attribute-row gaps, and one neutral similar-stock action inset by the sheet layout.
+- Portfolio stock sheet cells are 375px wide: identity rows are 60px high, attribute tab rows are 41px high, and health-check title summaries are 79px high with 94 / 88 / 58 / 46 / 73 columns.
+- Portfolio fit detail tables use 171 / 100 / 64 columns with 4px gaps, a 36px header row, and 48px detail-row rhythm.
+- Preferred-stock title is 375x38 with 12x8 padding, 4x13 accent, and 5px accent/title gap.
+- Preferred-stock top bar is 375x44 with 27px side icons and a centered attribute/title group.
+- Preferred-stock list header is 375x34; rows are 375x61. Both use 80 / 62 / 62 / 62 / 46 / 27 columns and 4px gaps.
+- Valuation labels are 68x28 with 20px horizontal padding and 4px vertical padding.
+- Portfolio health-check cells are 61px high with 60px content and a 1px divider.
+- Portfolio health-check rows are 659x61 with 102 / 80 / 88 / 58 / 46 / 64 / 84 / 63 / 74 columns.
+- Portfolio health report sections are 375px wide with 12x8 padding, 343px content width, and 4x13 title accents; observed heights are 95px for valuation, 286px for quality, and 556px for exception scanning.
+- Portfolio health report quality rows use 4px vertical padding, a 137px label/value group, right-aligned state text, and white-8 dividers.
+- Portfolio health report exception rows stack title and description within 343px and divide rows with white-8 hairlines.
+- Portfolio profit summary variants are 375px wide with 8px outer padding; collapsed/empty variants are 110px high, daily/cumulative variants are 218px high, and allocation is 226px high.
+- Portfolio profit summary surfaces are 359x94 with 8px radius, 8x12 padding, three metric columns, 100px profit/loss value widths, 106px market-value width, and 40px vertical dividers.
+- Profit detail charts keep compact dimensions: daily plot 309x58, cumulative donut 68px, allocation donut 98px, legend swatch 8px, legend label 122px, and legend value 43px.
+- Quarter-line status icons are 22x22; seasonal trend graphics are 37x16.
+- Relative date labels are 37px high with 12px horizontal and top padding; default date/relative gap is 12px, while the today icon/label gap is 4px.
+- Event name labels are 366x38 with 16px horizontal padding and 8px vertical padding.
+- Event table rows are 323px wide with 12px padding, 8px stock/detail gap, 96px identity column, and 64/66/68/86/120px height variants.
+- Return-today buttons are 70x28 with 6px horizontal and 4px vertical padding.
+- Event filter dropdown triggers are 86x28 with 6px horizontal padding, 4px vertical padding, 2px label/icon gap, and a fixed 64px label slot.
+- Event filter sheets are 375x457 with a 64px header and 393px body.
+- Event filter sheet options use 100x42 cells in the sheet grid, 10px padding, 26px side inset, and 12px row/column gaps.
+- Bottom-sheet header variants are 375x64; drag-handle variants are 375x20 with a centered 68x4 handle.
+- Bottom-sheet cells are 375x58 by default and 375x59 for switch rows; gray action cells are 365x62.
+- Bottom-sheet cells use 20x16 row padding, 8px icon/label gap, 4px status/chevron gap, 16px divider insets, 24px standard utility icons, 32px MyStock function icons, and 43x26 switch slots.
+- Switch component set is 134x136. Android variants are 40x24 with a centered 34x14 track and 20px knob; iOS variants are 43x26 with a 42x26 track and 22px knob.
+- Selection Control component set is 59x176. Every checkbox/radio frame is 20x20; checked checkbox uses a compact white 2px-stroke mark, and selected radio uses a centered 12px inner mark.
+- Bottom-sheet composite variants are 375px wide with observed heights of 374px for settings, 310px for realtime P/L settings, 195px for display-mode preview selection, 307px for sort selection, and 495px for watchlist add.
+- Bottom-sheet preview selectors use a 119px body, 20px side inset, 8px option gap, dark 8px-radius preview tiles, 74x66 preview images, and a 2px orange selected outline.
+- Bottom-sheet watchlist add sheets use a 324px scroll area, 20px radio/check controls, a 5x215 scrollbar thumb, and a bottom-sheet footer submit action.
+- Bottom Sheet Footer Button is a 339x65 strip with 20px side padding, 12px vertical padding, and a 299x41 orange action.
+- Popup Dialog variants are 292px wide with compact 4px radii, optional title/body/media blocks, and a two-action footer; observed variant heights range from 187px for text-only to about 397px for title/body/media combinations.
+- Empty State variants are 375x563 with 40px side padding, centered vertical alignment, 295px content width, optional 187x187 media placeholder, 8px title/body gap, 16px body/action gap, and an optional 266px-wide primary Button action.
+- Global Bubble variants normalize to a 234px callout width, 83px reference height, 16x8 padding, 4px title/body gap, and an 18x16 arrow.
+- Button heights are 25px tiny, 28px small, 38px medium, 41px large, 44px giant, and 46px for observed giant disabled variants; no-icon widths are 62/70/90/98/106px.
+- Stock-title Top App Bar is 375x64 including the 20px status area and 44px context row; side actions are 27px and centered prev/next arrows are 12px.
+- Realtime Quote Tile is 170x148 with 8px padding, 154px content width, 65px bottom content height, 124x44 chart, 38px weather icons, and 9x7 direction triangle.
+- Similar Stock Button is 415x49 with 27px horizontal padding, 12px vertical padding, a 4px icon/label gap, and a 24px search icon slot.
+- Similar Stock Card is 356x293 with 12px root padding, 332px content width, a 102px left summary area, a 230px feature panel, 212px panel text/divider width, 10px panel section gap, 4px inline/title-body gaps, 27px add-stock icon frame, 42px change lockup, and a 9x8 direction marker.
+- New Badge is 42x20 with 6x2 padding.
+- Market filter strips are 375x40 with a 13px left inset, 8px top inset, 8px item gap, and 6x2 item padding.
+- Primary inventory tab strips are 375x37 within a 415x227 component set; tab items use 11x7 padding, 4px label/chevron gap, 11x12 `看盤/盤後` chevron, and a 1px bottom divider.
+- Broker/source icon sets are 396x86, with 46x46 source marks spaced on a 62px horizontal rhythm.
+- Promotional badges are 23px high with 8px horizontal and 3px vertical padding; observed widths are 100px, 82px, and 125px inside a 165x134 component set.
+- Broker import header variants are 375px wide within a 415x191 set; A version is 38px high and B versions are 37px high.
+- Broker import rows are 375x132; the broker icon sits at x=14/y=12, content starts at x=76, title begins at y=23, helper copy is constrained to 224px, the action is 69x22, and the switch slot is 43x26.
+- Broker import menus are 375x42 with 8px horizontal padding, 7px vertical padding, 4px gaps, a 116x26 dropdown, 26px-high sync/edit controls, 16px action icons, and a timestamp block with 10px start padding.
+- Portfolio add action buttons are 48px high; screenshot/manual variants are 148px wide and auto-sync is 161.5px wide.
+- Portfolio add action sections are 375px wide on `#252525`; the dual-button variant is 80px high with 16px side padding and 12px button gap, while the centered single action is 82px high with 130px side padding and a 7px icon/label gap.
+- Portfolio add holding sheets are 375px wide. Default and tabbed variants are 385px high, the duplicate-warning variant is 451px high, headers are 64px, form body is 375x216, form rows are 54px, body-to-action gap is 40px, controls start at x=157, stock select is 200px wide, quantity value is 101px wide, cost value is 177px wide, steppers are 30px square, and the confirm action is 295x41.
+- Portfolio manual import value fields are 70x29 with 4px horizontal padding and vertical padding normalized from observed 2.5px to 3px.
+- Portfolio manual import cell variants use 34px headers and 61px row cells; stock columns are 136px, standard value columns are 78px, the observed wide value column is 93px, and stock identity text stacks inside an 88px name/code width.
+- Portfolio manual import rows are 557x61 with fixed 136 / 78 / 78 / 93 / 78 / 78 / 16 columns.
+- Side action pill sets keep 68x30 pills with 16px horizontal gaps between `設定`, `編輯`, and `下單`.
+- Attached watchlist floating actions are 38px high: the two-action group is 152px wide with two 76px segments and a 30px divider; the edit-only `關閉下單` variant is 76px wide.
+- Stock Labels are 28px high with 10px horizontal padding, 4px vertical padding, 6px code/name gap, and content-hug width; the observed 194px sample width is not fixed.
+- Stock Cards are 375px wide flat feed units with 16px side padding, 8px top padding, 12px bottom padding, 12px section rhythm, 30px header row, 8px main inline gaps, 4px action/avatar/tag gaps, 2px author separator gaps, and content-derived heights rather than fixed variant heights.
+- Stock Calendar is a 375x550 return module with 16px title/month/summary padding, 57x62 day and weekly cells, 49px cell content width, 17x19 weekly corner badges, 3px column gaps, 4px row gaps, and 4px grid row side insets. Stock Calendar Cell keeps amount/rate content inside that 49px width and uses a 1px selected border without changing cell dimensions.
+- Trend Analysis Header is 375x86 with 16px side insets, a title row padded 16px top and 8px bottom, a 42px filter row, a 2px padded range group with 4px gaps, 51px selected `全部`, 54px `近一週` / `近一月`, 68px `年初至今`, a 6px range-group radius, and 4px inner option/custom radii.
+- Asset Trend Chart is 375x230 with a 64px summary block, 30px label row, 34px value row, 16px side insets, a 166px plot region, 343x102 grid, 343x93 orange series band, and 117px selected-date cursor. The chart should sit flush under Trend Analysis Header without card gutters.
+- Trend Analysis Bar Chart is 375x138 with 16px outer padding, a 37px right-aligned y-axis label column, an 8px label-to-plot gap, a 106px label stack, a 298px plot, 46px positive and negative bar bands, 8px bars, and a 12px observed bar cadence. The plot should remain a flat histogram with no x-axis label row unless future evidence adds it.
+
+## Shape
+
+- Segmented selector corners: 2px.
+- Edge toggle corners: 4px on exposed side.
+- Event table rows use 4px radius and a 1px `#3D3D3D` border.
+- Event filter dropdowns use 5px radius and a 1px `#3D3D3D` border.
+- Event filter sheets use 12px top corners; event filter options use 4px corners.
+- Bottom-sheet headers use 12px top corners; drag handles use a full pill radius.
+- Bottom-sheet gray action surfaces and boxed `彈` utility icon use 4px corners.
+- Switch tracks and knobs use full-radius pill/circle geometry; do not square the track or add rectangular outlines.
+- Selection Control checkboxes use 2px corners; Selection Control radios use full-circle geometry. Do not round checkbox variants into pills or square radio variants.
+- Bottom-sheet preview option tiles use 8px corners; preview thumbnails use 2px corners; footer actions use 4px corners.
+- Similar Stock Button and Bottom Sheet Footer Button actions both use 4px corners while preserving different fills and intent.
+- Similar Stock Card uses 4px corners for the root, feature panel, and similarity chip; do not turn the feature panel into nested cards.
+- Popup Dialog containers and footer actions use 4px corners; do not apply bottom-sheet top-only 12px/16px radii.
+- Empty State itself has no card radius; only the optional media placeholder is a square dark block and the optional CTA inherits Button's 4px radius.
+- Global Bubble uses 8px corners and a triangular arrow; do not round it into a pill or square it into a dropdown.
+- Button uses 4px corners across fill, outline, disabled, and icon-only variants.
+- Realtime Quote Tile uses 4px corners and remains a compact dark tile, not a card stack with large radii.
+- Main-force trade tags use 4px corners with a 1px outline for `隔日沖` and `短沖`; the empty dash variant has no visible outline.
+- New Badge uses a full capsule radius.
+- Market filter strip option items use 4px corners.
+- Primary inventory tab strips remain square-edged; no active underline, active pill, or rounded tab item is observed.
+- Broker import menu dropdown and action controls use 4px corners with a 1px outline.
+- Promotional badges use 8px corners with a 1px outline.
+- Broker import row inline actions use 4px corners with a 1px outline.
+- Portfolio add action buttons use 8px corners with a 1px orange outline.
+- Portfolio add holding sheets use 8px top corners for default/duplicate headers, 12px top corners for the tabbed header, and 4px corners for outlined controls.
+- Portfolio manual import value fields use 4px corners; row and header cells remain square-edged.
+- Portfolio analysis detail panel corners: 8px.
+- Portfolio preference header action corners: 4px.
+- Portfolio attribute labels use a 14px pill radius.
+- Portfolio fit assessment indicators use a 4px radius transparent frame.
+- Portfolio fit stock sheets use 16px top corners; the similar-stock action uses a 4px radius.
+- Valuation labels use 14px pill radius.
+- Stock Labels use 4px corners and no border; do not round them into valuation/tag pills.
+- Stock Cards keep square outer edges; sentiment tags use 4px corners and avatars are circular.
+- Asset Trend Chart has no outer card radius. Only the selected-date marker uses the compact 4px radius; do not replace it with a rounded bubble or large tooltip.
+- Trend Analysis Bar Chart has no outer card radius, no rounded plot panel, and square-edged bars. Do not round the bars or add card chrome around the histogram.
+- Stock Calendar day, zero, no-market, empty, and weekly summary cells use 8px corners; weekly summary corner badges also use 8px corners. Empty cells are outline-only rather than filled cards, and selected Stock Calendar Cells keep the same 8px radius with a 1px outline.
+- Floating action pills: 24px radius. Attached two-action groups split the radius across left and right segments; edit-only attached variants use full 24px radius.
+- Home indicator: 100px radius.
+- Quote rows and bars remain square-edged.
+
+## Elevation And Depth
+
+- Depth is represented by surface color changes, not shadows.
+- Shadows are rare; profit summary surfaces use a 0/4/10 black alpha shadow, while most other surfaces remain flat.
+- Switch knobs use tight platform shadows only: Android has a low 0/1/1 plus 0/0/1 shadow stack, while iOS has a stronger 0/2/2 shadow.
+- Global Bubble is one of the few non-row components with elevation, using a low 0/2/4 black alpha-12 shadow normalized from the 3.5px Figma blur.
+- Empty State uses a low 0/4/4 black alpha-25 text shadow on title/body copy, but does not add card elevation or container shadows.
+- Stock Calendar uses a compact green-tinted text shadow on numeric cell text only. Do not apply that shadow to the module container, title, or other calendar-like components.
+- Attached watchlist Floating Action Pill variants use a low 0/4/2 black alpha-25 overlay shadow; earlier 68x30 side-action pills remain flat.
+- Active bottom navigation uses a darker/raised fill region rather than outline or shadow.
+- Portfolio health-check stock cells may use a 4px x-offset shadow to indicate a sticky first column in a horizontally scrolling row.
+- Portfolio manual import stock identity cells use a 4px x-offset sticky-edge shadow; the stronger 4/0/5 shadow appears on the row stock cell.
+
+## Iconography
+
+- Top app bar actions use 27px icon boxes; promo gift icon is 30px.
+- Stock-title Top App Bar uses 27px action boxes and 12px previous/next arrows around the centered stock identity.
+- Bottom navigation icons are 15-16px.
+- Floating action pills use 20px icons.
+- Side action and attached watchlist floating pills reuse the same 20px icon scale with visible text labels.
+- Enlarged realtime quote rows use a small candlestick marker made from a 1px wick and a 9x7 body, not an icon button.
+- Main-force weather indicators use 30px weather assets; the three-day variant is icon-only and needs accessible text.
+- Realtime Quote Tile after-hours variants use 38px weather assets; this larger tile-specific weather scale is separate from the 30px row-bound Main Force Weather Indicator.
+- Today date labels use a 12px inline icon before `今天`.
+- Event filter dropdowns use an 8x7 downward chevron.
+- Event filter sheets use a 16px close icon in the header.
+- Bottom-sheet headers use 16px close icons and 18px back icons.
+- Bottom-sheet cells use 24px pen/list/bounce utility icons and 32px MyStock function icons for sun, sort, inventory, and order.
+- Bottom-sheet selection rows use a 21px orange check for single-select and 20px radio/check controls for multi-select watchlist rows.
+- Bottom-sheet add-list action uses a 19px orange plus/search-add symbol.
+- Similar Stock Button uses a 24px search icon slot paired with text; the icon is decorative when the label is visible.
+- Stock Card `View More` uses a 16px trailing chevron paired with text; it is a header affordance, not a row expansion icon, quote trend marker, or button replacement.
+- Stock Calendar uses a 16px info icon beside `報酬日曆` and a 20px chevron in the month selector. These do not define the tooltip or month-picker expanded surfaces.
+- The boxed `彈` utility icon is text-in-icon artwork, not a badge or notification dot.
+- Primary inventory tab strips use an 11x12 chevron only on the `看盤/盤後` tab; the standalone collapse/expand icon set confirms this chevron asset but not the expanded menu surface.
+- Broker/source icons use source-colored rounded containers as the icon body; do not redraw them as generic building or wallet symbols.
+- Broker import rows reuse Broker Icon artwork and include a right-side Switch slot; use the extracted Switch instead of local row-only switch artwork.
+- Broker import menus use functional 16px sync/edit icons paired with text labels and an 11x9 dropdown chevron.
+- Portfolio add action buttons use 20px add/renew icons, while screenshot sync uses a 28px image icon.
+- Portfolio add holding sheets use a 16px close icon, 16px stock-search icon, and 30px outlined quantity steppers with 22px plus/minus symbols.
+- Portfolio manual import stock cells use an 18px delete/remove icon before the stock type label and stock identity.
+- Icons are concrete functional symbols, not decorative illustrations.
+
+## Data Display
+
+- Quote rows allocate fixed widths for price and change columns.
+- Realtime Quote Tile presents the same quote semantics in a compact grid tile: stable stock identity, price/change row, and bottom chart/event or weather region inside a 170x148 frame.
+- Stock Card presents stock-specific feed commentary with sentiment, author avatar, author/time metadata, and body copy. It is not a quote row/tile because it has no price, delta, chart, or market-data columns.
+- Stock Calendar presents monthly return data as a market-return grid with five trading-day columns, one weekly summary column, no-market cells, empty outside-month cells, and signed amount/rate values. It is not an event calendar, date picker, or generic heatmap dashboard.
+- Inline sparkline area is 76x36.
+- Main-force stock rows use fixed weather, value, and trade-tag columns rather than quote price/change/chart columns.
+- Main-force weather can be one-day text plus icon or a three-day icon sequence; do not expand it into a separate chart.
+- Main-force trade tags are row metadata, not filters or promotional badges.
+- Portfolio fit chart uses a 117px donut area beside a 234px rounded detail panel.
+- Analysis bars use fixed 18px height and 128px maximum width.
+- Portfolio preference header uses a 3x14 orange accent and a 12px chevron icon.
+- Portfolio fit rows use a 68x20 assessment indicator and a 105x24 attribute label aligned under the list header columns.
+- Portfolio attribute labels combine category and percentage inside the attribute column; no-feature state omits the percentage.
+- Portfolio fit assessment indicators pair a 14px status icon with text; the icon is not a substitute for the label.
+- Portfolio fit stock sheets explain a row through a compact bottom sheet: portfolio stock sheet cells, attribute labels, fixed-column detail table, and one neutral similar-stock action.
+- Portfolio stock sheet cells separate identity, attribute-tab summaries, and health-check title summaries from generic settings cells.
+- Portfolio fit detail tables keep item labels left-aligned while individual performance and score values are right-aligned; info rows can leave the performance column empty while retaining the score column.
+- Preferred-stock lists use a six-column table for stock identity, dividend years, yield, volatility, feature percentage, and add-to-watchlist action.
+- Preferred-stock rows use a 22px add-stock icon inside a 27px action column.
+- Valuation labels are compact standalone assessment markers, not primary actions.
+- Portfolio health-check rows use a diagnostic table composition with sticky stock identity, report action, valuation, attention text, numeric metrics, trend graphic, and quarter-line status.
+- Portfolio health report sections extend the row diagnostics into flat detail blocks: valuation paragraph, quality metric list, and exception list.
+- Portfolio profit summaries use a stable three-column metric header and optional below-summary charts for daily P/L bars, cumulative gain/loss split, or holding allocation donut.
+- Quarter-line status icons pair domain state with icon shape; red check means above the quarterly line, green X means not above it.
+- Relative date labels use fixed content widths from 76px to 137px depending on date and relative text length.
+- Event name labels are text-only; no event-name icon, badge fill, or divider is shown in the extracted component set.
+- Event table rows put stock identity on the left and event details right-aligned on the right; detail blocks may use one, two, or four lines.
+- Event filter dropdowns reserve 64px for the label so `全部`, `2項事件`, and `11項事件` align consistently.
+- Event filter sheets present event categories as a compact 3-column selection grid rather than as a long form.
+- Bottom-sheet headers separate sheet chrome from sheet body content; close/back/title/drag affordances should be composed from the header variants instead of recreated per sheet.
+- Bottom-sheet cells present commands and settings as dense rows with leading utility icon, label, optional status text, optional switch slot, or a gray action surface.
+- Bottom-sheet composites present nested settings as compact sheets: top-level settings rows can navigate to preview selectors or sort selectors, while watchlist assignment uses a scrollable multi-select list plus one `完成` action.
+- Display-mode previews are functional state previews and should remain small thumbnails inside selector options.
+- Popup Dialog presents prompt content as a centered media/text/action composition; it is not a bottom sheet, card grid, or page-level empty state.
+- New Badge marks action novelty only; it is not promotional copy or a primary action.
+- Market filter strips present secondary quote views as compact text options, with selection indicated by label color instead of a changed item fill.
+- Primary inventory tab strips present major holdings sections as compact tabs, with active state indicated by label color and the `看盤/盤後` chevron color.
+- Broker/source icon sets present source identity only; they do not define selection, connection, or account-status state by themselves.
+- Promotional badges present short promo or fee-discount metadata and can be composed inline with a row title.
+- Broker import rows combine source identity, import capability copy, promo metadata, inventory access, and a switch slot in one flat list row.
+- Broker import menus combine broker filtering, sync/edit commands, and last-update metadata in one 42px row rather than a separate toolbar or card.
+- Portfolio add action sections present add/sync entry points as compact outline actions, not as onboarding cards or upload panels.
+- Portfolio add holding sheets present one compact form: stock select, stock type segmented control, total shares stepper, cost average field, unit labels, optional duplicate warning, and one confirm action that can be disabled gray outline or enabled orange fill.
+- Portfolio manual import rows are fixed-column, horizontally table-like rows. Missing required values use compact `請填寫` fields, entered values use formatted numbers, and intentionally empty values use `-`.
+- Market movement triangle and candlestick marker follow market color.
+- Event metadata sits below stock identity, not in a separate card.
+
+## State Language
+
+- Selection is conveyed through filled neutral surfaces.
+- Primary action is orange; neutral action is warm gray.
+- Inactive navigation is gray text/icon on black.
+- Disabled behavior exists in prior color tokens but was not visible in this Figma node.
+- Temporal colors communicate calendar relationship only; do not reuse them for market, error, or portfolio category state.
+- Event orange communicates financial event metadata in this component; do not infer it as a tappable primary action without interaction evidence.
+- Event table rows are informational rows by default; bordered surface treatment does not imply card-stack marketing layout.
+- Return-today disabled state is observed as gray border and label, not opacity.
+- Event filter dropdown open menu and selected option treatments are not yet defined.
+- Event filter option selected state is a filled orange surface; default state is a filled neutral surface, not an outline.
+- Bottom-sheet cell status uses right-side text/chevron or a switch slot; do not infer row pressed/selected state from the default surface.
+- Bottom-sheet preview selection uses an orange outline around the selected preview tile; sort selection uses an orange check icon; watchlist selection uses orange selected radio/check control and white unselected radio outline.
+- Bottom Sheet Footer Button is a submit-only bottom-sheet action; disabled, loading, destructive, and dual-action footer states are not yet evidenced.
+- Popup Dialog observed actions are default-only: left secondary outline and right orange primary. Pressed, focus-visible, disabled, loading, destructive, close-dismiss, and single-action states are not yet evidenced.
+- New Badge state is default-only; dismissed, disabled, pressed, localized, and long-label states are not yet evidenced.
+- MyStock utility icons are default white assets; selected, disabled, or status-color variants are not yet evidenced.
+- Market filter selected state is orange label text on the same dark item fill; do not swap to an orange filled item without evidence.
+- Primary inventory tab selected state is white label text on the same dark strip; inactive tabs use gray text, and only `看盤/盤後` exposes a chevron color state.
+- Broker/source icon state is not evidenced beyond default identity artwork; do not infer selected, connected, or unavailable treatments from the icon set alone.
+- Promotional badges are informational in the observed nodes; do not infer pressed, selected, dismissible, or disabled states.
+- Broker import row observed state is imported/on with an inline action; row-specific switch disabled/loading/error, row pressed, and no-promo states are not yet evidenced. Standalone Switch supplies off/on visuals.
+- Broker import menu observed state is the default all-broker row with `同步` and `編輯` available; dropdown expanded, selected broker, disabled, syncing, edit-mode, error, and timestamp-absent states are not yet evidenced.
+- Portfolio add action buttons are orange outline actions by default; pressed, focus-visible, disabled, permission, sync-progress, and error states are not yet evidenced.
+- Portfolio add holding sheets show disabled confirm as explicit gray outline/text, enabled confirm as orange fill with white text, duplicate-stock warning as red text in the sheet flow, selected stock type as orange fill, and active manual tab as an orange underline; selected-stock, image-recognition content, keyboard, pressed, loading, save-success, and network-error states are not yet evidenced.
+- Portfolio manual import missing required state is the pale-orange outlined `請填寫` value field; it is not a focused state, validation banner, or generic error state without future evidence.
+- Portfolio attribute active state is filled; inactive state is transparent but keeps the category color on the label and white on the percent.
+- Portfolio stock sheet attribute tabs differ from standalone attribute labels: inactive tab labels are muted gray, while active tab labels are filled with the category color and white text.
+- Portfolio fit assessment match/mismatch states must stay semantic to fit evaluation, not generic success/error or market movement.
+- Portfolio fit stock sheet open state is a bottom sheet surface, not a page transition; backdrop, close, drag, scroll, and transition behaviors are not yet evidenced.
+- Similar Stock Button is neutral navigation, not a primary submit action; pressed, focus-visible, disabled, and loading states are not yet evidenced.
+- Portfolio fit high-score red is a scoring signal in this sheet, not a market-up value.
+- Portfolio fit detail table info rows use the 14px info icon as a tooltip affordance only; the icon does not change row selection or score state by itself.
+- Preferred-stock add icon is an action affordance, but selected/added state is not yet evidenced.
+- Valuation label variants are semantic assessment states; `無法評估` is unavailable valuation, not a disabled interaction state.
+- Health-check report action is an inline row action; health-check cell selected/pressed/loading states are not yet evidenced.
+- Health report detail sections are informational by default; empty, loading, collapsed, no-exception, pressed, and focus states are not yet evidenced.
+- Profit summary expand/collapse is indicated by compact chart toggles; pressed/focus-visible, loading, error, hidden-cost, and chart tooltip states are not yet evidenced.
+- Quarter-line status colors are technical-condition semantics, not generic validation semantics.
+- Stock Card sentiment states are feed/commentary states, not market price movement, filter selection, or valuation assessment. The observed `type=defualt` neutral and `type=bullish` variants do not define pressed, selected, bookmarked, loading, collapsed, expanded, or bearish behavior.
+- Stock Calendar cell fills are market-return states: red translucent means positive/up return, green translucent means negative/down return, `#333333` fill means no-market, outline-only means empty outside-month, and stronger red means highlighted/high-intensity up in the observed source. It does not define selected/focused/pressed calendar interaction states.

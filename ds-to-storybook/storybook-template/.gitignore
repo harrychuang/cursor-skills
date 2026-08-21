@@ -1,0 +1,14 @@
+node_modules/
+storybook-static/
+dist/
+!vendor/figma-export/dist/
+!.storybook/vendor/figma-export-addon/dist/
+!.storybook/vendor/figma-export-addon/dist/**
+.DS_Store
+.agents/
+.claude/
+.cursor/
+.cursorrules
+.spectra/
+.spectra.yaml
+openspec/.vector-search.db*

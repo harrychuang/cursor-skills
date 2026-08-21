@@ -1,0 +1,385 @@
+/* Reference tokens hold raw values only.
+   Sources:
+   - User-provided project color style export, 2026-05-28.
+   - Figma node 25668:74952, 即時報價_看盤盤後展開, inspected 2026-05-28.
+   - Figma node 29209:160554, 庫存股 / 持股分析速配度圖表, inspected 2026-05-28.
+   - Figma node 29207:159069, 庫存股 / 持股分析速配度標題, inspected 2026-05-28.
+   - Figma nodes 29208:159790 and 29208:159824, 持股分析速配度表頭與股票列表, inspected 2026-05-28.
+   - Figma node 19215:187463, 日期 variants, inspected 2026-05-28.
+   - Figma node 19215:187525, 事件名稱 variants, inspected 2026-05-28.
+   - Figma node 19215:187556, 事件Table variants, inspected 2026-05-28.
+   - Figma node 19215:187687, 回到今天 button variants, inspected 2026-05-28.
+   - Figma node 19215:187703, 下拉選單 variants, inspected 2026-05-28.
+   - Figma node 19215:187371, 重大事件篩選 bottom sheet, inspected 2026-05-28.
+   - Figma node 19215:187453, 一個選項 variants, inspected 2026-05-28.
+   - Figma node 29209:159854, 個股屬性特徵 variants, inspected 2026-05-28.
+   - Figma node 29209:159887, 速配評估 variants, inspected 2026-05-28.
+   - Figma node 29209:162730, 持股速配/長期存股/股票彈窗, inspected 2026-05-28.
+   - Figma nodes 29209:171175, 29209:171182, 29209:171392, 29209:171407, 29209:173791, 偏好股票列表與評價 labels, inspected 2026-05-28.
+   - Figma nodes 29209:173867, 29209:173922, 29209:173935, 持股體檢股票列表 cells and row, inspected 2026-05-28.
+   - Figma nodes 29210:26286, 29210:26310, 29210:26525, 持股體檢 report sections, inspected 2026-05-28.
+   - Figma node 29199:89866, 庫存股 即時損益 summary variants, inspected 2026-05-28.
+   - Figma nodes 29202:31008 and 29202:88715, 看盤盤後 filter strip and 庫存側邊按鈕, inspected 2026-05-28.
+   - Figma nodes 29213:87255, 29213:89332, and 29215:94535, broker icon set and add-holding action controls, inspected 2026-05-28.
+   - Figma nodes 29214:89592, 29215:89650, and 29215:89662, manual import inventory controls, inspected 2026-05-29.
+   - Figma node 7533:257724, add-holding bottom sheet variants, inspected 2026-05-29.
+   - Figma nodes 7533:256932 and 7533:257087, add-holding form body and confirm action states, inspected 2026-05-29.
+   - Figma nodes 23517:229465, 8159:289815, and 15937:219728, broker import promo/header/row patterns, inspected 2026-05-29.
+   - Figma node 29199:89369, inventory common component set, inspected 2026-05-29.
+   - Figma nodes 16405:224712, 16405:224726, 29207:103989, and 29207:103647, bottom sheet header/cell/icon patterns, inspected 2026-05-29.
+   - Figma node 16405:224755, bottom sheet composite variants, inspected 2026-05-29.
+   - Figma nodes 16405:233530, 16405:224793, 29210:28828, and 29209:162829, bottom sheet selector/action and portfolio stock sheet cells, inspected 2026-05-29.
+   - Figma nodes 29209:162952 and 29209:163029, portfolio fit detail table header and rows, inspected 2026-05-29.
+   - Figma nodes 29207:96213, 29207:95624, 29207:95615, and 29207:97253, realtime quote enlarged row and main-force quote row patterns, inspected 2026-05-29.
+   - Figma node 8134:289037, standalone switch component set, inspected 2026-06-02.
+   - Figma node 22911:207990, standalone selection control component set, inspected 2026-06-02.
+   - Figma node 5906:218640, popup dialog variants, inspected 2026-06-15.
+   - Figma node 594:2002, stock-title top bar variants, inspected 2026-06-15.
+   - Figma node 29503:80044 from canvas 202:4, global bubble variants, inspected 2026-06-15.
+   - Figma node 1934:94, button component set, inspected 2026-06-15.
+   - Figma node 18095:175915, watchlist realtime quote tile variants, inspected 2026-06-15.
+   - Figma node 5862:221812, empty-state variants, inspected 2026-06-15.
+   - Figma node 51034:5228, watchlist floating button variants, inspected 2026-06-15.
+   - Figma node 51036:377157, stock card variants, inspected 2026-06-15.
+   - Figma node 51054:298722, stock-calendar return calendar, inspected 2026-06-16.
+   - Figma node 46882:50259, stock-calendar cell component set, inspected 2026-06-17.
+   - Figma node 51059:51226, trend-analysis header/filter, inspected 2026-06-17.
+   - Figma node 51059:51227, asset trend chart, inspected 2026-06-17.
+   - Figma node 51059:278139, trend-analysis bar chart, inspected 2026-06-17.
+   - Figma node 51090:288762, similar stock result card, inspected 2026-06-17. */
+
+:root {
+  /* Brand hue values */
+  --sbt-ref-color-orange-12: #3f1d00;
+  --sbt-ref-color-orange-36: #b95700;
+  --sbt-ref-color-orange-50: #cc6102;
+  --sbt-ref-color-orange-60: #ff7800;
+  --sbt-ref-color-orange-75: #ebc09a;
+  --sbt-ref-color-orange-88: #ffd7b2;
+  --sbt-ref-color-orange-96: #fff1e5;
+  --sbt-ref-color-peach-92: #ffe2d4;
+  --sbt-ref-color-amber-50: #c37302;
+  --sbt-ref-color-amber-60: #f9a516;
+  --sbt-ref-color-amber-62: #ffa902;
+  --sbt-ref-color-amber-75: #ffd98a;
+  --sbt-ref-color-yellow-64: #ffb800;
+  --sbt-ref-color-yellow-68: #ffe55e;
+  --sbt-ref-color-yellow-94: #fbeeb9;
+  --sbt-ref-color-yellow-95: #ffeeb1;
+  --sbt-ref-color-yellow-96: #fef769;
+
+  /* Neutral scale */
+  --sbt-ref-color-neutral-0: #000000;
+  --sbt-ref-color-neutral-12: #1e1e1e;
+  --sbt-ref-color-neutral-15: #252525;
+  --sbt-ref-color-neutral-20: #333333;
+  --sbt-ref-color-neutral-24: #3d3d3d;
+  --sbt-ref-color-neutral-29: #4b4b4b;
+  --sbt-ref-color-neutral-32: #515151;
+  --sbt-ref-color-neutral-36: #5c5c5c;
+  --sbt-ref-color-neutral-46: #757575;
+  --sbt-ref-color-neutral-50: #808080;
+  --sbt-ref-color-neutral-56: #909090;
+  --sbt-ref-color-neutral-60: #999999;
+  --sbt-ref-color-neutral-65: #a7a7a7;
+  --sbt-ref-color-neutral-75: #c0c0c0;
+  --sbt-ref-color-neutral-85: #d9d9d9;
+  --sbt-ref-color-neutral-100: #ffffff;
+  --sbt-ref-color-lavender-94: #ebebf5;
+  --sbt-ref-color-warm-gray-50: #7e7873;
+
+  /* Market and status hue values */
+  --sbt-ref-color-red-25: #7a181b;
+  --sbt-ref-color-red-60: #ea272d;
+  --sbt-ref-color-red-62: #f93951;
+  --sbt-ref-color-red-65: #ff4f4f;
+  --sbt-ref-color-red-77: #ff8a91;
+  --sbt-ref-color-vermilion-56: #e95b33;
+  --sbt-ref-color-rose-55: #d73152;
+  --sbt-ref-color-rose-60: #eb415a;
+  --sbt-ref-color-rose-64: #ef6276;
+  --sbt-ref-color-red-38: #af0029;
+  --sbt-ref-color-pink-60: #ff3465;
+  --sbt-ref-color-purple-55: #9f5ebb;
+  --sbt-ref-color-violet-50: #8000ff;
+  --sbt-ref-color-cyan-47: #3196c1;
+  --sbt-ref-color-blue-45: #027dc6;
+  --sbt-ref-color-blue-55: #006fff;
+  --sbt-ref-color-blue-60: #36a9ea;
+  --sbt-ref-color-sky-96: #e5f9ff;
+  --sbt-ref-color-green-15: #09340f;
+  --sbt-ref-color-green-25: #15431b;
+  --sbt-ref-color-green-35: #29422c;
+  --sbt-ref-color-green-50: #00a94d;
+  --sbt-ref-color-green-55: #39b54a;
+  --sbt-ref-color-brown-40: #7c4616;
+
+  /* Alpha values and transparent paints */
+  --sbt-ref-opacity-0: 0;
+  --sbt-ref-opacity-8: 0.08;
+  --sbt-ref-opacity-20: 0.2;
+  --sbt-ref-opacity-30: 0.3;
+  --sbt-ref-opacity-50: 0.5;
+  --sbt-ref-opacity-60: 0.6;
+  --sbt-ref-opacity-80: 0.8;
+  --sbt-ref-color-white-alpha-0: rgba(255, 255, 255, 0);
+  --sbt-ref-color-white-alpha-8: rgba(255, 255, 255, 0.08);
+  --sbt-ref-color-white-alpha-20: rgba(255, 255, 255, 0.2);
+  --sbt-ref-color-red-57-alpha-20: rgba(231, 0, 0, 0.2);
+  --sbt-ref-color-red-60-alpha-30: rgba(234, 39, 45, 0.3);
+  --sbt-ref-color-red-60-alpha-50: rgba(234, 39, 45, 0.5);
+  --sbt-ref-color-green-55-alpha-30: rgba(57, 181, 74, 0.3);
+  --sbt-ref-color-green-55-alpha-50: rgba(57, 181, 74, 0.5);
+  --sbt-ref-color-orange-alpha-60: rgba(255, 120, 0, 0.6);
+  --sbt-ref-shadow-4-0-2-black-alpha-25: 4px 0 2px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-4-0-5-black-alpha-25: 4px 0 5px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-4-2-black-alpha-25: 0 4px 2px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-4-10-black-alpha-25: 0 4px 10px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-4-4-black-alpha-25: 0 4px 4px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-2-4-black-alpha-12: 0 2px 4px rgba(0, 0, 0, 0.12);
+  --sbt-ref-shadow-0-1-1-black-alpha-24-0-0-1-black-alpha-12: 0 1px 1px rgba(0, 0, 0, 0.24), 0 0 1px rgba(0, 0, 0, 0.12);
+  --sbt-ref-shadow-0-2-2-black-alpha-50: 0 2px 2px rgba(0, 0, 0, 0.5);
+  --sbt-ref-shadow-0-1-4-green-alpha-45: 0 1px 4px rgba(28, 88, 66, 0.45);
+
+  /* Annotation-only values */
+  --sbt-ref-color-yellow-70-alpha-80: rgba(255, 245, 109, 0.8);
+  --sbt-ref-color-mint-60-alpha-60: rgba(80, 227, 194, 0.6);
+  --sbt-ref-color-pink-70: #ffb7b9;
+  --sbt-ref-color-violet-70: #d1a3ff;
+
+  /* Type raw values */
+  --sbt-ref-typeface-pingfang-tc: "PingFang TC";
+  --sbt-ref-typeface-roboto: "Roboto";
+  --sbt-ref-typeface-inter: "Inter";
+  --sbt-ref-typeface-play: "Play";
+  --sbt-ref-typeface-noto-sans-jp: "Noto Sans JP";
+  --sbt-ref-typeface-noto-sans-sc: "Noto Sans SC";
+  --sbt-ref-typeface-sf-pro-display: "SF Pro Display";
+  --sbt-ref-typeface-sf-pro-text: "SF Pro Text";
+  --sbt-ref-weight-400: 400;
+  --sbt-ref-weight-500: 500;
+  --sbt-ref-weight-600: 600;
+  --sbt-ref-weight-700: 700;
+  --sbt-ref-line-height-normal: normal;
+
+  /* Raw size values */
+  --sbt-ref-size-0: 0;
+  --sbt-ref-size-1: 1px;
+  --sbt-ref-size-2: 2px;
+  --sbt-ref-size-3: 3px;
+  --sbt-ref-size-4: 4px;
+  --sbt-ref-size-5: 5px;
+  --sbt-ref-size-5-6: 5.6px;
+  --sbt-ref-size-6: 6px;
+  --sbt-ref-size-7: 7px;
+  --sbt-ref-size-8: 8px;
+  --sbt-ref-size-9: 9px;
+  --sbt-ref-size-10: 10px;
+  --sbt-ref-size-11: 11px;
+  --sbt-ref-size-12: 12px;
+  --sbt-ref-size-13: 13px;
+  --sbt-ref-size-14: 14px;
+  --sbt-ref-size-15: 15px;
+  --sbt-ref-size-16: 16px;
+  --sbt-ref-size-17: 17px;
+  --sbt-ref-size-18: 18px;
+  --sbt-ref-size-19: 19px;
+  --sbt-ref-size-20: 20px;
+  --sbt-ref-size-21: 21px;
+  --sbt-ref-size-22: 22px;
+  --sbt-ref-size-23: 23px;
+  --sbt-ref-size-24: 24px;
+  --sbt-ref-size-25: 25px;
+  --sbt-ref-size-26: 26px;
+  --sbt-ref-size-27: 27px;
+  --sbt-ref-size-28: 28px;
+  --sbt-ref-size-29: 29px;
+  --sbt-ref-size-30: 30px;
+  --sbt-ref-size-31: 31px;
+  --sbt-ref-size-32: 32px;
+  --sbt-ref-size-33: 33px;
+  --sbt-ref-size-34: 34px;
+  --sbt-ref-size-36: 36px;
+  --sbt-ref-size-37: 37px;
+  --sbt-ref-size-38: 38px;
+  --sbt-ref-size-40: 40px;
+  --sbt-ref-size-41: 41px;
+  --sbt-ref-size-42: 42px;
+  --sbt-ref-size-43: 43px;
+  --sbt-ref-size-44: 44px;
+  --sbt-ref-size-45: 45px;
+  --sbt-ref-size-46: 46px;
+  --sbt-ref-size-48: 48px;
+  --sbt-ref-size-49: 49px;
+  --sbt-ref-size-50: 50px;
+  --sbt-ref-size-51: 51px;
+  --sbt-ref-size-52: 52px;
+  --sbt-ref-size-54: 54px;
+  --sbt-ref-size-55: 55px;
+  --sbt-ref-size-57: 57px;
+  --sbt-ref-size-58: 58px;
+  --sbt-ref-size-59: 59px;
+  --sbt-ref-size-60: 60px;
+  --sbt-ref-size-61: 61px;
+  --sbt-ref-size-62: 62px;
+  --sbt-ref-size-63: 63px;
+  --sbt-ref-size-64: 64px;
+  --sbt-ref-size-65: 65px;
+  --sbt-ref-size-66: 66px;
+  --sbt-ref-size-68: 68px;
+  --sbt-ref-size-69: 69px;
+  --sbt-ref-size-70: 70px;
+  --sbt-ref-size-71: 71px;
+  --sbt-ref-size-73: 73px;
+  --sbt-ref-size-74: 74px;
+  --sbt-ref-size-76: 76px;
+  --sbt-ref-size-77: 77px;
+  --sbt-ref-size-78: 78px;
+  --sbt-ref-size-79: 79px;
+  --sbt-ref-size-80: 80px;
+  --sbt-ref-size-82: 82px;
+  --sbt-ref-size-83: 83px;
+  --sbt-ref-size-84: 84px;
+  --sbt-ref-size-86: 86px;
+  --sbt-ref-size-88: 88px;
+  --sbt-ref-size-90: 90px;
+  --sbt-ref-size-91: 91px;
+  --sbt-ref-size-93: 93px;
+  --sbt-ref-size-94: 94px;
+  --sbt-ref-size-95: 95px;
+  --sbt-ref-size-96: 96px;
+  --sbt-ref-size-98: 98px;
+  --sbt-ref-size-100: 100px;
+  --sbt-ref-size-101: 101px;
+  --sbt-ref-size-102: 102px;
+  --sbt-ref-size-103: 103px;
+  --sbt-ref-size-105: 105px;
+  --sbt-ref-size-106: 106px;
+  --sbt-ref-size-108: 108px;
+  --sbt-ref-size-109: 109px;
+  --sbt-ref-size-110: 110px;
+  --sbt-ref-size-112: 112px;
+  --sbt-ref-size-116: 116px;
+  --sbt-ref-size-117: 117px;
+  --sbt-ref-size-119: 119px;
+  --sbt-ref-size-120: 120px;
+  --sbt-ref-size-121: 121px;
+  --sbt-ref-size-122: 122px;
+  --sbt-ref-size-124: 124px;
+  --sbt-ref-size-125: 125px;
+  --sbt-ref-size-126: 126px;
+  --sbt-ref-size-128: 128px;
+  --sbt-ref-size-130: 130px;
+  --sbt-ref-size-131: 131px;
+  --sbt-ref-size-132: 132px;
+  --sbt-ref-size-134: 134px;
+  --sbt-ref-size-136: 136px;
+  --sbt-ref-size-137: 137px;
+  --sbt-ref-size-138: 138px;
+  --sbt-ref-size-140: 140px;
+  --sbt-ref-size-147: 147px;
+  --sbt-ref-size-148: 148px;
+  --sbt-ref-size-152: 152px;
+  --sbt-ref-size-154: 154px;
+  --sbt-ref-size-157: 157px;
+  --sbt-ref-size-161: 161px;
+  --sbt-ref-size-161-5: 161.5px;
+  --sbt-ref-size-165: 165px;
+  --sbt-ref-size-170: 170px;
+  --sbt-ref-size-171: 171px;
+  --sbt-ref-size-176: 176px;
+  --sbt-ref-size-177: 177px;
+  --sbt-ref-size-184: 184px;
+  --sbt-ref-size-187: 187px;
+  --sbt-ref-size-189: 189px;
+  --sbt-ref-size-191: 191px;
+  --sbt-ref-size-195: 195px;
+  --sbt-ref-size-200: 200px;
+  --sbt-ref-size-210: 210px;
+  --sbt-ref-size-211: 211px;
+  --sbt-ref-size-212: 212px;
+  --sbt-ref-size-215: 215px;
+  --sbt-ref-size-216: 216px;
+  --sbt-ref-size-217: 217px;
+  --sbt-ref-size-218: 218px;
+  --sbt-ref-size-222: 222px;
+  --sbt-ref-size-224: 224px;
+  --sbt-ref-size-226: 226px;
+  --sbt-ref-size-227: 227px;
+  --sbt-ref-size-230: 230px;
+  --sbt-ref-size-234: 234px;
+  --sbt-ref-size-247: 247px;
+  --sbt-ref-size-248: 248px;
+  --sbt-ref-size-262: 262px;
+  --sbt-ref-size-266: 266px;
+  --sbt-ref-size-276: 276px;
+  --sbt-ref-size-286: 286px;
+  --sbt-ref-size-292: 292px;
+  --sbt-ref-size-293: 293px;
+  --sbt-ref-size-294: 294px;
+  --sbt-ref-size-295: 295px;
+  --sbt-ref-size-298: 298px;
+  --sbt-ref-size-299: 299px;
+  --sbt-ref-size-304: 304px;
+  --sbt-ref-size-307: 307px;
+  --sbt-ref-size-309: 309px;
+  --sbt-ref-size-310: 310px;
+  --sbt-ref-size-323: 323px;
+  --sbt-ref-size-324: 324px;
+  --sbt-ref-size-332: 332px;
+  --sbt-ref-size-335: 335px;
+  --sbt-ref-size-339: 339px;
+  --sbt-ref-size-343: 343px;
+  --sbt-ref-size-355: 355px;
+  --sbt-ref-size-356: 356px;
+  --sbt-ref-size-359: 359px;
+  --sbt-ref-size-365: 365px;
+  --sbt-ref-size-366: 366px;
+  --sbt-ref-size-372: 372px;
+  --sbt-ref-size-374: 374px;
+  --sbt-ref-size-375: 375px;
+  --sbt-ref-size-376: 376px;
+  --sbt-ref-size-382: 382px;
+  --sbt-ref-size-385: 385px;
+  --sbt-ref-size-393: 393px;
+  --sbt-ref-size-396: 396px;
+  --sbt-ref-size-407: 407px;
+  --sbt-ref-size-415: 415px;
+  --sbt-ref-size-416: 416px;
+  --sbt-ref-size-451: 451px;
+  --sbt-ref-size-457: 457px;
+  --sbt-ref-size-468: 468px;
+  --sbt-ref-size-495: 495px;
+  --sbt-ref-size-520: 520px;
+  --sbt-ref-size-521: 521px;
+  --sbt-ref-size-529-5: 529.5px;
+  --sbt-ref-size-550: 550px;
+  --sbt-ref-size-556: 556px;
+  --sbt-ref-size-557: 557px;
+  --sbt-ref-size-563: 563px;
+  --sbt-ref-size-602: 602px;
+  --sbt-ref-size-605: 605px;
+  --sbt-ref-size-624: 624px;
+  --sbt-ref-size-659: 659px;
+  --sbt-ref-size-768: 768px;
+  --sbt-ref-size-792: 792px;
+  --sbt-ref-size-812: 812px;
+  --sbt-ref-size-986: 986px;
+  --sbt-ref-size-1162: 1162px;
+  --sbt-ref-size-1269: 1269px;
+  --sbt-ref-size-1280: 1280px;
+  --sbt-ref-size-1785: 1785px;
+
+  /* Raw radius values */
+  --sbt-ref-radius-0: 0;
+  --sbt-ref-radius-2: 2px;
+  --sbt-ref-radius-4: 4px;
+  --sbt-ref-radius-5: 5px;
+  --sbt-ref-radius-6: 6px;
+  --sbt-ref-radius-8: 8px;
+  --sbt-ref-radius-12: 12px;
+  --sbt-ref-radius-14: 14px;
+  --sbt-ref-radius-16: 16px;
+  --sbt-ref-radius-24: 24px;
+  --sbt-ref-radius-100: 100px;
+}

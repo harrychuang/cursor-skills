@@ -12,6 +12,13 @@ Document palette families with `100` as the lightest step and `0` as the darkest
 | Role | Font / weight / size guidance | Usage | Evidence / rationale |
 |---|---|---|---|
 
+## Typographic Composition / Text Lockups
+
+Document recurring text groupings separately from atomic typography. Include slot order, hierarchy, scale relationship, spacing, alignment, max line length, line-break behavior, color pairing, and language/script behavior.
+
+| Pattern | Slots | Composition rule | Evidence / rationale | Component candidate |
+|---|---|---|---|---|
+
 ## Shape And Corners
 
 | Role | Value | Usage | Evidence / rationale |

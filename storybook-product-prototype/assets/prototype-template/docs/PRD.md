@@ -12,6 +12,12 @@
 
 - [Primary user and context.]
 
+## Target Production Surfaces
+
+- Web: [Route, page, embedded surface, or `Not in scope`.]
+- App: [Native screen, tab, sheet, webview, or `Not in scope`.]
+- Shared package: [Reusable component or domain module, if any.]
+
 ## Goals
 
 - [Observable product outcome.]
@@ -32,10 +38,12 @@
 
 - Create a clickable Storybook prototype.
 - Keep data local and deterministic.
-- Maintain PRD, UI Spec, Flow Spec, Data Spec, Acceptance, typed flow metadata, fixtures, and `parameters.prototype` together.
+- Maintain PRD, UI Spec, Flow Spec, Data Spec, Production Handoff, Acceptance, typed flow metadata, fixtures, and `parameters.prototype` together.
+- Keep production handoff explicit about Storybook-only boundaries, web/app frontend needs, API/data contracts, and receiving-side integration ownership.
 
 ## Dependencies
 
 - Existing components: [List components to reuse.]
 - Existing tokens or styles: [List token/theme dependencies.]
 - Mocked external systems: [List systems that must remain mocked.]
+- Receiving implementation systems: [List services, routes, screens, packages, or platform owners that will replace prototype-only fixtures.]

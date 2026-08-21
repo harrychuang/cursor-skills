@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scaffold a PRD-led Storybook product prototype from bundled templates."""
+"""Scaffold a PRD-led Storybook product prototype and frontend handoff."""
 
 from __future__ import annotations
 
@@ -10,6 +10,8 @@ from pathlib import Path
 
 
 TOKEN_FILES = {
+    "FeaturePrototypeFlowExport.tsx.template": "__FEATURE_PASCAL__FlowExport.tsx",
+    "FeaturePrototypeFlowExport.stories.tsx.template": "__FEATURE_PASCAL__FlowExport.stories.tsx",
     "FeaturePrototype.tsx.template": "__FEATURE_PASCAL__.tsx",
     "FeaturePrototype.stories.tsx.template": "__FEATURE_PASCAL__.stories.tsx",
     "featurePrototypeFlow.ts.template": "__FEATURE_CAMEL__Flow.ts",
@@ -44,12 +46,31 @@ def to_title(words: list[str]) -> str:
     return " ".join(word[:1].upper() + word[1:] for word in words)
 
 
+def to_storybook_id(value: str) -> str:
+    story_id = re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
+    return story_id or "prototype"
+
+
 def copy_template_file(source: Path, target: Path, replacements: dict[str, str]) -> None:
     text = source.read_text()
     for token, value in replacements.items():
         text = text.replace(token, value)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text)
+
+
+def copy_flow_layout_helper(skill_root: Path, target_root: Path, force: bool) -> None:
+    source = skill_root / "assets" / "prototype-flow-layout" / "prototypeFlowLayout.ts"
+    target = target_root / "prototypeFlowLayout.ts"
+
+    if target.exists() and not force:
+        return
+
+    if not source.is_file():
+        raise FileNotFoundError(f"missing prototype flow layout helper: {source}")
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
 
 
 def scaffold(args: argparse.Namespace) -> Path:
@@ -65,6 +86,7 @@ def scaffold(args: argparse.Namespace) -> Path:
     template_root = skill_root / "assets" / "prototype-template"
     target_root = Path(args.target_root).resolve()
     prototype_dir = target_root / f"{feature_kebab}-prototype"
+    story_id_base = to_storybook_id(f"Pages/Prototypes/{feature_title}")
 
     if prototype_dir.exists():
         if not args.force:
@@ -80,9 +102,12 @@ def scaffold(args: argparse.Namespace) -> Path:
         "__FEATURE_CSS_CLASS__": css_class,
         "__FEATURE_KEBAB__": f"{feature_kebab}-prototype",
         "__FEATURE_PASCAL__": feature_pascal,
+        "__FEATURE_STORY_ID__": f"{story_id_base}--static-flow",
         "__FEATURE_TITLE__": feature_title,
         "__OWNER__": args.owner,
     }
+
+    copy_flow_layout_helper(skill_root, target_root, args.force)
 
     for source in template_root.rglob("*"):
         if source.is_dir():

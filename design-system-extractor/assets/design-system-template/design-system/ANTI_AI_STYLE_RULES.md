@@ -13,6 +13,7 @@ Use these project-specific constraints before recommending or implementing UI.
 - Row-as-card treatment
 - Extra whitespace beyond observed density
 - Extra radius, shadow, blur, or saturation
+- Generic heading/subheading stacks replacing evidenced typographic lockups
 
 ## Project-Specific Constraints
 

@@ -10,6 +10,8 @@ Use this reference when creating `DATA_SPEC.md` and `<featurePrototypeData>.ts`.
 - Include branch fixtures when the UI Flow contains branch nodes.
 - Include empty, loading, disabled, and error fixtures when those states are in scope.
 - Do not call live product APIs from a prototype.
+- For frontend handoff, map every fixture group to an expected API, service, local storage, feature flag, or static content contract.
+- Do not wire real data sources, auth/session, backend clients, cache, storage, or persistence inside the prototype unless the user explicitly scopes that work.
 
 ## Data Spec Sections
 
@@ -44,6 +46,8 @@ For each future API or service, document:
 - owning team or source
 - routes that consume it
 - fixture group that currently mocks it
+- auth, permission, cache, persistence, or offline constraints when known
+- receiving implementation owner for real data wiring
 
 ## Data Invariants
 
@@ -53,3 +57,4 @@ Document invariants that UI and tests rely on, such as:
 - required fields for each card or row
 - direction or status values controlling visual state
 - branch fixture values that trigger success and error flows
+- fixture fields that must remain stable across web and app frontend implementations

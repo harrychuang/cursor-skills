@@ -46,6 +46,10 @@ export type __FEATURE_PASCAL__Transition = {
   trigger: string;
   label: string;
   flowLine?: "key" | "reference" | "hidden";
+  sourceAnchor?: {
+    x: number;
+    y: number;
+  };
   kind?:
     | "primary"
     | "return"
@@ -67,9 +71,11 @@ export const __FEATURE_CAMEL__Routes = [
   },
 ] satisfies __FEATURE_PASCAL__Route[];
 
-export const __FEATURE_CAMEL__FlowNodes = [] satisfies __FEATURE_PASCAL__FlowNode[];
+export const __FEATURE_CAMEL__FlowNodes: __FEATURE_PASCAL__FlowNode[] =
+  [] satisfies __FEATURE_PASCAL__FlowNode[];
 
-export const __FEATURE_CAMEL__Transitions = [] satisfies __FEATURE_PASCAL__Transition[];
+export const __FEATURE_CAMEL__Transitions: __FEATURE_PASCAL__Transition[] =
+  [] satisfies __FEATURE_PASCAL__Transition[];
 
 export const __FEATURE_CAMEL__Flow = {
   nodes: __FEATURE_CAMEL__FlowNodes,

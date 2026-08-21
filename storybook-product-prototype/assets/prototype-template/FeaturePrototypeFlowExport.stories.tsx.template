@@ -1,0 +1,19 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { __FEATURE_PASCAL__FlowExport } from "./__FEATURE_PASCAL__FlowExport";
+import { __FEATURE_CAMEL__Meta } from "./__FEATURE_CAMEL__Meta";
+
+const meta = {
+  title: "Pages/Prototypes/__FEATURE_TITLE__",
+  component: __FEATURE_PASCAL__FlowExport,
+  parameters: {
+    layout: "fullscreen",
+    prototype: __FEATURE_CAMEL__Meta,
+  },
+} satisfies Meta<typeof __FEATURE_PASCAL__FlowExport>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const StaticFlow: Story = {};

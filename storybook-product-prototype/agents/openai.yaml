@@ -1,4 +1,4 @@
 interface:
   display_name: "Storybook Product Prototype"
-  short_description: "Create PRD-led prototype stories"
-  default_prompt: "Use $storybook-product-prototype to create PRD, data, UI Flow, and Storybook prototype files."
+  short_description: "Create PRD-led prototypes with frontend handoff"
+  default_prompt: "Use $storybook-product-prototype to create PRD, data, UI Flow, Frontend Handoff, interactive Storybook prototype files, template-compatible Static Flow export, and install the Prototype Inspector viewer when needed."

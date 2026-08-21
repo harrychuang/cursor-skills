@@ -1,6 +1,6 @@
 # Design System Extractor Skill
 
-`design-system-extractor` is a reusable skill for extracting a token-backed design-system package from screenshots, Figma references, or an existing project/prototype folder.
+`design-system-extractor` is a reusable skill for extracting and collaboratively reviewing a token-backed design-system package from screenshots, graphic/brand/editorial references, Figma references, branch diffs, an existing web or native iOS/Android project folder, or an AI-generated/vibe-coded prototype project.
 
 It does not implement product screens by default. It produces design-system documentation, token files, component inventory, component token specs, anti-AI style rules, static HTML documentation, and a checkpoint for the next step.
 
@@ -15,8 +15,11 @@ This guide describes the skill's reusable workflow. The generated project-specif
 Use this skill when you have one or more of these inputs:
 
 - UI screenshots or image exports
+- Graphic design, brand, editorial, poster, social, or marketing image references
 - Figma URL, Figma node, Figma exports, or Figma Variables
 - Existing project folder with app code, CSS, tokens, or Storybook
+- Native iOS or Android project folder with SwiftUI, UIKit, Jetpack Compose, Android Views/XML, previews, screenshot tests, simulator/emulator captures, app resources, or component modules
+- AI-generated or vibe-coded project where rendered UI should be treated as stronger evidence than source-only code
 - Prototype folder that should be treated as visual/reference material
 - Mixed references that need to become a reusable design-system package
 
@@ -31,7 +34,23 @@ Use $design-system-extractor to analyze this Figma URL and create design-system 
 ```
 
 ```txt
+Use $design-system-extractor to extract a reusable visual system from these brand and poster references, including typographic lockups when they have reusable structure.
+```
+
+```txt
 Use $design-system-extractor to extract a reusable design system from this project folder. Treat prototype code as reference only.
+```
+
+```txt
+Use $design-system-extractor to extract a reusable design system from this native iOS/Android app project. Inspect screenshots, previews, screenshot tests, simulator/emulator captures when available, native token/resource files, and design-system modules before treating source-only components as evidence.
+```
+
+```txt
+Use $design-system-extractor to extract a reusable design system from this vibe-coded project. Run the product or Storybook if possible, capture rendered routes across key viewports/states, treat code as reference-only, classify demo-only or unused generated code as low confidence, and record keep/ignore decisions.
+```
+
+```txt
+Use $design-system-extractor to review and integrate the design-system extraction branches from this team round. Record branch decisions in INTEGRATION_REVIEW.md, regenerate docs, run strict audits, and stop with blockers.
 ```
 
 ## What It Produces
@@ -41,6 +60,7 @@ The skill creates or updates a package like this:
 ```txt
 design-system/
 ├── DESIGN_SYSTEM_KICKSTART.md
+├── INTEGRATION_REVIEW.md
 ├── DESIGN_EVIDENCE_MAP.md
 ├── DESIGN_PRINCIPLES.md
 ├── DESIGN_ELEMENTS.md
@@ -51,7 +71,8 @@ design-system/
 ├── PAGE_COMPOSITION_RULES.md
 ├── ANTI_AI_STYLE_RULES.md
 ├── assets/
-│   └── component-review/
+│   ├── component-review/
+│   └── rendered-captures/
 └── SESSION_STATE.md
 
 tokens/
@@ -78,28 +99,123 @@ For CSS custom properties, the default prefixes are:
 - `--md-sys-*`: shared semantic roles only
 - `--md-comp-*`: component slots only
 
-Reference color scales use `100 -> 0` from light to dark. Near duplicate reference colors or numbers, exact system/component aliases inside the same audit group, and usage-aware system/component token pairs must be confirmed with the developer as either `merge` or `keep distinct` before the token set is finalized. Usage-aware comparison resolves `ref -> sys -> comp` inheritance chains, then compares semantic role, component category, slot/anatomy, state, and resolved raw value so component tokens are not deduped on raw value alone.
+Reference color scales use `100 -> 0` from light to dark. Near duplicate reference colors or numbers must be confirmed with the developer as either `merge` or `keep distinct` before the token set is finalized.
 
 Input sources also go through duplicate review. Screenshots, image exports, Figma URLs/nodes, rendered routes, and prototype references should be recorded with a source fingerprint in `DESIGN_EVIDENCE_MAP.md`. Exact or likely duplicate sources must be confirmed as `reuse existing source`, `ignore duplicate`, or `keep distinct` before both are counted as separate evidence.
 
-Figma sources are also preserved for downstream implementation. When a design comes from Figma, `DESIGN_EVIDENCE_MAP.md` and each affected component spec's `Source Trace` should keep the original Figma URL, canonical node URL when available, normalized `figma:<file-key>#<node-id>` fingerprint, and a `Figma MCP target` with file key, MCP node id, page/frame/node names, and suggested MCP calls. This lets `ds-to-storybook` or another implementation agent inspect the original node with Figma MCP before building the component.
+Component candidates also go through a similarity review. When a new Figma or screenshot component resembles an existing component, the extractor records a fingerprint and asks whether to merge it, make it a variant, keep it distinct, or block it pending more evidence. Component candidates include interactive UI elements, layout/display patterns, graphic motifs, and reusable typographic compositions. Visual comparison assets should come from actual Figma node previews/screenshots or screenshot crops, stored under `design-system/assets/component-review/`, and linked from `COMPONENT_INVENTORY.md`. Schematic SVGs are only a labeled last-resort fallback when source previews cannot be captured.
 
-Component candidates also go through a similarity review. The component audit automatically compares fingerprints from the inventory and component specs; when a new Figma or screenshot component resembles an existing component, the extractor records a fingerprint and asks whether to merge it, make it a variant, keep it distinct, or block it pending more evidence. Visual comparison assets should come from actual Figma node previews/screenshots or screenshot crops, stored under `design-system/assets/component-review/`, and linked from `COMPONENT_INVENTORY.md`. Schematic SVGs are only a labeled last-resort fallback when source previews cannot be captured.
+Typographic components, also called text lockups, sit between typography foundations and full layout components. Extract them when a repeated text grouping has stable slots and reusable hierarchy, such as kicker + headline, headline + subhead, number + unit + caption, quote + attribution, or label + value. Do not promote one-off lettering or decorative art text into a component unless the references show it is reused or brand-critical enough to constrain future work.
+
+## Vibe-Coded Project Intake
+
+For AI-generated or vibe-coded project folders, precision depends on source hygiene. The extractor should first locate or create a route/state manifest with each important route or Storybook story, viewport, state, render command, screenshot path, relevant source files, and keep/ignore notes.
+
+When the project is runnable, the extractor should run a rendered UI capture pass before extracting tokens or components:
+
+1. Detect install, dev server, preview, Storybook, and seed/test-data commands.
+2. Start the app or Storybook when dependencies and permissions allow.
+3. Open local routes or stories with browser automation.
+4. Capture mobile, tablet, and desktop screenshots, plus reachable UI states.
+5. Inspect DOM/computed styles to connect visible UI with used tokens, CSS variables, components, and route imports.
+6. Store screenshots under `design-system/assets/rendered-captures/`.
+7. Record every capture attempt, screenshot path, blocker, and confidence impact in `DESIGN_EVIDENCE_MAP.md`.
+
+Use this evidence order by default:
+
+1. User-marked keep/ignore notes tied to visible routes or screenshots.
+2. Captured screenshots and rendered routes with viewport/state metadata.
+3. Storybook stories or component examples that represent product UI.
+4. Used CSS variables, tokens, components, and route imports.
+5. Source-only code, unused CSS, demo pages, starter components, or generated comments.
+
+Do not raise confidence from source-only artifacts. Classify project evidence as `rendered`, `screenshot`, `storybook`, `token-used`, `component-used`, `demo-only`, `unused`, `dead-code`, `capture-blocked`, `auth-blocked`, `contradictory`, or `out-of-scope`, then record route coverage and keep/ignore decisions in `SESSION_STATE.md` and `DESIGN_EVIDENCE_MAP.md`.
+
+If the product cannot be started or a route is blocked by auth/data/setup, record the blocker and keep affected source-only design rules Low confidence unless the user supplies screenshots or confirms the pattern.
+
+## Native Mobile Project Intake
+
+For native iOS or Android project folders, the extractor should read `references/native-mobile-projects.md` before extraction. It should identify the platform/framework, app targets or modules, available capture surfaces, native token/resource files, and likely design-system modules before writing design decisions.
+
+Native evidence should be ranked by default as:
+
+1. Production Figma component library, design tokens, or named design-system package.
+2. Supplied production screenshots or QA captures.
+3. Simulator, emulator, or device captures with platform/device/state metadata.
+4. Screenshot-test artifacts, SwiftUI Previews, Compose Previews, preview galleries, or demo screens intended to represent product UI.
+5. Native theme, resource, or token files used by captured screens.
+6. UI components reachable from navigation, previews, screenshot tests, or app entrypoints.
+7. Source-only views, generated samples, unused previews, starter code, or comments.
+
+For iOS, inspect SwiftUI views, UIKit views/controllers/cells, asset catalogs, named colors, typography wrappers, `ViewModifier`s, Swift packages, and candidate modules such as `DesignSystem`, `UIComponents`, `Theme`, or `Tokens`.
+
+For Android, inspect Compose `@Composable` and `@Preview` functions, Android Views/XML layouts, navigation graphs, `res/values`, vector drawables, theme files, Gradle modules, and candidate modules such as `:designsystem`, `:core-ui`, `:theme`, or `:components`.
+
+When possible, run a Native UI Capture Pass using existing screenshots, screenshot tests, previews, demo/gallery screens, simulator, emulator, or device output. Record platform, device, OS/API level, orientation, state, command, screenshot path, source files, blockers, and confidence impact in `DESIGN_EVIDENCE_MAP.md`. Do not modify signing, provisioning, package names, bundle IDs, secrets, or destructive data just to capture UI.
+
+Native component names, composable names, view names, asset names, and XML style names are clues, not proof. Verify reusable components through screenshots, previews, screenshot tests, simulator/emulator captures, navigation reachability, imports/usages, or explicit user confirmation.
 
 ## Standard Workflow
 
-1. Discover inputs: screenshots, Figma data, rendered UI, project code, tokens, Storybook, and review duplicate sources.
+1. Discover inputs: screenshots, Figma data, rendered UI, native captures/previews, project code, tokens/resources, Storybook, rendered capture attempts, native capture attempts, and review duplicate sources.
 2. Build `DESIGN_EVIDENCE_MAP.md` so design decisions trace back to source evidence.
-3. For Figma sources, preserve original URLs, normalized fingerprints, and MCP-ready targets for downstream Figma MCP inspection.
-4. Extract 5-7 design principles with evidence and implementation rules.
-5. Define design elements: color, type, spacing, density, shape, elevation, iconography, imagery.
-6. Define token architecture, review near token candidates, and fill `tokens/`.
-7. Build `COMPONENT_INVENTORY.md` from repeated UI patterns and review similar component candidates.
-8. Extract initial component token specs under `design-system/components/`, usually a primary action and core navigation/shell component.
-9. Document page composition, interaction states, and anti-AI style rules.
-10. Generate developer-facing HTML documentation and the visual review queue.
-11. Run strict source, token, and component audits.
-12. Update `SESSION_STATE.md`, stop, and ask the user for the next step.
+3. Extract 5-7 design principles with evidence and implementation rules.
+4. Define design elements: color, type, typographic composition, spacing, density, shape, elevation, iconography, imagery.
+5. Define token architecture, review near token candidates, and fill `tokens/`.
+6. Build `COMPONENT_INVENTORY.md` from repeated UI, layout, graphic, and typographic patterns and review similar component candidates.
+7. Extract initial component token specs under `design-system/components/`, usually a primary action/core navigation component for UI-heavy references or a high-value typographic lockup for graphic/editorial-heavy references.
+8. Document page composition, interaction states, and anti-AI style rules.
+9. Generate developer-facing HTML documentation and the visual review queue.
+10. Run strict source, token, and component audits.
+11. Update `SESSION_STATE.md`, stop, and ask the user for the next step.
+
+For teams working on separate branches, use the collaboration review pass before merging extracted sources, tokens, and component specs into the shared design-system package.
+
+## Team Branch Workflow
+
+Use this simple flow when several developers extract Figma components into the same design-system package.
+
+### Developer Flow
+
+Start from latest `main`, create one branch for one component or one small Figma scope, then make the branch review-ready.
+
+```txt
+main -> ds/new-comp -> extract with this skill -> self-review and audits -> push -> PR
+```
+
+Developer prompt:
+
+```txt
+Use $design-system-extractor to run a component expansion pass for <component-name> from this Figma node: <figma-url-or-node>.
+Update DESIGN_EVIDENCE_MAP.md, COMPONENT_INVENTORY.md, design-system/components/<component-name>.md, tokens, docs, and SESSION_STATE.md.
+Run strict source, token, and component audits.
+Do not merge other branches. Stop with PR review notes, audit results, and open questions.
+```
+
+Developer PR checklist:
+
+- The PR targets `main`, but it is treated as review input for the integration round.
+- The branch includes evidence, component inventory updates, component spec, required tokens, regenerated docs, and `SESSION_STATE.md`.
+- Duplicate source, near-token, or similar-component decisions are recorded when relevant.
+- Strict source, token, and component audits pass, or blockers are written clearly.
+
+### Integrator Flow
+
+The integrator starts from latest `main`, creates one integration branch, reviews contributor PRs or branches, and merges the integration branch back through a final PR.
+
+```txt
+main -> ds/integration-round-1 -> merge contributor branches one by one -> run collaboration review -> integration PR -> main
+```
+
+Integrator prompt:
+
+```txt
+Use $design-system-extractor to run a collaboration review and integration pass for these branches or PRs: <branch-or-pr-list>.
+Target branch is main. Integration branch is ds/integration-round-1.
+Review each branch, record decisions in INTEGRATION_REVIEW.md, merge one branch at a time, resolve source/token/component conflicts through the review gates, regenerate docs, run strict audits, update SESSION_STATE.md, then stop with merge decisions and blockers.
+```
+
+Rule of thumb: developer PRs are the review inputs; the integration PR is the final design-system change that lands in `main`.
 
 ## Component Expansion Pass
 
@@ -124,6 +240,29 @@ Expansion workflow:
 9. Regenerate HTML docs and review queue.
 10. Run strict source, token, and component audits.
 11. Update session state and stop.
+
+## Collaboration Review And Integration Pass
+
+Use this pass when multiple contributors extracted separate Figma sources, components, or token candidates on separate branches or PRs.
+
+Recommended prompt:
+
+```txt
+Use $design-system-extractor to run a collaboration review and integration pass for these branches or PRs: <branch-or-pr-list>. Read SESSION_STATE.md, INTEGRATION_REVIEW.md, DESIGN_EVIDENCE_MAP.md, TOKEN_ARCHITECTURE.md, COMPONENT_INVENTORY.md, relevant component specs, and tokens. Review each branch scope, record decisions in INTEGRATION_REVIEW.md, resolve source/token/component conflicts using the review gates, regenerate docs/design-system/index.html and docs/design-system/review.html, run strict audits, update SESSION_STATE.md, then stop with merge decisions and blockers.
+```
+
+Integration workflow:
+
+1. Confirm the target branch, integration branch, and branch or PR list.
+2. Inspect each branch or PR diff before merging and record owner, scope, files touched, and review status in `design-system/INTEGRATION_REVIEW.md`.
+3. Merge or rebase one branch at a time into the integration branch.
+4. Resolve source conflicts through `DESIGN_EVIDENCE_MAP.md` duplicate decisions.
+5. Resolve token conflicts through `TOKEN_ARCHITECTURE.md` near-token decisions and strict `ref -> sys -> comp` inheritance.
+6. Resolve component conflicts through `COMPONENT_INVENTORY.md` similarity decisions and component fingerprints.
+7. Treat `docs/design-system/index.html` and `docs/design-system/review.html` as generated output; regenerate them after source conflicts are resolved.
+8. Run strict source, token, and component audits.
+9. Update `SESSION_STATE.md` and `INTEGRATION_REVIEW.md`.
+10. Stop with `merged`, `request changes`, `blocked`, `superseded`, or `defer` decisions for each branch or PR.
 
 ## HTML Documentation
 
@@ -151,6 +290,7 @@ The generated HTML includes:
 
 - rendered design-system Markdown
 - rendered component specs
+- rendered integration review records
 - sidebar navigation
 - missing-document notices
 - reference, system, and component token tables
@@ -164,9 +304,7 @@ The generated review queue includes:
 - color scale issues with swatches
 - near color token pairs with swatches and deltaE
 - near numeric token pairs with differences
-- exact system/component token aliases that need merge/keep-distinct review
-- usage-aware token graph pairs with inheritance chains, purpose labels, similarity scores, and resolved values
-- manual and automatically detected component similarity review rows with visual references
+- component similarity review rows with visual references
 - documented versus needs-review status
 
 Use this HTML file as the developer-friendly reading layer. The Markdown files and CSS token files remain the source of truth.
@@ -193,20 +331,16 @@ The audit checks for:
 
 - missing source fingerprints in `DESIGN_EVIDENCE_MAP.md`
 - repeated screenshot, Figma, route, or source keys without a documented duplicate source decision
-- unresolved Figma MCP target coverage when Figma-backed component specs are ready for implementation
 - component tokens referencing reference tokens directly
 - system token names that include component vocabulary
 - reference token names that include semantic roles
 - reference color scale direction: `100` lightest to `0` darkest
 - near duplicate reference colors or numbers that need a documented merge/keep-distinct decision
-- exact duplicate system aliases in the same semantic dimension and component aliases in the same component/dimension
-- usage-aware system/component pairs whose resolved values and purpose fingerprints are both close
 - raw values in system/component layers
 - missing token files or empty token layers in strict mode
 - `tokens.css` import order in strict mode
 - background-like system colors missing `on-*` foreground pairs
 - unresolved component similarity review rows
-- automatically detected component fingerprint similarities without an inventory decision
 - component specs missing a `Component Fingerprint` section
 
 ## Cross-Agent Use
@@ -245,9 +379,11 @@ Add this to `CLAUDE.md`:
 ```md
 # Design System Extraction
 
-Use `skills/design-system-extractor/SKILL.md` when extracting a design system from screenshots, Figma references, or project code.
+Use `skills/design-system-extractor/SKILL.md` when extracting a design system from screenshots, Figma references, rendered UI, native iOS/Android captures/previews/screenshot tests, or project code.
 Start with `design-system/SESSION_STATE.md` when it exists.
+Use `design-system/INTEGRATION_REVIEW.md` when reviewing or integrating parallel extraction branches.
 Use `design-system/` and `tokens/` as source of truth before product UI code.
+For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md`, record native screen/state coverage, and verify source-only Swift/Kotlin/XML through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 Maintain token inheritance: ref -> sys -> comp.
 Keep reference color scales ordered as 100 lightest to 0 darkest.
 Document duplicate source reuse/ignore/keep-distinct decisions in `DESIGN_EVIDENCE_MAP.md`.
@@ -269,6 +405,12 @@ For a Figma input:
 
 ```txt
 Use skills/design-system-extractor/SKILL.md to extract design-system docs and tokens from this Figma URL: <figma-url>. Treat Figma data as evidence, create an evidence map with source fingerprints, review duplicate Figma sources, capture component similarity review images when candidates overlap, generate docs/design-system/index.html and docs/design-system/review.html, run strict source, token, and component audits, and stop at the checkpoint.
+```
+
+Recommended Claude Code prompt for collaborative integration:
+
+```txt
+Use skills/design-system-extractor/SKILL.md to review and integrate these design-system extraction branches or PRs: <branch-or-pr-list>. Record branch review decisions in design-system/INTEGRATION_REVIEW.md, resolve source/token/component conflicts through the existing review tables, regenerate docs, run strict audits, update SESSION_STATE.md, and stop with blockers.
 ```
 
 ### Cursor
@@ -296,9 +438,11 @@ description: Design-system extraction and governance
 alwaysApply: true
 ---
 
-Use `skills/design-system-extractor/SKILL.md` for design-system extraction from screenshots, Figma references, rendered UI, or project code.
+Use `skills/design-system-extractor/SKILL.md` for design-system extraction from screenshots, Figma references, rendered UI, native iOS/Android captures/previews/screenshot tests, or project code.
 Read `design-system/SESSION_STATE.md` before continuing existing work.
+Use `design-system/INTEGRATION_REVIEW.md` when reviewing or integrating parallel extraction branches.
 Fill or update `design-system/` and `tokens/` before product UI code.
+For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md`, record native screen/state coverage, and verify source-only Swift/Kotlin/XML through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 Maintain token inheritance: ref -> sys -> comp.
 Keep reference color scales ordered as 100 lightest to 0 darkest.
 Document duplicate source reuse/ignore/keep-distinct decisions in `DESIGN_EVIDENCE_MAP.md`.
@@ -324,6 +468,12 @@ When starting from an existing project:
 Use skills/design-system-extractor/SKILL.md to inspect this project as reference material. Extract the design system into design-system/ and tokens/, then generate docs/design-system/index.html and docs/design-system/review.html. Do not refactor product UI yet.
 ```
 
+For branch integration:
+
+```txt
+Follow .cursor/rules/design-system.mdc and use skills/design-system-extractor/SKILL.md. Review and integrate these design-system branches or PRs: <branch-or-pr-list>. Update INTEGRATION_REVIEW.md and SESSION_STATE.md, regenerate docs, run strict audits, and stop with blockers.
+```
+
 ### Codex
 
 Codex can use this as a native skill when the folder is installed in a discoverable skills directory, or as a project-local skill when the prompt points to `skills/design-system-extractor/SKILL.md`.
@@ -344,9 +494,11 @@ Add this to `AGENTS.md`:
 ```md
 # Design System Agent Instructions
 
-Use `skills/design-system-extractor/SKILL.md` when extracting a design system from screenshots, Figma references, rendered UI, or project code.
-Use all reference screenshots, Figma data, rendered UI, and `design-system/` docs as source evidence.
+Use `skills/design-system-extractor/SKILL.md` when extracting a design system from screenshots, Figma references, rendered UI, native iOS/Android captures/previews/screenshot tests, or project code.
+Use all reference screenshots, Figma data, rendered UI, native captures/previews/screenshot tests, and `design-system/` docs as source evidence.
+For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md`, record native screen/state coverage, and verify source-only Swift/Kotlin/XML through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 Start with `design-system/SESSION_STATE.md`.
+Use `design-system/INTEGRATION_REVIEW.md` when reviewing or integrating parallel extraction branches.
 Keep token inheritance strict: ref -> sys -> comp.
 Keep reference color scales ordered as 100 lightest to 0 darkest.
 Document duplicate source reuse/ignore/keep-distinct decisions in `DESIGN_EVIDENCE_MAP.md`.
@@ -368,7 +520,13 @@ Use $design-system-extractor to extract a reusable design-system package from de
 If the skill is only project-local and not installed globally:
 
 ```txt
-Use skills/design-system-extractor/SKILL.md to extract a reusable design-system package from this project. Treat screenshots, Figma data, and prototype code as evidence. Fill design-system/ and tokens/, generate docs/design-system/index.html and docs/design-system/review.html, run the audits, and stop at the checkpoint.
+Use skills/design-system-extractor/SKILL.md to extract a reusable design-system package from this project. Treat screenshots, Figma data, native captures/previews/screenshot tests, and prototype code as evidence. Fill design-system/ and tokens/, generate docs/design-system/index.html and docs/design-system/review.html, run the audits, and stop at the checkpoint.
+```
+
+For collaborative branch review:
+
+```txt
+Use $design-system-extractor to review and integrate these design-system extraction branches or PRs: <branch-or-pr-list>. Use INTEGRATION_REVIEW.md as the integration log, resolve source/token/component conflicts through the review gates, regenerate docs, run strict audits, update SESSION_STATE.md, and stop with decisions and blockers.
 ```
 
 To install for global Codex discovery, copy the `design-system-extractor/` folder into your Codex skills directory, commonly:
@@ -389,6 +547,8 @@ Use $design-system-extractor to analyze this Figma URL and create design-system 
 - Do not copy prototype code into production by default.
 - Do not invent design rules without evidence; mark uncertain decisions as Low confidence.
 - Do not bypass token layers to make UI match faster.
+- Do not silently accept duplicate components, duplicate source evidence, or near-identical tokens during branch integration.
+- Do not hand-edit generated HTML docs to resolve merge conflicts; regenerate them from source Markdown and tokens.
 - Do not add generic gradients, glassmorphism, outline-card stacks, inflated whitespace, or SaaS landing-page patterns unless the references clearly show them.
 
 ## Template

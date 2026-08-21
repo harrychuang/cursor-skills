@@ -1,0 +1,74 @@
+.sbt-foundation {
+  display: grid;
+  gap: var(--sbt-sys-spacing-container-xl);
+  min-block-size: 100vh;
+  padding: var(--sbt-sys-spacing-container-xl);
+  color: var(--sbt-sys-color-on-background);
+  background: var(--sbt-sys-color-background);
+}
+
+.sbt-foundation__header {
+  display: grid;
+  gap: var(--sbt-sys-spacing-xs);
+}
+
+.sbt-foundation__header p,
+.sbt-foundation__header h2 {
+  margin: var(--sbt-sys-spacing-none);
+}
+
+.sbt-foundation__header p {
+  color: var(--sbt-sys-color-primary);
+  font-size: var(--sbt-sys-typescale-caption-sm-size);
+  font-weight: var(--sbt-sys-weight-semibold);
+  line-height: var(--sbt-sys-typescale-caption-sm-line-height);
+}
+
+.sbt-foundation__header h2 {
+  color: var(--sbt-sys-color-on-surface-strong);
+  font-size: var(--sbt-sys-typescale-title-lg-size);
+  font-weight: var(--sbt-sys-weight-semibold);
+  line-height: var(--sbt-sys-typescale-title-lg-line-height);
+}
+
+.sbt-foundation__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--sbt-ref-size-216), 1fr));
+  gap: var(--sbt-sys-spacing-screen-gutter);
+  max-inline-size: var(--sbt-ref-size-768);
+}
+
+.sbt-foundation__swatch {
+  display: flex;
+  gap: var(--sbt-sys-spacing-md);
+  align-items: center;
+  padding: var(--sbt-sys-spacing-container-lg);
+  background: var(--sbt-sys-color-surface);
+  border: var(--sbt-sys-spacing-hairline) solid var(--sbt-sys-color-outline);
+  border-radius: var(--sbt-sys-shape-corner-md);
+}
+
+.sbt-foundation__color {
+  flex: none;
+  inline-size: var(--sbt-ref-size-48);
+  block-size: var(--sbt-ref-size-48);
+  border: var(--sbt-sys-spacing-hairline) solid var(--sbt-sys-color-outline);
+  border-radius: var(--sbt-sys-shape-corner-sm);
+}
+
+.sbt-foundation__swatch div {
+  display: grid;
+  gap: var(--sbt-sys-spacing-xxs);
+}
+
+.sbt-foundation__swatch strong {
+  color: var(--sbt-sys-color-on-surface-strong);
+  font-size: var(--sbt-sys-typescale-body-sm-size);
+  line-height: var(--sbt-sys-typescale-body-sm-line-height);
+}
+
+.sbt-foundation__swatch code {
+  color: var(--sbt-sys-color-on-surface-medium);
+  font-size: var(--sbt-sys-typescale-caption-sm-size);
+  line-height: var(--sbt-sys-typescale-caption-sm-line-height);
+}

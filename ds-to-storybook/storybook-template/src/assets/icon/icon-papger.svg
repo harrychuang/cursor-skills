@@ -1,0 +1,13 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.15332 0.25H15.5C15.6381 0.25 15.75 0.361929 15.75 0.5V14.5605C15.75 14.6986 15.6381 14.8105 15.5 14.8105H1.5C1.36193 14.8105 1.25 14.6986 1.25 14.5605V5.89844C1.25 5.83859 1.27151 5.78071 1.31055 5.73535L5.96387 0.336914C6.01135 0.281831 6.0806 0.250013 6.15332 0.25Z" stroke="white" stroke-width="0.5"/>
+<rect x="8" y="7.79004" width="6" height="5.71264" rx="0.8" fill="white"/>
+<rect x="2.36328" y="12.291" width="5" height="0.8" rx="0.2" fill="white"/>
+<rect x="8" y="4.67383" width="6" height="0.8" rx="0.2" fill="white"/>
+<rect x="8" y="6" width="6" height="0.8" rx="0.2" fill="white"/>
+<rect x="2.36328" y="10.7329" width="5" height="0.8" rx="0.2" fill="white"/>
+<rect x="8" y="3.11597" width="6" height="0.8" rx="0.2" fill="white"/>
+<rect x="2.36328" y="9.1748" width="5" height="0.8" rx="0.2" fill="white"/>
+<rect x="2.36328" y="8" width="5" height="0.8" rx="0.2" fill="white"/>
+<rect x="8" y="1.55811" width="6" height="0.8" rx="0.2" fill="white"/>
+<path d="M6.15152 5.85886V0.543985C6.15152 0.357908 5.91968 0.272672 5.79914 0.414434L1.2802 5.72931C1.16976 5.8592 1.26207 6.05886 1.43257 6.05886H5.95151C6.06197 6.05886 6.15152 5.96932 6.15152 5.85886Z" fill="white"/>
+</svg>

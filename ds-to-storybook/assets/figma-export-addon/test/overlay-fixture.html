@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>figma-export overlay fixture</title>
+<link rel="stylesheet" href="./.export-overlay.bundle.css" />
+<style>
+  :root {
+    --fx-ref-color-blue: #3366ff;
+    --fx-sys-color-primary: var(--fx-ref-color-blue);
+    --fx-comp-card-color-bg: var(--fx-sys-color-primary);
+  }
+  body { font-family: Arial, sans-serif; margin: 16px; }
+  .demo-card {
+    width: 160px; height: 48px;
+    background-color: var(--fx-comp-card-color-bg);
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+<div id="storybook-root">
+  <div data-component="demo-card" class="demo-card"></div>
+</div>
+<pre id="fixture-result" style="display: none"></pre>
+<script src="./.export-overlay.bundle.js"></script>
+<script>
+  function toBase64Utf8(text) {
+    return btoa(unescape(encodeURIComponent(text)));
+  }
+
+  const results = [];
+  function check(name, condition, details) {
+    results.push({ name, passed: Boolean(condition), ...(details ? { details } : {}) });
+  }
+
+  function overlayElement() {
+    return document.querySelector("aside.sbfx-exporter");
+  }
+
+  function noticeElement() {
+    return document.querySelector("aside.sbfx-exporter-notice");
+  }
+
+  function waitFor(predicate, timeoutMs) {
+    return new Promise((resolve) => {
+      const startedAt = Date.now();
+      function tick() {
+        if (predicate()) {
+          resolve(true);
+          return;
+        }
+        if (Date.now() - startedAt > timeoutMs) {
+          resolve(false);
+          return;
+        }
+        // setTimeout (not rAF): headless Chromium throttles rAF, while
+        // virtual time fast-forwards timers deterministically.
+        setTimeout(tick, 50);
+      }
+      tick();
+    });
+  }
+
+  async function run() {
+    try {
+      document.title = "STEP:start";
+      const copies = [];
+      Object.defineProperty(navigator, "clipboard", {
+        configurable: true,
+        value: {
+          writeText: async (text) => {
+            copies.push(text);
+          },
+        },
+      });
+
+      const syncUrl = new URLSearchParams(location.search).get("sync") || undefined;
+      const decorator = window.FigmaOverlayFixture.createFigmaExportDecorator({
+        referenceImage: false,
+        storyTitlePrefix: false,
+        ...(syncUrl ? { payloadSyncUrl: syncUrl } : {}),
+      });
+
+      const baseContext = {
+        globals: { figmaExport: "on" },
+        id: "demo-card--default",
+        name: "Default",
+        title: "Components/DemoCard",
+        viewMode: "story",
+      };
+
+      // Pass-through identity: the decorator returns the story result unchanged.
+      document.title = "STEP:decorator";
+      const sentinel = { marker: "story-result" };
+      const returned = decorator(() => sentinel, baseContext);
+      check("decorator returns story result unchanged", returned === sentinel);
+
+      // Overlay mounts in the document-level workspace export slot.
+      const aside = overlayElement();
+      check(
+        "overlay aside mounted in workspace export slot",
+        Boolean(
+          aside?.parentElement?.matches('[data-sbfx-workspace-slot="export"]') &&
+          aside.closest('[data-sbfx-workspace][data-sbfx-capture-ignore]'),
+        ),
+      );
+      check("overlay starts idle", aside?.dataset.status === "idle");
+      const buttons = aside ? aside.querySelectorAll(".sbfx-exporter__actions button") : [];
+      check("overlay has four action buttons", buttons.length === 4);
+      const workspace = aside?.closest(".sbfx-workspace");
+      const workspaceRect = workspace?.getBoundingClientRect();
+      const workspaceStyle = workspace ? getComputedStyle(workspace) : null;
+      const isNarrowViewport = window.innerWidth <= 640;
+      check(
+        "workspace width matches its responsive dock mode",
+        isNarrowViewport
+          ? workspaceRect?.width === window.innerWidth - 32
+          : workspaceRect?.width === 320,
+      );
+      check(
+        "wide workspace reserves its width plus the 24 pixel offset",
+        isNarrowViewport ||
+          workspaceStyle?.getPropertyValue("--sbfx-workspace-reserved-inline-size").trim() ===
+            "min(344px, 100vw)",
+      );
+      const actionGroup = aside?.querySelector(".sbfx-exporter__actions");
+      const actionStyle = actionGroup ? getComputedStyle(actionGroup) : null;
+      const buttonRects = Array.from(buttons, (button) => button.getBoundingClientRect());
+      check(
+        "export actions use two explicit grid columns",
+        actionStyle?.display === "grid" && actionStyle.gridTemplateColumns.split(" ").length === 2,
+      );
+      check(
+        "export actions keep their existing order",
+        Array.from(buttons, (button) => button.textContent.trim()).join("|") ===
+          "Copy JSON|Download JSON|Console script|",
+      );
+      check(
+        "JSON actions occupy separate full-width rows",
+        buttonRects.length === 4 &&
+          Math.abs(buttonRects[0].left - buttonRects[1].left) <= 0.5 &&
+          Math.abs(buttonRects[0].width - buttonRects[1].width) <= 0.5 &&
+          Math.abs(buttonRects[0].width - actionGroup.getBoundingClientRect().width) <= 0.5 &&
+          buttonRects[1].top >= buttonRects[0].bottom,
+      );
+      check(
+        "Console script and Copy design to Figma share an equal-width bottom row",
+        buttonRects.length === 4 &&
+          buttonRects[2].top >= buttonRects[1].bottom &&
+          Math.abs(buttonRects[2].top - buttonRects[3].top) <= 0.5 &&
+          Math.abs(buttonRects[2].width - buttonRects[3].width) <= 0.5 &&
+          buttonRects[2].right <= buttonRects[3].left,
+      );
+      check(
+        "overlay reports addon version",
+        typeof aside?.dataset.version === "string" && aside.dataset.version.length > 0,
+      );
+      check(
+        "version badge rendered in title",
+        Boolean(aside?.querySelector(".sbfx-exporter__version")),
+      );
+
+      const canonicalFigmaPath =
+        "M9.2 0H4.803A2.603 2.603 0 003.41 4.802a2.603 2.603 0 000 4.396 2.602 2.602 0 103.998 2.199v-2.51a2.603 2.603 0 103.187-4.085A2.604 2.604 0 009.2 0zM7.407 7a1.793 1.793 0 103.586 0 1.793 1.793 0 00-3.586 0zm-.81 2.603H4.803a1.793 1.793 0 101.794 1.794V9.603zM4.803 4.397h1.794V.81H4.803a1.793 1.793 0 000 3.587zm0 .81a1.793 1.793 0 000 3.586h1.794V5.207H4.803zm4.397-.81H7.407V.81H9.2a1.794 1.794 0 010 3.587z";
+      const canonicalCollapsePath =
+        "M3.354.146a.5.5 0 10-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 00-.708-.708L7 3.793 3.354.146zM6.646 9.146a.5.5 0 01.708 0l4 4a.5.5 0 01-.708.708L7 10.207l-3.646 3.647a.5.5 0 01-.708-.708l4-4z";
+      const canonicalUnfoldMorePath =
+        "M6.646.146a.5.5 0 01.708 0l4 4a.5.5 0 01-.708.708L7 1.207 3.354 4.854a.5.5 0 01-.708-.708l4-4zM3.354 9.146a.5.5 0 10-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 00-.708-.708L7 12.793 3.354 9.146z";
+      const figmaIconSvgs = aside
+        ? [
+            aside.querySelector(".sbfx-exporter__mark svg"),
+            aside.querySelector('button[aria-label="Copy design to Figma"] svg'),
+          ]
+        : [];
+      check(
+        "header and design action both render Figma icons",
+        figmaIconSvgs.length === 2 && figmaIconSvgs.every(Boolean),
+      );
+      check(
+        "both Figma icons use canonical filled geometry",
+        figmaIconSvgs.every(
+          (svg) =>
+            svg?.getAttribute("viewBox") === "0 0 14 14" &&
+            svg?.getAttribute("fill") === "currentColor" &&
+            svg?.querySelectorAll("path").length === 1 &&
+            svg?.querySelector("path")?.getAttribute("d") === canonicalFigmaPath,
+        ),
+      );
+      check(
+        "former approximate Figma geometry is absent",
+        figmaIconSvgs.every(
+          (svg) => !svg?.hasAttribute("stroke") && !svg?.querySelector("circle"),
+        ),
+      );
+      const exportMark = aside?.querySelector(".sbfx-exporter__mark");
+      const exportMarkSvg = exportMark?.querySelector("svg");
+      const exportMarkRect = exportMark?.getBoundingClientRect();
+      const exportMarkSvgRect = exportMarkSvg?.getBoundingClientRect();
+      const horizontalCenterDelta = exportMarkRect && exportMarkSvgRect
+        ? Math.abs(
+            exportMarkRect.left + exportMarkRect.width / 2 -
+            (exportMarkSvgRect.left + exportMarkSvgRect.width / 2),
+          )
+        : Number.POSITIVE_INFINITY;
+      const verticalCenterDelta = exportMarkRect && exportMarkSvgRect
+        ? Math.abs(
+            exportMarkRect.top + exportMarkRect.height / 2 -
+            (exportMarkSvgRect.top + exportMarkSvgRect.height / 2),
+          )
+        : Number.POSITIVE_INFINITY;
+      check(
+        "export header Figma icon is horizontally centered",
+        horizontalCenterDelta <= 0.5,
+      );
+      check(
+        "export header Figma icon is vertically centered",
+        verticalCenterDelta <= 0.5,
+      );
+      check(
+        "design action keeps its accessible name",
+        aside?.querySelector('button[aria-label="Copy design to Figma"]')?.getAttribute("title") ===
+          "Copy design to Figma",
+      );
+      check(
+        "non-Figma action icons keep distinct geometry",
+        Boolean(
+          Array.from(buttons)
+            .find((button) => button.textContent.includes("Copy JSON"))
+            ?.querySelector("rect") &&
+          Array.from(buttons)
+            .find((button) => button.textContent.includes("Download JSON"))
+            ?.querySelector('path[d="M7 2v7m0 0L4.5 6.5M7 9l2.5-2.5M2.5 11.5h9"]') &&
+          Array.from(buttons)
+            .find((button) => button.textContent.includes("Console script"))
+            ?.querySelector('path[d="M5 5h4v4H5zM5 5H3.5A1.5 1.5 0 1 1 5 3.5V5zm4 0h1.5A1.5 1.5 0 1 0 9 3.5V5zM5 9H3.5A1.5 1.5 0 1 0 5 10.5V9zm4 0h1.5A1.5 1.5 0 1 1 9 10.5V9z"]'),
+        ),
+      );
+      const initialToggleSvg = aside?.querySelector(".sbfx-exporter__toggle svg");
+      check(
+        "expanded export uses the canonical inward Collapse icon",
+        initialToggleSvg?.getAttribute("viewBox") === "0 0 14 14" &&
+          initialToggleSvg?.getAttribute("fill") === "none" &&
+          !initialToggleSvg?.hasAttribute("stroke") &&
+          initialToggleSvg?.querySelector("path")?.getAttribute("fill") === "currentColor" &&
+          initialToggleSvg?.querySelector("path")?.getAttribute("d") === canonicalCollapsePath,
+      );
+
+      // Globals off unmounts the overlay and shows no notice.
+      decorator(() => sentinel, { ...baseContext, globals: { figmaExport: "off" } });
+      check("overlay removed when global is off", overlayElement() === null);
+      check("no notice when global is off", noticeElement() === null);
+
+      // Docs view mode keeps the overlay unmounted but explains why.
+      decorator(() => sentinel, { ...baseContext, viewMode: "docs" });
+      check("overlay absent in docs view mode", overlayElement() === null);
+      const docsNotice = noticeElement();
+      check("docs view shows story-view-only notice", Boolean(docsNotice));
+      check(
+        "docs notice explains story view requirement",
+        (docsNotice?.textContent || "").includes("Story view"),
+      );
+      docsNotice?.querySelector(".sbfx-exporter-notice__dismiss")?.click();
+      check("notice removed after dismiss", noticeElement() === null);
+      decorator(() => sentinel, { ...baseContext, viewMode: "docs" });
+      check("dismissed notice stays hidden on re-render", noticeElement() === null);
+
+      // Excluded story: overlay stays unmounted, notice names storyTitlePrefix.
+      const prefixedDecorator = window.FigmaOverlayFixture.createFigmaExportDecorator({
+        referenceImage: false,
+        storyTitlePrefix: ["Components/"],
+      });
+      const excludedContext = {
+        ...baseContext,
+        id: "foundations-colors--default",
+        name: "Default",
+        title: "Foundations/Colors",
+      };
+      prefixedDecorator(() => sentinel, excludedContext);
+      check("excluded story keeps overlay unmounted", overlayElement() === null);
+      const excludedNotice = noticeElement();
+      check("excluded story shows notice", Boolean(excludedNotice));
+      check(
+        "excluded notice names storyTitlePrefix",
+        (excludedNotice?.textContent || "").includes("storyTitlePrefix"),
+      );
+      check(
+        "excluded notice lists configured prefixes",
+        (excludedNotice?.textContent || "").includes("Components/"),
+      );
+
+      // A story matching the prefix mounts the overlay and clears the notice.
+      prefixedDecorator(() => sentinel, baseContext);
+      check("included story mounts overlay", Boolean(overlayElement()));
+      check("notice removed for included story", noticeElement() === null);
+
+      // Toggling off resets the dismissal so the notice can reappear.
+      prefixedDecorator(() => sentinel, {
+        ...excludedContext,
+        globals: { figmaExport: "off" },
+      });
+      prefixedDecorator(() => sentinel, excludedContext);
+      check("notice reappears after toolbar off/on", Boolean(noticeElement()));
+      prefixedDecorator(() => sentinel, {
+        ...excludedContext,
+        globals: { figmaExport: "off" },
+      });
+      check("notice removed when toolbar turns off", noticeElement() === null);
+
+      // Re-enable and export via the Copy JSON button with a stubbed clipboard.
+      document.title = "STEP:remount";
+      decorator(() => sentinel, baseContext);
+      const mounted = overlayElement();
+      check("overlay remounts when re-enabled", Boolean(mounted));
+      const copyJsonButton = Array.from(mounted.querySelectorAll("button")).find(
+        (button) => button.textContent.includes("Copy JSON"),
+      );
+      check("copy json button present", Boolean(copyJsonButton));
+      document.title = "STEP:clicked";
+      copyJsonButton.click();
+
+      const copied = await waitFor(
+        () => overlayElement()?.dataset.status === "copied",
+        8000,
+      );
+      document.title = "STEP:copied-" + String(copied) + "-" + String(overlayElement()?.dataset.status);
+      check("export reaches copied status", copied);
+      check("clipboard stub received one payload", copies.length === 1);
+
+      let payload = null;
+      try {
+        payload = JSON.parse(copies[0] || "null");
+      } catch {
+        payload = null;
+      }
+      check("copied payload parses as JSON", Boolean(payload));
+      check("payload version is 2", payload?.version === 2);
+      check(
+        "payload root comes from storybook-root scope",
+        payload?.root?.name === "demo-card",
+      );
+      check(
+        "overlay itself is not exported",
+        JSON.stringify(payload).includes("sbfx-exporter") === false,
+      );
+      check("token bindings resolved", (payload?.tokens?.length ?? 0) > 0);
+
+      if (syncUrl) {
+        // Give the fire-and-forget sync a beat, then confirm the status note.
+        await waitFor(
+          () => (overlayElement()?.textContent || "").includes("[synced]"),
+          8000,
+        );
+        check(
+          "sync note appended to summary",
+          (overlayElement()?.textContent || "").includes("[synced]"),
+        );
+      }
+
+      // Collapse toggle: state flips, persists to localStorage, and survives
+      // story changes; expanding restores the stored preference.
+      document.title = "STEP:collapse";
+      const toggleButton = overlayElement()?.querySelector(".sbfx-exporter__toggle");
+      check("collapse toggle present in header", Boolean(toggleButton));
+      check("overlay starts expanded", overlayElement()?.dataset.collapsed === "false");
+      check(
+        "workspace starts with expanded export disclosure state",
+        overlayElement()?.closest("[data-sbfx-workspace]")?.getAttribute("data-export-collapsed") === "false",
+      );
+      check(
+        "toggle reports expanded state",
+        toggleButton?.getAttribute("aria-expanded") === "true",
+      );
+      toggleButton?.click();
+      check("overlay collapses on toggle", overlayElement()?.dataset.collapsed === "true");
+      const collapsedWorkspaceRect = workspace?.getBoundingClientRect();
+      const collapsedExporterRect = overlayElement()?.getBoundingClientRect();
+      const collapsedTitleLabel = overlayElement()?.querySelector(".sbfx-exporter__title-label");
+      const collapsedSubtitle = overlayElement()?.querySelector(".sbfx-exporter__subtitle");
+      const collapsedVersion = overlayElement()?.querySelector(".sbfx-exporter__version");
+      const collapsedToggleIcon = toggleButton?.querySelector(".sbfx-exporter__toggle-icon");
+      const collapsedDisclosurePath = toggleButton?.querySelector("path")?.getAttribute("d") ?? null;
+      check(
+        "collapsed export disclosure hugs the Figma mark and version",
+        Boolean(
+          collapsedWorkspaceRect &&
+            collapsedExporterRect &&
+            collapsedWorkspaceRect.width < 320 &&
+            Math.abs(collapsedWorkspaceRect.width - collapsedExporterRect.width) <= 2.5 &&
+            collapsedTitleLabel &&
+            getComputedStyle(collapsedTitleLabel).display === "none" &&
+            collapsedSubtitle &&
+            getComputedStyle(collapsedSubtitle).display === "none" &&
+            collapsedVersion &&
+            getComputedStyle(collapsedVersion).display !== "none" &&
+            collapsedVersion.getBoundingClientRect().width > 0 &&
+            collapsedToggleIcon &&
+            getComputedStyle(collapsedToggleIcon).display === "none",
+        ),
+        JSON.stringify({
+          collapsedExporterRect,
+          collapsedWorkspaceRect,
+          titleLabelDisplay: collapsedTitleLabel
+            ? getComputedStyle(collapsedTitleLabel).display
+            : null,
+          subtitleDisplay: collapsedSubtitle
+            ? getComputedStyle(collapsedSubtitle).display
+            : null,
+          versionDisplay: collapsedVersion
+            ? getComputedStyle(collapsedVersion).display
+            : null,
+          versionWidth: collapsedVersion?.getBoundingClientRect().width ?? null,
+          toggleIconDisplay: collapsedToggleIcon
+            ? getComputedStyle(collapsedToggleIcon).display
+            : null,
+        }),
+      );
+      check(
+        "collapsed export state projects to the workspace root",
+        overlayElement()?.closest("[data-sbfx-workspace]")?.getAttribute("data-export-collapsed") === "true",
+      );
+      check(
+        "compact toggle stores outward Unfold More state while hiding the glyph",
+        toggleButton?.getAttribute("aria-expanded") === "false" &&
+          toggleButton?.getAttribute("aria-label") === "Expand Figma export panel" &&
+          toggleButton?.getAttribute("title") === "Expand Figma export panel" &&
+          collapsedDisclosurePath === canonicalUnfoldMorePath,
+      );
+      check(
+        "collapse preference persisted",
+        window.localStorage.getItem("sbfx:exporter-collapsed") === "1",
+      );
+      decorator(() => sentinel, { ...baseContext, id: "demo-card--hover", name: "Hover" });
+      check(
+        "collapse survives story change",
+        overlayElement()?.dataset.collapsed === "true",
+      );
+      toggleButton?.click();
+      check("overlay expands on second toggle", overlayElement()?.dataset.collapsed === "false");
+      const restoredWorkspaceRect = workspace?.getBoundingClientRect();
+      check(
+        "expanded export disclosure restores the complete responsive workspace",
+        Boolean(
+          restoredWorkspaceRect &&
+            (isNarrowViewport
+              ? restoredWorkspaceRect.width === window.innerWidth - 32
+              : restoredWorkspaceRect.width === 320) &&
+            collapsedTitleLabel &&
+            getComputedStyle(collapsedTitleLabel).display !== "none" &&
+            collapsedSubtitle &&
+            getComputedStyle(collapsedSubtitle).display !== "none" &&
+            collapsedToggleIcon &&
+            getComputedStyle(collapsedToggleIcon).display !== "none",
+        ),
+        JSON.stringify({ restoredWorkspaceRect }),
+      );
+      check(
+        "expanded export state projects to the workspace root",
+        overlayElement()?.closest("[data-sbfx-workspace]")?.getAttribute("data-export-collapsed") === "false",
+      );
+      check(
+        "expanded toggle restores the inward Collapse icon and collapse semantics",
+        toggleButton?.getAttribute("aria-expanded") === "true" &&
+          toggleButton?.getAttribute("aria-label") === "Collapse Figma export panel" &&
+          toggleButton?.getAttribute("title") === "Collapse Figma export panel" &&
+          toggleButton?.querySelector("path")?.getAttribute("d") === canonicalCollapsePath,
+      );
+      check(
+        "expand preference persisted",
+        window.localStorage.getItem("sbfx:exporter-collapsed") === "0",
+      );
+      decorator(() => sentinel, baseContext);
+
+      document.getElementById("fixture-result").textContent = toBase64Utf8(
+        JSON.stringify({
+          diagnostics: { status: overlayElement()?.dataset.status ?? null, summary: overlayElement()?.textContent ?? "" },
+          disclosurePaths: {
+            collapsed: collapsedDisclosurePath,
+            expanded: toggleButton?.querySelector("path")?.getAttribute("d") ?? null,
+          },
+          payloadStoryId: payload?.storyId ?? null,
+          results,
+        }),
+      );
+      document.title = "OVERLAY_DONE";
+    } catch (error) {
+      document.getElementById("fixture-result").textContent = toBase64Utf8(
+        JSON.stringify({
+          error: String(error && error.stack ? error.stack : error),
+          results,
+        }),
+      );
+      document.title = "OVERLAY_ERROR";
+    }
+  }
+
+  window.addEventListener("load", () => {
+    run();
+  });
+</script>
+</body>
+</html>

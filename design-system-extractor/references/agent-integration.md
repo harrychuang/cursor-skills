@@ -6,16 +6,15 @@ Use this reference when generating files for Claude Code, Cursor, or Codex.
 
 All agents should follow the same rules:
 
-- Treat screenshots, Figma, rendered UI, and design-system docs as source evidence.
+- Treat screenshots, Figma, rendered UI, native captures/previews/screenshot tests, and design-system docs as source evidence.
+- For native iOS/Android projects, read `references/native-mobile-projects.md`, record native screen/state coverage and capture blockers, and treat source-only Swift/Kotlin/XML as Low confidence until visually confirmed or user-confirmed.
 - Read `design-system/SESSION_STATE.md` before continuing.
 - Record source fingerprints in `DESIGN_EVIDENCE_MAP.md` and document reuse/ignore/keep-distinct decisions before counting duplicate sources as separate evidence.
-- For Figma sources, preserve original Figma URLs, normalized `figma:<file-key>#<node-id>` fingerprints, and `Figma MCP target` details so downstream agents can inspect the source node before implementation.
 - Use `tokens/tokens.css` import order: ref, sys, comp.
 - Keep reference color scales ordered as `100` lightest to `0` darkest.
 - Ask for and document merge/keep-distinct decisions before keeping near duplicate reference colors or numbers.
 - Review similar component candidates before adding new component specs; document merge/variant/keep-distinct/blocked decisions in `COMPONENT_INVENTORY.md`.
 - Use actual Figma node previews/screenshots or screenshot crops for component similarity review. Use schematic SVG only as a last-resort fallback, labeled `schematic fallback - source preview unavailable`, and never as design evidence.
-- When implementing from extracted docs, resolve component `Source Trace` through Figma MCP for Figma nodes before writing or changing component code.
 - Do not hardcode colors, spacing, radius, typography, opacity, shadows, or motion values when tokens exist.
 - Do not let component tokens reference reference tokens directly.
 - Add or update `design-system/components/*.md` specs before implementing new shared components.
@@ -34,11 +33,10 @@ Create or update `CLAUDE.md` with:
 
 Start with `design-system/SESSION_STATE.md`.
 Use `design-system/` and `tokens/` as the source of truth before editing product UI.
+For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md`, record native screen/state coverage, and verify source-only components through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 Maintain token inheritance: ref -> sys -> comp.
 Keep color steps ordered 100 lightest to 0 darkest.
 Document duplicate source reuse/ignore/keep-distinct decisions in DESIGN_EVIDENCE_MAP.md.
-For Figma sources, keep original URLs and MCP targets in DESIGN_EVIDENCE_MAP.md and component Source Trace.
-Before implementing components from Figma-backed specs, inspect the referenced node with Figma MCP when available.
 Document near-token merge/keep-distinct decisions in TOKEN_ARCHITECTURE.md.
 Document similar component merge/variant/keep-distinct/blocked decisions in COMPONENT_INVENTORY.md before creating new component specs.
 Run the strict source, token, and component audits after extraction, source, token, or component changes.
@@ -64,12 +62,11 @@ alwaysApply: true
 
 Read `design-system/SESSION_STATE.md` before UI work.
 Use `tokens/` and component specs before writing component CSS.
+For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md` and verify source-only Swift/Kotlin/XML through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 No hardcoded visual values when tokens exist.
 Component tokens may reference only system tokens.
 Reference color steps run 100 lightest to 0 darkest.
 Duplicate source candidates require documented reuse/ignore/keep-distinct decisions.
-Figma sources require original URL plus MCP target details in DESIGN_EVIDENCE_MAP.md and component Source Trace.
-Before implementation, resolve Figma-backed components through Figma MCP when available.
 Near token candidates require documented merge/keep-distinct decisions.
 Similar component candidates require documented merge/variant/keep-distinct/blocked decisions.
 Apply `design-system/ANTI_AI_STYLE_RULES.md` before UI generation.
@@ -88,12 +85,12 @@ Create or update `AGENTS.md` with:
 ```md
 # Design System Agent Instructions
 
-Use all reference screenshots, Figma data, rendered UI, and `design-system/` docs as source evidence.
+Use all reference screenshots, Figma data, rendered UI, native captures/previews/screenshot tests, and `design-system/` docs as source evidence.
+For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md`, record native screen/state coverage, and verify source-only Swift/Kotlin/XML through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 Start with `design-system/SESSION_STATE.md`.
 Keep token inheritance strict: ref -> sys -> comp.
 Use 100 lightest to 0 darkest for reference color scales.
 Document duplicate source reuse/ignore/keep-distinct decisions before counting repeated sources as separate evidence.
-For Figma sources, preserve original URLs and MCP targets, then inspect Figma-backed component sources with Figma MCP before implementation when available.
 Document near-token merge/keep-distinct decisions before finalizing tokens.
 Document similar component merge/variant/keep-distinct/blocked decisions before finalizing component specs.
 Fill or update design-system docs and tokens before product UI code.
@@ -110,12 +107,11 @@ Before claiming the package is ready for another agent:
 
 - `SESSION_STATE.md` names the current stage and next prompt.
 - `DESIGN_EVIDENCE_MAP.md` records source fingerprints and duplicate source review decisions when repeated sources appear.
-- `DESIGN_EVIDENCE_MAP.md` records original Figma URLs and MCP-ready targets for Figma sources, or unresolved reasons.
 - `TOKEN_ARCHITECTURE.md` documents prefixes and inheritance.
 - `TOKEN_ARCHITECTURE.md` records near-token merge/keep-distinct decisions when audit finds candidates.
 - `COMPONENT_INVENTORY.md` shows which components are extracted and which are pending.
 - `COMPONENT_INVENTORY.md` records similarity review decisions and links visual comparison assets when candidates overlap.
-- `design-system/components/*.md` contains specs for extracted component tokens, including Source Trace rows that point to Figma URLs and MCP targets when applicable.
+- `design-system/components/*.md` contains specs for extracted component tokens.
 - `ANTI_AI_STYLE_RULES.md` is project-specific, not generic.
 - `docs/design-system/index.html` exists and reflects the latest docs and tokens.
 - `docs/design-system/review.html` exists and reflects duplicate-source, near-token, and similar-component review state.

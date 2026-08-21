@@ -1,5 +1,3 @@
-export { FigmaCodeExporter } from "./FigmaCodeExporter";
-export { registerFigmaExportTool, figmaExportAddonId } from "./manager";
 export {
   createFigmaExportDecorator,
   createFigmaExportGlobalTypes,
@@ -11,8 +9,6 @@ export {
   isStoryIncludedForFigmaExport,
   resolveFigmaExportAddonOptions,
   type FigmaExportAddonOptions,
-  type FigmaExportReviewStatus,
-  type FigmaExportSourceReference,
   type ResolvedFigmaExportAddonOptions,
 } from "./options";
 export { createFigmaExportJson, createFigmaPluginCode } from "./pluginCode";

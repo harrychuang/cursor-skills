@@ -1,0 +1,2902 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design System Documentation</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --doc-bg: #ffffff;
+      --doc-surface: #ffffff;
+      --doc-surface-subtle: #f5f6f3;
+      --doc-text: #141414;
+      --doc-muted: #60645f;
+      --doc-border: #d7dbd3;
+      --doc-border-strong: #aeb5aa;
+      --doc-accent: #2f5d3a;
+      --doc-code-bg: #f0f2ee;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--doc-bg);
+      color: var(--doc-text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Noto Sans JP", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: var(--doc-accent); }
+    .layout {
+      display: grid;
+      grid-template-columns: 288px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 28px 22px;
+      border-right: 1px solid var(--doc-border);
+      background: var(--doc-surface);
+    }
+    main {
+      width: min(1160px, 100%);
+      padding: 34px 32px 72px;
+    }
+    .brand {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      margin: 0 0 4px;
+    }
+    .subtitle {
+      color: var(--doc-muted);
+      font-size: 13px;
+      margin: 0 0 24px;
+    }
+    nav a {
+      display: block;
+      padding: 7px 0;
+      color: var(--doc-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    nav a:hover { color: var(--doc-text); }
+    .language-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 20px;
+    }
+    .language-nav button {
+      appearance: none;
+      border: 1px solid var(--doc-border);
+      border-radius: 6px;
+      background: var(--doc-surface);
+      padding: 6px 12px;
+      color: var(--doc-muted);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .language-nav button:hover,
+    .language-nav button:focus-visible {
+      color: var(--doc-text);
+      border-color: var(--doc-border-strong);
+    }
+    .language-nav button[aria-selected="true"] {
+      background: var(--doc-surface-subtle);
+      border-color: var(--doc-border-strong);
+      color: var(--doc-text);
+    }
+    .hero {
+      padding: 0 0 24px;
+      border-bottom: 1px solid var(--doc-border);
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      max-width: 760px;
+      font-size: 34px;
+      line-height: 1.12;
+      margin: 0 0 12px;
+      letter-spacing: 0;
+    }
+    .hero p {
+      max-width: 820px;
+      margin: 0;
+      color: var(--doc-muted);
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .pill {
+      border: 1px solid var(--doc-border);
+      background: var(--doc-surface);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--doc-muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0;
+      border-bottom: 1px solid var(--doc-border);
+      margin-bottom: 8px;
+    }
+    .stat {
+      padding: 14px 18px 16px;
+      border-right: 1px solid var(--doc-border);
+    }
+    .stat:first-child { padding-left: 0; }
+    .stat:last-child { border-right: 0; }
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat span {
+      color: var(--doc-muted);
+      font-size: 13px;
+    }
+    .panel {
+      padding: 24px 0;
+      background: transparent;
+      border-top: 1px solid var(--doc-border);
+      margin: 0;
+      overflow: hidden;
+    }
+    .panel h1, .panel h2, .panel h3, .panel h4 {
+      letter-spacing: 0;
+      line-height: 1.15;
+      margin-top: 0;
+    }
+    .panel h1 { font-size: 30px; }
+    .panel h2 { font-size: 23px; margin-top: 26px; }
+    .panel h3 { font-size: 18px; margin-top: 22px; }
+    .panel p, .panel li { color: var(--doc-text); }
+    .muted { color: var(--doc-muted); }
+    .source {
+      display: inline-block;
+      color: var(--doc-muted);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    code {
+      background: var(--doc-code-bg);
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-size: 0.92em;
+    }
+    pre {
+      overflow: auto;
+      padding: 16px;
+      border-radius: 8px;
+      background: #1d211b;
+      color: #f5f7f2;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--doc-border);
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+    .doc-image {
+      display: block;
+      max-width: min(220px, 100%);
+      max-height: 160px;
+      margin: 4px 0;
+      border: 1px solid var(--doc-border);
+      border-radius: 6px;
+      background: var(--doc-surface);
+      object-fit: contain;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--doc-border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: var(--doc-surface-subtle);
+      color: var(--doc-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .swatch {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--doc-border);
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @media (max-width: 860px) {
+      .layout { display: block; }
+      aside {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--doc-border);
+      }
+      main { padding: 24px 16px 56px; }
+      .grid { grid-template-columns: 1fr; }
+      .stat,
+      .stat + .stat,
+      .stat:last-child {
+        border-right: 0;
+        border-top: 1px solid var(--doc-border);
+        padding: 14px 0;
+      }
+      .hero { padding-bottom: 20px; }
+      .panel { padding: 22px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <p class="brand" data-i18n="brand">Design System</p>
+      <p class="subtitle" data-i18n="subtitle">Generated documentation</p>
+      <div class="language-nav" role="tablist" aria-label="Language">
+        <button type="button" role="tab" data-language-button="zh-Hant" aria-selected="true">繁中</button>
+        <button type="button" role="tab" data-language-button="en" aria-selected="false">EN</button>
+        <button type="button" role="tab" data-language-button="ja" aria-selected="false">日本語</button>
+      </div>
+      <nav>
+        <a href="#overview" data-i18n="navOverview">Overview</a><a href="#tokens" data-i18n="navTokens">Tokens</a><a href="review.html" data-i18n="navReviewQueue">Review Queue</a><a href="#doc-design-system-kickstart-md" data-i18n="docKickstart">Kickstart</a><a href="#doc-session-state-md" data-i18n="docSessionState">Session State</a><a href="#doc-design-evidence-map-md" data-i18n="docEvidenceMap">Evidence Map</a><a href="#doc-design-principles-md" data-i18n="docDesignPrinciples">Design Principles</a><a href="#doc-design-elements-md" data-i18n="docDesignElements">Design Elements</a><a href="#doc-token-architecture-md" data-i18n="docTokenArchitecture">Token Architecture</a><a href="#doc-component-inventory-md" data-i18n="docComponentInventory">Component Inventory</a><a href="#doc-interaction-states-md" data-i18n="docInteractionStates">Interaction States</a><a href="#doc-page-composition-rules-md" data-i18n="docPageComposition">Page Composition</a><a href="#doc-anti-ai-style-rules-md" data-i18n="docAntiAiStyleRules">Anti-AI Style Rules</a><a href="#doc-figma-export-tooling-md">FIGMA EXPORT TOOLING</a><a href="#doc-storybook-architecture-md">STORYBOOK ARCHITECTURE</a><a href="#doc-storybook-component-plan-md">STORYBOOK COMPONENT PLAN</a><a href="#doc-storybook-component-queue-md">STORYBOOK COMPONENT QUEUE</a><a href="#doc-storybook-implementation-map-md">STORYBOOK IMPLEMENTATION MAP</a><a href="#doc-storybook-source-trace-md">STORYBOOK SOURCE TRACE</a><a href="#doc-components-example-card-md" data-i18n-template="component" data-i18n-name="Example Card">Component: Example Card</a>
+      </nav>
+    </aside>
+    <main>
+      <section class="hero" id="overview">
+        <h1 data-i18n="heroTitle">Design System Documentation</h1>
+        <p data-i18n="heroLead" data-i18n-html="true">This static reference was generated from <code>design-system/</code> Markdown files and <code>tokens/</code> CSS custom properties.</p>
+        <div class="meta">
+          <span class="pill"><span data-i18n="pillGenerated">Generated</span> 2026-10-18T15:23:28.786Z</span>
+          <span class="pill">17 <span data-i18n="pillDocuments">documents</span></span>
+          <span class="pill">549 <span data-i18n="pillTokens">tokens</span></span>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Documentation summary">
+        <div class="stat"><strong>17</strong><span data-i18n="statDocuments">Design-system documents</span></div>
+        <div class="stat"><strong>549</strong><span data-i18n="statTokens">Total tokens</span></div>
+        <div class="stat"><strong>199</strong><span data-i18n="statTokenRef">Reference tokens</span></div>
+        <div class="stat"><strong>323</strong><span data-i18n="statTokenSys">System tokens</span></div>
+        <div class="stat"><strong>27</strong><span data-i18n="statTokenComp">Component tokens</span></div>
+        <div class="stat"><strong>0</strong><span data-i18n="statMissing">Missing expected docs</span></div>
+      </section>
+
+      <section id="tokens">
+        <section class="panel" id="ref">
+    <h2 data-i18n="tokenRef">Reference Tokens</h2>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th data-i18n="tokenColumnName">Token</th>
+        <th data-i18n="tokenColumnValue">Value</th>
+        <th data-i18n="tokenColumnResolved">Resolved</th>
+      </tr></thead>
+      <tbody><tr>
+        <td><code>--sbt-ref-color-orange-12</code></td>
+        <td><code>#3f1d00</code></td>
+        <td><span class="swatch" style="background:#3f1d00"></span><code>#3f1d00</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-36</code></td>
+        <td><code>#b95700</code></td>
+        <td><span class="swatch" style="background:#b95700"></span><code>#b95700</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-50</code></td>
+        <td><code>#cc6102</code></td>
+        <td><span class="swatch" style="background:#cc6102"></span><code>#cc6102</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-60</code></td>
+        <td><code>#ff7800</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-75</code></td>
+        <td><code>#ebc09a</code></td>
+        <td><span class="swatch" style="background:#ebc09a"></span><code>#ebc09a</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-88</code></td>
+        <td><code>#ffd7b2</code></td>
+        <td><span class="swatch" style="background:#ffd7b2"></span><code>#ffd7b2</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-96</code></td>
+        <td><code>#fff1e5</code></td>
+        <td><span class="swatch" style="background:#fff1e5"></span><code>#fff1e5</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-peach-92</code></td>
+        <td><code>#ffe2d4</code></td>
+        <td><span class="swatch" style="background:#ffe2d4"></span><code>#ffe2d4</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-amber-50</code></td>
+        <td><code>#c37302</code></td>
+        <td><span class="swatch" style="background:#c37302"></span><code>#c37302</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-amber-60</code></td>
+        <td><code>#f9a516</code></td>
+        <td><span class="swatch" style="background:#f9a516"></span><code>#f9a516</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-amber-62</code></td>
+        <td><code>#ffa902</code></td>
+        <td><span class="swatch" style="background:#ffa902"></span><code>#ffa902</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-amber-75</code></td>
+        <td><code>#ffd98a</code></td>
+        <td><span class="swatch" style="background:#ffd98a"></span><code>#ffd98a</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-yellow-64</code></td>
+        <td><code>#ffb800</code></td>
+        <td><span class="swatch" style="background:#ffb800"></span><code>#ffb800</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-yellow-68</code></td>
+        <td><code>#ffe55e</code></td>
+        <td><span class="swatch" style="background:#ffe55e"></span><code>#ffe55e</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-yellow-94</code></td>
+        <td><code>#fbeeb9</code></td>
+        <td><span class="swatch" style="background:#fbeeb9"></span><code>#fbeeb9</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-yellow-95</code></td>
+        <td><code>#ffeeb1</code></td>
+        <td><span class="swatch" style="background:#ffeeb1"></span><code>#ffeeb1</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-yellow-96</code></td>
+        <td><code>#fef769</code></td>
+        <td><span class="swatch" style="background:#fef769"></span><code>#fef769</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-0</code></td>
+        <td><code>#000000</code></td>
+        <td><span class="swatch" style="background:#000000"></span><code>#000000</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-12</code></td>
+        <td><code>#1e1e1e</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-15</code></td>
+        <td><code>#252525</code></td>
+        <td><span class="swatch" style="background:#252525"></span><code>#252525</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-20</code></td>
+        <td><code>#333333</code></td>
+        <td><span class="swatch" style="background:#333333"></span><code>#333333</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-24</code></td>
+        <td><code>#3d3d3d</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-29</code></td>
+        <td><code>#4b4b4b</code></td>
+        <td><span class="swatch" style="background:#4b4b4b"></span><code>#4b4b4b</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-32</code></td>
+        <td><code>#515151</code></td>
+        <td><span class="swatch" style="background:#515151"></span><code>#515151</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-36</code></td>
+        <td><code>#5c5c5c</code></td>
+        <td><span class="swatch" style="background:#5c5c5c"></span><code>#5c5c5c</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-46</code></td>
+        <td><code>#757575</code></td>
+        <td><span class="swatch" style="background:#757575"></span><code>#757575</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-50</code></td>
+        <td><code>#808080</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-56</code></td>
+        <td><code>#909090</code></td>
+        <td><span class="swatch" style="background:#909090"></span><code>#909090</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-60</code></td>
+        <td><code>#999999</code></td>
+        <td><span class="swatch" style="background:#999999"></span><code>#999999</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-65</code></td>
+        <td><code>#a7a7a7</code></td>
+        <td><span class="swatch" style="background:#a7a7a7"></span><code>#a7a7a7</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-75</code></td>
+        <td><code>#c0c0c0</code></td>
+        <td><span class="swatch" style="background:#c0c0c0"></span><code>#c0c0c0</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-85</code></td>
+        <td><code>#d9d9d9</code></td>
+        <td><span class="swatch" style="background:#d9d9d9"></span><code>#d9d9d9</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-neutral-100</code></td>
+        <td><code>#ffffff</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-lavender-94</code></td>
+        <td><code>#ebebf5</code></td>
+        <td><span class="swatch" style="background:#ebebf5"></span><code>#ebebf5</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-warm-gray-50</code></td>
+        <td><code>#7e7873</code></td>
+        <td><span class="swatch" style="background:#7e7873"></span><code>#7e7873</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-25</code></td>
+        <td><code>#7a181b</code></td>
+        <td><span class="swatch" style="background:#7a181b"></span><code>#7a181b</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-60</code></td>
+        <td><code>#ea272d</code></td>
+        <td><span class="swatch" style="background:#ea272d"></span><code>#ea272d</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-62</code></td>
+        <td><code>#f93951</code></td>
+        <td><span class="swatch" style="background:#f93951"></span><code>#f93951</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-65</code></td>
+        <td><code>#ff4f4f</code></td>
+        <td><span class="swatch" style="background:#ff4f4f"></span><code>#ff4f4f</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-77</code></td>
+        <td><code>#ff8a91</code></td>
+        <td><span class="swatch" style="background:#ff8a91"></span><code>#ff8a91</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-vermilion-56</code></td>
+        <td><code>#e95b33</code></td>
+        <td><span class="swatch" style="background:#e95b33"></span><code>#e95b33</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-rose-55</code></td>
+        <td><code>#d73152</code></td>
+        <td><span class="swatch" style="background:#d73152"></span><code>#d73152</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-rose-60</code></td>
+        <td><code>#eb415a</code></td>
+        <td><span class="swatch" style="background:#eb415a"></span><code>#eb415a</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-rose-64</code></td>
+        <td><code>#ef6276</code></td>
+        <td><span class="swatch" style="background:#ef6276"></span><code>#ef6276</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-38</code></td>
+        <td><code>#af0029</code></td>
+        <td><span class="swatch" style="background:#af0029"></span><code>#af0029</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-pink-60</code></td>
+        <td><code>#ff3465</code></td>
+        <td><span class="swatch" style="background:#ff3465"></span><code>#ff3465</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-purple-55</code></td>
+        <td><code>#9f5ebb</code></td>
+        <td><span class="swatch" style="background:#9f5ebb"></span><code>#9f5ebb</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-violet-50</code></td>
+        <td><code>#8000ff</code></td>
+        <td><span class="swatch" style="background:#8000ff"></span><code>#8000ff</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-cyan-47</code></td>
+        <td><code>#3196c1</code></td>
+        <td><span class="swatch" style="background:#3196c1"></span><code>#3196c1</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-blue-45</code></td>
+        <td><code>#027dc6</code></td>
+        <td><span class="swatch" style="background:#027dc6"></span><code>#027dc6</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-blue-55</code></td>
+        <td><code>#006fff</code></td>
+        <td><span class="swatch" style="background:#006fff"></span><code>#006fff</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-blue-60</code></td>
+        <td><code>#36a9ea</code></td>
+        <td><span class="swatch" style="background:#36a9ea"></span><code>#36a9ea</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-sky-96</code></td>
+        <td><code>#e5f9ff</code></td>
+        <td><span class="swatch" style="background:#e5f9ff"></span><code>#e5f9ff</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-15</code></td>
+        <td><code>#09340f</code></td>
+        <td><span class="swatch" style="background:#09340f"></span><code>#09340f</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-25</code></td>
+        <td><code>#15431b</code></td>
+        <td><span class="swatch" style="background:#15431b"></span><code>#15431b</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-35</code></td>
+        <td><code>#29422c</code></td>
+        <td><span class="swatch" style="background:#29422c"></span><code>#29422c</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-50</code></td>
+        <td><code>#00a94d</code></td>
+        <td><span class="swatch" style="background:#00a94d"></span><code>#00a94d</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-55</code></td>
+        <td><code>#39b54a</code></td>
+        <td><span class="swatch" style="background:#39b54a"></span><code>#39b54a</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-brown-40</code></td>
+        <td><code>#7c4616</code></td>
+        <td><span class="swatch" style="background:#7c4616"></span><code>#7c4616</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-0</code></td>
+        <td><code>0</code></td>
+        <td><code>0</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-8</code></td>
+        <td><code>0.08</code></td>
+        <td><code>0.08</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-20</code></td>
+        <td><code>0.2</code></td>
+        <td><code>0.2</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-30</code></td>
+        <td><code>0.3</code></td>
+        <td><code>0.3</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-50</code></td>
+        <td><code>0.5</code></td>
+        <td><code>0.5</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-60</code></td>
+        <td><code>0.6</code></td>
+        <td><code>0.6</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-opacity-80</code></td>
+        <td><code>0.8</code></td>
+        <td><code>0.8</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-white-alpha-0</code></td>
+        <td><code>rgba(255, 255, 255, 0)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0)"></span><code>rgba(255, 255, 255, 0)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-white-alpha-8</code></td>
+        <td><code>rgba(255, 255, 255, 0.08)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0.08)"></span><code>rgba(255, 255, 255, 0.08)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-white-alpha-20</code></td>
+        <td><code>rgba(255, 255, 255, 0.2)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0.2)"></span><code>rgba(255, 255, 255, 0.2)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-57-alpha-20</code></td>
+        <td><code>rgba(231, 0, 0, 0.2)</code></td>
+        <td><span class="swatch" style="background:rgba(231, 0, 0, 0.2)"></span><code>rgba(231, 0, 0, 0.2)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-60-alpha-30</code></td>
+        <td><code>rgba(234, 39, 45, 0.3)</code></td>
+        <td><span class="swatch" style="background:rgba(234, 39, 45, 0.3)"></span><code>rgba(234, 39, 45, 0.3)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-red-60-alpha-50</code></td>
+        <td><code>rgba(234, 39, 45, 0.5)</code></td>
+        <td><span class="swatch" style="background:rgba(234, 39, 45, 0.5)"></span><code>rgba(234, 39, 45, 0.5)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-55-alpha-30</code></td>
+        <td><code>rgba(57, 181, 74, 0.3)</code></td>
+        <td><span class="swatch" style="background:rgba(57, 181, 74, 0.3)"></span><code>rgba(57, 181, 74, 0.3)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-green-55-alpha-50</code></td>
+        <td><code>rgba(57, 181, 74, 0.5)</code></td>
+        <td><span class="swatch" style="background:rgba(57, 181, 74, 0.5)"></span><code>rgba(57, 181, 74, 0.5)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-orange-alpha-60</code></td>
+        <td><code>rgba(255, 120, 0, 0.6)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 120, 0, 0.6)"></span><code>rgba(255, 120, 0, 0.6)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-4-0-2-black-alpha-25</code></td>
+        <td><code>4px 0 2px rgba(0, 0, 0, 0.25)</code></td>
+        <td><code>4px 0 2px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-4-0-5-black-alpha-25</code></td>
+        <td><code>4px 0 5px rgba(0, 0, 0, 0.25)</code></td>
+        <td><code>4px 0 5px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-0-4-2-black-alpha-25</code></td>
+        <td><code>0 4px 2px rgba(0, 0, 0, 0.25)</code></td>
+        <td><code>0 4px 2px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-0-4-10-black-alpha-25</code></td>
+        <td><code>0 4px 10px rgba(0, 0, 0, 0.25)</code></td>
+        <td><code>0 4px 10px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-0-4-4-black-alpha-25</code></td>
+        <td><code>0 4px 4px rgba(0, 0, 0, 0.25)</code></td>
+        <td><code>0 4px 4px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-0-2-4-black-alpha-12</code></td>
+        <td><code>0 2px 4px rgba(0, 0, 0, 0.12)</code></td>
+        <td><code>0 2px 4px rgba(0, 0, 0, 0.12)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-0-1-1-black-alpha-24-0-0-1-black-alpha-12</code></td>
+        <td><code>0 1px 1px rgba(0, 0, 0, 0.24), 0 0 1px rgba(0, 0, 0, 0.12)</code></td>
+        <td><code>0 1px 1px rgba(0, 0, 0, 0.24), 0 0 1px rgba(0, 0, 0, 0.12)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-shadow-0-2-2-black-alpha-50</code></td>
+        <td><code>0 2px 2px rgba(0, 0, 0, 0.5)</code></td>
+        <td><code>0 2px 2px rgba(0, 0, 0, 0.5)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-yellow-70-alpha-80</code></td>
+        <td><code>rgba(255, 245, 109, 0.8)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 245, 109, 0.8)"></span><code>rgba(255, 245, 109, 0.8)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-mint-60-alpha-60</code></td>
+        <td><code>rgba(80, 227, 194, 0.6)</code></td>
+        <td><span class="swatch" style="background:rgba(80, 227, 194, 0.6)"></span><code>rgba(80, 227, 194, 0.6)</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-pink-70</code></td>
+        <td><code>#ffb7b9</code></td>
+        <td><span class="swatch" style="background:#ffb7b9"></span><code>#ffb7b9</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-color-violet-70</code></td>
+        <td><code>#d1a3ff</code></td>
+        <td><span class="swatch" style="background:#d1a3ff"></span><code>#d1a3ff</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-pingfang-tc</code></td>
+        <td><code>&quot;PingFang TC&quot;</code></td>
+        <td><code>&quot;PingFang TC&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-roboto</code></td>
+        <td><code>&quot;Roboto&quot;</code></td>
+        <td><code>&quot;Roboto&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-inter</code></td>
+        <td><code>&quot;Inter&quot;</code></td>
+        <td><code>&quot;Inter&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-play</code></td>
+        <td><code>&quot;Play&quot;</code></td>
+        <td><code>&quot;Play&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-noto-sans-jp</code></td>
+        <td><code>&quot;Noto Sans JP&quot;</code></td>
+        <td><code>&quot;Noto Sans JP&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-noto-sans-sc</code></td>
+        <td><code>&quot;Noto Sans SC&quot;</code></td>
+        <td><code>&quot;Noto Sans SC&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-sf-pro-display</code></td>
+        <td><code>&quot;SF Pro Display&quot;</code></td>
+        <td><code>&quot;SF Pro Display&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-typeface-sf-pro-text</code></td>
+        <td><code>&quot;SF Pro Text&quot;</code></td>
+        <td><code>&quot;SF Pro Text&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-weight-400</code></td>
+        <td><code>400</code></td>
+        <td><code>400</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-weight-500</code></td>
+        <td><code>500</code></td>
+        <td><code>500</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-weight-600</code></td>
+        <td><code>600</code></td>
+        <td><code>600</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-weight-700</code></td>
+        <td><code>700</code></td>
+        <td><code>700</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-line-height-normal</code></td>
+        <td><code>normal</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-0</code></td>
+        <td><code>0</code></td>
+        <td><code>0</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-1</code></td>
+        <td><code>1px</code></td>
+        <td><code>1px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-2</code></td>
+        <td><code>2px</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-3</code></td>
+        <td><code>3px</code></td>
+        <td><code>3px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-4</code></td>
+        <td><code>4px</code></td>
+        <td><code>4px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-5</code></td>
+        <td><code>5px</code></td>
+        <td><code>5px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-6</code></td>
+        <td><code>6px</code></td>
+        <td><code>6px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-7</code></td>
+        <td><code>7px</code></td>
+        <td><code>7px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-8</code></td>
+        <td><code>8px</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-10</code></td>
+        <td><code>10px</code></td>
+        <td><code>10px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-11</code></td>
+        <td><code>11px</code></td>
+        <td><code>11px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-12</code></td>
+        <td><code>12px</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-13</code></td>
+        <td><code>13px</code></td>
+        <td><code>13px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-14</code></td>
+        <td><code>14px</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-15</code></td>
+        <td><code>15px</code></td>
+        <td><code>15px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-16</code></td>
+        <td><code>16px</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-17</code></td>
+        <td><code>17px</code></td>
+        <td><code>17px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-18</code></td>
+        <td><code>18px</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-20</code></td>
+        <td><code>20px</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-22</code></td>
+        <td><code>22px</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-24</code></td>
+        <td><code>24px</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-25</code></td>
+        <td><code>25px</code></td>
+        <td><code>25px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-26</code></td>
+        <td><code>26px</code></td>
+        <td><code>26px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-27</code></td>
+        <td><code>27px</code></td>
+        <td><code>27px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-28</code></td>
+        <td><code>28px</code></td>
+        <td><code>28px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-30</code></td>
+        <td><code>30px</code></td>
+        <td><code>30px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-32</code></td>
+        <td><code>32px</code></td>
+        <td><code>32px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-33</code></td>
+        <td><code>33px</code></td>
+        <td><code>33px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-34</code></td>
+        <td><code>34px</code></td>
+        <td><code>34px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-36</code></td>
+        <td><code>36px</code></td>
+        <td><code>36px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-38</code></td>
+        <td><code>38px</code></td>
+        <td><code>38px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-40</code></td>
+        <td><code>40px</code></td>
+        <td><code>40px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-41</code></td>
+        <td><code>41px</code></td>
+        <td><code>41px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-42</code></td>
+        <td><code>42px</code></td>
+        <td><code>42px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-43</code></td>
+        <td><code>43px</code></td>
+        <td><code>43px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-44</code></td>
+        <td><code>44px</code></td>
+        <td><code>44px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-46</code></td>
+        <td><code>46px</code></td>
+        <td><code>46px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-48</code></td>
+        <td><code>48px</code></td>
+        <td><code>48px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-49</code></td>
+        <td><code>49px</code></td>
+        <td><code>49px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-59</code></td>
+        <td><code>59px</code></td>
+        <td><code>59px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-60</code></td>
+        <td><code>60px</code></td>
+        <td><code>60px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-61</code></td>
+        <td><code>61px</code></td>
+        <td><code>61px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-62</code></td>
+        <td><code>62px</code></td>
+        <td><code>62px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-64</code></td>
+        <td><code>64px</code></td>
+        <td><code>64px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-66</code></td>
+        <td><code>66px</code></td>
+        <td><code>66px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-68</code></td>
+        <td><code>68px</code></td>
+        <td><code>68px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-70</code></td>
+        <td><code>70px</code></td>
+        <td><code>70px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-74</code></td>
+        <td><code>74px</code></td>
+        <td><code>74px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-76</code></td>
+        <td><code>76px</code></td>
+        <td><code>76px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-77</code></td>
+        <td><code>77px</code></td>
+        <td><code>77px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-79</code></td>
+        <td><code>79px</code></td>
+        <td><code>79px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-80</code></td>
+        <td><code>80px</code></td>
+        <td><code>80px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-82</code></td>
+        <td><code>82px</code></td>
+        <td><code>82px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-83</code></td>
+        <td><code>83px</code></td>
+        <td><code>83px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-86</code></td>
+        <td><code>86px</code></td>
+        <td><code>86px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-90</code></td>
+        <td><code>90px</code></td>
+        <td><code>90px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-96</code></td>
+        <td><code>96px</code></td>
+        <td><code>96px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-98</code></td>
+        <td><code>98px</code></td>
+        <td><code>98px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-100</code></td>
+        <td><code>100px</code></td>
+        <td><code>100px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-106</code></td>
+        <td><code>106px</code></td>
+        <td><code>106px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-112</code></td>
+        <td><code>112px</code></td>
+        <td><code>112px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-120</code></td>
+        <td><code>120px</code></td>
+        <td><code>120px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-122</code></td>
+        <td><code>122px</code></td>
+        <td><code>122px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-132</code></td>
+        <td><code>132px</code></td>
+        <td><code>132px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-134</code></td>
+        <td><code>134px</code></td>
+        <td><code>134px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-136</code></td>
+        <td><code>136px</code></td>
+        <td><code>136px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-140</code></td>
+        <td><code>140px</code></td>
+        <td><code>140px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-152</code></td>
+        <td><code>152px</code></td>
+        <td><code>152px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-176</code></td>
+        <td><code>176px</code></td>
+        <td><code>176px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-184</code></td>
+        <td><code>184px</code></td>
+        <td><code>184px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-187</code></td>
+        <td><code>187px</code></td>
+        <td><code>187px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-200</code></td>
+        <td><code>200px</code></td>
+        <td><code>200px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-216</code></td>
+        <td><code>216px</code></td>
+        <td><code>216px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-220</code></td>
+        <td><code>220px</code></td>
+        <td><code>220px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-224</code></td>
+        <td><code>224px</code></td>
+        <td><code>224px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-234</code></td>
+        <td><code>234px</code></td>
+        <td><code>234px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-266</code></td>
+        <td><code>266px</code></td>
+        <td><code>266px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-292</code></td>
+        <td><code>292px</code></td>
+        <td><code>292px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-295</code></td>
+        <td><code>295px</code></td>
+        <td><code>295px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-375</code></td>
+        <td><code>375px</code></td>
+        <td><code>375px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-520</code></td>
+        <td><code>520px</code></td>
+        <td><code>520px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-563</code></td>
+        <td><code>563px</code></td>
+        <td><code>563px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-624</code></td>
+        <td><code>624px</code></td>
+        <td><code>624px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-720</code></td>
+        <td><code>720px</code></td>
+        <td><code>720px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-768</code></td>
+        <td><code>768px</code></td>
+        <td><code>768px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-812</code></td>
+        <td><code>812px</code></td>
+        <td><code>812px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-960</code></td>
+        <td><code>960px</code></td>
+        <td><code>960px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-size-1280</code></td>
+        <td><code>1280px</code></td>
+        <td><code>1280px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-0</code></td>
+        <td><code>0</code></td>
+        <td><code>0</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-2</code></td>
+        <td><code>2px</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-4</code></td>
+        <td><code>4px</code></td>
+        <td><code>4px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-5</code></td>
+        <td><code>5px</code></td>
+        <td><code>5px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-6</code></td>
+        <td><code>6px</code></td>
+        <td><code>6px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-8</code></td>
+        <td><code>8px</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-12</code></td>
+        <td><code>12px</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-14</code></td>
+        <td><code>14px</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-16</code></td>
+        <td><code>16px</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-24</code></td>
+        <td><code>24px</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-ref-radius-100</code></td>
+        <td><code>100px</code></td>
+        <td><code>100px</code></td>
+      </tr></tbody>
+    </table></div>
+  </section>
+<section class="panel" id="sys">
+    <h2 data-i18n="tokenSys">System Tokens</h2>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th data-i18n="tokenColumnName">Token</th>
+        <th data-i18n="tokenColumnValue">Value</th>
+        <th data-i18n="tokenColumnResolved">Resolved</th>
+      </tr></thead>
+      <tbody><tr>
+        <td><code>--sbt-sys-color-primary</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-primary</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-primary-pressed</code></td>
+        <td><code>var(--sbt-ref-color-orange-50)</code></td>
+        <td><span class="swatch" style="background:#cc6102"></span><code>#cc6102</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-primary-pressed</code></td>
+        <td><code>var(--sbt-ref-color-orange-75)</code></td>
+        <td><span class="swatch" style="background:#ebc09a"></span><code>#ebc09a</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-primary-container</code></td>
+        <td><code>var(--sbt-ref-color-orange-88)</code></td>
+        <td><span class="swatch" style="background:#ffd7b2"></span><code>#ffd7b2</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-primary-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-primary-container-subtle</code></td>
+        <td><code>var(--sbt-ref-color-orange-96)</code></td>
+        <td><span class="swatch" style="background:#fff1e5"></span><code>#fff1e5</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-primary-container-subtle</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-primary-outline-pressed</code></td>
+        <td><code>var(--sbt-ref-color-orange-12)</code></td>
+        <td><span class="swatch" style="background:#3f1d00"></span><code>#3f1d00</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-primary-outline-subtle</code></td>
+        <td><code>var(--sbt-ref-color-orange-alpha-60)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 120, 0, 0.6)"></span><code>rgba(255, 120, 0, 0.6)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-secondary</code></td>
+        <td><code>var(--sbt-ref-color-amber-60)</code></td>
+        <td><span class="swatch" style="background:#f9a516"></span><code>#f9a516</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-secondary</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-secondary-pressed</code></td>
+        <td><code>var(--sbt-ref-color-amber-50)</code></td>
+        <td><span class="swatch" style="background:#c37302"></span><code>#c37302</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-secondary-pressed</code></td>
+        <td><code>var(--sbt-ref-color-orange-75)</code></td>
+        <td><span class="swatch" style="background:#ebc09a"></span><code>#ebc09a</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-secondary-container</code></td>
+        <td><code>var(--sbt-ref-color-amber-60)</code></td>
+        <td><span class="swatch" style="background:#f9a516"></span><code>#f9a516</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-secondary-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-highlight-warm</code></td>
+        <td><code>var(--sbt-ref-color-amber-75)</code></td>
+        <td><span class="swatch" style="background:#ffd98a"></span><code>#ffd98a</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-highlight-warm</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-scrim</code></td>
+        <td><code>var(--sbt-ref-color-neutral-0)</code></td>
+        <td><span class="swatch" style="background:#000000"></span><code>#000000</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-canvas-deep</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-canvas-deep</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-background</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-background</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-surface</code></td>
+        <td><code>var(--sbt-ref-color-neutral-15)</code></td>
+        <td><span class="swatch" style="background:#252525"></span><code>#252525</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-surface-raised</code></td>
+        <td><code>var(--sbt-ref-color-neutral-20)</code></td>
+        <td><span class="swatch" style="background:#333333"></span><code>#333333</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-raised</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-surface-hover</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-hover</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-inverse</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-inverse</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-strong</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-secondary</code></td>
+        <td><code>var(--sbt-ref-color-lavender-94)</code></td>
+        <td><span class="swatch" style="background:#ebebf5"></span><code>#ebebf5</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-high</code></td>
+        <td><code>var(--sbt-ref-color-neutral-85)</code></td>
+        <td><span class="swatch" style="background:#d9d9d9"></span><code>#d9d9d9</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-medium</code></td>
+        <td><code>var(--sbt-ref-color-neutral-75)</code></td>
+        <td><span class="swatch" style="background:#c0c0c0"></span><code>#c0c0c0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-muted</code></td>
+        <td><code>var(--sbt-ref-color-neutral-60)</code></td>
+        <td><span class="swatch" style="background:#999999"></span><code>#999999</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-dim</code></td>
+        <td><code>var(--sbt-ref-color-neutral-46)</code></td>
+        <td><span class="swatch" style="background:#757575"></span><code>#757575</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-subtle</code></td>
+        <td><code>var(--sbt-ref-color-neutral-50)</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-quiet</code></td>
+        <td><code>var(--sbt-ref-color-neutral-56)</code></td>
+        <td><span class="swatch" style="background:#909090"></span><code>#909090</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-surface-warm</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-disabled-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-50)</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-disabled-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-15)</code></td>
+        <td><span class="swatch" style="background:#252525"></span><code>#252525</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-disabled</code></td>
+        <td><code>var(--sbt-ref-color-neutral-50)</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-disabled</code></td>
+        <td><code>var(--sbt-ref-color-neutral-50)</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-inverse-subtle</code></td>
+        <td><code>var(--sbt-ref-color-white-alpha-8)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0.08)"></span><code>rgba(255, 255, 255, 0.08)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-inverse</code></td>
+        <td><code>var(--sbt-ref-color-white-alpha-20)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0.2)"></span><code>rgba(255, 255, 255, 0.2)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-subtle</code></td>
+        <td><code>var(--sbt-ref-color-neutral-20)</code></td>
+        <td><span class="swatch" style="background:#333333"></span><code>#333333</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-low</code></td>
+        <td><code>var(--sbt-ref-color-neutral-20)</code></td>
+        <td><span class="swatch" style="background:#333333"></span><code>#333333</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-middle</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-high</code></td>
+        <td><code>var(--sbt-ref-color-neutral-29)</code></td>
+        <td><span class="swatch" style="background:#4b4b4b"></span><code>#4b4b4b</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-strong</code></td>
+        <td><code>var(--sbt-ref-color-neutral-32)</code></td>
+        <td><span class="swatch" style="background:#515151"></span><code>#515151</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-outline-contrast</code></td>
+        <td><code>var(--sbt-ref-color-neutral-36)</code></td>
+        <td><span class="swatch" style="background:#5c5c5c"></span><code>#5c5c5c</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-success</code></td>
+        <td><code>var(--sbt-ref-color-green-55)</code></td>
+        <td><span class="swatch" style="background:#39b54a"></span><code>#39b54a</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-success</code></td>
+        <td><code>var(--sbt-ref-color-green-55)</code></td>
+        <td><span class="swatch" style="background:#39b54a"></span><code>#39b54a</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-success</code></td>
+        <td><code>var(--sbt-ref-color-neutral-0)</code></td>
+        <td><span class="swatch" style="background:#000000"></span><code>#000000</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-error</code></td>
+        <td><code>var(--sbt-ref-color-red-60)</code></td>
+        <td><span class="swatch" style="background:#ea272d"></span><code>#ea272d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-error</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-callout-container</code></td>
+        <td><code>var(--sbt-ref-color-amber-60)</code></td>
+        <td><span class="swatch" style="background:#f9a516"></span><code>#f9a516</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-callout-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-12)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-grid</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-axis</code></td>
+        <td><code>var(--sbt-ref-color-neutral-60)</code></td>
+        <td><span class="swatch" style="background:#999999"></span><code>#999999</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-cursor</code></td>
+        <td><code>var(--sbt-ref-color-neutral-60)</code></td>
+        <td><span class="swatch" style="background:#999999"></span><code>#999999</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-primary</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-primary-fill</code></td>
+        <td><code>var(--sbt-ref-color-orange-alpha-60)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 120, 0, 0.6)"></span><code>rgba(255, 120, 0, 0.6)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-tooltip-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-chart-tooltip-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-85)</code></td>
+        <td><span class="swatch" style="background:#d9d9d9"></span><code>#d9d9d9</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-1</code></td>
+        <td><code>var(--sbt-ref-color-amber-62)</code></td>
+        <td><span class="swatch" style="background:#ffa902"></span><code>#ffa902</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-2</code></td>
+        <td><code>var(--sbt-ref-color-vermilion-56)</code></td>
+        <td><span class="swatch" style="background:#e95b33"></span><code>#e95b33</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-3</code></td>
+        <td><code>var(--sbt-ref-color-purple-55)</code></td>
+        <td><span class="swatch" style="background:#9f5ebb"></span><code>#9f5ebb</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-4</code></td>
+        <td><code>var(--sbt-ref-color-cyan-47)</code></td>
+        <td><span class="swatch" style="background:#3196c1"></span><code>#3196c1</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-chart-series-5</code></td>
+        <td><code>var(--sbt-ref-color-pink-60)</code></td>
+        <td><span class="swatch" style="background:#ff3465"></span><code>#ff3465</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-temporal-current</code></td>
+        <td><code>var(--sbt-ref-color-yellow-95)</code></td>
+        <td><span class="swatch" style="background:#ffeeb1"></span><code>#ffeeb1</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-temporal-future</code></td>
+        <td><code>var(--sbt-ref-color-yellow-95)</code></td>
+        <td><span class="swatch" style="background:#ffeeb1"></span><code>#ffeeb1</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-temporal-past</code></td>
+        <td><code>var(--sbt-ref-color-neutral-75)</code></td>
+        <td><span class="swatch" style="background:#c0c0c0"></span><code>#c0c0c0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-selection-option-default</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-selection-option-default</code></td>
+        <td><code>var(--sbt-ref-color-neutral-75)</code></td>
+        <td><span class="swatch" style="background:#c0c0c0"></span><code>#c0c0c0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-selection-option-selected</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-selection-option-selected</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-status-new</code></td>
+        <td><code>var(--sbt-ref-color-red-62)</code></td>
+        <td><span class="swatch" style="background:#f93951"></span><code>#f93951</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-status-new</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-control-neutral</code></td>
+        <td><code>var(--sbt-ref-color-neutral-15)</code></td>
+        <td><span class="swatch" style="background:#252525"></span><code>#252525</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-control-selected</code></td>
+        <td><code>var(--sbt-ref-color-warm-gray-50)</code></td>
+        <td><span class="swatch" style="background:#7e7873"></span><code>#7e7873</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-control-selected-muted</code></td>
+        <td><code>var(--sbt-ref-color-neutral-50)</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-control-outline</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-control-selected</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-control-selected-muted</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-control</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-selection-control-container</code></td>
+        <td><code>var(--sbt-ref-color-white-alpha-0)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0)"></span><code>rgba(255, 255, 255, 0)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-selection-control-container</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-selection-control-outline</code></td>
+        <td><code>var(--sbt-ref-color-neutral-60)</code></td>
+        <td><span class="swatch" style="background:#999999"></span><code>#999999</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-selection-control-selected</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-selection-control-selected</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-selection-control-mark</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-action-neutral</code></td>
+        <td><code>var(--sbt-ref-color-warm-gray-50)</code></td>
+        <td><span class="swatch" style="background:#7e7873"></span><code>#7e7873</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-action-subtle</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-action-outline-deep</code></td>
+        <td><code>var(--sbt-ref-color-orange-36)</code></td>
+        <td><span class="swatch" style="background:#b95700"></span><code>#b95700</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-action-neutral</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-transparent</code></td>
+        <td><code>var(--sbt-ref-color-white-alpha-0)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 255, 255, 0)"></span><code>rgba(255, 255, 255, 0)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-toggle-track-off</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-toggle-track-off-strong</code></td>
+        <td><code>var(--sbt-ref-color-neutral-29)</code></td>
+        <td><span class="swatch" style="background:#4b4b4b"></span><code>#4b4b4b</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-toggle-track-on</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-toggle-knob-off</code></td>
+        <td><code>var(--sbt-ref-color-neutral-75)</code></td>
+        <td><span class="swatch" style="background:#c0c0c0"></span><code>#c0c0c0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-toggle-knob-on</code></td>
+        <td><code>var(--sbt-ref-color-orange-60)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-toggle-knob-contrast</code></td>
+        <td><code>var(--sbt-ref-color-neutral-100)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-overlay-media</code></td>
+        <td><code>var(--sbt-ref-color-neutral-20)</code></td>
+        <td><span class="swatch" style="background:#333333"></span><code>#333333</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-overlay-empty-art</code></td>
+        <td><code>var(--sbt-ref-color-neutral-24)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-on-overlay-empty-art</code></td>
+        <td><code>var(--sbt-ref-color-neutral-50)</code></td>
+        <td><span class="swatch" style="background:#808080"></span><code>#808080</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-annotation-fixed</code></td>
+        <td><code>var(--sbt-ref-color-yellow-70-alpha-80)</code></td>
+        <td><span class="swatch" style="background:rgba(255, 245, 109, 0.8)"></span><code>rgba(255, 245, 109, 0.8)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-annotation-ratio</code></td>
+        <td><code>var(--sbt-ref-color-mint-60-alpha-60)</code></td>
+        <td><span class="swatch" style="background:rgba(80, 227, 194, 0.6)"></span><code>rgba(80, 227, 194, 0.6)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-annotation-touch-target</code></td>
+        <td><code>var(--sbt-ref-color-pink-70)</code></td>
+        <td><span class="swatch" style="background:#ffb7b9"></span><code>#ffb7b9</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-color-annotation-flow</code></td>
+        <td><code>var(--sbt-ref-color-violet-70)</code></td>
+        <td><span class="swatch" style="background:#d1a3ff"></span><code>#d1a3ff</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typeface-plain</code></td>
+        <td><code>var(--sbt-ref-typeface-pingfang-tc)</code></td>
+        <td><code>&quot;PingFang TC&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typeface-latin</code></td>
+        <td><code>var(--sbt-ref-typeface-inter)</code></td>
+        <td><code>&quot;Inter&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typeface-status-latin</code></td>
+        <td><code>var(--sbt-ref-typeface-play)</code></td>
+        <td><code>&quot;Play&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typeface-cjk-support</code></td>
+        <td><code>var(--sbt-ref-typeface-noto-sans-jp)</code></td>
+        <td><code>&quot;Noto Sans JP&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typeface-numeric</code></td>
+        <td><code>var(--sbt-ref-typeface-sf-pro-display)</code></td>
+        <td><code>&quot;SF Pro Display&quot;</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-weight-regular</code></td>
+        <td><code>var(--sbt-ref-weight-400)</code></td>
+        <td><code>400</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-weight-medium</code></td>
+        <td><code>var(--sbt-ref-weight-500)</code></td>
+        <td><code>500</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-weight-semibold</code></td>
+        <td><code>var(--sbt-ref-weight-600)</code></td>
+        <td><code>600</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-weight-bold</code></td>
+        <td><code>var(--sbt-ref-weight-700)</code></td>
+        <td><code>700</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-chart-axis-size</code></td>
+        <td><code>var(--sbt-ref-size-10)</code></td>
+        <td><code>10px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-chart-axis-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-chart-axis-md-size</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-chart-axis-md-line-height</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-lg-size</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-lg-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-md-compact-size</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-md-compact-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-message-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-15)</code></td>
+        <td><code>15px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-message-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-control-symbol-size</code></td>
+        <td><code>var(--sbt-ref-size-22)</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-control-symbol-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-date-md-size</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-date-md-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-table-header-size</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-table-header-line-height</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-size-22)</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-base-size</code></td>
+        <td><code>var(--sbt-ref-size-17)</code></td>
+        <td><code>17px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-base-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metadata-xxs-size</code></td>
+        <td><code>var(--sbt-ref-size-10)</code></td>
+        <td><code>10px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metadata-xxs-line-height</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metadata-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metadata-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-status-new-size</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-status-new-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-md-size</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-title-md-line-height</code></td>
+        <td><code>var(--sbt-ref-size-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-body-md-size</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-body-md-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-body-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-body-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-xl-size</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-xl-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-lg-size</code></td>
+        <td><code>var(--sbt-ref-size-15)</code></td>
+        <td><code>15px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-lg-line-height</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-md-size</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-action-xs-size</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-action-xs-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-md-line-height</code></td>
+        <td><code>var(--sbt-ref-size-22)</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-md-compact-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-13)</code></td>
+        <td><code>13px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-label-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metric-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-13)</code></td>
+        <td><code>13px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metric-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-caption-sm-size</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-caption-sm-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metadata-xs-size</code></td>
+        <td><code>var(--sbt-ref-size-11)</code></td>
+        <td><code>11px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-metadata-xs-line-height</code></td>
+        <td><code>var(--sbt-ref-line-height-normal)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-numeric-lg-size</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-numeric-lg-line-height</code></td>
+        <td><code>var(--sbt-ref-size-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-numeric-md-size</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-typescale-numeric-md-line-height</code></td>
+        <td><code>var(--sbt-ref-size-22)</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-none</code></td>
+        <td><code>var(--sbt-ref-size-0)</code></td>
+        <td><code>0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-hairline</code></td>
+        <td><code>var(--sbt-ref-size-1)</code></td>
+        <td><code>1px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-xxs</code></td>
+        <td><code>var(--sbt-ref-size-2)</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-xxs-plus</code></td>
+        <td><code>var(--sbt-ref-size-3)</code></td>
+        <td><code>3px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-xxs-compact</code></td>
+        <td><code>var(--sbt-ref-size-3)</code></td>
+        <td><code>3px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-xs</code></td>
+        <td><code>var(--sbt-ref-size-4)</code></td>
+        <td><code>4px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-s</code></td>
+        <td><code>var(--sbt-ref-size-5)</code></td>
+        <td><code>5px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-sm</code></td>
+        <td><code>var(--sbt-ref-size-6)</code></td>
+        <td><code>6px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-icon-label-lg</code></td>
+        <td><code>var(--sbt-ref-size-7)</code></td>
+        <td><code>7px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-md</code></td>
+        <td><code>var(--sbt-ref-size-8)</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-m</code></td>
+        <td><code>var(--sbt-ref-size-10)</code></td>
+        <td><code>10px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-lg</code></td>
+        <td><code>var(--sbt-ref-size-11)</code></td>
+        <td><code>11px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-l</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-l-plus</code></td>
+        <td><code>var(--sbt-ref-size-13)</code></td>
+        <td><code>13px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-screen-gutter</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-segment-control-x</code></td>
+        <td><code>var(--sbt-ref-size-17)</code></td>
+        <td><code>17px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-xl</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-container-lg</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-container-xl</code></td>
+        <td><code>var(--sbt-ref-size-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-control-content-lg</code></td>
+        <td><code>var(--sbt-ref-size-27)</code></td>
+        <td><code>27px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-spacing-section-gap-xl</code></td>
+        <td><code>var(--sbt-ref-size-40)</code></td>
+        <td><code>40px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-none</code></td>
+        <td><code>var(--sbt-ref-radius-0)</code></td>
+        <td><code>0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-xxs</code></td>
+        <td><code>var(--sbt-ref-radius-2)</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-xs</code></td>
+        <td><code>var(--sbt-ref-radius-4)</code></td>
+        <td><code>4px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-sm</code></td>
+        <td><code>var(--sbt-ref-radius-5)</code></td>
+        <td><code>5px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-sm-plus</code></td>
+        <td><code>var(--sbt-ref-radius-6)</code></td>
+        <td><code>6px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-md</code></td>
+        <td><code>var(--sbt-ref-radius-8)</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-lg</code></td>
+        <td><code>var(--sbt-ref-radius-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-label</code></td>
+        <td><code>var(--sbt-ref-radius-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-top-xl</code></td>
+        <td><code>var(--sbt-ref-radius-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-pill</code></td>
+        <td><code>var(--sbt-ref-radius-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shape-corner-full</code></td>
+        <td><code>var(--sbt-ref-radius-100)</code></td>
+        <td><code>100px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-sticky-edge</code></td>
+        <td><code>var(--sbt-ref-shadow-4-0-2-black-alpha-25)</code></td>
+        <td><code>4px 0 2px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-sticky-edge-strong</code></td>
+        <td><code>var(--sbt-ref-shadow-4-0-5-black-alpha-25)</code></td>
+        <td><code>4px 0 5px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-action-overlay-low</code></td>
+        <td><code>var(--sbt-ref-shadow-0-4-2-black-alpha-25)</code></td>
+        <td><code>0 4px 2px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-raised-surface</code></td>
+        <td><code>var(--sbt-ref-shadow-0-4-10-black-alpha-25)</code></td>
+        <td><code>0 4px 10px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-text-low</code></td>
+        <td><code>var(--sbt-ref-shadow-0-4-4-black-alpha-25)</code></td>
+        <td><code>0 4px 4px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-surface-low</code></td>
+        <td><code>var(--sbt-ref-shadow-0-2-4-black-alpha-12)</code></td>
+        <td><code>0 2px 4px rgba(0, 0, 0, 0.12)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-control-selected-low</code></td>
+        <td><code>var(--sbt-ref-shadow-0-2-4-black-alpha-12)</code></td>
+        <td><code>0 2px 4px rgba(0, 0, 0, 0.12)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-toggle-knob-low</code></td>
+        <td><code>var(--sbt-ref-shadow-0-1-1-black-alpha-24-0-0-1-black-alpha-12)</code></td>
+        <td><code>0 1px 1px rgba(0, 0, 0, 0.24), 0 0 1px rgba(0, 0, 0, 0.12)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-shadow-toggle-knob-strong</code></td>
+        <td><code>var(--sbt-ref-shadow-0-2-2-black-alpha-50)</code></td>
+        <td><code>0 2px 2px rgba(0, 0, 0, 0.5)</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-viewport-compact-width</code></td>
+        <td><code>var(--sbt-ref-size-375)</code></td>
+        <td><code>375px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-viewport-medium-width</code></td>
+        <td><code>var(--sbt-ref-size-768)</code></td>
+        <td><code>768px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-viewport-wide-width</code></td>
+        <td><code>var(--sbt-ref-size-1280)</code></td>
+        <td><code>1280px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-viewport-compact-height</code></td>
+        <td><code>var(--sbt-ref-size-812)</code></td>
+        <td><code>812px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-micro</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-info</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-xxs</code></td>
+        <td><code>var(--sbt-ref-size-15)</code></td>
+        <td><code>15px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-xs</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-sm</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-compact-action</code></td>
+        <td><code>var(--sbt-ref-size-22)</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-standard</code></td>
+        <td><code>var(--sbt-ref-size-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-md</code></td>
+        <td><code>var(--sbt-ref-size-27)</code></td>
+        <td><code>27px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-compact-lg</code></td>
+        <td><code>var(--sbt-ref-size-28)</code></td>
+        <td><code>28px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-lg</code></td>
+        <td><code>var(--sbt-ref-size-30)</code></td>
+        <td><code>30px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-icon-xl</code></td>
+        <td><code>var(--sbt-ref-size-32)</code></td>
+        <td><code>32px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-header-with-status-height</code></td>
+        <td><code>var(--sbt-ref-size-64)</code></td>
+        <td><code>64px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-context-height</code></td>
+        <td><code>var(--sbt-ref-size-44)</code></td>
+        <td><code>44px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-status-height</code></td>
+        <td><code>var(--sbt-ref-size-44)</code></td>
+        <td><code>44px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-header-height</code></td>
+        <td><code>var(--sbt-ref-size-46)</code></td>
+        <td><code>46px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-subheader-height</code></td>
+        <td><code>var(--sbt-ref-size-33)</code></td>
+        <td><code>33px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-footer-height</code></td>
+        <td><code>var(--sbt-ref-size-49)</code></td>
+        <td><code>49px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-region-safe-area-bottom-height</code></td>
+        <td><code>var(--sbt-ref-size-34)</code></td>
+        <td><code>34px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-height-xs</code></td>
+        <td><code>var(--sbt-ref-size-28)</code></td>
+        <td><code>28px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-height-sm</code></td>
+        <td><code>var(--sbt-ref-size-30)</code></td>
+        <td><code>30px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-height-slim</code></td>
+        <td><code>var(--sbt-ref-size-26)</code></td>
+        <td><code>26px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-height-compact</code></td>
+        <td><code>var(--sbt-ref-size-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-height-md</code></td>
+        <td><code>var(--sbt-ref-size-42)</code></td>
+        <td><code>42px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-border-width</code></td>
+        <td><code>var(--sbt-ref-size-1)</code></td>
+        <td><code>1px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-border-width-strong</code></td>
+        <td><code>var(--sbt-ref-size-2)</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-width-sm</code></td>
+        <td><code>var(--sbt-ref-size-60)</code></td>
+        <td><code>60px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-control-width-md</code></td>
+        <td><code>var(--sbt-ref-size-68)</code></td>
+        <td><code>68px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-group-width-md</code></td>
+        <td><code>var(--sbt-ref-size-152)</code></td>
+        <td><code>152px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-segment-width-md</code></td>
+        <td><code>var(--sbt-ref-size-76)</code></td>
+        <td><code>76px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-divider-height-md</code></td>
+        <td><code>var(--sbt-ref-size-30)</code></td>
+        <td><code>30px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-height-tiny</code></td>
+        <td><code>var(--sbt-ref-size-25)</code></td>
+        <td><code>25px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-height-sm</code></td>
+        <td><code>var(--sbt-ref-size-28)</code></td>
+        <td><code>28px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-height-md</code></td>
+        <td><code>var(--sbt-ref-size-38)</code></td>
+        <td><code>38px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-height-lg</code></td>
+        <td><code>var(--sbt-ref-size-41)</code></td>
+        <td><code>41px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-height-xl</code></td>
+        <td><code>var(--sbt-ref-size-44)</code></td>
+        <td><code>44px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-height-xl-disabled</code></td>
+        <td><code>var(--sbt-ref-size-46)</code></td>
+        <td><code>46px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-tiny</code></td>
+        <td><code>var(--sbt-ref-size-62)</code></td>
+        <td><code>62px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-tiny-icon</code></td>
+        <td><code>var(--sbt-ref-size-76)</code></td>
+        <td><code>76px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-sm</code></td>
+        <td><code>var(--sbt-ref-size-70)</code></td>
+        <td><code>70px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-sm-icon</code></td>
+        <td><code>var(--sbt-ref-size-86)</code></td>
+        <td><code>86px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-md</code></td>
+        <td><code>var(--sbt-ref-size-90)</code></td>
+        <td><code>90px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-md-icon</code></td>
+        <td><code>var(--sbt-ref-size-112)</code></td>
+        <td><code>112px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-lg</code></td>
+        <td><code>var(--sbt-ref-size-98)</code></td>
+        <td><code>98px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-lg-icon</code></td>
+        <td><code>var(--sbt-ref-size-122)</code></td>
+        <td><code>122px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-xl</code></td>
+        <td><code>var(--sbt-ref-size-106)</code></td>
+        <td><code>106px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-xl-icon</code></td>
+        <td><code>var(--sbt-ref-size-132)</code></td>
+        <td><code>132px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-width-wide</code></td>
+        <td><code>var(--sbt-ref-size-266)</code></td>
+        <td><code>266px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-action-icon-nano</code></td>
+        <td><code>var(--sbt-ref-size-10)</code></td>
+        <td><code>10px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-set-width</code></td>
+        <td><code>var(--sbt-ref-size-59)</code></td>
+        <td><code>59px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-set-height</code></td>
+        <td><code>var(--sbt-ref-size-176)</code></td>
+        <td><code>176px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-size</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-check-icon-size</code></td>
+        <td><code>var(--sbt-ref-size-13)</code></td>
+        <td><code>13px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-radio-mark-size</code></td>
+        <td><code>var(--sbt-ref-size-12)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-border-width</code></td>
+        <td><code>var(--sbt-ref-size-1)</code></td>
+        <td><code>1px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-control-mark-stroke-width</code></td>
+        <td><code>var(--sbt-ref-size-2)</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-control-width</code></td>
+        <td><code>var(--sbt-ref-size-43)</code></td>
+        <td><code>43px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-control-height</code></td>
+        <td><code>var(--sbt-ref-size-26)</code></td>
+        <td><code>26px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-set-width</code></td>
+        <td><code>var(--sbt-ref-size-134)</code></td>
+        <td><code>134px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-set-height</code></td>
+        <td><code>var(--sbt-ref-size-136)</code></td>
+        <td><code>136px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-android-width</code></td>
+        <td><code>var(--sbt-ref-size-40)</code></td>
+        <td><code>40px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-android-height</code></td>
+        <td><code>var(--sbt-ref-size-24)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-android-track-width</code></td>
+        <td><code>var(--sbt-ref-size-34)</code></td>
+        <td><code>34px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-android-track-height</code></td>
+        <td><code>var(--sbt-ref-size-14)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-android-knob-size</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-ios-width</code></td>
+        <td><code>var(--sbt-ref-size-43)</code></td>
+        <td><code>43px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-ios-height</code></td>
+        <td><code>var(--sbt-ref-size-26)</code></td>
+        <td><code>26px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-ios-track-width</code></td>
+        <td><code>var(--sbt-ref-size-42)</code></td>
+        <td><code>42px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-ios-track-height</code></td>
+        <td><code>var(--sbt-ref-size-26)</code></td>
+        <td><code>26px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-toggle-ios-knob-size</code></td>
+        <td><code>var(--sbt-ref-size-22)</code></td>
+        <td><code>22px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-status-new-width</code></td>
+        <td><code>var(--sbt-ref-size-42)</code></td>
+        <td><code>42px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-status-new-height</code></td>
+        <td><code>var(--sbt-ref-size-20)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-overlay-compact-width</code></td>
+        <td><code>var(--sbt-ref-size-292)</code></td>
+        <td><code>292px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-overlay-compact-action-width</code></td>
+        <td><code>var(--sbt-ref-size-77)</code></td>
+        <td><code>77px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-overlay-compact-action-height</code></td>
+        <td><code>var(--sbt-ref-size-32)</code></td>
+        <td><code>32px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-feedback-view-height</code></td>
+        <td><code>var(--sbt-ref-size-563)</code></td>
+        <td><code>563px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-feedback-content-width</code></td>
+        <td><code>var(--sbt-ref-size-295)</code></td>
+        <td><code>295px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-media-placeholder-lg</code></td>
+        <td><code>var(--sbt-ref-size-187)</code></td>
+        <td><code>187px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-preview-width</code></td>
+        <td><code>var(--sbt-ref-size-74)</code></td>
+        <td><code>74px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-preview-height</code></td>
+        <td><code>var(--sbt-ref-size-66)</code></td>
+        <td><code>66px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-option-set-width</code></td>
+        <td><code>var(--sbt-ref-size-184)</code></td>
+        <td><code>184px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-option-set-height</code></td>
+        <td><code>var(--sbt-ref-size-82)</code></td>
+        <td><code>82px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-option-width-sm</code></td>
+        <td><code>var(--sbt-ref-size-68)</code></td>
+        <td><code>68px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-option-width-md</code></td>
+        <td><code>var(--sbt-ref-size-100)</code></td>
+        <td><code>100px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-selection-option-height</code></td>
+        <td><code>var(--sbt-ref-size-42)</code></td>
+        <td><code>42px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-callout-width-md</code></td>
+        <td><code>var(--sbt-ref-size-234)</code></td>
+        <td><code>234px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-callout-height-md</code></td>
+        <td><code>var(--sbt-ref-size-83)</code></td>
+        <td><code>83px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-callout-arrow-width</code></td>
+        <td><code>var(--sbt-ref-size-18)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-callout-arrow-height</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-data-column-md</code></td>
+        <td><code>var(--sbt-ref-size-64)</code></td>
+        <td><code>64px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-chart-inline-width</code></td>
+        <td><code>var(--sbt-ref-size-76)</code></td>
+        <td><code>76px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-chart-inline-height</code></td>
+        <td><code>var(--sbt-ref-size-36)</code></td>
+        <td><code>36px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-chart-plot-height</code></td>
+        <td><code>var(--sbt-ref-size-140)</code></td>
+        <td><code>140px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-chart-bar-width</code></td>
+        <td><code>var(--sbt-ref-size-16)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-row-compact-height</code></td>
+        <td><code>var(--sbt-ref-size-61)</code></td>
+        <td><code>61px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-row-expanded-height</code></td>
+        <td><code>var(--sbt-ref-size-79)</code></td>
+        <td><code>79px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-home-indicator-width</code></td>
+        <td><code>var(--sbt-ref-size-134)</code></td>
+        <td><code>134px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-size-home-indicator-height</code></td>
+        <td><code>var(--sbt-ref-size-5)</code></td>
+        <td><code>5px</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-none</code></td>
+        <td><code>var(--sbt-ref-opacity-0)</code></td>
+        <td><code>0</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-subtle</code></td>
+        <td><code>var(--sbt-ref-opacity-8)</code></td>
+        <td><code>0.08</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-medium</code></td>
+        <td><code>var(--sbt-ref-opacity-20)</code></td>
+        <td><code>0.2</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-control-track-subtle</code></td>
+        <td><code>var(--sbt-ref-opacity-30)</code></td>
+        <td><code>0.3</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-control-track-selected</code></td>
+        <td><code>var(--sbt-ref-opacity-50)</code></td>
+        <td><code>0.5</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-annotation-medium</code></td>
+        <td><code>var(--sbt-ref-opacity-60)</code></td>
+        <td><code>0.6</code></td>
+      </tr><tr>
+        <td><code>--sbt-sys-state-opacity-annotation-strong</code></td>
+        <td><code>var(--sbt-ref-opacity-80)</code></td>
+        <td><code>0.8</code></td>
+      </tr></tbody>
+    </table></div>
+  </section>
+<section class="panel" id="comp">
+    <h2 data-i18n="tokenComp">Component Tokens</h2>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th data-i18n="tokenColumnName">Token</th>
+        <th data-i18n="tokenColumnValue">Value</th>
+        <th data-i18n="tokenColumnResolved">Resolved</th>
+      </tr></thead>
+      <tbody><tr>
+        <td><code>--sbt-comp-example-card-container-max-width</code></td>
+        <td><code>var(--sbt-sys-size-viewport-compact-width)</code></td>
+        <td><code>375px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-padding</code></td>
+        <td><code>var(--sbt-sys-spacing-container-lg)</code></td>
+        <td><code>16px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-gap</code></td>
+        <td><code>var(--sbt-sys-spacing-md)</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-color</code></td>
+        <td><code>var(--sbt-sys-color-surface)</code></td>
+        <td><span class="swatch" style="background:#252525"></span><code>#252525</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-on-color</code></td>
+        <td><code>var(--sbt-sys-color-on-surface)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-outline-color</code></td>
+        <td><code>var(--sbt-sys-color-outline)</code></td>
+        <td><span class="swatch" style="background:#3d3d3d"></span><code>#3d3d3d</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-outline-width</code></td>
+        <td><code>var(--sbt-sys-spacing-hairline)</code></td>
+        <td><code>1px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-shape</code></td>
+        <td><code>var(--sbt-sys-shape-corner-md)</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-container-shadow</code></td>
+        <td><code>var(--sbt-sys-shadow-raised-surface)</code></td>
+        <td><code>0 4px 10px rgba(0, 0, 0, 0.25)</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-header-gap</code></td>
+        <td><code>var(--sbt-sys-spacing-md)</code></td>
+        <td><code>8px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-eyebrow-color</code></td>
+        <td><code>var(--sbt-sys-color-primary)</code></td>
+        <td><span class="swatch" style="background:#ff7800"></span><code>#ff7800</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-eyebrow-size</code></td>
+        <td><code>var(--sbt-sys-typescale-caption-sm-size)</code></td>
+        <td><code>12px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-eyebrow-line-height</code></td>
+        <td><code>var(--sbt-sys-typescale-caption-sm-line-height)</code></td>
+        <td><code>normal</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-eyebrow-weight</code></td>
+        <td><code>var(--sbt-sys-weight-semibold)</code></td>
+        <td><code>600</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-status-color</code></td>
+        <td><code>var(--sbt-sys-color-primary-container)</code></td>
+        <td><span class="swatch" style="background:#ffd7b2"></span><code>#ffd7b2</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-status-on-color</code></td>
+        <td><code>var(--sbt-sys-color-on-primary-container)</code></td>
+        <td><span class="swatch" style="background:#1e1e1e"></span><code>#1e1e1e</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-status-padding-block</code></td>
+        <td><code>var(--sbt-sys-spacing-xxs)</code></td>
+        <td><code>2px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-status-padding-inline</code></td>
+        <td><code>var(--sbt-sys-spacing-xs)</code></td>
+        <td><code>4px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-status-shape</code></td>
+        <td><code>var(--sbt-sys-shape-corner-pill)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-title-color</code></td>
+        <td><code>var(--sbt-sys-color-on-surface-strong)</code></td>
+        <td><span class="swatch" style="background:#ffffff"></span><code>#ffffff</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-title-size</code></td>
+        <td><code>var(--sbt-sys-typescale-title-md-size)</code></td>
+        <td><code>18px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-title-line-height</code></td>
+        <td><code>var(--sbt-sys-typescale-title-md-line-height)</code></td>
+        <td><code>24px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-title-weight</code></td>
+        <td><code>var(--sbt-sys-weight-semibold)</code></td>
+        <td><code>600</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-description-color</code></td>
+        <td><code>var(--sbt-sys-color-on-surface-medium)</code></td>
+        <td><span class="swatch" style="background:#c0c0c0"></span><code>#c0c0c0</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-description-size</code></td>
+        <td><code>var(--sbt-sys-typescale-body-sm-size)</code></td>
+        <td><code>14px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-description-line-height</code></td>
+        <td><code>var(--sbt-sys-typescale-body-sm-line-height)</code></td>
+        <td><code>20px</code></td>
+      </tr><tr>
+        <td><code>--sbt-comp-example-card-text-margin</code></td>
+        <td><code>var(--sbt-sys-spacing-none)</code></td>
+        <td><code>0</code></td>
+      </tr></tbody>
+    </table></div>
+  </section>
+      </section>
+
+      
+      <section class="panel" id="doc-design-system-kickstart-md">
+      <span class="source">DESIGN_SYSTEM_KICKSTART.md</span>
+      <h1 id="doc-design-system-kickstart-md-design-system-extraction-kickstart">Design System Extraction Kickstart</h1>
+<p>This package holds a design-system specification extracted from the references listed below. It defines rules and tokens only: do not implement product screens, scaffold app routes, or invent a landing page here. Product implementation begins after the user approves the checkpoint in <code>SESSION_STATE.md</code>.</p>
+<h2 id="doc-design-system-kickstart-md-references">References</h2>
+<p>List screenshots, graphic/brand/editorial references, Figma design URLs (the full <code>figma.com/design/&lt;file-key&gt;/...</code> link written verbatim, also recorded in <code>SESSION_STATE.md</code> under Figma file URL), rendered routes, native app captures, project folders, and prototype sources here. Each one also gets a <code>Source Inventory</code> row in <code>DESIGN_EVIDENCE_MAP.md</code>.</p>
+<h2 id="doc-design-system-kickstart-md-package-guide">Package Guide</h2>
+<p>Files are filled in this order (SKILL.md Workflow steps 1-9):</p>
+<ol><li><code>DESIGN_EVIDENCE_MAP.md</code> — Source Inventory with fingerprints and evidence tiers, Source Duplicate Review, Evidence.</li><li><code>DESIGN_ELEMENTS.md</code> — foundations; <code>DESIGN_PRINCIPLES.md</code> — 5-7 principles (Deep Extract, or Character Pass).</li><li><code>TOKEN_ARCHITECTURE.md</code> + <code>tokens/tokens-ref.css</code>, <code>tokens-sys.css</code>, <code>tokens-comp.css</code> — near-token decisions recorded before <code>sys</code>/<code>comp</code> tokens are written.</li><li><code>COMPONENT_INVENTORY.md</code> — patterns with Category and Status; Component Similarity Review when candidates overlap.</li><li><code>components/&lt;component-name&gt;.md</code> — specs from <code>COMPONENT_SPEC_TEMPLATE.md</code> (Quick: 1-3 components; Deep: all).</li><li><code>ANTI_AI_STYLE_RULES.md</code> (always); <code>PAGE_COMPOSITION_RULES.md</code>, <code>INTERACTION_STATES.md</code> (Deep Extract, or Character Pass).</li><li><code>docs/design-system/index.html</code> and <code>review.html</code> — generated by <code>node &lt;skill-root&gt;/scripts/extract_check.mjs &lt;target-root&gt; --locale &lt;ui-locale&gt;</code>, which also runs the strict audits.</li><li><code>SESSION_STATE.md</code> — updated at every checkpoint; <code>Mode</code> records <code>quick</code> or <code>deep</code>, <code>Intake</code> records <code>none</code>, <code>web-project</code>, or <code>native</code>.</li></ol>
+<p>Quick Extract leaves <code>DESIGN_PRINCIPLES.md</code>, <code>PAGE_COMPOSITION_RULES.md</code>, and <code>INTERACTION_STATES.md</code> as stubs whose first content line reads <code>Status: deferred to Character Pass</code>. <code>INTEGRATION_REVIEW.md</code> is created only by the Collaboration Review And Integration Pass.</p>
+    </section>
+<section class="panel" id="doc-session-state-md">
+      <span class="source">SESSION_STATE.md</span>
+      <h1 id="doc-session-state-md-design-system-session-state">Design System Session State</h1>
+<p>Update this file at every checkpoint. Write <code>n/a</code> in fields that do not apply; never delete a section. <code>Mode</code> is <code>quick</code> or <code>deep</code>; <code>Intake</code> is <code>none</code>, <code>web-project</code>, or <code>native</code> (intake blocks are pasted in from the matching reference). In Completed Outputs mark <code>[x]</code> done, <code>[ ]</code> pending, or write <code>deferred</code> after a Quick Extract stub the Character Pass will fill.</p>
+<h2 id="doc-session-state-md-current-stage">Current Stage</h2>
+<ul><li>Stage: Starter template (no extraction yet)</li><li>Last updated:</li><li>AI tool / model:</li><li>Report Language: en (English)</li><li>Mode: n/a</li><li>Intake: none</li><li>Figma file URL: n/a</li></ul>
+<h2 id="doc-session-state-md-completed-outputs">Completed Outputs</h2>
+<ul><li>[ ] DESIGN_EVIDENCE_MAP.md</li><li>[ ] DESIGN_ELEMENTS.md</li><li>[ ] DESIGN_PRINCIPLES.md</li><li>[ ] TOKEN_ARCHITECTURE.md + tokens/tokens-ref.css, tokens-sys.css, tokens-comp.css</li><li>[ ] COMPONENT_INVENTORY.md</li><li>[ ] design-system/components/*.md component token specs</li><li>[ ] ANTI_AI_STYLE_RULES.md</li><li>[ ] PAGE_COMPOSITION_RULES.md</li><li>[ ] INTERACTION_STATES.md</li><li>[ ] docs/design-system/index.html + review.html</li></ul>
+<h2 id="doc-session-state-md-key-design-decisions">Key Design Decisions</h2>
+<div class="table-wrap"><table><thead><tr><th>Decision</th><th>Evidence</th><th>Files updated</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-session-state-md-source-duplicate-review">Source Duplicate Review</h2>
+<ul><li>Duplicate source candidates found (including auto-resolved exact matches):</li><li>Developer decisions recorded in <code>DESIGN_EVIDENCE_MAP.md</code>:</li></ul>
+<h2 id="doc-session-state-md-token-review">Token Review</h2>
+<ul><li>Near token candidates found:</li><li>Developer decisions recorded in <code>TOKEN_ARCHITECTURE.md</code>:</li><li>Token layers changed (ref / sys / comp):</li><li>Token Recalibration:</li></ul>
+<h2 id="doc-session-state-md-component-similarity-review">Component Similarity Review</h2>
+<ul><li>Similar component candidates found:</li><li>Developer decisions recorded in <code>COMPONENT_INVENTORY.md</code>:</li><li>Visual comparison assets:</li></ul>
+<h2 id="doc-session-state-md-open-questions">Open Questions</h2>
+<h2 id="doc-session-state-md-verification">Verification</h2>
+<ul><li>extract_check result:</li><li>Source audit / Token audit / Component audit:</li><li>HTML docs / review queue paths:</li><li>HTML docs UI locale:</li></ul>
+<h2 id="doc-session-state-md-recommended-next-prompt">Recommended Next Prompt</h2>
+<p>Run design-system-extractor on your product sources (screenshots, a Figma URL, or a project folder) with this workspace as the package root, then continue with design-system-to-storybook. The starter <code>Example Card</code> rows in <code>DESIGN_EVIDENCE_MAP.md</code>, <code>COMPONENT_INVENTORY.md</code>, and <code>components/example-card.md</code> can be replaced or kept as a reference.</p>
+    </section>
+<section class="panel" id="doc-design-evidence-map-md">
+      <span class="source">DESIGN_EVIDENCE_MAP.md</span>
+      <h1 id="doc-design-evidence-map-md-design-evidence-map">Design Evidence Map</h1>
+<p>Use this file to trace design decisions back to source evidence. Project-folder intakes append their manifest and capture tables here from <code>references/project-intake.md</code> or <code>references/native-mobile-projects.md</code>.</p>
+<h2 id="doc-design-evidence-map-md-source-inventory">Source Inventory</h2>
+<p>Evidence tier ranks the source's authority: <code>1</code> production Figma/component library, <code>2</code> production screenshots, <code>3</code> native simulator/emulator/device captures, <code>4</code> rendered project UI, <code>5</code> native preview/screenshot-test captures, <code>6</code> prototype code, <code>7</code> descriptive prompt. When a new source's tier outranks the tiers behind existing decisions, run the Late-Arriving Authoritative Source Pass instead of treating it as supplementary evidence.</p>
+<p>Downstream tools read this table by header name — keep the English header text.</p>
+<div class="table-wrap"><table><thead><tr><th>Source ID</th><th>Type</th><th>Evidence tier</th><th>Path / URL / Node</th><th>Source fingerprint</th><th>Screen or state</th><th>Notes</th><th>Confidence</th></tr></thead><tbody><tr><td>S-01</td><td>prototype code</td><td>6</td><td><code>src/components/example-card/ExampleCard.tsx</code></td><td><code>file:src/components/example-card/ExampleCard.tsx</code></td><td>Default</td><td>Starter example shipped with the template. Replace this row with the real sources from design-system-extractor.</td><td>Low</td></tr></tbody></table></div>
+<h2 id="doc-design-evidence-map-md-source-duplicate-review">Source Duplicate Review</h2>
+<p>Use this table when two screenshots, graphic/brand exports, Figma nodes, routes, or other exports are exact duplicates or visually/functionally very close. Exact matches (same sha256 with the same screen or state, or the same <code>figma:&lt;file&gt;#&lt;node&gt;</code>) are auto-resolved as <code>ignore duplicate</code> with the rationale <code>exact match (auto-resolved)</code>; every other pair needs a developer decision (<code>reuse existing source</code> / <code>ignore duplicate</code> / <code>keep distinct</code>) before both count as separate evidence.</p>
+<div class="table-wrap"><table><thead><tr><th>Candidate source</th><th>Duplicate of</th><th>Match type</th><th>Fingerprint / normalized key</th><th>Suggested action</th><th>Developer decision</th><th>Rationale</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-design-evidence-map-md-evidence">Evidence</h2>
+<div class="table-wrap"><table><thead><tr><th>Evidence ID</th><th>Source ID</th><th>Region</th><th>Observed pattern</th><th>Design decision</th><th>Affected output</th><th>Confidence</th></tr></thead><tbody><tr><td>E-01</td><td>S-01</td><td>Whole card</td><td>Eyebrow, status pill, title, and description stacked in one surface</td><td>Model the starter card as one component with a status slot</td><td><code>components/example-card.md</code>, <code>tokens/tokens-comp.css</code></td><td>Low</td></tr></tbody></table></div>
+    </section>
+<section class="panel" id="doc-design-principles-md">
+      <span class="source">DESIGN_PRINCIPLES.md</span>
+      <h1 id="doc-design-principles-md-design-principles">Design Principles</h1>
+<p>Quick Extract: replace this paragraph with the single line <code>Status: deferred to Character Pass</code> and fill the file in the Character Pass. Deep Extract: fill it now.</p>
+<p>Write exactly 5-7 principles extracted from the references. Each principle must include observed evidence (Source IDs), an implementation rule, and do / don't guidance.</p>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Principle</th><th>Evidence</th><th>Implementation rule</th><th>Do</th><th>Don't</th></tr></thead><tbody></tbody></table></div>
+    </section>
+<section class="panel" id="doc-design-elements-md">
+      <span class="source">DESIGN_ELEMENTS.md</span>
+      <h1 id="doc-design-elements-md-design-elements">Design Elements</h1>
+<h2 id="doc-design-elements-md-color-system">Color System</h2>
+<div class="table-wrap"><table><thead><tr><th>Role</th><th>Recommended value</th><th>Usage</th><th>Evidence / rationale</th></tr></thead><tbody></tbody></table></div>
+<p>Document palette families with <code>100</code> as the lightest step and <code>0</code> as the darkest step. Note any close colors that need a merge/keep-distinct decision in <code>TOKEN_ARCHITECTURE.md</code>.</p>
+<h2 id="doc-design-elements-md-typography">Typography</h2>
+<div class="table-wrap"><table><thead><tr><th>Role</th><th>Font / weight / size guidance</th><th>Usage</th><th>Evidence / rationale</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-design-elements-md-typographic-composition-text-lockups">Typographic Composition / Text Lockups</h2>
+<p>Document recurring text groupings separately from atomic typography. Include slot order, hierarchy, scale relationship, spacing, alignment, max line length, line-break behavior, color pairing, and language/script behavior.</p>
+<div class="table-wrap"><table><thead><tr><th>Pattern</th><th>Slots</th><th>Composition rule</th><th>Evidence / rationale</th><th>Component candidate</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-design-elements-md-shape-and-corners">Shape And Corners</h2>
+<div class="table-wrap"><table><thead><tr><th>Role</th><th>Value</th><th>Usage</th><th>Evidence / rationale</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-design-elements-md-spacing-and-density">Spacing And Density</h2>
+<div class="table-wrap"><table><thead><tr><th>Role</th><th>Value</th><th>Usage</th><th>Evidence / rationale</th></tr></thead><tbody></tbody></table></div>
+<p>Record close spacing, sizing, type, radius, opacity, or motion values that need developer confirmation before becoming separate reference tokens.</p>
+<h2 id="doc-design-elements-md-elevation-and-depth">Elevation And Depth</h2>
+<div class="table-wrap"><table><thead><tr><th>Role</th><th>Value</th><th>Usage</th><th>Evidence / rationale</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-design-elements-md-iconography-and-imagery">Iconography And Imagery</h2>
+<p>Document icon style, media style, illustration/photo rules, and accessibility expectations.</p>
+    </section>
+<section class="panel" id="doc-token-architecture-md">
+      <span class="source">TOKEN_ARCHITECTURE.md</span>
+      <h1 id="doc-token-architecture-md-token-architecture">Token Architecture</h1>
+<p>Document the token layers, prefixes, naming model, and audit rules for this package.</p>
+<h2 id="doc-token-architecture-md-prefixes">Prefixes</h2>
+<div class="table-wrap"><table><thead><tr><th>Layer</th><th>Prefix</th><th>Responsibility</th></tr></thead><tbody><tr><td>Reference</td><td><code>--sbt-ref-*</code></td><td>Raw values only</td></tr><tr><td>System</td><td><code>--sbt-sys-*</code></td><td>Shared semantic roles</td></tr><tr><td>Component</td><td><code>--sbt-comp-*</code></td><td>Component and region slots</td></tr></tbody></table></div>
+<p><code>npm run init-template -- --prefix &lt;prefix&gt;</code> rewrites <code>sbt</code> to the project prefix. The starter values in <code>tokens/</code> are a neutral dark-shell palette; replace them with the design-system-extractor output for your product.</p>
+<h2 id="doc-token-architecture-md-inheritance">Inheritance</h2>
+<pre><code data-lang="txt">component token -&gt; system token -&gt; reference value</code></pre>
+<h2 id="doc-token-architecture-md-reference-color-scale">Reference Color Scale</h2>
+<p>Use numeric palette steps from light to dark:</p>
+<pre><code data-lang="txt">100 -&gt; 0</code></pre>
+<ul><li><code>100</code> is the lightest visible step in a palette family.</li><li><code>0</code> is the darkest visible step in a palette family.</li><li>Higher numbers must be visually lighter than lower numbers in the same family.</li><li>Semantic color names belong in <code>sys</code>, not <code>ref</code>.</li></ul>
+<h2 id="doc-token-architecture-md-layer-rules">Layer Rules</h2>
+<div class="table-wrap"><table><thead><tr><th>Layer</th><th>Allowed</th><th>Forbidden</th></tr></thead><tbody><tr><td>Reference</td><td>raw color steps, sizes, weights, radius, opacity</td><td>semantic roles, component names</td></tr><tr><td>System</td><td>shared roles, foreground/background pairs, spacing roles</td><td>component anatomy, raw values</td></tr><tr><td>Component</td><td>component slots and states</td><td>raw values, direct reference values</td></tr></tbody></table></div>
+<h2 id="doc-token-architecture-md-near-token-decisions">Near Token Decisions</h2>
+<p>Use this table when candidate reference tokens are visually or numerically close. Record rows only after the developer confirms — a proposal written here reads as a decision to the audit.</p>
+<p>Provenance is <code>authored</code> (Figma Variable/style, design-system export, source-code token — no measurement error) or <code>measured</code> (screenshot sampling, pixel measurement). <code>measured</code> vs <code>measured</code> may merge through normal review; when either side is <code>authored</code>, default to keep distinct and never round the authored value away; <code>authored</code> vs <code>authored</code> always requires an explicit developer decision.</p>
+<div class="table-wrap"><table><thead><tr><th>Candidate A</th><th>Provenance A</th><th>Candidate B</th><th>Provenance B</th><th>Difference</th><th>Decision (<code>merge</code> / <code>keep distinct</code>)</th><th>Rationale</th><th>Confirmed by</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-token-architecture-md-accessibility-remap-decisions">Accessibility Remap Decisions</h2>
+<p>Use this table when an authored value fails an accessibility requirement (for example WCAG AA contrast) and the shipped value must differ. Keep the authored value as its own <code>ref</code> token, map the <code>sys</code> role to the accessible value, and add an <code>a11y-remap</code> CSS comment linking the two. Downstream parity tooling reads these rows to classify the difference as <code>required-adaptation</code> instead of drift.</p>
+<div class="table-wrap"><table><thead><tr><th>Decision ID</th><th>Authored value (ref token)</th><th>Authored contrast</th><th>Accessible value (ref token)</th><th>Accessible contrast</th><th>Affected sys/comp tokens</th><th>Rationale</th><th>Confirmed by</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-token-architecture-md-token-recalibration">Token Recalibration</h2>
+<p>Use this table when a higher-tier authoritative source (for example production Figma with Variables) arrives after tokens were finalized from lower-tier evidence. List every affected token, recommend <code>merge</code> (measured collapses into the authored value), <code>keep distinct</code>, or <code>re-authorize</code> (replace the token value with the authored value), and get developer adjudication before applying changes.</p>
+<div class="table-wrap"><table><thead><tr><th>Token</th><th>Current value (provenance)</th><th>Authoritative value (source)</th><th>Delta</th><th>Recommendation</th><th>Developer decision</th><th>Follow-up</th></tr></thead><tbody></tbody></table></div>
+<h2 id="doc-token-architecture-md-starter-token-note">Starter Token Note</h2>
+<p>The starter <code>tokens/</code> set is a neutral stepwise scale (1, 2, 3, 4 ... px; neutral steps 29 and 32). <code>npm run check:tokens</code> validates its ref -&gt; sys -&gt; comp layering. The extractor's strict audit (<code>extract_check.mjs</code>) still lists these intentional scale steps as near-value pairs; replace the starter tokens with your extraction output, or record <code>keep distinct</code> decisions, before treating that audit as a gate for this workspace.</p>
+<h2 id="doc-token-architecture-md-required-audit">Required Audit</h2>
+<ul><li>No component token references a reference token directly.</li><li>No system token name includes component anatomy.</li><li>No reference token name includes semantic roles.</li><li>Reference color steps follow <code>100</code> lightest to <code>0</code> darkest.</li><li>Near reference colors and numbers have a documented merge or keep-distinct decision that records both provenances; pairs involving an <code>authored</code> value default to keep distinct.</li><li>Accessibility remaps keep the authored value as a <code>ref</code> token and carry an <code>a11y-remap</code> record; the shipped <code>sys</code> mapping points at the accessible value.</li><li>Every background-like system color has a matching <code>on-*</code> foreground pair.</li><li>Values found only in unused code, demo-only components, blocked captures, or unverified resources are not promoted to tokens unless a keep decision is recorded in <code>DESIGN_EVIDENCE_MAP.md</code>.</li></ul>
+    </section>
+<section class="panel" id="doc-component-inventory-md">
+      <span class="source">COMPONENT_INVENTORY.md</span>
+      <h1 id="doc-component-inventory-md-component-inventory">Component Inventory</h1>
+<p>Inventory repeated components and UI, graphic, layout, and typographic patterns from the references.</p>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Category</th><th>Seen in</th><th>Status</th><th>Priority</th><th>Fingerprint summary</th><th>Required tokens</th><th>Missing states / modes</th><th>Notes</th></tr></thead><tbody><tr><td>Example Card</td><td>data-display</td><td>S-01</td><td>implementation-derived</td><td>P2</td><td>Surface card with eyebrow, status pill, title, and description</td><td>color, type, spacing, shape, shadow, size</td><td>Hover, focus-visible, and loading are not applicable for this display-only starter</td><td>Starter example that proves tokens, catalog, and stories are wired. Replace or delete after the first real extraction.</td></tr></tbody></table></div>
+<p>Status values: <code>extracted</code>, <code>planned</code>, <code>blocked</code>, <code>out-of-scope</code>. Status words belong only in the Status column: the current <code>design-system-to-storybook</code> planner reads Status by header name, while older planner copies and inventories without a Status column are scanned cell by cell for <code>blocked</code>, <code>deferred</code>, <code>out of scope</code>, and <code>needs-extraction</code>, so phrase Notes without those words. Category (optional): <code>foundation</code>, <code>primitive</code>, <code>typographic</code>, <code>form-control</code>, <code>layout</code>, <code>navigation</code>, <code>data-display</code>, <code>feedback</code>, <code>overlay</code>, <code>composite</code>, <code>product-pattern</code>.</p>
+<h2 id="doc-component-inventory-md-component-similarity-review">Component Similarity Review</h2>
+<p>Use this table when a newly observed component is visually, structurally, behaviorally, or compositionally close to an existing component. Create the row and its review image when the overlap is found; confirm unresolved rows before creating another component spec.</p>
+<div class="table-wrap"><table><thead><tr><th>New candidate</th><th>Similar existing component</th><th>Visual reference</th><th>Similarity reason</th><th>Suggested action</th><th>Developer decision (<code>merge</code> / <code>make variant</code> / <code>keep distinct</code> / <code>blocked</code>)</th><th>Rationale / owner</th></tr></thead><tbody></tbody></table></div>
+<p>Visual references must point to source-based previews when available, such as actual Figma node screenshots or screenshot crops saved under <code>assets/component-review/</code>. A schematic SVG is allowed only as a last-resort fallback when source previews cannot be captured, and it must be labeled <code>schematic fallback - source preview unavailable</code>.</p>
+    </section>
+<section class="panel" id="doc-interaction-states-md">
+      <span class="source">INTERACTION_STATES.md</span>
+      <h1 id="doc-interaction-states-md-interaction-states">Interaction States</h1>
+<p>Quick Extract: replace this paragraph with the single line <code>Status: deferred to Character Pass</code> and fill the file in the Character Pass. Deep Extract: fill it now.</p>
+<p>Document global state behavior and token usage. Mark states absent from the references <code>not applicable</code> or <code>inferred</code>.</p>
+<div class="table-wrap"><table><thead><tr><th>State</th><th>Visual behavior</th><th>Required tokens</th><th>Accessibility notes</th></tr></thead><tbody><tr><td>Default</td><td></td><td></td><td></td></tr><tr><td>Hover</td><td></td><td></td><td></td></tr><tr><td>Pressed</td><td></td><td></td><td></td></tr><tr><td>Focus-visible</td><td></td><td></td><td></td></tr><tr><td>Disabled</td><td></td><td></td><td></td></tr><tr><td>Selected / active</td><td></td><td></td><td></td></tr><tr><td>Loading</td><td></td><td></td><td></td></tr><tr><td>Error</td><td></td><td></td><td></td></tr></tbody></table></div>
+<h2 id="doc-interaction-states-md-motion">Motion</h2>
+<p>Document duration, easing, reduced-motion behavior, and any observed animation patterns.</p>
+    </section>
+<section class="panel" id="doc-page-composition-rules-md">
+      <span class="source">PAGE_COMPOSITION_RULES.md</span>
+      <h1 id="doc-page-composition-rules-md-page-composition-rules">Page Composition Rules</h1>
+<p>Quick Extract: replace this paragraph with the single line <code>Status: deferred to Character Pass</code> and fill the file in the Character Pass. Deep Extract: fill it now.</p>
+<p>Document how pages should be assembled from foundations and components.</p>
+<h2 id="doc-page-composition-rules-md-viewport-and-app-shell">Viewport And App Shell</h2>
+<h2 id="doc-page-composition-rules-md-layout-rhythm">Layout Rhythm</h2>
+<h2 id="doc-page-composition-rules-md-section-rules">Section Rules</h2>
+<h2 id="doc-page-composition-rules-md-typographic-composition-rules">Typographic Composition Rules</h2>
+<p>Document how recurring text lockups are placed within pages, graphics, cards, editorial surfaces, or marketing compositions. Include alignment, width, rhythm, relationship to media, and responsive wrapping.</p>
+<h2 id="doc-page-composition-rules-md-lists-and-rows">Lists And Rows</h2>
+<h2 id="doc-page-composition-rules-md-cards-and-surfaces">Cards And Surfaces</h2>
+<h2 id="doc-page-composition-rules-md-navigation-regions">Navigation Regions</h2>
+<h2 id="doc-page-composition-rules-md-responsive-behavior">Responsive Behavior</h2>
+<h2 id="doc-page-composition-rules-md-composition-patterns">Composition Patterns</h2>
+<div class="table-wrap"><table><thead><tr><th>Pattern</th><th>Evidence</th><th>Layout rule</th><th>Components</th><th>Tokens</th></tr></thead><tbody></tbody></table></div>
+    </section>
+<section class="panel" id="doc-anti-ai-style-rules-md">
+      <span class="source">ANTI_AI_STYLE_RULES.md</span>
+      <h1 id="doc-anti-ai-style-rules-md-anti-ai-style-rules">Anti-AI Style Rules</h1>
+<p>Use these project-specific constraints before recommending or implementing UI.</p>
+<h2 id="doc-anti-ai-style-rules-md-do-not-add-unless-evidenced">Do Not Add Unless Evidenced</h2>
+<ul><li>Background gradients</li><li>Glow blobs, bokeh orbs, abstract waves</li><li>Glassmorphism</li><li>Generic SaaS hero sections</li><li>Decorative illustration panels</li><li>Outlined card stacks</li><li>Row-as-card treatment</li><li>Extra whitespace beyond observed density</li><li>Extra radius, shadow, blur, or saturation</li><li>Generic heading/subheading stacks replacing evidenced typographic lockups</li></ul>
+<h2 id="doc-anti-ai-style-rules-md-project-specific-constraints">Project-Specific Constraints</h2>
+<p>Add constraints tied to the references.</p>
+    </section>
+<section class="panel" id="doc-figma-export-tooling-md">
+      <span class="source">FIGMA_EXPORT_TOOLING.md</span>
+      <h1 id="doc-figma-export-tooling-md-figma-export-tooling">Figma Export Tooling</h1>
+<p>This project uses the vendored Figma export addon as the generic export/import engine, with project-specific settings kept in <code>.storybook/figma-export.config.ts</code>.</p>
+<h2 id="doc-figma-export-tooling-md-boundaries">Boundaries</h2>
+<p><code>data-component</code>, <code>data-variant</code>, and <code>data-figma-*</code>.</p>
+<p><code>design-system/component-review-status.json</code>.</p>
+<ul><li>Generic tooling lives in the Storybook addon and its Figma importer payload.</li><li>Project settings live in <code>.storybook/figma-export.config.ts</code>.</li><li>Storybook preview and Vite middleware both import that same config object.</li><li>Component markup remains responsible for stable export hints such as</li><li>Storybook review state is project-local and stored in</li></ul>
+<h2 id="doc-figma-export-tooling-md-generic-export-hints">Generic Export Hints</h2>
+<p>fixed-width columns instead of adding anti-clipping safety width.</p>
+<p>with color-stop variables bound when the stops use design tokens.</p>
+<ul><li><code>data-component</code> marks reusable component roots.</li><li><code>data-variant</code> distinguishes Figma component variants.</li><li><code>data-figma-text-auto-width=&quot;true&quot;</code> imports text as hug content.</li><li><code>data-figma-text-fixed-width=&quot;true&quot;</code> preserves the measured text width for</li><li><code>data-figma-layout-align=&quot;stretch&quot;</code> imports stretch child sizing.</li><li><code>data-figma-layout-grow=&quot;1&quot;</code> imports fill-container child sizing.</li><li><code>data-figma-layout-sizing-horizontal=&quot;hug&quot;</code> imports hug horizontal sizing.</li><li><code>data-figma-text-align-vertical=&quot;center&quot;</code> imports centered text.</li><li>CSS <code>linear-gradient(...)</code> backgrounds import as Figma linear-gradient fills,</li></ul>
+<p>These hints are intended to be portable across projects as long as the addon and Figma importer understand the same payload schema.</p>
+<h2 id="doc-figma-export-tooling-md-project-configuration">Project Configuration</h2>
+<p><code>.storybook/figma-export.config.ts</code> owns the project-specific values:</p>
+<ul><li>component class prefixes, such as <code>sbt-</code> (rewritten by <code>npm run init-template</code>)</li><li>component names that use absolute-fidelity export</li><li>Storybook title prefixes</li><li>Figma source file fallback URL</li><li>documented source-node overrides</li><li>review API path, plugin name, and status-file path</li><li>visual-comments API path, persistence directory, capture selector, and author storage key</li></ul>
+<p>When review and export are enabled, both sections mount inside one responsive bottom-right workspace dock. The dock reserves right-side space on wide viewports and bottom space on narrow viewports. Visual comments use a separate top-right Edit icon launcher that expands the meeting, capture, composer, and Reports controls without overlapping the workspace. Both surfaces remain excluded from screenshots. Meeting reports separate the current meeting from closed history and show capture/comment counts.</p>
+<p>If another project adopts the tooling, create its own config instead of changing the addon or hard-coding values in Storybook preview files.</p>
+<h2 id="doc-figma-export-tooling-md-current-patch-layer">Current Patch Layer</h2>
+<p><code>package.json</code> runs <code>scripts/patch-figma-export-addon.mjs</code> after install. The patch currently applies generic export/import capabilities to the local addon copy in <code>node_modules</code>, then delegates component-import support to <code>scripts/patch-figma-export-component-import.mjs</code>.</p>
+<p>Treat this patch layer as a bridge. Long term, generic behavior should move upstream into the addon package so projects only maintain config.</p>
+<h2 id="doc-figma-export-tooling-md-regression-guard">Regression Guard</h2>
+<p>When changing the tooling, verify at minimum:</p>
+<p><code>data-figma-*</code> hints unless the component itself is intentionally changing</p>
+<ul><li><code>npm run check</code></li><li><code>npm run storybook:build</code></li><li>targeted Storybook export smoke checks for recently approved components</li><li>no changes to existing component <code>data-component</code>, <code>data-variant</code>, or</li></ul>
+    </section>
+<section class="panel" id="doc-storybook-architecture-md">
+      <span class="source">STORYBOOK_ARCHITECTURE.md</span>
+      <h1 id="doc-storybook-architecture-md-storybook-architecture">Storybook Architecture</h1>
+<h2 id="doc-storybook-architecture-md-purpose">Purpose</h2>
+<p>Storybook is the verification surface for this design system. The source of truth remains:</p>
+<ul><li><code>tokens/</code> for CSS custom-property design tokens.</li><li><code>design-system/</code> for evidence, component specs, interaction gaps, and composition rules.</li><li>Storybook stories for visual validation, token browsing, and future component state coverage.</li></ul>
+<h2 id="doc-storybook-architecture-md-current-scaffold">Current Scaffold</h2>
+<ul><li>Builder: Storybook with React and Vite.</li><li>Project configuration boundary: <code>.storybook/project.config.ts</code>.</li><li>Global token import: <code>.storybook/preview.ts</code> imports <code>tokens/tokens.css</code>.</li><li>Component source and colocated component stories: <code>src/components/&lt;component&gt;/</code>.</li><li>Foundation stories: <code>src/stories/foundations/</code>.</li><li>Governance stories: <code>src/stories/governance/</code>.</li><li>Page source and colocated page stories: <code>src/pages/&lt;page&gt;/</code>.</li><li>Shared story guide data and copy: <code>src/stories/_shared/</code>.</li><li>Internal Storybook tooling only: <code>src/storybook/</code>.</li><li>AI-readable starter component catalog: <code>src/storybook/componentCatalog.ts</code>.</li></ul>
+<p>Component and page stories live next to their source so implementation, CSS, exports, and visual states can be reviewed as one unit. <code>src/stories/</code> is reserved for cross-cutting Storybook content such as foundations, governance, and shared guide data.</p>
+<p>The template default surface is controlled by <code>storybook.stories</code> in <code>.storybook/project.config.ts</code>. The default surface loads generic governance, the starter foundation story, <code>example-card</code>, and <code>example-prototype</code>. Legacy project-specific material can remain in the repository as reference input, but it is not part of the initialized Storybook navigation.</p>
+<h2 id="doc-storybook-architecture-md-project-configuration">Project Configuration</h2>
+<p>Run initialization with an explicit project prefix:</p>
+<pre><code data-lang="sh">npm run init-template -- --name &quot;Design Lab&quot; --prefix acme</code></pre>
+<p>The initializer generates project settings for:</p>
+<ul><li>Project name, package name, token prefix, and component class prefixes.</li><li>Storybook story globs, static directories, backgrounds, and story sort.</li><li>Figma export class prefixes, source fallback, node overrides, and review middleware.</li><li>Prototype inspector naming and route preview measurement selector.</li><li>Component catalog story root.</li></ul>
+<p><code>cm</code> is not a template default. Each project must set its own prefix through <code>.storybook/project.config.ts</code> or <code>npm run init-template</code>.</p>
+<h2 id="doc-storybook-architecture-md-component-taxonomy-and-ai-discovery">Component Taxonomy And AI Discovery</h2>
+<p>Every shared component story must use <code>src/storybook/componentCatalog.ts</code> for AI metadata, while keeping the CSF <code>title</code> as a static string literal required by Storybook:</p>
+<pre><code data-lang="ts">title: &quot;Components/&lt;Category&gt;/&lt;Component Name&gt;&quot;
+parameters: {
+  ...getComponentStoryParameters(&quot;&lt;component-id&gt;&quot;),
+}</code></pre>
+<p>The static <code>title</code> must match the catalog-derived <code>storyTitle</code>. The catalog is the source of truth for component subcategories, purpose, <code>useWhen</code> guidance, dependencies, keywords, design-system doc paths, product paths, and documentation provenance. Storybook exposes the same information in <code>Governance/Component Catalog</code>.</p>
+<p>Current starter component subcategory:</p>
+<ul><li>Examples</li></ul>
+<p>When adding a new component, add or update the catalog entry before wiring the story title. Mark entries as <code>extracted</code> only when a reviewed design-system component spec exists; otherwise use <code>implementation-derived</code> and <code>needs-review</code> in the component spec. Run the catalog coverage check before closeout so literal story titles and catalog metadata do not drift.</p>
+<h2 id="doc-storybook-architecture-md-governance-rules">Governance Rules</h2>
+<p>Future work uses <code>$design-system-governance</code> before creating or changing tokens, shared components, composite views, or stories.</p>
+<p>Required flow:</p>
+<ol><li>Check the existing component inventory and specs.</li><li>Confirm the needed <code>--&lt;prefix&gt;-comp-*</code> token slots already exist.</li><li>Confirm those component tokens map to <code>--&lt;prefix&gt;-sys-*</code> tokens.</li><li>Confirm system tokens map to <code>--&lt;prefix&gt;-ref-*</code> tokens.</li><li>Build the component only after token mapping is complete.</li><li>Add stories for evidenced states: default, hover, focus-visible, disabled, and composite assembly where applicable.</li></ol>
+<h2 id="doc-storybook-architecture-md-token-contract">Token Contract</h2>
+<p>The project uses the configured token prefix from <code>.storybook/project.config.ts</code> with three strict layers:</p>
+<pre><code data-lang="txt">--&lt;prefix&gt;-ref-* -&gt; --&lt;prefix&gt;-sys-* -&gt; --&lt;prefix&gt;-comp-*</code></pre>
+<ul><li>Reference tokens hold raw values only.</li><li>System tokens hold product-wide semantic roles and reference only <code>--&lt;prefix&gt;-ref-*</code>.</li><li>Component tokens hold component slots and reference only <code>--&lt;prefix&gt;-sys-*</code>.</li></ul>
+<p>Run this before review:</p>
+<pre><code data-lang="sh">npm run check:tokens</code></pre>
+<h2 id="doc-storybook-architecture-md-missing-foundations">Missing Foundations</h2>
+<ul><li>Motion tokens and keyframe naming are not established yet.</li><li>A named app grid class is not established yet.</li><li>Product i18n has not been established yet; Storybook guide copy is isolated under <code>src/stories/_shared/copy.ts</code>.</li><li>Desktop and tablet behavior are not evidenced yet.</li></ul>
+<p>Do not invent these foundations inside component stories. Add or approve the foundation first, then implement stories.</p>
+    </section>
+<section class="panel" id="doc-storybook-component-plan-md">
+      <span class="source">STORYBOOK_COMPONENT_PLAN.md</span>
+      <h1 id="doc-storybook-component-plan-md-storybook-component-build-plan">Storybook Component Build Plan</h1>
+<ul><li>Design-system root: <code>/Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template/design-system</code></li><li>Package root: <code>/Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template</code></li><li>Source trace: <code>/Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template/design-system/STORYBOOK_SOURCE_TRACE.md</code></li><li>Components ordered: 1</li><li>Batches: 1</li><li>Skipped components: 0</li><li>Dependency cycles: 0</li></ul>
+<h2 id="doc-storybook-component-plan-md-recommended-build-order">Recommended Build Order</h2>
+<div class="table-wrap"><table><thead><tr><th>Order</th><th>Batch</th><th>Component</th><th>Category</th><th>Depends on</th><th>Used by</th><th>Story source URL</th><th>Build reason</th></tr></thead><tbody><tr><td>1</td><td>B01</td><td>Example Card</td><td>data-display</td><td>-</td><td>-</td><td>-</td><td>no dependencies detected</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-plan-md-batch-plan">Batch Plan</h2>
+<div class="table-wrap"><table><thead><tr><th>Batch</th><th>Components</th><th>Shared dependencies</th><th>Tiers</th><th>Rationale</th><th>Exit criteria</th></tr></thead><tbody><tr><td>B01</td><td>Example Card</td><td>-</td><td>data-display</td><td>Continue dependency-ordered data-display implementation.</td><td>component/page folder, co-located story, source URL parameters, queue status, and verification log updated</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-plan-md-dependency-details">Dependency Details</h2>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Depends on</th><th>Dependency reason</th><th>Source refs</th><th>Spec file</th></tr></thead><tbody><tr><td>Example Card</td><td>-</td><td>-</td><td>S-01</td><td>design-system/components/example-card.md</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-plan-md-dependency-cycles">Dependency Cycles</h2>
+<ul><li>None detected.</li></ul>
+<h2 id="doc-storybook-component-plan-md-skipped-components">Skipped Components</h2>
+<ul><li>None.</li></ul>
+<h2 id="doc-storybook-component-plan-md-usage-notes">Usage Notes</h2>
+<ul><li>Implement components in the recommended order unless product discovery proves an existing component can be reused first.</li><li>Do not build a composed component before its listed dependencies are implemented, reused, or explicitly marked blocked with a reason.</li><li>Implement typographic/text-lockup components as editable, token-backed display components; do not flatten them into generic heading/subheading styles.</li><li>After each component, update the queue/implementation map before starting the next component.</li><li>Put new component stories beside their component files; reserve root <code>stories/</code> or <code>src/stories/</code> for foundation guides/docs.</li><li>Put requested page/screen implementations in dedicated page folders with co-located page stories.</li><li>If a dependency is inferred incorrectly, record the correction in the implementation map and update the queue ordering.</li></ul>
+    </section>
+<section class="panel" id="doc-storybook-component-queue-md">
+      <span class="source">STORYBOOK_COMPONENT_QUEUE.md</span>
+      <h1 id="doc-storybook-component-queue-md-storybook-component-queue">Storybook Component Queue</h1>
+<h2 id="doc-storybook-component-queue-md-context">Context</h2>
+<ul><li>Design-system package: /Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template/design-system</li><li>Product repo:</li><li>Framework:</li><li>Storybook/catalog:</li><li>Source trace: /Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template/design-system/STORYBOOK_SOURCE_TRACE.md</li><li>Component build plan: /Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template/design-system/STORYBOOK_COMPONENT_PLAN.md</li><li>Figma export addon:</li><li>Package manager:</li><li>Token import strategy:</li><li>Target layout: components in <code>src/components/&lt;ComponentName&gt;/</code>, pages in <code>src/pages/&lt;PageName&gt;/</code>, foundation docs in <code>stories/</code> or <code>src/stories/</code></li><li>Typographic components: implement text lockups as editable shared components in <code>src/components/&lt;ComponentName&gt;/</code> unless the extraction explicitly requires raster artwork</li><li>Current batch: B01</li></ul>
+<h2 id="doc-storybook-component-queue-md-status-values">Status Values</h2>
+<ul><li><code>queued</code>: ready for a future batch</li><li><code>in-progress</code>: selected for the current batch</li><li><code>done</code>: implemented, documented, and verified</li><li><code>reused</code>: existing product component accepted as the implementation</li><li><code>blocked</code>: cannot continue without a decision or missing source</li><li><code>deferred</code>: intentionally postponed</li><li><code>needs-extraction</code>: missing design-system evidence or component spec</li><li><code>needs-source</code>: extractor source evidence exists but the Figma node, image, route, or frontend folder cannot be resolved</li><li><code>needs-token</code>: missing token at the required layer</li><li><code>needs-api-decision</code>: shared component API needs a product decision</li><li><code>needs-existing-component-review</code>: similar product component needs review first</li><li><code>needs-addon-compatibility</code>: Storybook, React, or addon setup requirement is missing</li><li><code>out-of-scope</code>: not part of this Storybook rollout</li></ul>
+<h2 id="doc-storybook-component-queue-md-source-trace">Source Trace</h2>
+<div class="table-wrap"><table><thead><tr><th>Source ID / location</th><th>Type</th><th>Resolved file / Figma node / route</th><th>Story source URL</th><th>Components</th><th>Status</th><th>Notes</th></tr></thead><tbody><tr><td>S-01</td><td>-</td><td>design-system/components/example-card.md</td><td>-</td><td>Example Card</td><td>resolved</td><td>synced from component plan</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-current-component-checkpoint">Current Component Checkpoint</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Active component</td><td></td></tr><tr><td>Queue order / batch</td><td></td></tr><tr><td>Dependency status</td><td></td></tr><tr><td>Source inspected</td><td></td></tr><tr><td>Existing component review</td><td></td></tr><tr><td>Token decision</td><td></td></tr><tr><td>Product files</td><td></td></tr><tr><td>Story files</td><td></td></tr><tr><td>Target layout</td><td></td></tr><tr><td>Verification</td><td></td></tr><tr><td>Blocker / next action</td><td></td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-dependency-plan">Dependency Plan</h2>
+<div class="table-wrap"><table><thead><tr><th>Order</th><th>Component</th><th>Category</th><th>Depends on</th><th>Used by</th><th>Core reason</th><th>Status</th><th>Notes</th></tr></thead><tbody><tr><td>1</td><td>Example Card</td><td>data-display</td><td>-</td><td>-</td><td>no dependencies detected</td><td>done</td><td>-</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-component-queue">Component Queue</h2>
+<div class="table-wrap"><table><thead><tr><th>Batch</th><th>Order</th><th>Component</th><th>Category</th><th>Source spec</th><th>Design sources</th><th>Story source URL</th><th>Depends on</th><th>Used by</th><th>Product target</th><th>Story target</th><th>Decision</th><th>Status</th></tr></thead><tbody><tr><td>B01</td><td>1</td><td>Example Card</td><td>data-display</td><td>design-system/components/example-card.md</td><td>S-01</td><td>-</td><td>-</td><td>-</td><td>src/components/example-card/ExampleCard.tsx</td><td>src/components/example-card/ExampleCard.stories.tsx</td><td>-</td><td>done</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-batch-plan">Batch Plan</h2>
+<div class="table-wrap"><table><thead><tr><th>Batch</th><th>Components</th><th>Shared dependencies</th><th>Design sources</th><th>Dependency exit criteria</th><th>Validation</th><th>Status</th></tr></thead><tbody><tr><td>B01</td><td>Example Card</td><td>-</td><td>S-01</td><td>all listed dependencies are done, reused, or accepted blocked decisions</td><td>co-located stories, source URLs, verification log</td><td>done</td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-decisions">Decisions</h2>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Item</th><th>Decision</th><th>Reason</th><th>Follow-up</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-figma-export-addon">Figma Export Addon</h2>
+<div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Detected value</th><th>Status</th><th>Notes</th></tr></thead><tbody><tr><td>Storybook <code>^10</code></td><td></td><td></td><td></td></tr><tr><td>React</td><td></td><td></td><td></td></tr><tr><td>Bundled addon asset</td><td><code>assets/figma-export-addon/</code></td><td></td><td></td></tr><tr><td>Product vendor path</td><td><code>.storybook/vendor/figma-export-addon/</code></td><td></td><td></td></tr><tr><td>Project config</td><td><code>.storybook/figma-export.config.ts</code></td><td></td><td></td></tr><tr><td><code>@storybook/icons</code></td><td></td><td></td><td></td></tr><tr><td>Addon package</td><td></td><td></td><td></td></tr><tr><td><code>.storybook/main.*</code> registration</td><td></td><td></td><td></td></tr><tr><td><code>.storybook/preview.*</code> decorator/globals</td><td></td><td></td><td></td></tr><tr><td>Review helper / status API</td><td></td><td></td><td></td></tr><tr><td>Token prefix/options</td><td></td><td></td><td></td></tr></tbody></table></div>
+<h2 id="doc-storybook-component-queue-md-verification-log">Verification Log</h2>
+<div class="table-wrap"><table><thead><tr><th>Batch</th><th>Command or check</th><th>Result</th><th>Notes</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+    </section>
+<section class="panel" id="doc-storybook-implementation-map-md">
+      <span class="source">STORYBOOK_IMPLEMENTATION_MAP.md</span>
+      <h1 id="doc-storybook-implementation-map-md-storybook-implementation-map">Storybook Implementation Map</h1>
+<p>Record every design-system item that design-system-to-storybook maps into this workspace. Update a row at each component checkpoint.</p>
+<h2 id="doc-storybook-implementation-map-md-current-pass">Current Pass</h2>
+<p>Date: (set by the first pass)</p>
+<p>Scope: starter template — one example component and one example prototype.</p>
+<div class="table-wrap"><table><thead><tr><th>Design-system item</th><th>Source file</th><th>Product target</th><th>Decision</th><th>Status</th></tr></thead><tbody><tr><td>Component catalog</td><td><code>design-system/COMPONENT_INVENTORY.md</code></td><td><code>src/storybook/componentCatalog.ts</code></td><td>One catalog source for story titles, purpose, dependencies, and provenance</td><td>done</td></tr><tr><td>Example Card</td><td><code>design-system/components/example-card.md</code></td><td><code>src/components/example-card/*</code></td><td>Starter display component bound to <code>--sbt-comp-example-card-*</code> tokens</td><td>done</td></tr><tr><td>Example Prototype</td><td><code>src/pages/prototypes/example-prototype/docs/*</code></td><td><code>src/pages/prototypes/example-prototype/*</code></td><td>Neutral prototype that exercises Story, Docs, UI Flow, Data, and Static Flow</td><td>done</td></tr></tbody></table></div>
+<h2 id="doc-storybook-implementation-map-md-product-conventions">Product Conventions</h2>
+<ul><li>Framework: React with Storybook 10 and Vite.</li><li>Package manager: npm.</li><li>Component layout: <code>src/components/&lt;component&gt;/</code> with co-located source, CSS, exports, and story.</li><li>Foundation/governance layout: <code>src/stories/foundations/</code> and <code>src/stories/governance/</code>.</li><li>Token import strategy: <code>.storybook/preview.ts</code> imports <code>tokens/tokens.css</code>.</li><li>Token layers: <code>--sbt-ref-* -&gt; --sbt-sys-* -&gt; --sbt-comp-*</code> (prefix set by <code>npm run init-template</code>).</li></ul>
+<h2 id="doc-storybook-implementation-map-md-verification-log">Verification Log</h2>
+<div class="table-wrap"><table><thead><tr><th>Item</th><th>Command</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+    </section>
+<section class="panel" id="doc-storybook-source-trace-md">
+      <span class="source">STORYBOOK_SOURCE_TRACE.md</span>
+      <h1 id="doc-storybook-source-trace-md-storybook-source-trace">Storybook Source Trace</h1>
+<ul><li>Design-system root: <code>/Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template/design-system</code></li><li>Package root: <code>/Users/HarryChuang/.cursor/skills/ds-to-storybook/storybook-template</code></li><li>Sources found: 1</li><li>Figma: 0</li><li>Images: 0</li><li>Frontend folders: 1</li><li>Rendered routes: 0</li><li>Unresolved local sources: 0</li></ul>
+<h2 id="doc-storybook-source-trace-md-source-index">Source Index</h2>
+<div class="table-wrap"><table><thead><tr><th>Source IDs</th><th>Type</th><th>Location</th><th>Resolved path</th><th>Components</th><th>Seen in</th><th>Status</th></tr></thead><tbody><tr><td>S-01</td><td>frontend-folder</td><td>src/components/example-card/ExampleCard.tsx</td><td>-</td><td>example-card</td><td>design-system/DESIGN_EVIDENCE_MAP.md:13, design-system/components/example-card.md:13</td><td>remote</td></tr></tbody></table></div>
+<h2 id="doc-storybook-source-trace-md-figma-mcp-targets">Figma MCP Targets</h2>
+<div class="table-wrap"><table><thead><tr><th>Location</th><th>File key</th><th>Node or page</th><th>Suggested read</th></tr></thead><tbody><tr><td>-</td><td>-</td><td>-</td><td>-</td></tr></tbody></table></div>
+<h2 id="doc-storybook-source-trace-md-component-source-links">Component Source Links</h2>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Source IDs / locations</th></tr></thead><tbody><tr><td>example-card</td><td>S-01</td></tr></tbody></table></div>
+<h2 id="doc-storybook-source-trace-md-story-source-url-parameters">Story Source URL Parameters</h2>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Preferred URL</th><th>Story parameter</th><th>Source IDs</th></tr></thead><tbody><tr><td>-</td><td>-</td><td>-</td><td>-</td></tr></tbody></table></div>
+<h2 id="doc-storybook-source-trace-md-missing-or-ambiguous-sources">Missing Or Ambiguous Sources</h2>
+<ul><li>None detected.</li></ul>
+<h2 id="doc-storybook-source-trace-md-usage-notes">Usage Notes</h2>
+<ul><li>Inspect Figma sources with Figma MCP before implementing components that reference those sources.</li><li>Inspect image/crop sources directly and use them for Storybook visual checks.</li><li>Inspect frontend-folder sources for behavior and existing implementation patterns, but keep extracted tokens and component specs normative.</li><li>If a source contradicts the extracted spec, update the implementation map and ask whether to revise the extraction.</li></ul>
+    </section>
+<section class="panel" id="doc-components-example-card-md">
+      <span class="source">components/example-card.md</span>
+      <h1 id="doc-components-example-card-md-example-card">Example Card</h1>
+<h2 id="doc-components-example-card-md-purpose">Purpose</h2>
+<p>Starter display component that proves the template wiring: comp tokens, the component catalog, co-located stories, Autodocs, and the Figma export addon. It is implementation-derived and needs review; replace it after the first real extraction.</p>
+<h2 id="doc-components-example-card-md-evidence">Evidence</h2>
+<p>The Source column holds the Source Inventory <code>Source ID</code> from <code>DESIGN_EVIDENCE_MAP.md</code>.</p>
+<div class="table-wrap"><table><thead><tr><th>Evidence ID</th><th>Source</th><th>Region</th><th>Notes</th></tr></thead><tbody><tr><td>E-01</td><td>S-01</td><td>Whole card</td><td>Implementation-derived starter; no design source yet.</td></tr></tbody></table></div>
+<h2 id="doc-components-example-card-md-component-fingerprint">Component Fingerprint</h2>
+<div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Description</th></tr></thead><tbody><tr><td>Purpose / behavior / composition role</td><td>Display-only summary card</td></tr><tr><td>Anatomy</td><td>container, header (eyebrow + status pill), title, description</td></tr><tr><td>Variants / states / modes</td><td>status: Ready, Draft, Review (text only; one visual style)</td></tr><tr><td>Token contract summary</td><td>Every visual value enters through <code>--sbt-comp-example-card-*</code></td></tr><tr><td>Layout / density</td><td>Vertical grid, max width = compact viewport width</td></tr><tr><td>Visual reference</td><td><code>Components/Examples/Example Card</code> story</td></tr><tr><td>Native platform mapping</td><td>n/a</td></tr><tr><td>Similar components reviewed</td><td>none</td></tr></tbody></table></div>
+<h2 id="doc-components-example-card-md-anatomy">Anatomy</h2>
+<ol><li><code>container</code> — surface, outline, corner, shadow, padding, gap.</li><li><code>header</code> — eyebrow text and status pill on one row.</li><li><code>title</code> — single heading.</li><li><code>description</code> — supporting body text.</li></ol>
+<h2 id="doc-components-example-card-md-variants">Variants</h2>
+<p>None. <code>status</code> changes only the pill label.</p>
+<h2 id="doc-components-example-card-md-states">States</h2>
+<p>Display-only: hover, pressed, focus-visible, disabled, selected, loading, and error are <code>not applicable</code>.</p>
+<h2 id="doc-components-example-card-md-token-contract">Token Contract</h2>
+<div class="table-wrap"><table><thead><tr><th>Component token</th><th>Maps to system token</th><th>Purpose</th><th>State / mode</th></tr></thead><tbody><tr><td><code>--sbt-comp-example-card-container-color</code></td><td><code>--sbt-sys-color-surface</code></td><td>Card fill</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-on-color</code></td><td><code>--sbt-sys-color-on-surface</code></td><td>Default text on the card</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-outline-color</code></td><td><code>--sbt-sys-color-outline</code></td><td>Card border</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-outline-width</code></td><td><code>--sbt-sys-spacing-hairline</code></td><td>Card border width</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-shape</code></td><td><code>--sbt-sys-shape-corner-md</code></td><td>Card corner radius</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-shadow</code></td><td><code>--sbt-sys-shadow-raised-surface</code></td><td>Card depth</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-padding</code></td><td><code>--sbt-sys-spacing-container-lg</code></td><td>Card padding</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-gap</code></td><td><code>--sbt-sys-spacing-md</code></td><td>Gap between rows</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-container-max-width</code></td><td><code>--sbt-sys-size-viewport-compact-width</code></td><td>Max inline size</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-header-gap</code></td><td><code>--sbt-sys-spacing-md</code></td><td>Eyebrow to pill gap</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-eyebrow-color</code></td><td><code>--sbt-sys-color-primary</code></td><td>Eyebrow text</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-eyebrow-size</code></td><td><code>--sbt-sys-typescale-caption-sm-size</code></td><td>Eyebrow and pill text size</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-eyebrow-line-height</code></td><td><code>--sbt-sys-typescale-caption-sm-line-height</code></td><td>Eyebrow and pill line height</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-eyebrow-weight</code></td><td><code>--sbt-sys-weight-semibold</code></td><td>Eyebrow and pill weight</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-status-color</code></td><td><code>--sbt-sys-color-primary-container</code></td><td>Status pill fill</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-status-on-color</code></td><td><code>--sbt-sys-color-on-primary-container</code></td><td>Status pill text</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-status-padding-block</code></td><td><code>--sbt-sys-spacing-xxs</code></td><td>Pill vertical padding</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-status-padding-inline</code></td><td><code>--sbt-sys-spacing-xs</code></td><td>Pill horizontal padding</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-status-shape</code></td><td><code>--sbt-sys-shape-corner-pill</code></td><td>Pill corner</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-title-color</code></td><td><code>--sbt-sys-color-on-surface-strong</code></td><td>Title text</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-title-size</code></td><td><code>--sbt-sys-typescale-title-md-size</code></td><td>Title size</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-title-line-height</code></td><td><code>--sbt-sys-typescale-title-md-line-height</code></td><td>Title line height</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-title-weight</code></td><td><code>--sbt-sys-weight-semibold</code></td><td>Title weight</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-description-color</code></td><td><code>--sbt-sys-color-on-surface-medium</code></td><td>Description text</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-description-size</code></td><td><code>--sbt-sys-typescale-body-sm-size</code></td><td>Description size</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-description-line-height</code></td><td><code>--sbt-sys-typescale-body-sm-line-height</code></td><td>Description line height</td><td>default</td></tr><tr><td><code>--sbt-comp-example-card-text-margin</code></td><td><code>--sbt-sys-spacing-none</code></td><td>Reset text margins</td><td>default</td></tr></tbody></table></div>
+<h2 id="doc-components-example-card-md-layout-rules">Layout Rules</h2>
+<p>Not a typographic component; rows stack in source order with <code>container-gap</code>.</p>
+<h2 id="doc-components-example-card-md-content-rules">Content Rules</h2>
+<p>deferred to Deep Extract</p>
+<h2 id="doc-components-example-card-md-accessibility-rules">Accessibility Rules</h2>
+<ul><li>Renders as <code>article</code>; the title is an <code>h3</code>, so place the card under an <code>h2</code> context.</li><li>The status pill is plain text; do not rely on its color to convey state.</li><li>Text roles keep on-* pairing with the surface and primary-container fills.</li><li>Display-only: no focus target; wrap it in a link or button component when it must be interactive.</li></ul>
+<h2 id="doc-components-example-card-md-do-don-t">Do / Don't</h2>
+<p>deferred to Deep Extract</p>
+<h2 id="doc-components-example-card-md-implementation-notes">Implementation Notes</h2>
+<p>Source: <code>src/components/example-card/</code> (ExampleCard.tsx, ExampleCard.css, ExampleCard.stories.tsx). Catalog entry <code>example-card</code> in <code>src/storybook/componentCatalog.ts</code>. Provenance: <code>implementation-derived</code>, <code>needs-review</code>.</p>
+    </section>
+    </main>
+  </div>
+  <script>
+(() => {
+  const STORAGE_KEY = "design-system-docs-lang";
+  const DEFAULT_LOCALE = "en";
+  const copy = {"zh-Hant":{"htmlLang":"zh-Hant","pageTitle":"設計系統文件","brand":"設計系統","subtitle":"自動產生文件","langSelectorLabel":"語言","navOverview":"總覽","navTokens":"Tokens","navReviewQueue":"審查佇列","navMissingDocuments":"缺少文件","heroTitle":"設計系統文件","heroLead":"此靜態參考文件由 <code>design-system/</code> Markdown 與 <code>tokens/</code> CSS 自訂屬性自動產生。","pillGenerated":"產生時間","pillDocuments":"份文件","pillTokens":"個 tokens","summaryAriaLabel":"文件摘要","statDocuments":"設計系統文件","statTokens":"Token 總數","statTokenRef":"Reference tokens","statTokenSys":"System tokens","statTokenComp":"Component tokens","statMissing":"缺少預期文件","tokenRef":"Reference Tokens","tokenSys":"System Tokens","tokenComp":"Component Tokens","tokenColumnName":"Token","tokenColumnValue":"值","tokenColumnResolved":"解析值","noTokensFound":"找不到 tokens。","missingDocumentsTitle":"缺少文件","missingDocumentsLead":"此套件中找不到以下預期的設計系統文件。","componentPrefix":"元件：","docKickstart":"Kickstart","docSessionState":"Session 狀態","docEvidenceMap":"設計證據對照","docDesignPrinciples":"設計原則","docDesignElements":"設計元素","docTokenArchitecture":"Token 架構","docComponentInventory":"元件盤點","docInteractionStates":"互動狀態","docPageComposition":"頁面組成","docAntiAiStyleRules":"Anti-AI 風格規則"},"en":{"htmlLang":"en","pageTitle":"Design System Documentation","brand":"Design System","subtitle":"Generated documentation","langSelectorLabel":"Language","navOverview":"Overview","navTokens":"Tokens","navReviewQueue":"Review Queue","navMissingDocuments":"Missing Documents","heroTitle":"Design System Documentation","heroLead":"This static reference was generated from <code>design-system/</code> Markdown files and <code>tokens/</code> CSS custom properties.","pillGenerated":"Generated","pillDocuments":"documents","pillTokens":"tokens","summaryAriaLabel":"Documentation summary","statDocuments":"Design-system documents","statTokens":"Total tokens","statTokenRef":"Reference tokens","statTokenSys":"System tokens","statTokenComp":"Component tokens","statMissing":"Missing expected docs","tokenRef":"Reference Tokens","tokenSys":"System Tokens","tokenComp":"Component Tokens","tokenColumnName":"Token","tokenColumnValue":"Value","tokenColumnResolved":"Resolved","noTokensFound":"No tokens found.","missingDocumentsTitle":"Missing Documents","missingDocumentsLead":"These expected design-system documents were not found in this package.","componentPrefix":"Component: ","docKickstart":"Kickstart","docSessionState":"Session State","docEvidenceMap":"Evidence Map","docDesignPrinciples":"Design Principles","docDesignElements":"Design Elements","docTokenArchitecture":"Token Architecture","docComponentInventory":"Component Inventory","docInteractionStates":"Interaction States","docPageComposition":"Page Composition","docAntiAiStyleRules":"Anti-AI Style Rules"},"ja":{"htmlLang":"ja","pageTitle":"デザインシステムドキュメント","brand":"Design System","subtitle":"自動生成ドキュメント","langSelectorLabel":"言語","navOverview":"概要","navTokens":"Tokens","navReviewQueue":"Review Queue","navMissingDocuments":"不足ドキュメント","heroTitle":"デザインシステムドキュメント","heroLead":"この静的リファレンスは <code>design-system/</code> の Markdown と <code>tokens/</code> CSS カスタムプロパティから生成されました。","pillGenerated":"生成","pillDocuments":"件のドキュメント","pillTokens":"件の tokens","summaryAriaLabel":"ドキュメント概要","statDocuments":"デザインシステムドキュメント","statTokens":"Token 総数","statTokenRef":"Reference tokens","statTokenSys":"System tokens","statTokenComp":"Component tokens","statMissing":"不足している想定ドキュメント","tokenRef":"Reference Tokens","tokenSys":"System Tokens","tokenComp":"Component Tokens","tokenColumnName":"Token","tokenColumnValue":"値","tokenColumnResolved":"解決値","noTokensFound":"tokens が見つかりません。","missingDocumentsTitle":"不足ドキュメント","missingDocumentsLead":"このパッケージで次の想定デザインシステムドキュメントが見つかりませんでした。","componentPrefix":"コンポーネント：","docKickstart":"Kickstart","docSessionState":"Session 状態","docEvidenceMap":"Evidence Map","docDesignPrinciples":"デザイン原則","docDesignElements":"デザイン要素","docTokenArchitecture":"Token アーキテクチャ","docComponentInventory":"コンポーネント一覧","docInteractionStates":"インタラクション状態","docPageComposition":"ページ構成","docAntiAiStyleRules":"Anti-AI スタイルルール"}};
+
+  const buttons = Array.from(document.querySelectorAll("[data-language-button]"));
+
+  function setLanguage(language) {
+    const messages = copy[language] || copy[DEFAULT_LOCALE];
+    document.documentElement.lang = messages.htmlLang;
+    document.title = messages.pageTitle;
+
+    document.querySelectorAll("[data-i18n]").forEach((node) => {
+      const value = messages[node.dataset.i18n];
+      if (typeof value !== "string") return;
+      if (node.dataset.i18nHtml === "true") {
+        node.innerHTML = value;
+      } else {
+        node.textContent = value;
+      }
+    });
+
+    document.querySelectorAll("[data-i18n-template]").forEach((node) => {
+      if (node.dataset.i18nTemplate === "component" && node.dataset.i18nName) {
+        node.textContent = (messages.componentPrefix || "") + node.dataset.i18nName;
+      }
+    });
+
+    buttons.forEach((button) => {
+      const selected = button.dataset.languageButton === language;
+      button.setAttribute("aria-selected", String(selected));
+    });
+
+    try {
+      localStorage.setItem(STORAGE_KEY, language);
+    } catch (_error) {
+      /* ignore storage failures */
+    }
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setLanguage(button.dataset.languageButton);
+    });
+  });
+
+  let initial = DEFAULT_LOCALE;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored && copy[stored]) initial = stored;
+  } catch (_error) {
+    /* ignore storage failures */
+  }
+  setLanguage(initial);
+})();
+</script>
+</body>
+</html>

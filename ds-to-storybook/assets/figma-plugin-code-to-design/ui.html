@@ -1,0 +1,1415 @@
+<main class="app">
+  <header class="header">
+    <div class="brand">
+      <span aria-hidden="true" class="brand-mark">S</span>
+      <div class="brand-copy">
+        <h1>Storybook Code To Design</h1>
+        <p>Import Storybook exports as editable Figma layers</p>
+      </div>
+    </div>
+    <span class="badge" id="plugin-version" title="Plugin build version">build 1.9.0</span>
+  </header>
+
+  <nav aria-label="Import method" class="tabs" role="tablist">
+    <button aria-controls="panel-paste" aria-selected="true" class="tab" id="tab-paste" role="tab" type="button">
+      Paste JSON
+    </button>
+    <button aria-controls="panel-bridge" aria-selected="false" class="tab" id="tab-bridge" role="tab" tabindex="-1" type="button">
+      From Storybook
+    </button>
+    <button aria-controls="panel-file" aria-selected="false" class="tab" id="tab-file" role="tab" tabindex="-1" type="button">
+      From file
+    </button>
+  </nav>
+
+  <section aria-labelledby="tab-paste" class="panel" id="panel-paste" role="tabpanel">
+    <p class="panel-lead">
+      In Storybook, toggle <strong>Figma export</strong> on and press
+      <strong>Copy JSON</strong>, then paste the payload below.
+    </p>
+    <textarea
+      aria-label="Storybook export JSON"
+      id="payload"
+      placeholder='{"version":2,"artifactKind":"component","storyId":"components-switch--all-variants","tokens":[...],"root":{...}}'
+      spellcheck="false"
+    ></textarea>
+    <p class="inline-hint" data-tone="neutral" id="paste-hint">
+      Accepts payload v1/v2 JSON from the export addon.
+    </p>
+  </section>
+
+  <section aria-labelledby="tab-bridge" class="panel" hidden id="panel-bridge" role="tabpanel">
+    <p class="panel-lead">
+      Batch-import payloads stored by the Storybook local bridge — no clipboard
+      round-trips.
+    </p>
+    <div class="bridge-controls">
+      <input
+        aria-label="Storybook URL"
+        id="bridge-url"
+        spellcheck="false"
+        type="text"
+        value="http://localhost:6006"
+      />
+      <button class="secondary" id="bridge-fetch" type="button">Fetch</button>
+    </div>
+    <p class="inline-hint" data-tone="neutral" id="bridge-hint">
+      Fetch reads the stored payload list from your running Storybook.
+    </p>
+    <div class="bridge-empty" id="bridge-empty">
+      <strong>Nothing listed after Fetch?</strong>
+      <ol>
+        <li>
+          Add <code>payloadSyncUrl: "/__figma-export/payloads"</code> to the
+          addon options in <code>.storybook/preview</code>, then restart
+          Storybook.
+        </li>
+        <li>
+          Open a story, toggle <strong>Figma export</strong> on, and press
+          <strong>Copy JSON</strong> — the overlay notes <code>[synced]</code>
+          and the story appears here.
+        </li>
+        <li>Press <strong>Fetch</strong> again, tick the stories, and import.</li>
+      </ol>
+    </div>
+    <div class="bridge-list" hidden id="bridge-list"></div>
+    <div class="bridge-toolbar" hidden id="bridge-toolbar">
+      <label class="bridge-select-all">
+        <input id="bridge-select-all" type="checkbox" />
+        Select all
+      </label>
+      <span class="bridge-count" id="bridge-count">0 selected</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="tab-file" class="panel" hidden id="panel-file" role="tabpanel">
+    <p class="panel-lead">Import a saved <code>.sbfx.json</code> export file.</p>
+    <div aria-label="Choose or drop a Storybook export JSON file" class="file-drop" id="file-drop-zone" role="button" tabindex="0">
+      <span aria-hidden="true" class="file-drop-icon">JSON</span>
+      <strong>Drop the export file here</strong>
+      <span class="file-drop-sub">or</span>
+      <label class="file-drop-action" for="file-input">Choose file</label>
+      <input
+        accept=".json,.sbfx.json,application/json"
+        class="file-input"
+        id="file-input"
+        type="file"
+      />
+    </div>
+    <div class="file-loaded" hidden id="file-loaded">
+      <span aria-hidden="true" class="file-loaded-icon">✓</span>
+      <span class="file-loaded-copy">
+        <strong id="file-loaded-name">export.sbfx.json</strong>
+        <span id="file-loaded-meta">Ready to import.</span>
+      </span>
+      <span class="file-loaded-buttons">
+        <button class="secondary" id="file-edit-json" type="button">Edit as JSON</button>
+        <button class="secondary" id="file-clear" type="button">Clear</button>
+      </span>
+    </div>
+    <p class="inline-hint" data-tone="neutral" id="file-hint">
+      The overlay's Save JSON action produces these files.
+    </p>
+  </section>
+
+  <label
+    class="import-option"
+    title="Place the exporter's browser screenshot as a locked Browser Reference layer beside the import"
+  >
+    <input id="include-reference" type="checkbox" />
+    Place Browser Reference image beside the import
+  </label>
+
+  <section aria-live="polite" class="status" id="status">
+    <span aria-hidden="true" class="status-dot"></span>
+    <span class="status-copy">
+      <strong id="status-title">Ready</strong>
+      <span id="status-body">Pick an import method above.</span>
+    </span>
+    <pre id="status-detail"></pre>
+  </section>
+
+  <div class="actions">
+    <button id="primary-action" type="button">Import to Figma</button>
+    <button class="secondary" id="cancel" type="button">Close</button>
+  </div>
+</main>
+
+<style>
+  :root {
+    --sctd-bg: #f7f8fc;
+    --sctd-border: #d9def0;
+    --sctd-border-strong: #b8c1e4;
+    --sctd-error: #b42318;
+    --sctd-muted: #667085;
+    --sctd-primary: #4945FF;
+    --sctd-primary-strong: #3430d9;
+    --sctd-primary-soft: #eef0ff;
+    --sctd-purple: #7762ff;
+    --sctd-success: #16855f;
+    --sctd-surface: #ffffff;
+    --sctd-surface-raised: #fbfcff;
+    --sctd-text: #182033;
+  }
+
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  /* Author display rules on grid/flex containers must never defeat the
+     hidden attribute used for tab-panel and section toggling. */
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Match UA scrollbars and form controls to Figma's active theme. */
+  :root {
+    color-scheme: light;
+  }
+
+  .figma-light {
+    color-scheme: light;
+  }
+
+  .figma-dark {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    color: var(--figma-color-text, var(--sctd-text));
+    background: var(--figma-color-bg, var(--sctd-bg));
+    font: 12px/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: min(100vw, 440px);
+    max-width: 440px;
+    height: 100vh;
+    min-height: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 16px 16px 84px;
+    background:
+      linear-gradient(180deg, rgba(73, 69, 255, 0.08), rgba(119, 98, 255, 0) 180px),
+      var(--figma-color-bg, var(--sctd-bg));
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    gap: 12px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--sctd-primary), var(--sctd-purple));
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(73, 69, 255, 0.24);
+    font-size: 14px;
+    font-weight: 760;
+    line-height: 1;
+  }
+
+  .brand-copy {
+    display: grid;
+    min-width: 0;
+    gap: 1px;
+  }
+
+  h1 {
+    overflow: hidden;
+    margin: 0;
+    color: var(--figma-color-text, var(--sctd-text));
+    font-size: 14px;
+    font-weight: 680;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    margin: 0;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  code {
+    padding: 0 3px;
+    background: rgba(73, 69, 255, 0.1);
+    border-radius: 4px;
+    font: 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .badge {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    color: var(--sctd-primary-strong);
+    background: var(--sctd-primary-soft);
+    border: 1px solid rgba(73, 69, 255, 0.16);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 3px;
+    background: var(--figma-color-bg-secondary, var(--sctd-surface-raised));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 9px;
+  }
+
+  .tab {
+    min-height: 28px;
+    padding: 0 8px;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    box-shadow: none;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 640;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .tab:hover {
+    color: var(--figma-color-text, var(--sctd-text));
+    background: rgba(73, 69, 255, 0.08);
+  }
+
+  .tab[aria-selected="true"] {
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--sctd-primary), var(--sctd-purple));
+    box-shadow: 0 4px 10px rgba(73, 69, 255, 0.24);
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 8px;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .panel[hidden] {
+    display: none;
+  }
+
+  .panel-lead {
+    flex: 0 0 auto;
+  }
+
+  .panel-lead strong,
+  .bridge-empty strong {
+    color: var(--figma-color-text, var(--sctd-text));
+  }
+
+  textarea {
+    flex: 1 1 auto;
+    min-height: 120px;
+    resize: none;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    color: var(--figma-color-text, var(--sctd-text));
+    background: var(--figma-color-bg, var(--sctd-surface));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(24, 32, 51, 0.05);
+    font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  textarea:focus {
+    border-color: var(--sctd-primary);
+    outline: 3px solid rgba(73, 69, 255, 0.18);
+    outline-offset: 0;
+  }
+
+  .inline-hint {
+    flex: 0 0 auto;
+    min-height: 16px;
+    font-size: 11px;
+  }
+
+  .inline-hint[data-tone="ok"] {
+    color: var(--figma-color-text-success, var(--sctd-success));
+  }
+
+  .inline-hint[data-tone="error"] {
+    color: var(--figma-color-text-danger, var(--sctd-error));
+  }
+
+  .bridge-controls {
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .bridge-controls input {
+    min-width: 0;
+    padding: 6px 10px;
+    color: var(--figma-color-text, var(--sctd-text));
+    background: var(--figma-color-bg, var(--sctd-surface));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 7px;
+    font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .bridge-controls input:focus {
+    border-color: var(--sctd-primary);
+    outline: 3px solid rgba(73, 69, 255, 0.18);
+    outline-offset: 0;
+  }
+
+  .bridge-controls button {
+    min-height: 30px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
+  .bridge-empty {
+    display: grid;
+    overflow: auto;
+    flex: 0 1 auto;
+    gap: 6px;
+    min-height: 0;
+    padding: 10px 12px;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    background: var(--figma-color-bg-secondary, var(--sctd-surface-raised));
+    border: 1px dashed var(--figma-color-border, var(--sctd-border-strong));
+    border-radius: 8px;
+    font-size: 11px;
+  }
+
+  .bridge-empty ol {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding-left: 16px;
+    line-height: 16px;
+  }
+
+  .bridge-list {
+    display: grid;
+    overflow: auto;
+    flex: 1 1 auto;
+    gap: 2px;
+    min-height: 0;
+    padding: 4px;
+    background: var(--figma-color-bg-secondary, var(--sctd-surface-raised));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 8px;
+  }
+
+  .bridge-list label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    overflow: hidden;
+    padding: 5px 6px;
+    border-radius: 6px;
+    color: var(--figma-color-text, var(--sctd-text));
+    font-size: 11px;
+    font-weight: 520;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  .bridge-list label:hover {
+    background: rgba(73, 69, 255, 0.08);
+  }
+
+  .bridge-list .bridge-item-name {
+    flex: 0 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bridge-list .bridge-item-meta {
+    flex: 0 0 auto;
+    overflow: hidden;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 10px;
+    text-overflow: ellipsis;
+  }
+
+  .bridge-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    gap: 8px;
+  }
+
+  .bridge-select-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .bridge-count {
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 11px;
+    font-weight: 640;
+  }
+
+  .file-drop {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    gap: 6px;
+    padding: 22px 16px;
+    color: var(--figma-color-text, var(--sctd-text));
+    background: var(--figma-color-bg-secondary, var(--sctd-surface-raised));
+    border: 1px dashed var(--figma-color-border, var(--sctd-border-strong));
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .file-drop[data-dragging="true"] {
+    border-color: var(--sctd-primary);
+    outline: 3px solid rgba(73, 69, 255, 0.14);
+  }
+
+  .file-drop[data-disabled="true"] {
+    opacity: 0.64;
+  }
+
+  .file-drop:focus-visible {
+    border-color: var(--sctd-primary);
+    outline: 3px solid rgba(73, 69, 255, 0.18);
+    outline-offset: 0;
+  }
+
+  .file-drop strong {
+    font-size: 12px;
+  }
+
+  .file-drop-sub {
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .file-drop-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    color: var(--sctd-primary-strong);
+    background: var(--sctd-primary-soft);
+    border: 1px solid rgba(73, 69, 255, 0.16);
+    border-radius: 7px;
+    font-size: 9px;
+    font-weight: 760;
+  }
+
+  .file-drop-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 12px;
+    color: var(--figma-color-text, var(--sctd-text));
+    background: var(--figma-color-bg, var(--sctd-surface));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 680;
+    line-height: 16px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .file-drop-action:hover {
+    border-color: var(--sctd-primary);
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .file-loaded {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 10px;
+    padding: 10px;
+    background: var(--figma-color-bg-secondary, var(--sctd-surface-raised));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 8px;
+  }
+
+  .file-loaded-icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+    background: var(--sctd-success);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .file-loaded-copy {
+    display: grid;
+    min-width: 0;
+    gap: 1px;
+  }
+
+  .file-loaded-copy strong {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 17px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-loaded-copy span {
+    overflow: hidden;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 11px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-loaded-buttons {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .file-loaded button {
+    min-height: 28px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .actions {
+    display: flex;
+    position: fixed;
+    z-index: 10;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    min-width: 0;
+    width: min(100vw, 440px);
+    margin: 0 auto;
+    padding: 12px 16px 16px;
+    gap: 10px;
+    background: var(--figma-color-bg, var(--sctd-bg));
+    border-top: 1px solid var(--figma-color-border, var(--sctd-border));
+    box-shadow: 0 -8px 18px rgba(24, 32, 51, 0.08);
+  }
+
+  button {
+    min-height: 34px;
+    padding: 0 16px;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--sctd-primary), var(--sctd-purple));
+    border: 0;
+    border-radius: 7px;
+    box-shadow: 0 7px 16px rgba(73, 69, 255, 0.22);
+    font: inherit;
+    font-weight: 680;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  button:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--sctd-primary-strong), #6250e8);
+  }
+
+  button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  button.secondary {
+    color: var(--figma-color-text, var(--sctd-text));
+    background: var(--figma-color-bg, var(--sctd-surface));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    box-shadow: none;
+  }
+
+  button.secondary:hover:not(:disabled) {
+    background: var(--figma-color-bg, var(--sctd-surface));
+    border-color: var(--sctd-primary);
+  }
+
+  .import-option {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .status {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    flex: 0 0 auto;
+    gap: 2px 9px;
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 10px 12px;
+    background: var(--figma-color-bg-secondary, var(--sctd-surface-raised));
+    border: 1px solid var(--figma-color-border, var(--sctd-border));
+    border-radius: 8px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
+    background: var(--sctd-primary);
+    border-radius: 999px;
+    box-shadow: 0 0 0 4px rgba(73, 69, 255, 0.12);
+  }
+
+  .status-copy {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .status strong {
+    color: var(--figma-color-text, var(--sctd-text));
+    font-size: 12px;
+    line-height: 17px;
+  }
+
+  @keyframes sctd-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  .status[data-state="importing"] .status-dot {
+    background: var(--sctd-purple);
+    box-shadow: 0 0 0 4px rgba(119, 98, 255, 0.12);
+    animation: sctd-pulse 1.1s ease-in-out infinite;
+  }
+
+  .status[data-state="complete"] .status-dot {
+    background: var(--sctd-success);
+    box-shadow: 0 0 0 4px rgba(22, 133, 95, 0.12);
+  }
+
+  .status[data-state="error"] {
+    border-color: var(--figma-color-border-danger-strong, var(--sctd-error));
+  }
+
+  .status[data-state="error"] .status-dot {
+    background: var(--sctd-error);
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12);
+  }
+
+  .status[data-state="error"] strong {
+    color: var(--figma-color-text-danger, var(--sctd-error));
+  }
+
+  #status-body {
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+  }
+
+  #status-detail {
+    grid-column: 2;
+    overflow: auto;
+    max-height: 88px;
+    margin: 4px 0 0;
+    color: var(--figma-color-text-secondary, var(--sctd-muted));
+    font: 10.5px/1.45 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    white-space: pre-wrap;
+  }
+
+  #status-detail:empty {
+    display: none;
+  }
+</style>
+
+<script>
+  const payload = document.getElementById("payload");
+  const pasteHint = document.getElementById("paste-hint");
+  const fileInput = document.getElementById("file-input");
+  const fileDropZone = document.getElementById("file-drop-zone");
+  const fileLoaded = document.getElementById("file-loaded");
+  const fileLoadedName = document.getElementById("file-loaded-name");
+  const fileLoadedMeta = document.getElementById("file-loaded-meta");
+  const fileClearButton = document.getElementById("file-clear");
+  const fileHint = document.getElementById("file-hint");
+  const includeReferenceCheckbox = document.getElementById("include-reference");
+  const primaryButton = document.getElementById("primary-action");
+  const cancelButton = document.getElementById("cancel");
+  const statusBox = document.getElementById("status");
+  const statusTitle = document.getElementById("status-title");
+  const statusBody = document.getElementById("status-body");
+  const statusDetail = document.getElementById("status-detail");
+
+  // --- Tabs -----------------------------------------------------------------
+
+  const tabs = [
+    { panel: document.getElementById("panel-paste"), tab: document.getElementById("tab-paste") },
+    { panel: document.getElementById("panel-bridge"), tab: document.getElementById("tab-bridge") },
+    { panel: document.getElementById("panel-file"), tab: document.getElementById("tab-file") },
+  ];
+  let activeTab = "tab-paste";
+
+  function selectTab(tabId) {
+    activeTab = tabId;
+    for (const entry of tabs) {
+      const selected = entry.tab.id === tabId;
+      entry.tab.setAttribute("aria-selected", selected ? "true" : "false");
+      entry.tab.tabIndex = selected ? 0 : -1;
+      entry.panel.hidden = !selected;
+    }
+    refreshPrimaryAction();
+  }
+
+  for (const [index, entry] of tabs.entries()) {
+    entry.tab.addEventListener("click", () => selectTab(entry.tab.id));
+    entry.tab.addEventListener("keydown", (event) => {
+      let targetIndex = -1;
+      if (event.key === "ArrowRight") targetIndex = (index + 1) % tabs.length;
+      else if (event.key === "ArrowLeft") targetIndex = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === "Home") targetIndex = 0;
+      else if (event.key === "End") targetIndex = tabs.length - 1;
+      if (targetIndex < 0) return;
+      event.preventDefault();
+      const next = tabs[targetIndex];
+      next.tab.focus();
+      selectTab(next.tab.id);
+    });
+  }
+
+  // --- Global status + primary action --------------------------------------
+
+  let importing = false;
+  let pasteJsonValid = false;
+  let loadedFileJson = null;
+
+  function setStatus(state, title, body, detail) {
+    statusBox.dataset.state = state;
+    statusTitle.textContent = title;
+    statusBody.textContent = body || "";
+    statusDetail.textContent = detail || "";
+  }
+
+  function setInlineHint(element, tone, text) {
+    element.dataset.tone = tone;
+    element.textContent = text;
+  }
+
+  function selectedBridgeIds() {
+    return Array.from(
+      bridgeList.querySelectorAll("input.bridge-item:checked"),
+    ).map((checkbox) => checkbox.value);
+  }
+
+  function refreshPrimaryAction() {
+    if (importing) {
+      if (bridgeActive && bridgeQueue.length > 0) {
+        primaryButton.disabled = false;
+        primaryButton.textContent = "Stop after current story";
+        return;
+      }
+      primaryButton.disabled = true;
+      primaryButton.textContent = "Importing...";
+      return;
+    }
+
+    if (activeTab === "tab-bridge") {
+      const count = selectedBridgeIds().length;
+      primaryButton.textContent =
+        count > 0 ? `Import selected (${count})` : "Import selected";
+      primaryButton.disabled = count === 0;
+      return;
+    }
+
+    if (activeTab === "tab-file") {
+      primaryButton.textContent = "Import to Figma";
+      primaryButton.disabled = !loadedFileJson;
+      return;
+    }
+
+    primaryButton.textContent = "Import to Figma";
+    primaryButton.disabled = !pasteJsonValid;
+  }
+
+  function setImporting(nextImporting) {
+    importing = nextImporting;
+    includeReferenceCheckbox.disabled = nextImporting;
+    fileInput.disabled = nextImporting;
+    fileDropZone.dataset.disabled = nextImporting ? "true" : "false";
+    fileDropZone.setAttribute("aria-disabled", nextImporting ? "true" : "false");
+    bridgeFetchButton.disabled = nextImporting || bridgeFetching;
+    bridgeUrlInput.disabled = nextImporting;
+    refreshPrimaryAction();
+  }
+
+  function startImport(json) {
+    setImporting(true);
+    setStatus("importing", "Importing", "Parsing JSON and creating Figma layers.");
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "import-json",
+          json,
+          includeReference: includeReferenceCheckbox.checked,
+        },
+      },
+      "*",
+    );
+  }
+
+  // --- Paste tab ------------------------------------------------------------
+
+  let pasteValidationTimer = 0;
+
+  function describePayload(parsed) {
+    if (!parsed || typeof parsed !== "object") return "";
+    const title =
+      typeof parsed.componentTitle === "string" ? parsed.componentTitle : "";
+    const story = typeof parsed.storyName === "string" ? parsed.storyName : "";
+    const storyId = typeof parsed.storyId === "string" ? parsed.storyId : "";
+    if (title) return story ? `${title} / ${story}` : title;
+    return storyId;
+  }
+
+  function validatePastedJson() {
+    const text = payload.value.trim();
+    if (!text) {
+      pasteJsonValid = false;
+      setInlineHint(pasteHint, "neutral", "Accepts payload v1/v2 JSON from the export addon.");
+      refreshPrimaryAction();
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(text);
+      const looksLikePayload =
+        parsed &&
+        typeof parsed === "object" &&
+        !Array.isArray(parsed) &&
+        typeof parsed.version === "number" &&
+        parsed.root &&
+        typeof parsed.root === "object";
+      if (!looksLikePayload) {
+        pasteJsonValid = false;
+        setInlineHint(
+          pasteHint,
+          "error",
+          "JSON parses, but this is not a Storybook export payload (it needs version and root).",
+        );
+        refreshPrimaryAction();
+        return;
+      }
+      pasteJsonValid = true;
+      const label = describePayload(parsed);
+      setInlineHint(pasteHint, "ok", label ? `Valid payload — ${label}` : "Valid payload.");
+    } catch (error) {
+      pasteJsonValid = false;
+      setInlineHint(
+        pasteHint,
+        "error",
+        `Not valid JSON yet: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    refreshPrimaryAction();
+  }
+
+  payload.addEventListener("input", () => {
+    clearTimeout(pasteValidationTimer);
+    pasteValidationTimer = setTimeout(validatePastedJson, 250);
+  });
+
+  payload.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      clearTimeout(pasteValidationTimer);
+      validatePastedJson();
+      if (pasteJsonValid && !importing) startImport(payload.value.trim());
+    }
+  });
+
+  // --- File tab -------------------------------------------------------------
+
+  function formatFileSize(bytes) {
+    if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  function isJsonExportFile(file) {
+    return (
+      file.name.toLowerCase().endsWith(".json") ||
+      file.name.toLowerCase().endsWith(".sbfx.json") ||
+      file.type === "application/json"
+    );
+  }
+
+  function clearLoadedFile() {
+    loadedFileJson = null;
+    fileLoaded.hidden = true;
+    fileDropZone.hidden = false;
+    setInlineHint(fileHint, "neutral", "The overlay's Save JSON action produces these files.");
+    refreshPrimaryAction();
+  }
+
+  async function loadExportFile(file) {
+    if (!file) return;
+
+    if (!isJsonExportFile(file)) {
+      setInlineHint(fileHint, "error", "Choose a .json or .sbfx.json Storybook export file.");
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      loadedFileJson = text.trim();
+      fileLoadedName.textContent = file.name;
+      const label = describePayload(parsed);
+      fileLoadedMeta.textContent = `${formatFileSize(file.size)}${label ? ` — ${label}` : ""}`;
+      fileLoaded.hidden = false;
+      fileDropZone.hidden = true;
+      setInlineHint(fileHint, "ok", "File loaded. Press Import to Figma.");
+    } catch (error) {
+      loadedFileJson = null;
+      setInlineHint(
+        fileHint,
+        "error",
+        `Invalid JSON file: ${error instanceof Error ? error.message : "unable to read the file."}`,
+      );
+    }
+    refreshPrimaryAction();
+  }
+
+  fileClearButton.addEventListener("click", clearLoadedFile);
+
+  fileInput.addEventListener("change", () => {
+    loadExportFile(fileInput.files && fileInput.files[0]);
+    fileInput.value = "";
+  });
+
+  fileDropZone.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (!fileInput.disabled) fileInput.click();
+    }
+  });
+
+  document.getElementById("file-edit-json").addEventListener("click", () => {
+    if (!loadedFileJson) return;
+    payload.value = loadedFileJson;
+    selectTab("tab-paste");
+    clearTimeout(pasteValidationTimer);
+    validatePastedJson();
+    payload.focus();
+  });
+
+  fileDropZone.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    if (!fileInput.disabled) {
+      fileDropZone.dataset.dragging = "true";
+    }
+  });
+
+  fileDropZone.addEventListener("dragleave", () => {
+    delete fileDropZone.dataset.dragging;
+  });
+
+  fileDropZone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    delete fileDropZone.dataset.dragging;
+    if (fileInput.disabled) return;
+    loadExportFile(event.dataTransfer.files && event.dataTransfer.files[0]);
+  });
+
+  // sbfx-bridge-helpers-start
+  // Pure helpers for the local Storybook bridge; kept fetch-free so
+  // test/verify-bridge-helpers.cjs can evaluate them under Node.
+  function buildBridgePayloadListUrl(baseUrl) {
+    const trimmed = String(baseUrl || "").trim().replace(/\/+$/, "");
+    if (!/^https?:\/\//i.test(trimmed)) return null;
+    return trimmed + "/__figma-export/payloads";
+  }
+
+  function buildBridgePayloadUrl(baseUrl, storyId) {
+    const listUrl = buildBridgePayloadListUrl(baseUrl);
+    if (!listUrl || !storyId) return null;
+    return listUrl + "/" + encodeURIComponent(String(storyId));
+  }
+
+  function parseBridgePayloadList(data) {
+    if (!Array.isArray(data)) {
+      throw new Error("Bridge list response must be a JSON array.");
+    }
+    return data
+      .filter(
+        (entry) =>
+          entry &&
+          typeof entry === "object" &&
+          typeof entry.storyId === "string" &&
+          entry.storyId.length > 0,
+      )
+      .map((entry) => ({
+        componentTitle:
+          typeof entry.componentTitle === "string" ? entry.componentTitle : "",
+        generatedAt: typeof entry.generatedAt === "string" ? entry.generatedAt : "",
+        storyId: entry.storyId,
+        storyName: typeof entry.storyName === "string" ? entry.storyName : "",
+      }));
+  }
+  // sbfx-bridge-helpers-end
+
+  // sbfx-summary-helpers-start
+  // Pure import-summary formatting; kept DOM-free so
+  // test/verify-bridge-helpers.cjs can evaluate it under Node.
+  function formatImportSummary(stats) {
+    const componentSummary = stats.componentsCreated || stats.reusedComponents
+      ? ` ${stats.componentsCreated} components created, ${stats.reusedComponents} reused.`
+      : "";
+    // Font substitution sits with the node and variable counts, not in the
+    // scrollable warning detail — a silently substituted font otherwise reads
+    // as a clean import. Zero substitutions say nothing.
+    const substitutionCount = (stats.fontSubstitutions || []).length;
+    const fontSummary = substitutionCount ? ` ${substitutionCount} fonts substituted.` : "";
+    const rootSummary = stats.rootType
+      ? ` Root: ${stats.rootType}${stats.rootName ? ` (${stats.rootName})` : ""}.`
+      : "";
+    const importSummary = stats.artifactKind
+      ? ` Artifact: ${stats.artifactKind}${stats.importedAsComponent ? " component import" : ""}.`
+      : "";
+    const referenceSummary = stats.referencePlaced
+      ? " Browser Reference layer placed beside the import."
+      : "";
+    const skippedVariantGroups = stats.variantGroupsSkipped || [];
+    const skippedSummary = skippedVariantGroups.length
+      ? ` Skipped variant groups: ${skippedVariantGroups.join(", ")}.`
+      : "";
+    const variantSummary = stats.variantGroupSelected
+      ? ` Variant group: ${stats.variantGroupSelected}.${skippedSummary}`
+      : skippedSummary
+        ? ` Rebuilt the payload tree.${skippedSummary}`
+        : "";
+    return `${stats.nodesCreated} nodes created.${componentSummary} ${stats.variablesCreated} variables created, ${stats.reusedVariables} reused.${fontSummary}${rootSummary}${importSummary}${variantSummary}${referenceSummary}`;
+  }
+  // sbfx-summary-helpers-end
+
+  const bridgeUrlInput = document.getElementById("bridge-url");
+  const bridgeFetchButton = document.getElementById("bridge-fetch");
+  const bridgeHint = document.getElementById("bridge-hint");
+  const bridgeEmpty = document.getElementById("bridge-empty");
+  const bridgeList = document.getElementById("bridge-list");
+  const bridgeToolbar = document.getElementById("bridge-toolbar");
+  const bridgeSelectAll = document.getElementById("bridge-select-all");
+  const bridgeCount = document.getElementById("bridge-count");
+
+  let bridgeQueue = [];
+  let bridgeTotal = 0;
+  let bridgeFailed = [];
+  let bridgeActive = false;
+  let bridgeFetching = false;
+  let bridgeBatchBaseUrl = "";
+  let bridgeCurrentStoryId = "";
+  let bridgeWarnings = [];
+  let bridgeNodesCreated = 0;
+  let bridgeImported = 0;
+
+  function refreshBridgeSelection() {
+    const boxes = Array.from(bridgeList.querySelectorAll("input.bridge-item"));
+    const selected = boxes.filter((checkbox) => checkbox.checked).length;
+    bridgeCount.textContent = `${selected} selected`;
+    bridgeSelectAll.checked = boxes.length > 0 && selected === boxes.length;
+    refreshPrimaryAction();
+  }
+
+  function renderBridgeList(entries) {
+    bridgeList.innerHTML = "";
+    for (const entry of entries) {
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = entry.storyId;
+      checkbox.className = "bridge-item";
+      const name = document.createElement("span");
+      name.className = "bridge-item-name";
+      name.textContent = entry.componentTitle
+        ? entry.componentTitle + " / " + entry.storyName
+        : entry.storyId;
+      const meta = document.createElement("span");
+      meta.className = "bridge-item-meta";
+      meta.textContent = entry.storyId;
+      label.append(checkbox, name, meta);
+      bridgeList.append(label);
+    }
+    const hasEntries = entries.length > 0;
+    bridgeList.hidden = !hasEntries;
+    bridgeToolbar.hidden = !hasEntries;
+    bridgeEmpty.hidden = hasEntries;
+    refreshBridgeSelection();
+  }
+
+  bridgeList.addEventListener("change", refreshBridgeSelection);
+
+  bridgeSelectAll.addEventListener("change", () => {
+    for (const checkbox of bridgeList.querySelectorAll("input.bridge-item")) {
+      checkbox.checked = bridgeSelectAll.checked;
+    }
+    refreshBridgeSelection();
+  });
+
+  bridgeFetchButton.onclick = async () => {
+    const listUrl = buildBridgePayloadListUrl(bridgeUrlInput.value);
+    if (!listUrl) {
+      setInlineHint(
+        bridgeHint,
+        "error",
+        "Invalid Storybook URL — use an http(s) URL such as http://localhost:6006.",
+      );
+      return;
+    }
+
+    if (bridgeFetching) return;
+    bridgeFetching = true;
+    bridgeFetchButton.disabled = true;
+    setInlineHint(bridgeHint, "neutral", `Reading stored payloads from ${listUrl}...`);
+    try {
+      const response = await fetch(listUrl);
+      if (!response.ok) {
+        throw new Error(`Bridge answered ${response.status}.`);
+      }
+      const entries = parseBridgePayloadList(await response.json());
+      renderBridgeList(entries);
+      setInlineHint(
+        bridgeHint,
+        entries.length > 0 ? "ok" : "error",
+        entries.length > 0
+          ? `Bridge connected — ${entries.length} stored payload(s). Tick the stories to import.`
+          : "Bridge connected, but no payloads are stored yet — follow the steps below.",
+      );
+    } catch (error) {
+      // Keep any previously fetched list (and its selections) on failure.
+      setInlineHint(
+        bridgeHint,
+        "error",
+        `Bridge unreachable: ${error instanceof Error ? error.message : String(error)} ` +
+          "Check that Storybook is running and the plugin manifest allows this localhost port.",
+      );
+    } finally {
+      bridgeFetching = false;
+      bridgeFetchButton.disabled = importing;
+      refreshPrimaryAction();
+    }
+  };
+
+  function importNextFromBridge() {
+    if (bridgeQueue.length === 0) {
+      bridgeActive = false;
+      const doneCount = bridgeImported;
+      setImporting(false);
+      const detailParts = [];
+      if (bridgeFailed.length > 0) detailParts.push(`Failed: ${bridgeFailed.join(", ")}`);
+      if (bridgeWarnings.length > 0) {
+        detailParts.push(
+          `${bridgeWarnings.length} warning(s):\n${bridgeWarnings.slice(0, 12).join("\n")}`,
+        );
+      }
+      setStatus(
+        bridgeFailed.length > 0 ? "error" : "complete",
+        "Batch import finished",
+        `${doneCount}/${bridgeTotal} payload(s) imported, ${bridgeNodesCreated} nodes created.`,
+        detailParts.join("\n"),
+      );
+      return;
+    }
+
+    const storyId = bridgeQueue.shift();
+    bridgeCurrentStoryId = storyId;
+    const position = bridgeTotal - bridgeQueue.length;
+    const payloadUrl = buildBridgePayloadUrl(bridgeBatchBaseUrl, storyId);
+    setImporting(true);
+    setStatus("importing", `Importing ${position}/${bridgeTotal}`, storyId);
+
+    fetch(payloadUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Bridge answered ${response.status} for ${storyId}.`);
+        }
+        return response.text();
+      })
+      .then((json) => {
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "import-json",
+              json: json.trim(),
+              includeReference: includeReferenceCheckbox.checked,
+            },
+          },
+          "*",
+        );
+      })
+      .catch(() => {
+        bridgeFailed.push(storyId);
+        importNextFromBridge();
+      });
+  }
+
+  // --- Primary action routing ----------------------------------------------
+
+  primaryButton.onclick = () => {
+    if (importing) {
+      // Stop the bridge batch after the story currently being imported.
+      if (bridgeActive && bridgeQueue.length > 0) {
+        bridgeQueue.length = 0;
+        primaryButton.disabled = true;
+        primaryButton.textContent = "Stopping...";
+        setStatus("importing", "Stopping", "Finishing the current story, then stopping.");
+      }
+      return;
+    }
+
+    if (activeTab === "tab-bridge") {
+      const selected = selectedBridgeIds();
+      if (selected.length === 0) return;
+      bridgeQueue = selected;
+      bridgeTotal = selected.length;
+      bridgeFailed = [];
+      bridgeWarnings = [];
+      bridgeNodesCreated = 0;
+      bridgeImported = 0;
+      bridgeBatchBaseUrl = bridgeUrlInput.value;
+      bridgeActive = true;
+      importNextFromBridge();
+      return;
+    }
+
+    if (activeTab === "tab-file") {
+      if (!loadedFileJson) return;
+      startImport(loadedFileJson);
+      return;
+    }
+
+    clearTimeout(pasteValidationTimer);
+    validatePastedJson();
+    if (!pasteJsonValid) return;
+    startImport(payload.value.trim());
+  };
+
+  cancelButton.onclick = () => {
+    parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
+  };
+
+  window.onmessage = (event) => {
+    const message = event.data.pluginMessage;
+    if (!message) return;
+
+    if (message.type === "plugin-version") {
+      document.getElementById("plugin-version").textContent = `build ${message.version}`;
+      return;
+    }
+
+    if (message.type === "import-status") {
+      setImporting(true);
+      if (!bridgeActive) {
+        setStatus("importing", "Importing", "Upserting variables and creating nodes.");
+      }
+      return;
+    }
+
+    if (message.type === "import-complete") {
+      const stats = message.stats;
+      const warningCount = stats.warnings.length;
+      const summary = formatImportSummary(stats);
+      const detail = warningCount
+        ? `${warningCount} warnings:\n${stats.warnings.slice(0, 12).join("\n")}`
+        : "No warnings.";
+      if (bridgeActive) {
+        bridgeImported += 1;
+        bridgeNodesCreated += stats.nodesCreated || 0;
+        for (const warning of stats.warnings.slice(0, 6)) {
+          if (bridgeWarnings.length < 30) {
+            bridgeWarnings.push(`${bridgeCurrentStoryId}: ${warning}`);
+          }
+        }
+        importNextFromBridge();
+        return;
+      }
+      setImporting(false);
+      setStatus("complete", "Import complete", summary, detail);
+      return;
+    }
+
+    if (message.type === "import-error") {
+      if (bridgeActive) {
+        bridgeFailed.push(`${bridgeCurrentStoryId}: ${message.message}`);
+        importNextFromBridge();
+        return;
+      }
+      setImporting(false);
+      setStatus("error", "Import failed", message.message);
+    }
+  };
+
+  refreshPrimaryAction();
+</script>

@@ -1,0 +1,56 @@
+.sbt-example-card {
+  display: grid;
+  gap: var(--sbt-comp-example-card-container-gap);
+  box-sizing: border-box;
+  inline-size: min(100%, var(--sbt-comp-example-card-container-max-width));
+  padding: var(--sbt-comp-example-card-container-padding);
+  color: var(--sbt-comp-example-card-container-on-color);
+  background: var(--sbt-comp-example-card-container-color);
+  border: var(--sbt-comp-example-card-container-outline-width) solid var(--sbt-comp-example-card-container-outline-color);
+  border-radius: var(--sbt-comp-example-card-container-shape);
+  box-shadow: var(--sbt-comp-example-card-container-shadow);
+}
+
+.sbt-example-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sbt-comp-example-card-header-gap);
+}
+
+.sbt-example-card__eyebrow,
+.sbt-example-card__description,
+.sbt-example-card__title {
+  margin: var(--sbt-comp-example-card-text-margin);
+}
+
+.sbt-example-card__eyebrow {
+  color: var(--sbt-comp-example-card-eyebrow-color);
+  font-size: var(--sbt-comp-example-card-eyebrow-size);
+  font-weight: var(--sbt-comp-example-card-eyebrow-weight);
+  line-height: var(--sbt-comp-example-card-eyebrow-line-height);
+}
+
+.sbt-example-card__status {
+  flex: none;
+  padding: var(--sbt-comp-example-card-status-padding-block) var(--sbt-comp-example-card-status-padding-inline);
+  color: var(--sbt-comp-example-card-status-on-color);
+  background: var(--sbt-comp-example-card-status-color);
+  border-radius: var(--sbt-comp-example-card-status-shape);
+  font-size: var(--sbt-comp-example-card-eyebrow-size);
+  font-weight: var(--sbt-comp-example-card-eyebrow-weight);
+  line-height: var(--sbt-comp-example-card-eyebrow-line-height);
+}
+
+.sbt-example-card__title {
+  color: var(--sbt-comp-example-card-title-color);
+  font-size: var(--sbt-comp-example-card-title-size);
+  font-weight: var(--sbt-comp-example-card-title-weight);
+  line-height: var(--sbt-comp-example-card-title-line-height);
+}
+
+.sbt-example-card__description {
+  color: var(--sbt-comp-example-card-description-color);
+  font-size: var(--sbt-comp-example-card-description-size);
+  line-height: var(--sbt-comp-example-card-description-line-height);
+}

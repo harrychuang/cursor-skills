@@ -1,17 +1,5 @@
 import type { TokenLayer } from "./types";
-
-export type FigmaExportSourceReference = {
-  editUrl?: string;
-  label?: string;
-  type?: "figma" | "reference" | "source" | "storybook";
-  url: string;
-};
-
-export type FigmaExportReviewStatus =
-  | "approved"
-  | "exported"
-  | "need-fix"
-  | "not-reviewed";
+import type { VisualCommentOptions } from "./visualComment";
 
 export type FigmaExportAddonOptions = {
   absoluteFidelityComponents?: string[];
@@ -19,13 +7,14 @@ export type FigmaExportAddonOptions = {
   componentClassPrefixes?: string[];
   embeddedSvgByDataGraphic?: Record<string, string>;
   globalName?: string;
+  payloadSyncUrl?: string;
   pluginDataKey?: string;
-  reviewStorageKey?: string;
-  reviewStatuses?: FigmaExportReviewStatus[];
-  sourceReferences?: FigmaExportSourceReference[];
+  /** Attach a browser-render snapshot to the payload (default true). */
+  referenceImage?: boolean;
   storyTitlePrefix?: false | string | string[];
   tokenLayers?: Partial<Record<TokenLayer, string>>;
   tokenPrefix?: string;
+  visualComments?: VisualCommentOptions;
 };
 
 export type ResolvedFigmaExportAddonOptions = {
@@ -34,13 +23,13 @@ export type ResolvedFigmaExportAddonOptions = {
   componentClassPrefixes: string[];
   embeddedSvgByDataGraphic: Record<string, string>;
   globalName: string;
+  payloadSyncUrl?: string;
   pluginDataKey: string;
-  reviewStorageKey: string;
-  reviewStatuses: FigmaExportReviewStatus[];
-  sourceReferences: FigmaExportSourceReference[];
+  referenceImage: boolean;
   storyTitlePrefix: false | string[];
   tokenLayers: Record<TokenLayer, string>;
   tokenPrefix?: string;
+  visualComments: Required<VisualCommentOptions>;
 };
 
 export const defaultFigmaExportGlobalName = "figmaExport";
@@ -77,21 +66,21 @@ export function resolveFigmaExportAddonOptions(
     componentClassPrefixes: options?.componentClassPrefixes ?? [],
     embeddedSvgByDataGraphic: options?.embeddedSvgByDataGraphic ?? {},
     globalName: options?.globalName ?? defaultFigmaExportGlobalName,
+    ...(options?.payloadSyncUrl ? { payloadSyncUrl: options.payloadSyncUrl } : {}),
     pluginDataKey: options?.pluginDataKey ?? "storybookCssToken",
-    reviewStorageKey: options?.reviewStorageKey ?? "storybookFigmaExportReviews",
-    reviewStatuses: options?.reviewStatuses ?? [
-      "not-reviewed",
-      "exported",
-      "need-fix",
-      "approved",
-    ],
-    sourceReferences: options?.sourceReferences ?? [],
+    referenceImage: options?.referenceImage ?? true,
     storyTitlePrefix: normalizeStoryTitlePrefix(options?.storyTitlePrefix),
     tokenLayers: {
       ...defaultTokenLayers,
       ...options?.tokenLayers,
     },
     tokenPrefix: normalizeTokenPrefix(options?.tokenPrefix),
+    visualComments: {
+      enabled: options?.visualComments?.enabled ?? true,
+      apiPath: options?.visualComments?.apiPath ?? "/__figma_export_review_comments",
+      captureSelector: options?.visualComments?.captureSelector ?? "#storybook-root",
+      authorStorageKey: options?.visualComments?.authorStorageKey ?? "sbfx:review-author",
+    },
   };
 }
 

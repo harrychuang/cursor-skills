@@ -1,0 +1,34 @@
+/* Component tokens map component slots to system tokens only.
+   Starter example: every visual value of ExampleCard enters through a comp token below.
+   Add one block per shared component; never reference ref tokens from this layer. */
+
+:root {
+  /* Example card */
+  --sbt-comp-example-card-container-max-width: var(--sbt-sys-size-viewport-compact-width);
+  --sbt-comp-example-card-container-padding: var(--sbt-sys-spacing-container-lg);
+  --sbt-comp-example-card-container-gap: var(--sbt-sys-spacing-md);
+  --sbt-comp-example-card-container-color: var(--sbt-sys-color-surface);
+  --sbt-comp-example-card-container-on-color: var(--sbt-sys-color-on-surface);
+  --sbt-comp-example-card-container-outline-color: var(--sbt-sys-color-outline);
+  --sbt-comp-example-card-container-outline-width: var(--sbt-sys-spacing-hairline);
+  --sbt-comp-example-card-container-shape: var(--sbt-sys-shape-corner-md);
+  --sbt-comp-example-card-container-shadow: var(--sbt-sys-shadow-raised-surface);
+  --sbt-comp-example-card-header-gap: var(--sbt-sys-spacing-md);
+  --sbt-comp-example-card-eyebrow-color: var(--sbt-sys-color-primary);
+  --sbt-comp-example-card-eyebrow-size: var(--sbt-sys-typescale-caption-sm-size);
+  --sbt-comp-example-card-eyebrow-line-height: var(--sbt-sys-typescale-caption-sm-line-height);
+  --sbt-comp-example-card-eyebrow-weight: var(--sbt-sys-weight-semibold);
+  --sbt-comp-example-card-status-color: var(--sbt-sys-color-primary-container);
+  --sbt-comp-example-card-status-on-color: var(--sbt-sys-color-on-primary-container);
+  --sbt-comp-example-card-status-padding-block: var(--sbt-sys-spacing-xxs);
+  --sbt-comp-example-card-status-padding-inline: var(--sbt-sys-spacing-xs);
+  --sbt-comp-example-card-status-shape: var(--sbt-sys-shape-corner-pill);
+  --sbt-comp-example-card-title-color: var(--sbt-sys-color-on-surface-strong);
+  --sbt-comp-example-card-title-size: var(--sbt-sys-typescale-title-md-size);
+  --sbt-comp-example-card-title-line-height: var(--sbt-sys-typescale-title-md-line-height);
+  --sbt-comp-example-card-title-weight: var(--sbt-sys-weight-semibold);
+  --sbt-comp-example-card-description-color: var(--sbt-sys-color-on-surface-medium);
+  --sbt-comp-example-card-description-size: var(--sbt-sys-typescale-body-sm-size);
+  --sbt-comp-example-card-description-line-height: var(--sbt-sys-typescale-body-sm-line-height);
+  --sbt-comp-example-card-text-margin: var(--sbt-sys-spacing-none);
+}

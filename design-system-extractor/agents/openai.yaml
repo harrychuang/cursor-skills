@@ -1,7 +1,7 @@
 interface:
   display_name: "Design System Extractor"
-  short_description: "Extract token-backed systems and text components"
-  default_prompt: "Use $design-system-extractor to extract a reusable design-system package, including typography tokens and typographic components from screenshots, graphic design references, a Figma URL, or a project folder."
+  short_description: "Extract and review token-backed design systems"
+  default_prompt: "Use $design-system-extractor to extract or integrate a reusable design-system package and static HTML docs from screenshots, a Figma URL, rendered route captures, native iOS/Android app captures, branch diffs, a project folder, or a vibe-coded prototype."
 
 policy:
   allow_implicit_invocation: true

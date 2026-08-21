@@ -3,6 +3,7 @@ import dataSpec from "./docs/DATA_SPEC.md?raw";
 import flowSpec from "./docs/FLOW_SPEC.md?raw";
 import implementationGuide from "./docs/IMPLEMENTATION_GUIDE.md?raw";
 import prd from "./docs/PRD.md?raw";
+import productionHandoff from "./docs/PRODUCTION_HANDOFF.md?raw";
 import uiSpec from "./docs/UI_SPEC.md?raw";
 import { __FEATURE_CAMEL__Routes } from "./__FEATURE_CAMEL__Data";
 import { __FEATURE_CAMEL__Flow } from "./__FEATURE_CAMEL__Flow";
@@ -37,7 +38,11 @@ export const __FEATURE_CAMEL__Meta = {
     flowSpec,
     implementationGuide,
     prd,
+    productionHandoff,
     uiSpec,
+  },
+  figmaExport: {
+    flowStoryId: "__FEATURE_STORY_ID__",
   },
   flow: __FEATURE_CAMEL__Flow,
   id: "__FEATURE_KEBAB__",

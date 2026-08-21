@@ -1,0 +1,220 @@
+/* Reference tokens hold raw values only.
+   Starter palette for a new project. Replace values with the design-system-extractor output
+   (tokens/tokens-ref.css) and keep the ref -> sys -> comp inheritance intact. */
+
+:root {
+  /* Brand hue values */
+  --sbt-ref-color-orange-12: #3f1d00;
+  --sbt-ref-color-orange-36: #b95700;
+  --sbt-ref-color-orange-50: #cc6102;
+  --sbt-ref-color-orange-60: #ff7800;
+  --sbt-ref-color-orange-75: #ebc09a;
+  --sbt-ref-color-orange-88: #ffd7b2;
+  --sbt-ref-color-orange-96: #fff1e5;
+  --sbt-ref-color-peach-92: #ffe2d4;
+  --sbt-ref-color-amber-50: #c37302;
+  --sbt-ref-color-amber-60: #f9a516;
+  --sbt-ref-color-amber-62: #ffa902;
+  --sbt-ref-color-amber-75: #ffd98a;
+  --sbt-ref-color-yellow-64: #ffb800;
+  --sbt-ref-color-yellow-68: #ffe55e;
+  --sbt-ref-color-yellow-94: #fbeeb9;
+  --sbt-ref-color-yellow-95: #ffeeb1;
+  --sbt-ref-color-yellow-96: #fef769;
+
+  /* Neutral scale */
+  --sbt-ref-color-neutral-0: #000000;
+  --sbt-ref-color-neutral-12: #1e1e1e;
+  --sbt-ref-color-neutral-15: #252525;
+  --sbt-ref-color-neutral-20: #333333;
+  --sbt-ref-color-neutral-24: #3d3d3d;
+  --sbt-ref-color-neutral-29: #4b4b4b;
+  --sbt-ref-color-neutral-32: #515151;
+  --sbt-ref-color-neutral-36: #5c5c5c;
+  --sbt-ref-color-neutral-46: #757575;
+  --sbt-ref-color-neutral-50: #808080;
+  --sbt-ref-color-neutral-56: #909090;
+  --sbt-ref-color-neutral-60: #999999;
+  --sbt-ref-color-neutral-65: #a7a7a7;
+  --sbt-ref-color-neutral-75: #c0c0c0;
+  --sbt-ref-color-neutral-85: #d9d9d9;
+  --sbt-ref-color-neutral-100: #ffffff;
+  --sbt-ref-color-lavender-94: #ebebf5;
+  --sbt-ref-color-warm-gray-50: #7e7873;
+
+  /* Status hue values */
+  --sbt-ref-color-red-25: #7a181b;
+  --sbt-ref-color-red-60: #ea272d;
+  --sbt-ref-color-red-62: #f93951;
+  --sbt-ref-color-red-65: #ff4f4f;
+  --sbt-ref-color-red-77: #ff8a91;
+  --sbt-ref-color-vermilion-56: #e95b33;
+  --sbt-ref-color-rose-55: #d73152;
+  --sbt-ref-color-rose-60: #eb415a;
+  --sbt-ref-color-rose-64: #ef6276;
+  --sbt-ref-color-red-38: #af0029;
+  --sbt-ref-color-pink-60: #ff3465;
+  --sbt-ref-color-purple-55: #9f5ebb;
+  --sbt-ref-color-violet-50: #8000ff;
+  --sbt-ref-color-cyan-47: #3196c1;
+  --sbt-ref-color-blue-45: #027dc6;
+  --sbt-ref-color-blue-55: #006fff;
+  --sbt-ref-color-blue-60: #36a9ea;
+  --sbt-ref-color-sky-96: #e5f9ff;
+  --sbt-ref-color-green-15: #09340f;
+  --sbt-ref-color-green-25: #15431b;
+  --sbt-ref-color-green-35: #29422c;
+  --sbt-ref-color-green-50: #00a94d;
+  --sbt-ref-color-green-55: #39b54a;
+  --sbt-ref-color-brown-40: #7c4616;
+
+  /* Alpha values and transparent paints */
+  --sbt-ref-opacity-0: 0;
+  --sbt-ref-opacity-8: 0.08;
+  --sbt-ref-opacity-20: 0.2;
+  --sbt-ref-opacity-30: 0.3;
+  --sbt-ref-opacity-50: 0.5;
+  --sbt-ref-opacity-60: 0.6;
+  --sbt-ref-opacity-80: 0.8;
+  --sbt-ref-color-white-alpha-0: rgba(255, 255, 255, 0);
+  --sbt-ref-color-white-alpha-8: rgba(255, 255, 255, 0.08);
+  --sbt-ref-color-white-alpha-20: rgba(255, 255, 255, 0.2);
+  --sbt-ref-color-red-57-alpha-20: rgba(231, 0, 0, 0.2);
+  --sbt-ref-color-red-60-alpha-30: rgba(234, 39, 45, 0.3);
+  --sbt-ref-color-red-60-alpha-50: rgba(234, 39, 45, 0.5);
+  --sbt-ref-color-green-55-alpha-30: rgba(57, 181, 74, 0.3);
+  --sbt-ref-color-green-55-alpha-50: rgba(57, 181, 74, 0.5);
+  --sbt-ref-color-orange-alpha-60: rgba(255, 120, 0, 0.6);
+  --sbt-ref-shadow-4-0-2-black-alpha-25: 4px 0 2px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-4-0-5-black-alpha-25: 4px 0 5px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-4-2-black-alpha-25: 0 4px 2px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-4-10-black-alpha-25: 0 4px 10px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-4-4-black-alpha-25: 0 4px 4px rgba(0, 0, 0, 0.25);
+  --sbt-ref-shadow-0-2-4-black-alpha-12: 0 2px 4px rgba(0, 0, 0, 0.12);
+  --sbt-ref-shadow-0-1-1-black-alpha-24-0-0-1-black-alpha-12: 0 1px 1px rgba(0, 0, 0, 0.24), 0 0 1px rgba(0, 0, 0, 0.12);
+  --sbt-ref-shadow-0-2-2-black-alpha-50: 0 2px 2px rgba(0, 0, 0, 0.5);
+
+  /* Annotation-only values */
+  --sbt-ref-color-yellow-70-alpha-80: rgba(255, 245, 109, 0.8);
+  --sbt-ref-color-mint-60-alpha-60: rgba(80, 227, 194, 0.6);
+  --sbt-ref-color-pink-70: #ffb7b9;
+  --sbt-ref-color-violet-70: #d1a3ff;
+
+  /* Type raw values */
+  --sbt-ref-typeface-pingfang-tc: "PingFang TC";
+  --sbt-ref-typeface-roboto: "Roboto";
+  --sbt-ref-typeface-inter: "Inter";
+  --sbt-ref-typeface-play: "Play";
+  --sbt-ref-typeface-noto-sans-jp: "Noto Sans JP";
+  --sbt-ref-typeface-noto-sans-sc: "Noto Sans SC";
+  --sbt-ref-typeface-sf-pro-display: "SF Pro Display";
+  --sbt-ref-typeface-sf-pro-text: "SF Pro Text";
+  --sbt-ref-weight-400: 400;
+  --sbt-ref-weight-500: 500;
+  --sbt-ref-weight-600: 600;
+  --sbt-ref-weight-700: 700;
+  --sbt-ref-line-height-normal: normal;
+
+  /* Raw size values */
+  --sbt-ref-size-0: 0;
+  --sbt-ref-size-1: 1px;
+  --sbt-ref-size-2: 2px;
+  --sbt-ref-size-3: 3px;
+  --sbt-ref-size-4: 4px;
+  --sbt-ref-size-5: 5px;
+  --sbt-ref-size-6: 6px;
+  --sbt-ref-size-7: 7px;
+  --sbt-ref-size-8: 8px;
+  --sbt-ref-size-10: 10px;
+  --sbt-ref-size-11: 11px;
+  --sbt-ref-size-12: 12px;
+  --sbt-ref-size-13: 13px;
+  --sbt-ref-size-14: 14px;
+  --sbt-ref-size-15: 15px;
+  --sbt-ref-size-16: 16px;
+  --sbt-ref-size-17: 17px;
+  --sbt-ref-size-18: 18px;
+  --sbt-ref-size-20: 20px;
+  --sbt-ref-size-22: 22px;
+  --sbt-ref-size-24: 24px;
+  --sbt-ref-size-25: 25px;
+  --sbt-ref-size-26: 26px;
+  --sbt-ref-size-27: 27px;
+  --sbt-ref-size-28: 28px;
+  --sbt-ref-size-30: 30px;
+  --sbt-ref-size-32: 32px;
+  --sbt-ref-size-33: 33px;
+  --sbt-ref-size-34: 34px;
+  --sbt-ref-size-36: 36px;
+  --sbt-ref-size-38: 38px;
+  --sbt-ref-size-40: 40px;
+  --sbt-ref-size-41: 41px;
+  --sbt-ref-size-42: 42px;
+  --sbt-ref-size-43: 43px;
+  --sbt-ref-size-44: 44px;
+  --sbt-ref-size-46: 46px;
+  --sbt-ref-size-48: 48px;
+  --sbt-ref-size-49: 49px;
+  --sbt-ref-size-59: 59px;
+  --sbt-ref-size-60: 60px;
+  --sbt-ref-size-61: 61px;
+  --sbt-ref-size-62: 62px;
+  --sbt-ref-size-64: 64px;
+  --sbt-ref-size-66: 66px;
+  --sbt-ref-size-68: 68px;
+  --sbt-ref-size-70: 70px;
+  --sbt-ref-size-74: 74px;
+  --sbt-ref-size-76: 76px;
+  --sbt-ref-size-77: 77px;
+  --sbt-ref-size-79: 79px;
+  --sbt-ref-size-80: 80px;
+  --sbt-ref-size-82: 82px;
+  --sbt-ref-size-83: 83px;
+  --sbt-ref-size-86: 86px;
+  --sbt-ref-size-90: 90px;
+  --sbt-ref-size-96: 96px;
+  --sbt-ref-size-98: 98px;
+  --sbt-ref-size-100: 100px;
+  --sbt-ref-size-106: 106px;
+  --sbt-ref-size-112: 112px;
+  --sbt-ref-size-120: 120px;
+  --sbt-ref-size-122: 122px;
+  --sbt-ref-size-132: 132px;
+  --sbt-ref-size-134: 134px;
+  --sbt-ref-size-136: 136px;
+  --sbt-ref-size-140: 140px;
+  --sbt-ref-size-152: 152px;
+  --sbt-ref-size-176: 176px;
+  --sbt-ref-size-184: 184px;
+  --sbt-ref-size-187: 187px;
+  --sbt-ref-size-200: 200px;
+  --sbt-ref-size-216: 216px;
+  --sbt-ref-size-220: 220px;
+  --sbt-ref-size-224: 224px;
+  --sbt-ref-size-234: 234px;
+  --sbt-ref-size-266: 266px;
+  --sbt-ref-size-292: 292px;
+  --sbt-ref-size-295: 295px;
+  --sbt-ref-size-375: 375px;
+  --sbt-ref-size-520: 520px;
+  --sbt-ref-size-563: 563px;
+  --sbt-ref-size-624: 624px;
+  --sbt-ref-size-720: 720px;
+  --sbt-ref-size-768: 768px;
+  --sbt-ref-size-812: 812px;
+  --sbt-ref-size-960: 960px;
+  --sbt-ref-size-1280: 1280px;
+
+  /* Raw radius values */
+  --sbt-ref-radius-0: 0;
+  --sbt-ref-radius-2: 2px;
+  --sbt-ref-radius-4: 4px;
+  --sbt-ref-radius-5: 5px;
+  --sbt-ref-radius-6: 6px;
+  --sbt-ref-radius-8: 8px;
+  --sbt-ref-radius-12: 12px;
+  --sbt-ref-radius-14: 14px;
+  --sbt-ref-radius-16: 16px;
+  --sbt-ref-radius-24: 24px;
+  --sbt-ref-radius-100: 100px;
+}

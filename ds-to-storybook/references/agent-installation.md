@@ -39,7 +39,7 @@ Claude Code discovers skills from `.claude/skills/<skill-name>/SKILL.md` and `~/
 
 Supported targets:
 
-- User: `~/.codex/skills/design-system-to-storybook/`
+- User: `~/.agents/skills/design-system-to-storybook/`
 - Project/open-standard: `<repo>/.agents/skills/design-system-to-storybook/`
 
 Invoke with:
@@ -76,9 +76,5 @@ Cursor also supports rules for always-on project guidance, but this workflow sho
 - `SKILL.md` frontmatter `name` is `design-system-to-storybook`.
 - `scripts/install_figma_export_addon.mjs` exists.
 - `scripts/generate_figma_export_config.mjs` exists.
-- `scripts/generate_component_spec_modules.mjs` exists.
-- `scripts/sync_story_source_parameters.mjs` exists.
-- `scripts/inspect_storybook_project.mjs` exists.
-- `scripts/validate_figma_export_setup.mjs` exists.
 - `assets/figma-export-addon/dist/source.js` exists.
 - Invocation works through the agent's skill command or explicit path prompt.

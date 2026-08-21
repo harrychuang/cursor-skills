@@ -4,6 +4,8 @@ export type __FEATURE_PASCAL__RouteContent = {
   id: __FEATURE_PASCAL__RouteId;
   title: string;
   description: string;
+  /** Fixture-driven UI state so loading/empty/error branches stay reachable. */
+  state?: "default" | "loading" | "empty" | "error";
 };
 
 export const __FEATURE_CAMEL__Routes = [
@@ -12,4 +14,12 @@ export const __FEATURE_CAMEL__Routes = [
     id: "__ENTRY_ROUTE_ID__",
     title: "__FEATURE_TITLE__",
   },
+  // Add one fixture per route, and non-default state fixtures for branch
+  // states in scope, for example:
+  // {
+  //   description: "Shown while portfolio data loads.",
+  //   id: "portfolio-loading",
+  //   state: "loading",
+  //   title: "Loading portfolio",
+  // },
 ] satisfies __FEATURE_PASCAL__RouteContent[];

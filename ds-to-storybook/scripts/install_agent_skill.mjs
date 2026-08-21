@@ -20,11 +20,9 @@ if (help) {
 
 const scriptPath = fileURLToPath(import.meta.url);
 const skillRoot = path.resolve(path.dirname(scriptPath), "..");
-const folderName = path.basename(skillRoot);
-const skillMetadata = readSkillMetadata(skillRoot);
-const skillName = skillMetadata.name || folderName;
+const skillName = path.basename(skillRoot);
 
-validateSkillPackage(skillRoot, skillMetadata);
+validateSkillPackage(skillRoot, skillName);
 
 if (!["all", "claude", "codex", "cursor"].includes(agent)) {
   fail(`Unsupported --agent "${agent}". Expected claude, codex, cursor, or all.`);
@@ -46,7 +44,7 @@ for (const target of targets) {
 }
 
 console.log("");
-console.log("Installed targets:");
+console.log(dryRun ? "Dry-run targets:" : "Installed targets:");
 for (const target of targets) {
   console.log(`- ${target.agent}: ${target.destination}`);
 }
@@ -80,7 +78,7 @@ function destinationFor(selectedAgent, selectedScope, selectedProjectRoot) {
   if (selectedScope === "user") {
     const home = os.homedir();
     if (selectedAgent === "claude") return path.join(home, ".claude", "skills", skillName);
-    if (selectedAgent === "codex") return path.join(home, ".codex", "skills", skillName);
+    if (selectedAgent === "codex") return path.join(home, ".agents", "skills", skillName);
     if (selectedAgent === "cursor") return path.join(home, ".cursor", "skills", skillName);
   }
 
@@ -103,13 +101,13 @@ function installSkill(target) {
     fail(`Refusing to install into the source skill directory: ${destination}`);
   }
 
-  if (fs.existsSync(destination) && !force) {
-    fail(`${destination} already exists. Re-run with --force to replace it.`);
-  }
-
   if (dryRun) {
     console.log(`[dry-run] ${target.agent}: ${skillRoot} -> ${destination}`);
     return;
+  }
+
+  if (fs.existsSync(destination) && !force) {
+    fail(`${destination} already exists. Re-run with --force to replace it.`);
   }
 
   if (fs.existsSync(destination)) {
@@ -146,23 +144,16 @@ function shouldSkip(name) {
 }
 
 function validateSkillPackage(root, expectedName) {
-  if (!expectedName.name) {
-    fail(`Missing required name field in ${path.join(root, "SKILL.md")}.`);
-  }
-}
-
-function readSkillMetadata(root) {
   const skillFile = path.join(root, "SKILL.md");
   if (!fs.existsSync(skillFile)) fail(`Missing ${skillFile}.`);
 
   const markdown = fs.readFileSync(skillFile, "utf8");
   const nameMatch = markdown.match(/^name:\s*([^\n]+)$/m);
-  const descriptionMatch = markdown.match(/^description:\s*(?:>-\s*)?([^\n]+)?$/m);
+  const declaredName = nameMatch?.[1]?.trim().replace(/^["']|["']$/g, "");
 
-  return {
-    description: descriptionMatch?.[1]?.trim().replace(/^["']|["']$/g, "") || "",
-    name: nameMatch?.[1]?.trim().replace(/^["']|["']$/g, "") || "",
-  };
+  if (declaredName && declaredName !== expectedName) {
+    fail(`SKILL.md name "${declaredName}" must match folder name "${expectedName}".`);
+  }
 }
 
 function fail(message) {

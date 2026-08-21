@@ -8,6 +8,10 @@ Document how pages should be assembled from foundations and components.
 
 ## Section Rules
 
+## Typographic Composition Rules
+
+Document how recurring text lockups are placed within pages, graphics, cards, editorial surfaces, or marketing compositions. Include alignment, width, rhythm, relationship to media, and responsive wrapping.
+
 ## Lists And Rows
 
 ## Cards And Surfaces

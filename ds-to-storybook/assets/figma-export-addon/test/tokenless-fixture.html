@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>figma-export token-less fixture</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 16px; }
+  .plain-card { width: 160px; height: 48px; background-color: #336699; border-radius: 6px; }
+</style>
+</head>
+<body>
+<div id="storybook-root">
+  <div data-component="plain-card" class="plain-card"></div>
+</div>
+<pre id="fixture-result" style="display: none"></pre>
+<script src="./.export-overlay.bundle.js"></script>
+<script>
+  function toBase64Utf8(text) {
+    return btoa(unescape(encodeURIComponent(text)));
+  }
+
+  const results = [];
+  function check(name, condition) {
+    results.push({ name, passed: Boolean(condition) });
+  }
+
+  function waitFor(predicate, timeoutMs) {
+    return new Promise((resolve) => {
+      const startedAt = Date.now();
+      function tick() {
+        if (predicate()) {
+          resolve(true);
+          return;
+        }
+        if (Date.now() - startedAt > timeoutMs) {
+          resolve(false);
+          return;
+        }
+        // setTimeout (not rAF): headless Chromium throttles rAF, while
+        // virtual time fast-forwards timers deterministically.
+        setTimeout(tick, 50);
+      }
+      tick();
+    });
+  }
+
+  async function run() {
+    try {
+      const copies = [];
+      Object.defineProperty(navigator, "clipboard", {
+        configurable: true,
+        value: {
+          writeText: async (text) => {
+            copies.push(text);
+          },
+        },
+      });
+
+      const decorator = window.FigmaOverlayFixture.createFigmaExportDecorator({
+        referenceImage: false,
+        storyTitlePrefix: false,
+      });
+      decorator(() => null, {
+        globals: { figmaExport: "on" },
+        id: "plain-card--default",
+        name: "Default",
+        title: "Components/PlainCard",
+        viewMode: "story",
+      });
+
+      const aside = document.querySelector("aside.sbfx-exporter");
+      check("overlay mounted without tokens", Boolean(aside));
+      const copyJsonButton = Array.from(aside.querySelectorAll("button")).find(
+        (button) => button.textContent.includes("Copy JSON"),
+      );
+      copyJsonButton.click();
+
+      // Token-less export must complete instead of throwing the prefix error.
+      const finished = await waitFor(() => {
+        const status = document.querySelector("aside.sbfx-exporter")?.dataset.status;
+        return status === "copied" || status === "error";
+      }, 8000);
+      const status = document.querySelector("aside.sbfx-exporter")?.dataset.status;
+      check("token-less export finishes", finished);
+      check("token-less export succeeds (no error status)", status === "copied");
+      const overlayText = document.querySelector("aside.sbfx-exporter")?.textContent || "";
+      check(
+        "no token prefix error surfaced",
+        !overlayText.includes("Unable to detect"),
+      );
+
+      let payload = null;
+      try {
+        payload = JSON.parse(copies[0] || "null");
+      } catch {
+        payload = null;
+      }
+      check("payload parses", Boolean(payload));
+      check("payload.tokens is empty", Array.isArray(payload?.tokens) && payload.tokens.length === 0);
+      check("tokenSystem.prefix is empty string", payload?.tokenSystem?.prefix === "");
+      check(
+        "node bindings are empty",
+        payload ? Object.keys(payload.root?.bindings ?? {}).length === 0 : false,
+      );
+      check("summary reports 0 variables", overlayText.includes("0 variables"));
+
+      document.getElementById("fixture-result").textContent = toBase64Utf8(
+        JSON.stringify({ results }),
+      );
+      document.title = "TOKENLESS_DONE";
+    } catch (error) {
+      document.getElementById("fixture-result").textContent = toBase64Utf8(
+        JSON.stringify({
+          error: String(error && error.stack ? error.stack : error),
+          results,
+        }),
+      );
+      document.title = "TOKENLESS_ERROR";
+    }
+  }
+
+  window.addEventListener("load", () => {
+    run();
+  });
+</script>
+</body>
+</html>

@@ -35,6 +35,7 @@ Use this reference when writing `design-system/ANTI_AI_STYLE_RULES.md`.
 - Do not make all text bold.
 - Do not reduce primary text contrast unless content is secondary or disabled.
 - Preserve numeric hierarchy and alignment from the references.
+- Do not flatten distinctive typographic lockups into generic heading/subheading stacks when the references show reusable hierarchy, spacing, alignment, or line-break behavior.
 
 ## Product-Specificity Restraints
 

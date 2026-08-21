@@ -1,4 +1,5 @@
 import type { ResolvedFigmaExportAddonOptions } from "./options";
+import { parseCssColorToRgba } from "./color";
 import type {
   FigmaExportToken,
   FigmaVariableType,
@@ -40,6 +41,71 @@ const tokenLayerOrder: Record<TokenLayer, number> = {
 
 const tokenLayers: TokenLayer[] = ["ref", "sys", "comp"];
 
+const cssGenericFontFamilies = new Set([
+  "cursive",
+  "emoji",
+  "fangsong",
+  "fantasy",
+  "math",
+  "monospace",
+  "sans-serif",
+  "serif",
+  "system-ui",
+  "ui-monospace",
+  "ui-rounded",
+  "ui-sans-serif",
+  "ui-serif",
+]);
+
+export function getCssFontFamilyCandidates(value: string): string[] {
+  const candidates: string[] = [];
+  let buffer = "";
+  let quote: "\"" | "'" | undefined;
+  let escaped = false;
+
+  function pushCandidate() {
+    const candidate = buffer.trim().replace(/^['\"]|['\"]$/g, "");
+    buffer = "";
+    if (!candidate || cssGenericFontFamilies.has(candidate.toLowerCase())) return;
+    if (!candidates.includes(candidate)) candidates.push(candidate);
+  }
+
+  for (const character of String(value ?? "")) {
+    if (escaped) {
+      buffer += character;
+      escaped = false;
+      continue;
+    }
+    if (quote) {
+      if (character === "\\") {
+        escaped = true;
+      } else if (character === quote) {
+        quote = undefined;
+      } else {
+        buffer += character;
+      }
+      continue;
+    }
+    if (character === "\"" || character === "'") {
+      quote = character;
+    } else if (character === ",") {
+      pushCandidate();
+    } else {
+      buffer += character;
+    }
+  }
+  pushCandidate();
+  return candidates;
+}
+
+function isFontFamilyTokenName(name: string): boolean {
+  return (
+    /-typeface(?:-|$)/.test(name) ||
+    /-font-family(?:-|$)/.test(name) ||
+    (name.includes("-typescale-") && name.endsWith("-family"))
+  );
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -49,10 +115,10 @@ function getTokenFamily(name: string): TokenFamily {
   if (name.includes("-opacity-")) return "opacity";
   if (name.includes("-shadow-")) return "shadow";
   if (
-    name.includes("-typeface-") ||
+    isFontFamilyTokenName(name) ||
     name.includes("-typescale-") ||
     name.includes("-weight-") ||
-    name.includes("-line-height-")
+    name.includes("-line-height")
   ) {
     return "type";
   }
@@ -139,6 +205,21 @@ function collectCssCustomProperties(): Map<string, string> {
     }
   }
 
+  // Document-level adoptedStyleSheets can also define :root/body tokens.
+  let adoptedSheets: CSSStyleSheet[] = [];
+  try {
+    adoptedSheets = Array.from(document.adoptedStyleSheets ?? []);
+  } catch {
+    adoptedSheets = [];
+  }
+  for (const sheet of adoptedSheets) {
+    try {
+      collectRuleList(sheet.cssRules);
+    } catch {
+      // Ignore inaccessible constructed style sheets.
+    }
+  }
+
   collectFromStyle(document.documentElement.style, true);
   if (document.body) collectFromStyle(document.body.style, true);
   collectFromStyle(window.getComputedStyle(document.documentElement), false);
@@ -162,7 +243,7 @@ function getTokenLayer(
 function detectTokenPrefix(
   tokenNames: Iterable<string>,
   options: ResolvedFigmaExportAddonOptions,
-): string {
+): string | undefined {
   if (options.tokenPrefix) return options.tokenPrefix;
 
   const candidates = new Map<
@@ -190,6 +271,10 @@ function detectTokenPrefix(
     }
   }
 
+  // No custom property matches any layered pattern: degrade to a token-less
+  // export (empty token system) instead of blocking the whole export.
+  if (candidates.size === 0) return undefined;
+
   const completeCandidates = Array.from(candidates.entries())
     .filter(([, candidate]) => tokenLayers.every((layer) => candidate.layers.has(layer)))
     .sort(([, a], [, b]) => b.count - a.count);
@@ -201,11 +286,22 @@ function detectTokenPrefix(
   );
 }
 
+const emptyTokenSystemPrefix = "";
+
 export function detectTokenSystem(
   options: ResolvedFigmaExportAddonOptions,
 ): DetectedTokenSystem {
   const customProperties = collectCssCustomProperties();
   const prefix = detectTokenPrefix(customProperties.keys(), options);
+  if (prefix === undefined) {
+    return {
+      catalog: [],
+      collections: options.collections,
+      layers: options.tokenLayers,
+      pluginDataKey: options.pluginDataKey,
+      prefix: emptyTokenSystemPrefix,
+    };
+  }
   const catalog: TokenDefinition[] = [];
 
   customProperties.forEach((value, name) => {
@@ -288,6 +384,16 @@ function parseRawValue(value: string): {
     };
   }
 
+  // hsl()/oklch()/color()/named tokens parse through the browser color engine
+  // so they export as COLOR variables instead of STRING fallbacks.
+  const cssColor = parseCssColorToRgba(trimmed);
+  if (cssColor) {
+    return {
+      type: "COLOR",
+      value: cssColor,
+    };
+  }
+
   return {
     type: "STRING",
     value: trimmed.replace(/^["']|["']$/g, ""),
@@ -325,31 +431,40 @@ function getTokenType(
   return parseRawValue(token.value).type;
 }
 
+// Matches "-segment-" in the middle or "-segment" at the end, so
+// "--md-sys-typescale-label-weight" classifies like "--md-ref-weight-700".
+function nameHasSegment(name: string, segment: string): boolean {
+  return name.includes(`-${segment}-`) || name.endsWith(`-${segment}`);
+}
+
 function getTokenScopes(token: TokenDefinition, type: FigmaVariableType): string[] {
   if (type === "COLOR") {
     return ["FRAME_FILL", "SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR"];
   }
 
   if (type === "STRING") {
-    if (token.name.includes("-typeface-")) return ["FONT_FAMILY"];
+    if (isFontFamilyTokenName(token.name)) return ["FONT_FAMILY"];
     return ["TEXT_CONTENT"];
   }
 
   if (type !== "FLOAT") return [];
 
-  if (token.name.includes("-opacity-")) return ["OPACITY"];
-  if (token.name.includes("-radius-") || token.name.includes("-shape-")) {
+  if (nameHasSegment(token.name, "opacity")) return ["OPACITY"];
+  if (nameHasSegment(token.name, "radius") || nameHasSegment(token.name, "shape")) {
     return ["CORNER_RADIUS"];
   }
-  if (token.name.includes("-spacing-")) {
+  if (nameHasSegment(token.name, "spacing") || nameHasSegment(token.name, "gap")) {
     return ["GAP", "WIDTH_HEIGHT"];
   }
-  if (token.name.includes("-weight-")) return ["FONT_WEIGHT"];
-  if (token.name.includes("-line-height-")) return ["LINE_HEIGHT"];
-  if (token.name.includes("-typescale-") && token.name.includes("-size")) {
+  if (nameHasSegment(token.name, "weight")) return ["FONT_WEIGHT"];
+  if (token.name.includes("-line-height")) return ["LINE_HEIGHT"];
+  if (
+    (token.name.includes("-typescale-") || token.name.includes("-text-")) &&
+    nameHasSegment(token.name, "size")
+  ) {
     return ["FONT_SIZE"];
   }
-  if (token.name.includes("-size-")) return ["WIDTH_HEIGHT"];
+  if (nameHasSegment(token.name, "size")) return ["WIDTH_HEIGHT"];
 
   return ["WIDTH_HEIGHT"];
 }
@@ -358,6 +473,8 @@ export function extractCssVariableNames(
   value: string,
   tokenSystem: DetectedTokenSystem,
 ): string[] {
+  if (!tokenSystem.prefix) return [];
+
   const layerPattern = tokenLayers
     .map((layer) => escapeRegExp(tokenSystem.layers[layer]))
     .join("|");
@@ -376,8 +493,49 @@ function getAliasTokenName(
   return extractCssVariableNames(token.value, tokenSystem)[0];
 }
 
+// Follows the alias chain to the final concrete token and parses its raw
+// value. Used to verify that a candidate binding's variable value actually
+// matches the computed style it would replace (for example a unitless
+// line-height token of 1.3 must never bind to a 15.6px Figma line height).
+export function resolveTokenComparableValue(
+  cssName: string,
+  tokenSystem: DetectedTokenSystem,
+  seen = new Set<string>(),
+): { raw: string; type: FigmaVariableType; value: FigmaVariableValue } | undefined {
+  if (seen.has(cssName)) return undefined;
+  seen.add(cssName);
+
+  const token = tokenSystem.catalog.find((candidate) => candidate.name === cssName);
+  if (!token) return undefined;
+
+  const alias = getAliasTokenName(token, tokenSystem);
+  if (alias) return resolveTokenComparableValue(alias, tokenSystem, seen);
+  return { ...parseRawValue(token.value), raw: token.value };
+}
+
 function toFigmaVariableName(cssName: string): string {
   return cssName.replace(/^--/, "").replaceAll("-", "/");
+}
+
+function getExportTokenValue(
+  token: TokenDefinition,
+  parsed: { type: FigmaVariableType; value: FigmaVariableValue } | undefined,
+): FigmaVariableValue | undefined {
+  if (parsed?.type === "STRING" && isFontFamilyTokenName(token.name)) {
+    return getCssFontFamilyCandidates(token.value)[0] ?? "Inter";
+  }
+
+  if (
+    token.family !== "opacity" ||
+    parsed?.type !== "FLOAT" ||
+    typeof parsed.value !== "number"
+  ) {
+    return parsed?.value;
+  }
+
+  return parsed.value >= 0 && parsed.value <= 1
+    ? parsed.value * 100
+    : parsed.value;
 }
 
 function toExportToken(
@@ -390,7 +548,7 @@ function toExportToken(
   const parsed = alias ? undefined : parseRawValue(token.value);
 
   return {
-    ...(alias ? { alias } : { value: parsed?.value }),
+    ...(alias ? { alias } : { value: getExportTokenValue(token, parsed) }),
     collection: token.layer,
     cssName: token.name,
     figmaName: toFigmaVariableName(token.name),

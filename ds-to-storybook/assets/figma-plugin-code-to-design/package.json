@@ -1,0 +1,23 @@
+{
+  "name": "storybook-code-to-design",
+  "version": "1.9.0",
+  "description": "Figma importer for Storybook Code To Design JSON exports",
+  "main": "code.js",
+  "scripts": {
+    "prebuild": "node scripts/stamp-version.mjs",
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "watch": "npm run build -- --watch"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@figma/eslint-plugin-figma-plugins": "*",
+    "@figma/plugin-typings": "*",
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1"
+  }
+}

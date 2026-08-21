@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>figma-export story-fidelity fixture</title>
+<style>
+  /* Mirrors the 80sJP text-link Inline story: an inline component embedded in
+     demo body copy. Token chain and component CSS copied from the project. */
+  :root {
+    --md-ref-color-red-50: #e21820;
+    --md-ref-color-neutral-10: #141414;
+    --md-ref-size-16: 16px;
+    --md-ref-size-375: 375px;
+    --md-ref-weight-400: 400;
+    --md-ref-weight-700: 700;
+    --md-ref-line-height-165: 1.65;
+    --md-ref-typeface-gothic-jp: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+    --md-ref-typeface-mincho-jp: "Hiragino Mincho ProN", "Noto Serif JP", "Yu Mincho", serif;
+    --md-sys-color-primary: var(--md-ref-color-red-50);
+    --md-sys-color-on-surface: var(--md-ref-color-neutral-10);
+    --md-sys-typescale-body-family: var(--md-ref-typeface-mincho-jp);
+    --md-sys-typescale-body-size: var(--md-ref-size-16);
+    --md-sys-typescale-body-weight: var(--md-ref-weight-400);
+    --md-sys-typescale-body-line-height: var(--md-ref-line-height-165);
+    --md-sys-typescale-label-family: var(--md-ref-typeface-gothic-jp);
+    --md-sys-typescale-label-weight: var(--md-ref-weight-700);
+    --md-comp-text-link-label-font-family: var(--md-sys-typescale-label-family);
+    --md-comp-text-link-label-text-color: var(--md-sys-color-primary);
+    --md-comp-text-link-label-text-size-inline: var(--md-sys-typescale-body-size);
+    --md-comp-text-link-label-text-weight: var(--md-sys-typescale-label-weight);
+  }
+
+  body { margin: 16px; }
+
+  .md-text-link {
+    color: var(--md-comp-text-link-label-text-color);
+    font-family: var(--md-comp-text-link-label-font-family);
+    font-weight: var(--md-comp-text-link-label-text-weight);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .md-text-link--inline {
+    font-size: var(--md-comp-text-link-label-text-size-inline);
+    line-height: var(--md-sys-typescale-body-line-height);
+  }
+
+  .md-text-link-demo-body {
+    max-inline-size: var(--md-ref-size-375);
+    margin: 0;
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--md-sys-typescale-body-family);
+    font-size: var(--md-sys-typescale-body-size);
+    font-weight: var(--md-sys-typescale-body-weight);
+    line-height: var(--md-sys-typescale-body-line-height);
+  }
+</style>
+</head>
+<body>
+<div id="scope"><p class="md-text-link-demo-body">詳細は<a class="md-text-link md-text-link--inline" data-component="text-link" data-variant="inline" href="#detail">こちら</a>をご確認ください。本文は明朝、リンクはゴシックのまま強調します。</p></div>
+
+<pre id="payload-output"></pre>
+<pre id="payload-error"></pre>
+
+<script src="./.story-fidelity-fixture.bundle.js"></script>
+<script>
+  function toBase64Utf8(text) {
+    return btoa(String.fromCharCode(...new TextEncoder().encode(text)));
+  }
+
+  async function runFixtureExport() {
+    try {
+      const exportApi = window.FigmaExportFixture;
+      const payload = await exportApi.createFigmaExportPayload({
+        componentTitle: "Actions/Text Link",
+        options: exportApi.resolveFigmaExportAddonOptions({
+          referenceImage: false,
+          storyTitlePrefix: false,
+        }),
+        scope: document.getElementById("scope"),
+        storyId: "components-actions-text-link--inline",
+        storyName: "Inline",
+        storyTitle: "Components/Actions/Text Link",
+      });
+
+      document.getElementById("payload-output").textContent = toBase64Utf8(
+        JSON.stringify(payload),
+      );
+      document.title = "EXPORT_DONE";
+    } catch (error) {
+      document.getElementById("payload-error").textContent = toBase64Utf8(
+        String(error && error.stack ? error.stack : error),
+      );
+      document.title = "EXPORT_ERROR";
+    }
+  }
+
+  window.addEventListener("load", () => {
+    runFixtureExport();
+  });
+</script>
+</body>
+</html>

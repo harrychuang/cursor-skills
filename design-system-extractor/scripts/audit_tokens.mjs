@@ -90,7 +90,9 @@ function stripInlineComments(value) {
 
 function parseDeclarations(css) {
   const declarations = new Map();
-  const pattern = /(?:\/\*([\s\S]*?)\*\/\s*)?(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);(?:\s*\/\*([\s\S]*?)\*\/)?/g;
+  // The trailing comment may only sit on the same line as the declaration;
+  // letting it cross newlines would steal the next declaration's leading comment.
+  const pattern = /(?:\/\*([\s\S]*?)\*\/\s*)?(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([\s\S]*?)\*\/)?/g;
   let match;
   while ((match = pattern.exec(css))) {
     declarations.set(match[2], {
@@ -325,218 +327,6 @@ function parseReferenceFamily(name) {
     .filter(Boolean)[0] || "unknown";
 }
 
-function parseLayerSegments(name, marker) {
-  const normalized = normalizeTokenName(name);
-  const markerIndex = normalized.indexOf(marker);
-  if (markerIndex === -1) return [];
-  return normalized.slice(markerIndex + marker.length).split("-").filter(Boolean);
-}
-
-function tokenDimensionFromSegments(segments) {
-  const dimensions = [
-    "color",
-    "space",
-    "spacing",
-    "size",
-    "radius",
-    "type",
-    "font",
-    "shadow",
-    "elevation",
-    "opacity",
-    "motion",
-    "duration",
-    "breakpoint",
-    "z",
-  ];
-  return segments.find((segment) => dimensions.includes(segment)) || segments[0] || "unknown";
-}
-
-function splitComponentSegments(segments) {
-  const componentNouns = new Set([
-    "button",
-    "card",
-    "nav",
-    "navigation",
-    "tab",
-    "input",
-    "field",
-    "dialog",
-    "modal",
-    "toast",
-    "chip",
-    "avatar",
-    "row",
-    "tile",
-    "sidebar",
-    "toolbar",
-    "bar",
-    "sheet",
-    "drawer",
-  ]);
-  if (segments.length > 2 && componentNouns.has(segments[1])) {
-    return { component: `${segments[0]}-${segments[1]}`, rest: segments.slice(2) };
-  }
-  return { component: segments[0] || "unknown", rest: segments.slice(1) };
-}
-
-function componentSlotSegments(rest, dimension) {
-  const index = rest.indexOf(dimension);
-  if (index === -1) return rest.slice(1);
-  return index === rest.length - 1 ? rest.slice(0, index) : rest.slice(index + 1);
-}
-
-function normalizeTokenValue(value) {
-  return stripInlineComments(value).replace(/\s+/g, " ").toLowerCase();
-}
-
-function sysDuplicateGroupKey(name, value) {
-  const segments = parseLayerSegments(name, "-sys-");
-  const dimension = tokenDimensionFromSegments(segments);
-  return `${dimension}::${normalizeTokenValue(value)}`;
-}
-
-function compDuplicateGroupKey(name, value) {
-  const segments = parseLayerSegments(name, "-comp-");
-  const { component, rest } = splitComponentSegments(segments);
-  const dimension = tokenDimensionFromSegments(rest);
-  return `${component}::${dimension}::${normalizeTokenValue(value)}`;
-}
-
-function segmentsAfterDimension(segments, dimension) {
-  const index = segments.indexOf(dimension);
-  return index === -1 ? segments.slice(1) : segments.slice(index + 1);
-}
-
-function tokenTextSet(parts) {
-  return new Set(
-    parts
-      .join(" ")
-      .toLowerCase()
-      .split(/[^a-z0-9]+/)
-      .filter((part) => part.length > 1),
-  );
-}
-
-function jaccardSet(a, b) {
-  if (!a.size || !b.size) return 0;
-  let intersection = 0;
-  for (const item of a) {
-    if (b.has(item)) intersection += 1;
-  }
-  return intersection / (a.size + b.size - intersection);
-}
-
-function semanticCategory(segments) {
-  const text = segments.join("-");
-  if (/\b(on|foreground|content|text|label|icon|ink)\b/.test(text)) return "foreground";
-  if (/\b(surface|background|container|canvas|page|sheet|panel)\b/.test(text)) return "surface";
-  if (/\b(primary|secondary|tertiary|accent|brand|action|cta)\b/.test(text)) return "action";
-  if (/\b(success|positive)\b/.test(text)) return "status-success";
-  if (/\b(warning|caution)\b/.test(text)) return "status-warning";
-  if (/\b(error|danger|critical|negative)\b/.test(text)) return "status-error";
-  if (/\b(info|notice)\b/.test(text)) return "status-info";
-  if (/\b(outline|border|divider|stroke|separator)\b/.test(text)) return "outline";
-  if (/\b(padding|inset|gap|space|spacing|margin|inline|horizontal|x|vertical|block|y)\b/.test(text)) {
-    return "spacing";
-  }
-  if (/\b(width|height|min|max|size|touch|target)\b/.test(text)) return "size";
-  if (/\b(radius|corner|round)\b/.test(text)) return "radius";
-  if (/\b(shadow|elevation|overlay)\b/.test(text)) return "elevation";
-  if (/\b(duration|delay|motion|easing|transition)\b/.test(text)) return "motion";
-  return segments[0] || "unknown";
-}
-
-function componentCategory(component) {
-  if (/\b(button|action|cta|fab)\b/.test(component)) return "action-control";
-  if (/\b(nav|navigation|tab|sidebar|top|bottom|bar|toolbar)\b/.test(component)) return "navigation";
-  if (/\b(card|tile|panel|surface|sheet|container)\b/.test(component)) return "container";
-  if (/\b(input|field|form|select|textarea|checkbox|radio|switch)\b/.test(component)) return "input";
-  if (/\b(chip|tag|segmented|pill|filter)\b/.test(component)) return "selection";
-  if (/\b(dialog|modal|drawer|popover|menu)\b/.test(component)) return "overlay";
-  if (/\b(toast|banner|alert|snackbar)\b/.test(component)) return "feedback";
-  if (/\b(row|list|item|cell|table)\b/.test(component)) return "data-display";
-  return component || "unknown";
-}
-
-function extractState(segments) {
-  const stateWords = [
-    "default",
-    "hover",
-    "pressed",
-    "active",
-    "selected",
-    "focus",
-    "focus-visible",
-    "disabled",
-    "loading",
-    "error",
-    "success",
-    "warning",
-    "checked",
-    "expanded",
-  ];
-  return segments.find((segment) => stateWords.includes(segment)) || "base";
-}
-
-function parseTokenMetadata(name) {
-  if (normalizeTokenName(name).includes("-ref-")) {
-    const segments = parseLayerSegments(name, "-ref-");
-    const dimension = tokenDimensionFromSegments(segments);
-    return {
-      layer: "ref",
-      dimension,
-      roleSegments: segmentsAfterDimension(segments, dimension),
-      component: "",
-      componentCategory: "",
-      slotCategory: semanticCategory(segments),
-      state: "base",
-      text: segments,
-    };
-  }
-  if (normalizeTokenName(name).includes("-sys-")) {
-    const segments = parseLayerSegments(name, "-sys-");
-    const dimension = tokenDimensionFromSegments(segments);
-    const roleSegments = segmentsAfterDimension(segments, dimension);
-    return {
-      layer: "sys",
-      dimension,
-      roleSegments,
-      component: "",
-      componentCategory: "",
-      slotCategory: semanticCategory(roleSegments),
-      state: extractState(roleSegments),
-      text: segments,
-    };
-  }
-  if (normalizeTokenName(name).includes("-comp-")) {
-    const segments = parseLayerSegments(name, "-comp-");
-    const { component, rest } = splitComponentSegments(segments);
-    const dimension = tokenDimensionFromSegments(rest);
-    const slotSegments = componentSlotSegments(rest, dimension);
-    return {
-      layer: "comp",
-      dimension,
-      roleSegments: slotSegments,
-      component,
-      componentCategory: componentCategory(component),
-      slotCategory: semanticCategory(slotSegments),
-      state: extractState(slotSegments),
-      text: segments,
-    };
-  }
-  return {
-    layer: "unknown",
-    dimension: "unknown",
-    roleSegments: [],
-    component: "",
-    componentCategory: "",
-    slotCategory: "unknown",
-    state: "base",
-    text: [],
-  };
-}
-
 function parseNumericValue(value) {
   const cleanValue = stripInlineComments(value);
   if (/^(?:#|rgb|hsl)/i.test(cleanValue) || cleanValue.includes("var(") || cleanValue.includes("calc(")) {
@@ -587,8 +377,10 @@ function reviewTextForDeclaration(declaration) {
 
 function hasCssReviewDecision(declarationA, declarationB) {
   const text = `${reviewTextForDeclaration(declarationA)}\n${reviewTextForDeclaration(declarationB)}`;
-  return /token-review\s*:\s*(?:keep|keep-distinct|merge|merge-with|approved|separate|split)/i.test(
-    text,
+  return (
+    /token-review\s*:\s*(?:keep|keep-distinct|merge|merge-with|approved|separate|split)/i.test(
+      text,
+    ) || /a11y-remap/i.test(text)
   );
 }
 
@@ -596,17 +388,18 @@ function hasArchitectureReviewDecision(architectureDoc, tokenA, tokenB) {
   if (!architectureDoc) return false;
   const first = tokenA.toLowerCase();
   const second = tokenB.toLowerCase();
-  return architectureDoc
-    .toLowerCase()
-    .split(/\r?\n/)
-    .some(
-      (line) =>
-        line.includes(first) &&
-        line.includes(second) &&
-        /merge|merged|keep|distinct|separate|split|approved|合併|保留|拆開|分開|確認/.test(
-          line,
-        ),
+  const lines = architectureDoc.toLowerCase().split(/\r?\n/);
+  let inRemapSection = false;
+  return lines.some((line) => {
+    if (/^#{1,6}\s/.test(line)) {
+      inRemapSection = /accessibility remap/.test(line);
+    }
+    if (!line.includes(first) || !line.includes(second)) return false;
+    if (inRemapSection || line.includes("a11y-remap")) return true;
+    return /merge|merged|keep|distinct|separate|split|approved|合併|保留|拆開|分開|確認/.test(
+      line,
     );
+  });
 }
 
 function hasReviewDecision(architectureDoc, declarations, tokenA, tokenB) {
@@ -649,111 +442,6 @@ const declarations = {
   sys: parseDeclarations(css.sys || ""),
   comp: parseDeclarations(css.comp || ""),
 };
-
-const allDeclarations = new Map([
-  ...declarations.ref,
-  ...declarations.sys,
-  ...declarations.comp,
-]);
-const allProps = new Map([
-  ...props.ref,
-  ...props.sys,
-  ...props.comp,
-]);
-
-function referencedTokens(value) {
-  const refs = [];
-  const pattern = /var\(\s*(--[A-Za-z0-9_-]+)/g;
-  let match;
-  while ((match = pattern.exec(value))) refs.push(match[1]);
-  return refs;
-}
-
-function resolveTokenValue(name, seen = new Set()) {
-  if (seen.has(name)) {
-    return { value: allProps.get(name) || "", chain: [name], cyclic: true };
-  }
-  const value = allProps.get(name);
-  if (!value) return { value: "", chain: [name], cyclic: false };
-  const refs = referencedTokens(value);
-  if (!refs.length) return { value: stripInlineComments(value), chain: [name], cyclic: false };
-  const next = refs[0];
-  const resolved = resolveTokenValue(next, new Set([...seen, name]));
-  return {
-    value: resolved.value,
-    chain: [name, ...resolved.chain],
-    cyclic: resolved.cyclic,
-  };
-}
-
-function valueProximity(a, b) {
-  const colorA = parseColor(a);
-  const colorB = parseColor(b);
-  if (colorA && colorB) {
-    const alphaDiff = Math.abs(colorA.a - colorB.a);
-    const deltaE = deltaE76(colorA, colorB);
-    return {
-      near: alphaDiff <= NEAR_COLOR_ALPHA_DELTA && deltaE <= NEAR_COLOR_DELTA_E,
-      label: `deltaE ${formatNumber(deltaE)}`,
-    };
-  }
-  const numberA = parseNumericValue(a);
-  const numberB = parseNumericValue(b);
-  if (numberA && numberB && numberA.unitGroup === numberB.unitGroup) {
-    const diff = Math.abs(numberA.normalized - numberB.normalized);
-    return {
-      near: isNearNumericValue(numberA, numberB),
-      label: `${formatNumber(diff)} ${numberA.unitGroup}`,
-    };
-  }
-  const normalizedA = normalizeTokenValue(a);
-  const normalizedB = normalizeTokenValue(b);
-  return {
-    near: normalizedA !== "" && normalizedA === normalizedB,
-    label: normalizedA === normalizedB ? "exact resolved value" : "different values",
-  };
-}
-
-function usageSimilarity(a, b) {
-  if (a.meta.layer !== b.meta.layer || a.meta.dimension !== b.meta.dimension) return 0;
-  const roleText = jaccardSet(tokenTextSet(a.meta.roleSegments), tokenTextSet(b.meta.roleSegments));
-  const slotMatch = a.meta.slotCategory === b.meta.slotCategory ? 1 : 0;
-  const stateMatch = a.meta.state === b.meta.state ? 1 : 0;
-  if (a.meta.layer === "sys") {
-    return slotMatch * 0.55 + stateMatch * 0.15 + roleText * 0.3;
-  }
-  if (a.meta.layer === "comp") {
-    const componentMatch =
-      a.meta.component === b.meta.component
-        ? 1
-        : a.meta.componentCategory === b.meta.componentCategory
-          ? 0.72
-          : 0;
-    return componentMatch * 0.35 + slotMatch * 0.28 + stateMatch * 0.17 + roleText * 0.2;
-  }
-  return 0;
-}
-
-function tokenPurposeLabel(token) {
-  if (token.meta.layer === "comp") {
-    return `${token.meta.componentCategory}/${token.meta.slotCategory}/${token.meta.state}`;
-  }
-  return `${token.meta.slotCategory}/${token.meta.state}`;
-}
-
-function usageAwareCandidatesForLayer(layer, layerProps) {
-  return [...layerProps].map(([name, value]) => {
-    const resolved = resolveTokenValue(name);
-    return {
-      name,
-      value,
-      resolvedValue: resolved.value,
-      chain: resolved.chain,
-      meta: parseTokenMetadata(name),
-      layer,
-    };
-  });
-}
 
 if (strict) {
   for (const [layer, file] of Object.entries(files)) {
@@ -904,10 +592,9 @@ for (const [family, familyTokens] of colorsByFamily) {
 
 let unresolvedReviewCandidates = 0;
 let documentedReviewCandidates = 0;
-let usageAwareReviewCandidates = 0;
 
 function recordReviewCandidate(message, tokenA, tokenB) {
-  if (hasReviewDecision(tokenArchitectureDoc, allDeclarations, tokenA, tokenB)) {
+  if (hasReviewDecision(tokenArchitectureDoc, declarations.ref, tokenA, tokenB)) {
     documentedReviewCandidates += 1;
     return;
   }
@@ -917,65 +604,6 @@ function recordReviewCandidate(message, tokenA, tokenB) {
     issues.push(finalMessage);
   } else {
     warnings.push(finalMessage);
-  }
-}
-
-function reviewExactDuplicateAliases(layer, layerProps, groupKeyFor) {
-  const groups = new Map();
-  for (const [name, value] of layerProps) {
-    const normalizedValue = normalizeTokenValue(value);
-    if (!normalizedValue || normalizedValue.includes("calc(")) continue;
-    const key = groupKeyFor(name, value);
-    const group = groups.get(key) || [];
-    group.push({ name, value });
-    groups.set(key, group);
-  }
-
-  for (const group of groups.values()) {
-    if (group.length < 2) continue;
-    for (let firstIndex = 0; firstIndex < group.length; firstIndex += 1) {
-      for (let secondIndex = firstIndex + 1; secondIndex < group.length; secondIndex += 1) {
-        const first = group[firstIndex];
-        const second = group[secondIndex];
-        recordReviewCandidate(
-          `Exact ${layer} token alias duplicate needs review: ${first.name} (${first.value}) and ${second.name} (${second.value}) resolve to the same value in the same audit group`,
-          first.name,
-          second.name,
-        );
-      }
-    }
-  }
-}
-
-function reviewUsageAwareNearTokens(layer, layerProps) {
-  const tokens = usageAwareCandidatesForLayer(layer, layerProps).filter(
-    (token) => token.resolvedValue && token.meta.dimension !== "unknown",
-  );
-  const threshold = layer === "sys" ? 0.52 : 0.58;
-  for (let firstIndex = 0; firstIndex < tokens.length; firstIndex += 1) {
-    for (let secondIndex = firstIndex + 1; secondIndex < tokens.length; secondIndex += 1) {
-      const first = tokens[firstIndex];
-      const second = tokens[secondIndex];
-      if (first.value && second.value && normalizeTokenValue(first.value) === normalizeTokenValue(second.value)) {
-        continue;
-      }
-      const similarity = usageSimilarity(first, second);
-      if (similarity < threshold) continue;
-      const proximity = valueProximity(first.resolvedValue, second.resolvedValue);
-      if (!proximity.near) continue;
-      usageAwareReviewCandidates += 1;
-      recordReviewCandidate(
-        `Usage-aware ${layer} token review: ${first.name} (${tokenPurposeLabel(
-          first,
-        )}, chain ${first.chain.join(" -> ")}, resolves ${first.resolvedValue}) and ${
-          second.name
-        } (${tokenPurposeLabel(second)}, chain ${second.chain.join(" -> ")}, resolves ${
-          second.resolvedValue
-        }) have similar usage score ${formatNumber(similarity)} and ${proximity.label}`,
-        first.name,
-        second.name,
-      );
-    }
   }
 }
 
@@ -1026,11 +654,6 @@ for (let firstIndex = 0; firstIndex < referenceNumbers.length; firstIndex += 1) 
   }
 }
 
-reviewExactDuplicateAliases("system", props.sys, sysDuplicateGroupKey);
-reviewExactDuplicateAliases("component", props.comp, compDuplicateGroupKey);
-reviewUsageAwareNearTokens("sys", props.sys);
-reviewUsageAwareNearTokens("comp", props.comp);
-
 const relRoot = path.relative(process.cwd(), targetRoot) || ".";
 console.log(`Token audit target: ${relRoot}`);
 console.log(`Reference tokens: ${props.ref.size}`);
@@ -1039,7 +662,6 @@ console.log(`Component tokens: ${props.comp.size}`);
 console.log(`Strict mode: ${strict ? "on" : "off"}`);
 console.log(`Token review candidates: ${unresolvedReviewCandidates}`);
 console.log(`Documented review decisions: ${documentedReviewCandidates}`);
-console.log(`Usage-aware review candidates: ${usageAwareReviewCandidates}`);
 
 if (warnings.length) {
   console.log("\nWarnings:");

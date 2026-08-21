@@ -150,10 +150,9 @@ function parseComponentEvidence(file) {
     if (!cells || cells.length < 2) continue;
     if (/^evidence id$/i.test(cells[0]) || /^-+$/.test(cells[0])) continue;
 
-    for (const cellValue of cells) {
-      linkComponentToSourceId(stripFormatting(cellValue), component, file, lineNumber);
-    }
-    scanTextForSources(cells.join(" "), file, lineNumber, component);
+    const sourceCell = stripFormatting(cells[1]);
+    linkComponentToSourceId(sourceCell, component, file, lineNumber);
+    scanTextForSources(sourceCell, file, lineNumber, component);
   }
 
   for (const { line, lineNumber } of lines.map((line, index) => ({ line, lineNumber: index + 1 }))) {
@@ -256,7 +255,20 @@ function inferType(locator, declaredType = "") {
   const value = String(locator).toLowerCase();
 
   if (declared.includes("figma") || value.startsWith("figma:") || value.includes("figma.com/")) return "figma";
-  if (declared.includes("image") || declared.includes("screenshot") || declared.includes("crop") || IMAGE_EXT.test(value)) return "image";
+  if (
+    declared.includes("image")
+    || declared.includes("screenshot")
+    || declared.includes("crop")
+    || declared.includes("graphic")
+    || declared.includes("brand")
+    || declared.includes("editorial")
+    || declared.includes("poster")
+    || declared.includes("social")
+    || declared.includes("marketing")
+    || IMAGE_EXT.test(value)
+  ) {
+    return "image";
+  }
   if (declared.includes("rendered") || declared.includes("route") || isRenderedRoute(value)) return "rendered-route";
   if (
     declared.includes("frontend")

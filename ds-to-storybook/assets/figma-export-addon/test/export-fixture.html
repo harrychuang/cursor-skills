@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>figma-export fixture</title>
+<style>
+  :root {
+    --fx-ref-color-blue: #3366ff;
+    --fx-ref-color-teal: hsl(210, 50%, 40%);
+    --fx-ref-spacing-3: 12px;
+    --fx-ref-typeface-grotesque: "Helvetica Neue", Helvetica, "Arial Narrow", Arial, sans-serif;
+    --fx-sys-color-primary: var(--fx-ref-color-blue);
+    --fx-sys-color-accent: var(--fx-ref-color-teal);
+    --fx-sys-spacing-gap: var(--fx-ref-spacing-3);
+    --fx-sys-typescale-label-family: var(--fx-ref-typeface-grotesque);
+    --fx-comp-card-color-bg: var(--fx-sys-color-primary);
+    --fx-comp-caption-font-family: var(--fx-sys-typescale-label-family);
+    --fx-ref-line-height-130: 1.3;
+    --fx-sys-typescale-body-line-height: var(--fx-ref-line-height-130);
+    --fx-ref-line-height-20: 20px;
+    --fx-sys-typescale-caption-line-height: var(--fx-ref-line-height-20);
+    --fx-ref-spacing-2: 8px;
+    --fx-sys-spacing-inset: var(--fx-ref-spacing-2);
+  }
+
+  body { font-family: Arial, sans-serif; margin: 16px; }
+
+  #scope > div[data-component="fixture-root"] {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-start;
+    width: 640px;
+  }
+
+  .case-oklch { width: 120px; height: 40px; background-color: oklch(0.7 0.15 200); }
+
+  .case-shadow {
+    width: 120px; height: 40px; background-color: #ffffff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .case-inset-shadow {
+    width: 120px; height: 40px; background-color: #ffffff;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .case-corners {
+    width: 120px; height: 40px; background-color: #dddddd;
+    border-radius: 8px 8px 0px 0px;
+  }
+
+  .case-margin-row { display: flex; background-color: #f5f5f5; padding: 4px; }
+  .case-margin-row > div { width: 40px; height: 20px; background-color: #999999; }
+  .case-margin-row > div:not(:last-child) { margin-right: 12px; }
+
+  .case-uneven-row { display: flex; background-color: #f5f5f5; padding: 4px; }
+  .case-uneven-row > div { width: 40px; height: 20px; background-color: #999999; }
+  .case-uneven-row > .uneven-first { margin-right: 8px; }
+  .case-uneven-row > .uneven-second { margin-right: 24px; }
+
+  .case-reverse { display: flex; flex-direction: row-reverse; gap: 10px; background-color: #f5f5f5; }
+  .case-reverse > div { width: 40px; height: 20px; }
+  .item-a { background-color: #cc3333; }
+  .item-b { background-color: #33cc33; }
+  .item-c { background-color: #3333cc; }
+
+  .case-wrap {
+    display: flex; flex-wrap: wrap; gap: 12px 8px;
+    width: 200px; background-color: #f5f5f5;
+  }
+  .case-wrap > div { width: 60px; height: 24px; background-color: #aaaaaa; }
+
+  .case-raster { width: 40px; height: 40px; object-fit: cover; }
+  .case-raster-big { width: 300px; height: 150px; object-fit: cover; }
+
+  .case-uppercase { text-transform: uppercase; font-size: 14px; }
+  .case-multiline { font-size: 14px; width: 200px; }
+  .case-letterspacing {
+    font-size: 14px; letter-spacing: 0.5px; text-decoration: underline;
+  }
+  .case-italic { font-size: 14px; font-style: italic; }
+  .case-font-stack {
+    font-family: var(--fx-comp-caption-font-family);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .case-text-shadow { font-size: 14px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); }
+
+  .case-media-token { width: 120px; height: 40px; background-color: #dd4444; }
+  @media (max-width: 600px) {
+    .case-media-token { background-color: var(--fx-sys-color-primary); }
+  }
+
+  .spec-a.spec-b { background-color: var(--fx-comp-card-color-bg); }
+  .case-specificity { width: 120px; height: 40px; }
+  .spec-b { background-color: var(--fx-sys-color-accent); }
+
+  .case-hsl-token { width: 120px; height: 40px; background-color: var(--fx-sys-color-accent); }
+
+  .case-plain { width: 120px; height: 40px; background-color: #eeeeee; }
+
+  .case-mixed-inline { font-size: 14px; width: 360px; }
+  .case-mixed-inline strong { font-weight: 700; }
+
+  .case-multiline-flex { display: flex; flex-direction: column; width: 220px; background-color: #f5f5f5; }
+  .case-multiline-flex p { margin: 0; font-size: 14px; line-height: 20px; }
+
+  .case-space-around { display: flex; justify-content: space-around; width: 300px; background-color: #f5f5f5; }
+  .case-space-around > div { width: 40px; height: 20px; background-color: #999999; }
+
+  .case-border-row { display: flex; gap: 10px; border: 3px solid #333333; padding: 8px; width: 200px; background-color: #ffffff; }
+  .case-border-row > div { width: 40px; height: 20px; background-color: #999999; }
+
+  .case-column-gap { display: flex; flex-direction: column; row-gap: 14px; column-gap: 50px; width: 60px; background-color: #f5f5f5; }
+  .case-column-gap > div { width: 40px; height: 10px; background-color: #999999; }
+
+  .case-bg-image { width: 80px; height: 40px; background-size: cover; }
+  .case-bg-layers { width: 80px; height: 40px; }
+  .case-radial { width: 80px; height: 40px; background-image: radial-gradient(circle at center, #ff0000 0%, #0000ff 100%); }
+  .case-corner-gradient { width: 80px; height: 40px; background-image: linear-gradient(to top right, #ff0000, #0000ff); }
+
+  .case-line-clamp {
+    width: 160px; font-size: 14px; line-height: 20px;
+    display: -webkit-box; -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; overflow: hidden;
+  }
+
+  .case-blur { width: 80px; height: 40px; background-color: #123456; filter: blur(4px); }
+  .case-backdrop { width: 80px; height: 40px; background-color: rgba(255, 255, 255, 0.4); backdrop-filter: blur(6px); }
+  .case-dashed { width: 120px; height: 40px; border: 2px dashed #cc0000; }
+
+  .contents-wrapper { display: contents; }
+  .case-contents { width: 120px; height: 60px; background-color: #f5f5f5; position: relative; }
+  .case-contents .lifted { width: 40px; height: 20px; background-color: #999999; }
+
+  .case-zindex { position: relative; width: 120px; height: 40px; background-color: #f5f5f5; }
+  .case-zindex .z-high { position: absolute; left: 0; top: 0; width: 60px; height: 40px; z-index: 2; background-color: #cc3333; }
+  .case-zindex .z-low { position: absolute; left: 30px; top: 0; width: 60px; height: 40px; z-index: 1; background-color: #3333cc; }
+
+  .fixture-input {
+    box-sizing: border-box; width: 200px; height: 40px; padding: 8px 12px;
+    border: 1px solid #888888; border-radius: 6px; background-color: #ffffff;
+    color: #222222; font-size: 14px; font-family: Arial, sans-serif;
+  }
+  .case-textarea {
+    box-sizing: border-box; width: 200px; height: 64px; padding: 8px 12px;
+    border: 1px solid #888888; background-color: #ffffff; color: #222222;
+    font-size: 14px;
+  }
+
+  .case-rotate { position: relative; width: 80px; height: 80px; background-color: #f5f5f5; }
+  .case-rotate .diamond {
+    position: absolute; left: 20px; top: 20px; width: 40px; height: 40px;
+    background-color: #cc3344; transform: rotate(45deg);
+  }
+  .case-rotate .diamond-inner {
+    display: inline-block; transform: rotate(-45deg);
+    font-size: 14px; color: #ffffff; margin: 10px 0 0 14px;
+  }
+  .case-scale { position: relative; width: 80px; height: 40px; background-color: #f5f5f5; }
+  .case-scale .scaled {
+    position: absolute; left: 0; top: 0; width: 40px; height: 20px;
+    transform: scale(1.5); transform-origin: top left; background-color: #3344cc;
+  }
+  .case-rasterize { width: 80px; height: 40px; background: conic-gradient(#ff0000, #0000ff); }
+
+  .case-ratio-line-height { width: 220px; font-size: 14px; line-height: var(--fx-sys-typescale-body-line-height); }
+  .case-px-line-height { width: 220px; font-size: 14px; line-height: var(--fx-sys-typescale-caption-line-height); }
+  .case-padding-token-border {
+    display: flex; gap: 6px; width: 200px;
+    border: 2px solid #444444; padding: var(--fx-sys-spacing-inset);
+    background-color: #ffffff;
+  }
+  .case-padding-token-border > div { width: 40px; height: 16px; background-color: #999999; }
+</style>
+</head>
+<body>
+<div id="scope">
+  <div data-component="fixture-root">
+    <div data-component="case-oklch" class="case-oklch"></div>
+    <div data-component="case-shadow" class="case-shadow"></div>
+    <div data-component="case-inset-shadow" class="case-inset-shadow"></div>
+    <div data-component="case-corners" class="case-corners"></div>
+    <div data-component="case-margin-row" class="case-margin-row">
+      <div></div><div></div><div></div>
+    </div>
+    <div data-component="case-uneven-row" class="case-uneven-row">
+      <div class="uneven-first"></div><div class="uneven-second"></div><div></div>
+    </div>
+    <div data-component="case-reverse" class="case-reverse">
+      <div class="item-a"></div><div class="item-b"></div><div class="item-c"></div>
+    </div>
+    <div data-component="case-wrap" class="case-wrap">
+      <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+    <img data-component="case-raster" class="case-raster" alt="" />
+    <img data-component="case-raster-big" class="case-raster-big" alt="" />
+    <span data-component="case-uppercase" class="case-uppercase">Submit order</span>
+    <div data-component="case-multiline" class="case-multiline">Line one<br />Line two</div>
+    <span data-component="case-letterspacing" class="case-letterspacing">Tracked underline</span>
+    <span data-component="case-italic" class="case-italic">Italic note</span>
+    <span data-component="case-font-stack" class="case-font-stack">Fallback family</span>
+    <span data-component="case-text-shadow" class="case-text-shadow">Shadowed text</span>
+    <div data-component="case-media-token" class="case-media-token"></div>
+    <div data-component="case-specificity" class="case-specificity spec-a spec-b"></div>
+    <div data-component="case-hsl-token" class="case-hsl-token"></div>
+    <div data-component="case-plain" class="case-plain"></div>
+    <shadow-case data-component="case-shadow-dom"></shadow-case>
+    <div data-component="case-mixed-inline" class="case-mixed-inline">Hello <strong>bold</strong> tail</div>
+    <div data-component="case-multiline-flex" class="case-multiline-flex">
+      <p>This paragraph is long enough to wrap onto several lines inside its narrow column container.</p>
+    </div>
+    <div data-component="case-space-around" class="case-space-around">
+      <div></div><div></div><div></div>
+    </div>
+    <div data-component="case-border-row" class="case-border-row">
+      <div></div><div></div>
+    </div>
+    <div data-component="case-column-gap" class="case-column-gap">
+      <div></div>
+    </div>
+    <div data-component="case-bg-image" class="case-bg-image"></div>
+    <div data-component="case-bg-layers" class="case-bg-layers"></div>
+    <div data-component="case-radial" class="case-radial"></div>
+    <div data-component="case-corner-gradient" class="case-corner-gradient"></div>
+    <div data-component="case-line-clamp" class="case-line-clamp">This clamped paragraph keeps only two lines visible even though the source text keeps going on and on.</div>
+    <div data-component="case-blur" class="case-blur"></div>
+    <div data-component="case-backdrop" class="case-backdrop"></div>
+    <div data-component="case-dashed" class="case-dashed"></div>
+    <div data-component="case-contents" class="case-contents">
+      <div class="contents-wrapper">
+        <div class="lifted"></div>
+        <div class="lifted"></div>
+      </div>
+    </div>
+    <div data-component="case-zindex" class="case-zindex">
+      <div class="z-high"></div>
+      <div class="z-low"></div>
+    </div>
+    <input data-component="case-input-value" class="fixture-input" value="Hello value" readonly />
+    <input data-component="case-input-placeholder" class="fixture-input" placeholder="Type here" />
+    <input data-component="case-input-password" class="fixture-input" type="password" value="secret" />
+    <select data-component="case-select" class="fixture-input">
+      <option>First option</option>
+      <option selected>Chosen option</option>
+    </select>
+    <textarea data-component="case-textarea" class="case-textarea" readonly>Multi line textarea content</textarea>
+    <div data-component="case-rotate" class="case-rotate">
+      <div class="diamond"></div>
+    </div>
+    <div data-component="case-rotate-nested" class="case-rotate">
+      <div class="diamond"><span class="diamond-inner">7</span></div>
+    </div>
+    <div data-component="case-scale" class="case-scale">
+      <div class="scaled"></div>
+    </div>
+    <div data-component="case-rasterize" class="case-rasterize" data-figma-rasterize="true"></div>
+    <span data-component="case-ratio-line-height" class="case-ratio-line-height">Ratio line height</span>
+    <span data-component="case-px-line-height" class="case-px-line-height">Pixel line height</span>
+    <div data-component="case-padding-token-border" class="case-padding-token-border">
+      <div></div><div></div>
+    </div>
+  </div>
+</div>
+<div id="ref-scope">
+  <div data-component="ref-root" style="width: 120px; height: 60px; background-color: #3366ff"></div>
+</div>
+<pre id="payload-output" style="display: none"></pre>
+<pre id="reference-output" style="display: none"></pre>
+<pre id="payload-error" style="display: none"></pre>
+<script src="./.export-fixture.bundle.js"></script>
+<script>
+  function toBase64Utf8(text) {
+    return btoa(unescape(encodeURIComponent(text)));
+  }
+
+  // Web component with an open shadow root; its inner styles arrive through
+  // an adoptedStyleSheet that binds background-color to a sys color token.
+  class ShadowCase extends HTMLElement {
+    connectedCallback() {
+      const root = this.attachShadow({ mode: "open" });
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(
+        ":host { display: block; } " +
+          ".shadow-inner { width: 120px; height: 40px; background-color: var(--fx-sys-color-primary); }",
+      );
+      root.adoptedStyleSheets = [sheet];
+      const inner = document.createElement("div");
+      inner.className = "shadow-inner";
+      root.append(inner);
+    }
+  }
+  customElements.define("shadow-case", ShadowCase);
+
+  function makePngDataUrl(width, height, color) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    context.fillStyle = color;
+    context.fillRect(0, 0, width, height);
+    return canvas.toDataURL("image/png");
+  }
+
+  // Assign raster sources synchronously during parsing so both images take
+  // part in the window load event; img.decode() is unreliable under headless
+  // virtual time, so the export must not depend on it.
+  document.querySelector('[data-component="case-raster"]').src =
+    makePngDataUrl(64, 64, "#cc4444");
+  document.querySelector('[data-component="case-raster-big"]').src =
+    makePngDataUrl(3000, 1500, "#4488cc");
+
+  // CSS background images use the same synchronous data URLs.
+  const fixtureBgUrl = makePngDataUrl(32, 32, "#22aa66");
+  document.querySelector('[data-component="case-bg-image"]').style.backgroundImage =
+    "url(" + fixtureBgUrl + ")";
+  document.querySelector('[data-component="case-bg-layers"]').style.backgroundImage =
+    "linear-gradient(rgba(255, 0, 0, 0.5), rgba(0, 0, 255, 0.5)), url(" + fixtureBgUrl + ")";
+
+  async function runFixtureExport() {
+    try {
+      const exportApi = window.FigmaExportFixture;
+      // The browser-reference capture is verified on a small dedicated scope:
+      // rasterizing the full fixture page starves headless virtual time.
+      const payload = await exportApi.createFigmaExportPayload({
+        componentTitle: "Fixture",
+        options: exportApi.resolveFigmaExportAddonOptions({
+          referenceImage: false,
+          storyTitlePrefix: false,
+        }),
+        scope: document.getElementById("scope"),
+        storyId: "fixture--all",
+        storyName: "All",
+        storyTitle: "Fixture/All",
+      });
+
+      document.getElementById("payload-output").textContent = toBase64Utf8(
+        JSON.stringify(payload),
+      );
+
+      // html-to-image is occasionally flaky under headless virtual time, so
+      // the reference capture retries in-page before reporting.
+      let referencePayload;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        referencePayload = await exportApi.createFigmaExportPayload({
+          componentTitle: "Reference",
+          options: exportApi.resolveFigmaExportAddonOptions({ storyTitlePrefix: false }),
+          scope: document.getElementById("ref-scope"),
+          storyId: "fixture--reference",
+          storyName: "Reference",
+          storyTitle: "Fixture/Reference",
+        });
+        if (referencePayload.reference) break;
+      }
+      document.getElementById("reference-output").textContent = toBase64Utf8(
+        JSON.stringify({ reference: referencePayload.reference ?? null }),
+      );
+      document.title = "EXPORT_DONE";
+    } catch (error) {
+      document.getElementById("payload-error").textContent = toBase64Utf8(
+        String(error && error.stack ? error.stack : error),
+      );
+      document.title = "EXPORT_ERROR";
+    }
+  }
+
+  window.addEventListener("load", () => {
+    runFixtureExport();
+  });
+</script>
+</body>
+</html>

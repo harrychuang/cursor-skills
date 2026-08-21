@@ -12,7 +12,7 @@
 - Package manager:
 - Token import strategy:
 - Target layout: components in `src/components/<ComponentName>/`, pages in `src/pages/<PageName>/`, foundation docs in `stories/` or `src/stories/`
-- Figma export structure: stable roots, data attributes, class prefixes, token bindings, and exceptions tracked per component
+- Typographic components: implement text lockups as editable shared components in `src/components/<ComponentName>/` unless the extraction explicitly requires raster artwork
 - Current batch:
 
 ## Status Values
@@ -47,11 +47,12 @@
 | Source inspected |  |
 | Existing component review |  |
 | Token decision |  |
-| Figma export structure |  |
+| State coverage confirmed |  |
 | Product files |  |
 | Story files |  |
 | Target layout |  |
 | Verification |  |
+| Parity report |  |
 | Blocker / next action |  |
 
 ## Dependency Plan
@@ -64,13 +65,25 @@
 
 | Batch | Order | Component | Category | Source spec | Design sources | Story source URL | Depends on | Used by | Product target | Story target | Decision | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `B01` | 1 |  |  |  |  |  |  |  | `src/components/<ComponentName>/<ComponentName>.tsx` | `src/components/<ComponentName>/<ComponentName>.stories.tsx` |  | queued |
+| `B01` | 1 |  | typographic |  |  |  |  |  | `src/components/<ComponentName>/<ComponentName>.tsx` | `src/components/<ComponentName>/<ComponentName>.stories.tsx` |  | queued |
 
 ## Batch Plan
 
 | Batch | Components | Shared dependencies | Design sources | Dependency exit criteria | Validation | Status |
 |---|---|---|---|---|---|---|
 | `B01` |  |  |  | all listed dependencies are done, reused, or accepted blocked decisions |  | queued |
+
+## State Coverage
+
+One row per component/state pair, filled in and confirmed with the user **before** the batch starts. Coverage is `evidenced` (a source proves it), `inferred` (a proposed extrapolation that needs confirmation), or `out-of-scope` (deliberately not built — must stay visible in stories/docs, never silently missing).
+
+| Component | State | Coverage | Evidence / reason | Confirmed by |
+|---|---|---|---|---|
+|  | default |  |  |  |
+|  | loading |  |  |  |
+|  | empty |  |  |  |
+|  | error |  |  |  |
+|  | disabled |  |  |  |
 
 ## Decisions
 
@@ -93,12 +106,6 @@
 | `.storybook/preview.*` decorator/globals |  |  |  |
 | Review helper / status API |  |  |  |
 | Token prefix/options |  |  |  |
-
-## Figma Export Structure
-
-| Component or story | Root marker | Variant/state markers | Stable class prefix | Token bindings | Unsupported CSS/DOM risks | Export verification | Status |
-|---|---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  | queued |
 
 ## Verification Log
 

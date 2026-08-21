@@ -1,18 +1,28 @@
-import { copyFileSync, unlinkSync } from "node:fs";
+import { copyFileSync, readFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { defineConfig } from "tsup";
 
+const { version } = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf8"),
+) as { version: string };
+
 export default defineConfig({
   clean: true,
+  define: {
+    __SBFX_VERSION__: JSON.stringify(version),
+  },
   dts: true,
   entry: {
     index: "src/index.ts",
-    preview: "src/preview.tsx",
+    preview: "src/preview.ts",
     preset: "src/preset.ts",
     manager: "src/manager-entry.ts",
     review: "src/review.ts",
+    "review-controller": "src/reviewController.ts",
     "review-server": "src/review-server.ts",
     source: "src/source.ts",
+    "visual-comment-store": "src/visualCommentStore.ts",
+    "visual-comment-report": "src/visualCommentReport.ts",
   },
   external: [
     "react",
@@ -47,8 +57,11 @@ export default defineConfig({
       "index.css",
       "preview.css",
       "review.css.map",
+      "review-server.js.map",
+      "review.js.map",
       "index.css.map",
       "preview.css.map",
+      "source.js.map",
     ]) {
       try {
         unlinkSync(join("dist", artifact));

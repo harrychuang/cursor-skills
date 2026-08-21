@@ -4,20 +4,13 @@ Use these rules when extracting components from references.
 
 ## Component Selection
 
-Extract components when a pattern is repeated, central to navigation or conversion, structurally reusable, or token-heavy enough to block implementation.
-
-For graphic design references, extract reusable text combinations as typographic components when they express a repeatable hierarchy or layout relationship, even if the source is a flat poster, banner, ad, editorial spread, social card, or brand graphic rather than an interactive UI. Do not reduce these to typography tokens only; tokens describe values, while typographic components describe how text slots combine.
+Extract components when a pattern is repeated, central to navigation, conversion, brand expression, editorial hierarchy, information display, structurally reusable, or token-heavy enough to block implementation.
 
 Common first components:
 
 - primary action button
 - secondary / inverse button
 - icon action button
-- typographic hero lockup
-- typographic section heading
-- typographic metric pair
-- typographic price stack
-- typographic caption overlay
 - bottom navigation
 - top app bar
 - list row
@@ -25,6 +18,42 @@ Common first components:
 - chip / segmented selector
 - avatar / contact item
 - data row / metric row
+- hero title lockup
+- editorial heading stack
+- metric lockup
+- quote lockup
+- label/value text group
+
+## Typographic Components / Text Lockups
+
+Typographic components are reusable text compositions, not isolated font tokens. Use typography foundations for atomic values like font family, size, weight, line height, and letter spacing. Create a typographic component only when the reference shows a stable text grouping with reusable slots, hierarchy, layout behavior, and tokenized relationships.
+
+Common text-lockup slots:
+
+- kicker / eyebrow
+- headline / title
+- subhead / supporting text
+- body excerpt
+- number
+- unit
+- caption
+- attribution
+- label
+- value
+
+Good candidates:
+
+- repeated heading stacks across pages, posters, social cards, or editorial layouts
+- brand-critical title treatments that set future layout rules
+- metric or price lockups with stable number, unit, caption, and alignment rules
+- quote compositions with repeatable quote, attribution, and source slots
+
+Poor candidates:
+
+- one-off art-directed lettering
+- copy that is only unique campaign content with no reusable structure
+- isolated font-size or weight choices that belong in typography foundations
+- text embedded in a raster image when no future editable usage is expected
 
 ## Required Component Spec Sections
 
@@ -34,7 +63,6 @@ Each component spec must include:
 
 - Purpose
 - Evidence
-- Source Trace
 - Component fingerprint
 - Anatomy
 - Variants
@@ -46,60 +74,24 @@ Each component spec must include:
 - Do / Don't
 - Implementation notes
 
+For native iOS/Android sources, also include platform mapping in the implementation notes: SwiftUI view/modifier names, UIKit class or style names, Compose composable/modifier names, Android XML layout/style/view names, resource files, and source screenshots/previews/captures that prove usage.
+
 ## Component Fingerprint
 
 Before creating a new component spec, summarize the candidate as a fingerprint:
 
 | Dimension | What to capture |
 |---|---|
-| Purpose / behavior | action, navigation, selection, display-only, data entry, feedback, or layout container |
-| Anatomy | slots such as container, icon, label, media, metadata, badge, divider, state layer |
-| Variants / states | default, selected, active, disabled, loading, density, hierarchy, emphasis |
-| Token contract summary | main color, type, spacing, radius, elevation, size, and state tokens |
-| Layout / density | height, padding, gap, alignment, truncation, responsive behavior |
+| Purpose / behavior | action, navigation, selection, display-only, data entry, feedback, layout container, brand expression, editorial hierarchy, or information display |
+| Anatomy | slots such as container, icon, label, media, metadata, badge, divider, state layer, kicker, headline, subhead, number, unit, caption, attribution |
+| Variants / states | default, selected, active, disabled, loading, density, hierarchy, emphasis, scale, alignment, theme, or display mode |
+| Token contract summary | main color, type, spacing, radius, elevation, size, state, hierarchy, and slot relationship tokens |
+| Layout / density | height, padding, gap, alignment, truncation, responsive behavior, line breaks, max line length, and text wrapping behavior |
 | Visual reference | Figma node preview/screenshot or screenshot crop; schematic SVG only as labeled fallback |
+| Native platform mapping | iOS/Android source symbols, resource names, preview/screenshot-test/capture evidence, and reachability when applicable |
 | Similar components reviewed | matching existing components and final decision |
 
-Similarity review compares purpose and behavior first. Visual similarity alone is not enough to merge components; different behavior may require separate components or variants.
-
-## Typographic Components
-
-Use a `typographic-` filename prefix when the component's main job is a reusable text composition rather than a control or container. Examples include `typographic-hero-lockup.md`, `typographic-section-heading.md`, `typographic-metric-pair.md`, `typographic-price-stack.md`, `typographic-caption-overlay.md`, and `typographic-pull-quote.md`.
-
-Typographic component specs must capture:
-
-- text slots: kicker, eyebrow, headline, title, subtitle, deck, body, label, value, qualifier, metadata, caption, legal copy, or CTA text
-- hierarchy: relative size, weight, case, line-height, tracking, contrast, and emphasis between slots
-- composition: stacking order, inline vs stacked pairing, alignment, line-break behavior, max width, gap, indentation, baseline rhythm, and relationship to imagery or overlays
-- responsive rules: allowed wrapping, minimum/maximum lines, truncation, slot hiding rules, and how hierarchy changes across viewports
-- content rules: punctuation, casing, numeral formatting, line length, allowed emphasis, localization risk, and whether copy may be authored freely or must use a fixed pattern
-- accessibility: semantic heading level guidance, reading order, contrast, screen-reader wording for numbers/prices, and whether decorative text should be hidden
-
-Treat one-off lettering, logos, or artwork as imagery/brand assets unless the same text relationship should become a reusable product pattern.
-
-The audit script automatically compares component fingerprints from `COMPONENT_INVENTORY.md` and `design-system/components/*.md`. Similarity scoring weights purpose/behavior first, then anatomy, variants/states, token contract, and layout/density. Any automatic candidate must be resolved in the inventory similarity table before the extraction checkpoint passes strict audit.
-
-## Source Trace
-
-Record the implementation lookup chain for every extracted component:
-
-| Trace type | What to capture |
-|---|---|
-| Figma node / design URL | exact file/design URL, canonical node URL with `node-id`, selected node name, component set, or page/frame reference |
-| Figma MCP target | file key, MCP node id using `:`, page/frame/node names, variable collection when relevant, and suggested calls such as `get_design_context`, `get_screenshot`, `get_metadata`, or `get_variable_defs` |
-| Screenshot crop / export | path to the crop/export that shows the component and state |
-| Rendered route / viewport / state | local route or captured route, viewport, state, and command when available |
-| Prototype or source files | reference component files, CSS files, token files, or route owners inspected during extraction |
-| Existing product component candidates | product components that appear reusable or close enough for downstream review |
-
-If a trace type is unavailable, write `not available` and explain why. If a Figma URL exists but the MCP target cannot be confirmed, write `unresolved - <reason>` in the Figma MCP target row. Do not leave trace rows blank. Downstream implementation skills use this section to find the original design or code reference without doing a fresh design-system extraction.
-
-For Figma components, preserve both forms of identity:
-
-- the shareable Figma URL with `node-id=12-34`
-- the MCP node id / normalized fingerprint form `figma:<file-key>#12:34`
-
-Do not replace the Figma trace with only a screenshot crop. The crop supports visual review, but downstream Storybook work needs the Figma URL or MCP target to inspect the original node.
+Similarity review compares purpose, behavior, and composition role first. Visual similarity alone is not enough to merge components; different behavior, content structure, or typographic hierarchy may require separate components or variants.
 
 ## Component Similarity Review
 
@@ -135,9 +127,9 @@ List slots by visual and semantic role:
 - amount / metadata
 - kicker / eyebrow
 - headline / title
-- deck / subtitle
-- value / qualifier
-- caption / legal copy
+- subhead / supporting text
+- number / unit
+- caption / attribution
 
 Only include slots observed or clearly required by the component role.
 
@@ -155,23 +147,16 @@ Interactive components should define:
 
 If a state is not visible in references, infer cautiously from system state tokens and label it as inferred.
 
+Display-only, graphic, and typographic components can mark interactive states as `not applicable`. They should still define observed variants or modes such as scale, density, emphasis, alignment, color theme, image overlay usage, editorial/marketing context, responsive wrapping, and language/script behavior.
+
 ## Token Contract
 
 Use a table:
 
-| Component token | Maps to system token | Purpose | State |
+| Component token | Maps to system token | Purpose | State / mode |
 |---|---|---|---|
 
 Component tokens must reference system tokens only. If no system role exists, add or propose a system role before defining the component slot.
-
-Typographic component token examples:
-
-- `--md-comp-typographic-hero-lockup-kicker-text-color`
-- `--md-comp-typographic-hero-lockup-headline-text-size`
-- `--md-comp-typographic-hero-lockup-headline-line-height`
-- `--md-comp-typographic-hero-lockup-deck-gap`
-- `--md-comp-typographic-metric-pair-value-text-weight`
-- `--md-comp-typographic-caption-overlay-container-color`
 
 ## Layout Rules
 
@@ -182,12 +167,13 @@ Specify:
 - padding
 - icon size
 - text alignment
+- text hierarchy ratio
+- line count / max line length
+- line-break behavior
 - gap
 - border/radius/elevation behavior
 - responsive behavior
 - truncation behavior
-- line-count and wrapping behavior for each text slot
-- baseline or optical alignment for paired text such as value + qualifier
 
 ## Accessibility Rules
 
@@ -200,6 +186,9 @@ Specify:
 - icon-only labeling
 - contrast requirements
 - screen-reader formatting for numeric or monetary content
+- heading level guidance for heading lockups
+- preserving real editable text when implemented on web or in templates
+- alt text guidance when the composition must ship as a raster image
 
 ## Component Inventory Status
 

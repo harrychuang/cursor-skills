@@ -163,6 +163,18 @@
         max-width: 920px;
       }
 
+      /* Let grid tracks shrink so long tokens and tables wrap or scroll inside their panels */
+      .layout > * {
+        min-width: 0;
+      }
+
+      p code,
+      li code,
+      td code,
+      .token-path {
+        overflow-wrap: anywhere;
+      }
+
       /* Hero */
       .hero {
         padding: 56px 0 40px;
@@ -761,6 +773,38 @@
         margin: 0;
       }
 
+      /* Severity and tier pills */
+      .sev {
+        display: inline-block;
+        margin-left: 8px;
+        border-radius: 999px;
+        padding: 1px 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      td > .sev {
+        margin-left: 0;
+      }
+
+      .sev-error {
+        background: #f9dedc;
+        color: #b3261e;
+      }
+
+      .sev-warning {
+        background: var(--warn-soft);
+        color: var(--warn);
+      }
+
+      .sev-info {
+        background: var(--sys-soft);
+        color: var(--sys);
+      }
+
       /* Responsive */
       @media (max-width: 900px) {
         .layout {
@@ -806,6 +850,12 @@
         .cascade-arrow {
           transform: rotate(90deg);
         }
+
+        .cascade-node {
+          max-width: 100%;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
       }
     </style>
   </head>
@@ -826,13 +876,19 @@
             <ul class="nav-list">
               <li><a href="#overview">簡介</a></li>
               <li><a href="#architecture">三層架構</a></li>
+              <li><a href="#routing">選擇工作流程</a></li>
               <li><a href="#rules">通用規則</a></li>
+              <li><a href="#tiers">變動分級</a></li>
             </ul>
           </div>
           <div class="nav-group">
-            <p class="nav-group-label">命名</p>
+            <p class="nav-group-label">命名與詞彙</p>
             <ul class="nav-list">
               <li><a href="#naming">命名哲學</a></li>
+              <li><a href="#encoding">命名編碼</a></li>
+              <li><a href="#vocabulary">Sys 語意詞彙</a></li>
+              <li><a href="#composite">文字與陰影</a></li>
+              <li><a href="#translucent">半透明色彩</a></li>
               <li><a href="#syntax">WEB Code Syntax</a></li>
               <li><a href="#scopes">Scope 對照表</a></li>
             </ul>
@@ -840,11 +896,13 @@
           <div class="nav-group">
             <p class="nav-group-label">工作流程</p>
             <ul class="nav-list">
-              <li><a href="#workflow-a">A · 套用現有 Variables</a></li>
-              <li><a href="#workflow-b">B · 建立 Variables</a></li>
-              <li><a href="#workflow-c">C · 稽核 Variables</a></li>
+              <li><a href="#workflow-a">A · 套用到單一目標</a></li>
+              <li><a href="#workflow-b">B · 建立新的 token 系統</a></li>
+              <li><a href="#workflow-c">C · 稽核</a></li>
               <li><a href="#workflow-d">D · 從 Variables 設計元件</a></li>
-              <li><a href="#workflow-e">E · 批次套用 Variables</a></li>
+              <li><a href="#workflow-e">E · 批次套用</a></li>
+              <li><a href="#workflow-f">F · 寫死的數值 token 化</a></li>
+              <li><a href="#review-board">近似值比對板</a></li>
             </ul>
           </div>
           <div class="nav-group">
@@ -864,14 +922,16 @@
           <p class="eyebrow">Design Token Architecture</p>
           <h2>Figma M3 Variables</h2>
           <p class="lead">
-            在 Figma 中建立、套用、稽核與理解 Variables 的完整 Agent Skill。
-            遵循 Google Material Design 3 的三層 Token 繼承模型，讓設計與程式碼共用同一套語意化命名。
+            在 Figma 中建立、套用、稽核與反推 Variables 的 Agent Skill。
+            遵循 Material Design 3 的三層 Token 繼承，涵蓋色彩、文字、圓角、間距、尺寸、描邊寬度、透明度與陰影，
+            而且綁定 token 之後，設計稿的外觀維持不變。
           </p>
           <div class="hero-meta">
             <span class="badge"><span class="badge-dot ref"></span> Reference</span>
             <span class="badge"><span class="badge-dot sys"></span> System</span>
             <span class="badge"><span class="badge-dot comp"></span> Component</span>
             <span class="badge">Ref → Sys → Comp</span>
+            <span class="badge">Workflow A–F</span>
           </div>
         </header>
 
@@ -891,7 +951,7 @@
                 </div>
                 <div class="tier-content">
                   <h4>Reference — 這個值本身是什麼？</h4>
-                  <p>存放 hex 色碼、px 數值、字重等原始資料。名稱必須直覺反映數值本身，不可出現元件或版面區域名稱。</p>
+                  <p>存放 hex 色碼、px 數值、字重、字型名稱等原始資料。名稱直接反映數值，不可出現元件或版面區域名稱；scope 一律為空，不出現在挑選器中。</p>
                   <code class="token-path">{prefix}/ref/palette/primary/40</code>
                 </div>
               </div>
@@ -902,7 +962,7 @@
                 </div>
                 <div class="tier-content">
                   <h4>System — 產品共用的語意是什麼？</h4>
-                  <p>將 Ref 映射為跨元件共用的語意角色（primary、error、inset-md 等）。不可綁定單一元件的解剖結構。</p>
+                  <p>把 Ref 對應成跨元件共用的語意角色（primary、inset-horizontal-md、corner-full、label-large 等），不可綁定單一元件的結構。</p>
                   <code class="token-path">{prefix}/sys/color/primary</code>
                 </div>
               </div>
@@ -913,7 +973,7 @@
                 </div>
                 <div class="tier-content">
                   <h4>Component — 這個元件如何使用 Token？</h4>
-                  <p>只有這一層可以出現 button、card、padding-horizontal 等元件與結構名稱。Comp 必須 alias 到 Sys，而非直接指向 Ref。</p>
+                  <p>只有這一層可以出現元件、variant、狀態與結構名稱（button、disabled、container、label-text 等）。Comp 必須 alias 到 Sys，不能直接指向 Ref。</p>
                   <code class="token-path">{prefix}/comp/filled-button/container/background-color</code>
                 </div>
               </div>
@@ -933,7 +993,41 @@
           </div>
 
           <div class="note note-info" style="margin-top: 16px">
-            <p><strong>前置條件：</strong>每次呼叫 <code>use_figma</code> 前必須先讀取 <code>figma-use</code> skill，且必須傳入 <code>skillNames: "figma-m3-variables"</code>。所有 <code>use_figma</code> 呼叫必須<strong>依序執行</strong>，不可平行。</p>
+            <p><strong>前置條件：</strong>第一次呼叫 <code>use_figma</code> 前先讀 <code>figma-use</code> skill，每次呼叫都要傳入 <code>skillNames: "figma-m3-variables"</code>。<code>use_figma</code> 每次呼叫都從第一頁開始，也不能一次載入所有頁面，跨頁作業要逐頁執行。提問時使用編輯器的提問工具（Cursor 為 <code>AskQuestion</code>、Claude Code 為 <code>AskUserQuestion</code>）；沒有提問工具時，以文字詢問並等待回覆再寫入。</p>
+          </div>
+        </section>
+
+        <!-- Routing -->
+        <section id="routing">
+          <div class="section-head">
+            <h3>選擇工作流程</h3>
+            <p>依使用者的需求選擇流程。目標不明確時，先詢問節點連結、選取範圍、section、page 或 component set，再做任何寫入。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>使用者的需求</th>
+                    <th>流程</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>把現有 Variables 套用到一個節點或目前的選取範圍</td><td><a href="#workflow-a">A</a></td></tr>
+                  <tr><td>檔案還沒有 tokens，要建立一套新的 token 系統</td><td><a href="#workflow-b">B</a></td></tr>
+                  <tr><td>檢查命名、alias 鏈、scope 或 token 覆蓋率</td><td><a href="#workflow-c">C</a></td></tr>
+                  <tr><td>用現有 tokens 建立新元件</td><td><a href="#workflow-d">D</a></td></tr>
+                  <tr><td>把現有 Variables 套用到整頁、多個元件或 component set</td><td><a href="#workflow-e">E</a></td></tr>
+                  <tr><td>把既有設計稿中寫死的數值轉成 tokens</td><td><a href="#workflow-f">F</a></td></tr>
+                  <tr><td>只想知道有哪些 tokens，不做任何修改</td><td>只盤點（P2）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>A 或 E 遇到沒有對應 token 的數值時，改走 F：從設計稿反推的 tokens 能維持原本的外觀。只有使用者想要一套可能改變外觀的新系統時才走 B。把散圖層做成元件屬於 <code>figma-componentize</code>，它會呼叫 F 處理 tokens。</p>
           </div>
         </section>
 
@@ -941,66 +1035,63 @@
         <section id="rules">
           <div class="section-head">
             <h3>通用規則</h3>
-            <p>適用於所有工作流程（A / B / C / D / E）的強制規則，批次寫入必須先 dry-run。</p>
+            <p>適用於所有工作流程的規則。</p>
           </div>
 
           <div class="panel">
             <ol class="rules-list">
-              <li>
-                <div>
-                  <strong>Inspect before Write</strong>
-                  <span>每次寫入前先以唯讀 <code>use_figma</code> 確認目前狀態，再執行寫入操作。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>ALL_SCOPES 禁止使用</strong>
-                  <span>必須依 Token 角色設定明確的 scope，不可使用 ALL_SCOPES 或非 Ref 空 scope。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>必須設定 WEB code syntax</strong>
-                  <span>格式固定為 <code>var(--{prefix}-{layer}-{name})</code>，例如 <code>var(--md-sys-color-primary)</code>。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>回傳所有 ID</strong>
-                  <span>每個建立或修改腳本都必須 <code>return</code> 所有受影響的 variable ID 與 node ID。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>Prefix 一旦確認即固定</strong>
-                  <span>整個 session 使用同一 prefix（如 md、dd、bd），不可混用。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>use_figma 嚴格依序</strong>
-                  <span>絕不可同時平行執行兩個 <code>use_figma</code> 呼叫。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>優先綁定 Comp Token</strong>
-                  <span>元件節點應優先綁定 <code>comp</code> token；只有頁面級共用語意或缺少 comp token 時才使用 <code>sys</code>，不得直接綁定 <code>ref</code>。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>批次寫入先 Dry-run</strong>
-                  <span>任何超過一個 node 的綁定都必須先回傳 binding plan，除非使用者明確要求直接 auto-apply。</span>
-                </div>
-              </li>
-              <li>
-                <div>
-                  <strong>錯誤處理</strong>
-                  <span>發生錯誤時停止、閱讀錯誤訊息、修正後重試 — 不可盲目重試。</span>
-                </div>
-              </li>
+              <li><div><strong>先檢查再寫入</strong><span>每次寫入前，先以唯讀的 <code>use_figma</code> 確認目前狀態。</span></div></li>
+              <li><div><strong>一次一個呼叫</strong><span><code>use_figma</code> 不可平行執行。寫入腳本要依 ID 重新取得節點與 variables、檢查型別是否相符，並回傳所有受影響的 variable、style 與 node ID。</span></div></li>
+              <li><div><strong>先從檔案推斷慣例</strong><span>prefix、collection 結構、文字與陰影的綁定模式、階梯、狀態命名與 Ref 色彩分類都先從檔案推斷；檔案沒有線索才詢問，確認後整個 session 固定。</span></div></li>
+              <li><div><strong>三層方向</strong><span>Ref 只存原始值（scope 為空）；Sys 只 alias Ref；Comp 只 alias Sys；composed 色彩也遵守相同方向。節點不可綁定 Ref。</span></div></li>
+              <li><div><strong>綁定目標</strong><span>單一值屬性綁 Comp token（沒有元件的頁面層級用法才綁 Sys）。文字與陰影綁定到 Styles，Styles 的欄位再綁 Sys tokens（Styles 模式，預設）；或改為在文字節點綁 Comp typography tokens（Variables 模式）。</span></div></li>
+              <li><div><strong>Scope 與 code syntax</strong><span>Sys 與 Comp 一律設定明確的 scope，禁止 <code>ALL_SCOPES</code>；每個 variable 都要有 WEB code syntax。</span></div></li>
+              <li><div><strong>外觀不變</strong><span>綁定前比對 token 的解析值與節點目前的值；只要不同就是 Tier 3 變動，即使使用者說「全部套用」也要逐組確認。</span></div></li>
+              <li><div><strong>不複製 library tokens</strong><span>目標已使用 library variables 時，不在本地建立相同角色的 variables。</span></div></li>
+              <li><div><strong>分批寫入</strong><span>每次寫入最多 100 個綁定，或一個元件。</span></div></li>
+              <li><div><strong>錯誤處理</strong><span>發生錯誤時停止、閱讀錯誤訊息、修正原因後只重試該步驟，不盲目重試。</span></div></li>
             </ol>
+          </div>
+        </section>
+
+        <!-- Tiers -->
+        <section id="tiers">
+          <div class="section-head">
+            <h3>變動分級</h3>
+            <p>每個寫入計畫在執行前先分級，由計畫中最高的級別決定確認方式。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>級別</th>
+                    <th>內容</th>
+                    <th>確認方式</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><span class="sev sev-info">Tier 0</span><br />唯讀</td><td>盤點、檢查、收集數值、稽核報告、dry-run 計畫</td><td>不需確認</td></tr>
+                  <tr><td><span class="sev sev-info">Tier 1</span><br />單一目標，外觀不變</td><td>在使用者指定的一個節點綁定數值相同的 token，或為它建立最多 10 個 variables</td><td>顯示對應表後等待確認；使用者明說直接套用則可略過</td></tr>
+                  <tr><td><span class="sev sev-warning">Tier 2</span><br />批次或結構性，外觀不變</td><td>跨多個節點綁定、建立 collection 或 mode、一次建立超過 10 個 variables、建立或修改 Styles、從節點 detach Style、改名、把 paint 透明度移到圖層透明度</td><td>dry-run 計畫後等待確認；使用者明說不需審閱即可略過</td></tr>
+                  <tr><td><span class="sev sev-error">Tier 3</span><br />改變外觀或具破壞性</td><td>綁定數值不同的 token、合併近似值、把數值貼齊階梯、修改已被使用的 token 值或 alias、刪除、移除綁定、更換 prefix</td><td>附視覺證據，逐組取得確認；任何「全部自動套用」都不能略過</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>每次確認都會列出</h4>
+              <ul style="margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem">
+                <li>各層要建立的 variables 與 styles 數量</li>
+                <li>依元件或節點分組的綁定，並列目前的值與 token 的值</li>
+                <li>每個對應的信心度：<code>exact</code>、<code>inferred</code>、<code>needs-review</code></li>
+                <li>每個會改變外觀的項目都有標記</li>
+                <li>Tier 3：每個受影響範圍的基準截圖，加上近似值比對板連結或變更後預覽</li>
+              </ul>
+            </div>
           </div>
         </section>
 
@@ -1015,9 +1106,9 @@
             <div class="bento-card">
               <h4><span class="tier-tag ref">Ref</span> 允許</h4>
               <ul>
-                <li><code>ref/color/red/50</code></li>
+                <li><code>ref/color/blue/50</code></li>
                 <li><code>ref/spacing/16</code></li>
-                <li><code>ref/radius/12</code></li>
+                <li><code>ref/radius/9999</code></li>
                 <li><code>ref/type/size/14</code></li>
               </ul>
             </div>
@@ -1035,6 +1126,7 @@
                 <li><code>sys/color/primary</code></li>
                 <li><code>sys/spacing/inset-horizontal-md</code></li>
                 <li><code>sys/shape/corner-full</code></li>
+                <li><code>sys/typescale/label-large/size</code></li>
               </ul>
             </div>
             <div class="bento-card">
@@ -1046,39 +1138,238 @@
             </div>
             <div class="bento-card wide">
               <h4><span class="tier-tag comp">Comp</span> 元件結構命名</h4>
-              <p>只有 Comp 層可以出現元件與解剖結構名稱，且必須 alias 到 Sys：</p>
+              <p>順序為 <code>comp/{component}[/{variant}][/{size}][/{condition}][/{state}]/{anatomy}/{property}</code>，必須 alias 到 Sys：</p>
               <ul>
-                <li><code>comp/filled-button/container/padding-horizontal</code> → <code>sys/spacing/inset-horizontal-md</code></li>
-                <li><code>comp/text-field/label-text/color</code> → <code>sys/color/on-surface-variant</code></li>
-                <li><code>comp/navigation-bar/container/background-color</code> → <code>sys/color/surface-container</code></li>
+                <li><code>comp/filled-button/container/padding-horizontal</code> → <code>sys/spacing/inset-horizontal-xl</code></li>
+                <li><code>comp/filled-button/disabled/container/background-color</code> → composed（<code>on-surface</code> + 12%）</li>
+                <li><code>comp/button/filled/hovered/state-layer/opacity</code> → <code>sys/state/hover/state-layer-opacity</code></li>
               </ul>
             </div>
           </div>
 
           <div class="panel" style="margin-top: 16px">
             <div class="panel-body">
-              <h4>Collection 命名</h4>
+              <h4>Collection 結構</h4>
               <div class="table-wrap">
                 <table>
                   <thead>
                     <tr>
-                      <th>結構選項</th>
+                      <th>結構</th>
                       <th>Collection 名稱</th>
+                      <th>使用時機</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>三個獨立 Collection（建議）</td>
-                      <td><code>{Prefix} · Reference</code> / <code>{Prefix} · System</code> / <code>{Prefix} · Component · {ElementName}</code></td>
-                    </tr>
-                    <tr>
-                      <td>單一 Collection</td>
-                      <td><code>{Prefix} · Design Tokens</code>（以 group prefix 區分三層）</td>
-                    </tr>
+                    <tr><td>新檔案預設</td><td><code>{Prefix} · Reference</code> / <code>{Prefix} · System</code> / <code>{Prefix} · Component</code>（Component 內以群組區分元件）</td><td>檔案還沒有 token collection</td></tr>
+                    <tr><td>每個元件一個</td><td><code>{Prefix} · Component · {ElementName}</code></td><td>使用者偏好，或檔案已使用</td></tr>
+                    <tr><td>單一 Collection</td><td><code>{Prefix} · Design Tokens</code>（以群組區分三層）</td><td>檔案已使用</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="note note-info">
+                <p>既有檔案一律沿用原本的結構。Light / Dark 兩個 mode 需要付費方案：Starter 每個 collection 只有 1 個 mode，Professional 10 個、Organization 20 個；每個 collection 最多 5,000 個 variables。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Encoding -->
+        <section id="encoding">
+          <div class="section-head">
+            <h3>命名編碼</h3>
+            <p>名稱要能直接轉成合法的 CSS 自訂屬性，Ref 名稱也要能反推出數值，供稽核規則 12 比對。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>規則</th>
+                    <th>範例</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>每段只用小寫英數、<code>-</code>、<code>_</code>；不可使用 <code>.</code>、<code>{</code>、<code>}</code>，也不可以 <code>$</code> 開頭</td><td><code>inset-horizontal-md</code></td></tr>
+                  <tr><td>小數點改用 <code>_</code></td><td>0.5 → <code>ref/type/tracking/0_5</code></td></tr>
+                  <tr><td>負數加上 <code>neg-</code></td><td>−0.25 → <code>ref/type/tracking/neg-0_25</code></td></tr>
+                  <tr><td>透明度用百分比整數</td><td>38% → <code>ref/opacity/38</code></td></tr>
+                  <tr><td>色彩 tone 取 CIE L* 四捨五入（M3 HCT 的 tone 就是 L*）</td><td>#1A73E8 → <code>ref/color/blue/50</code></td></tr>
+                  <tr><td>帶 alpha 的色彩加 <code>-a{百分比}</code></td><td>#000000 15% → <code>ref/color/neutral/0-a15</code></td></tr>
+                  <tr><td>全圓圓角</td><td><code>ref/radius/9999</code></td></tr>
+                  <tr><td>兩個不同的值撞名：使用次數多的保留原名，其他加 <code>-b</code>、<code>-c</code></td><td><code>ref/color/blue/50-b</code></td></tr>
+                  <tr><td>一個名稱不可同時是另一個 variable 的群組前綴</td><td>避免 <code>…/background-color</code> 與 <code>…/background-color/hovered</code> 並存</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Vocabulary -->
+        <section id="vocabulary">
+          <div class="section-head">
+            <h3>Sys 語意詞彙</h3>
+            <p>檔案沒有 Sys tokens 時使用的預設詞彙；檔案已有的階梯永遠優先。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card full">
+              <h4>色彩角色（M3）</h4>
+              <ul>
+                <li><strong>Accent</strong>：<code>primary</code>、<code>on-primary</code>、<code>primary-container</code>、<code>on-primary-container</code>，secondary、tertiary 同理</li>
+                <li><strong>Error</strong>：<code>error</code>、<code>on-error</code>、<code>error-container</code>、<code>on-error-container</code></li>
+                <li><strong>Surface</strong>：<code>surface</code>、<code>on-surface</code>、<code>on-surface-variant</code>、<code>surface-dim</code>、<code>surface-bright</code>、<code>surface-container-lowest</code> … <code>surface-container-highest</code></li>
+                <li><strong>Outline / Inverse / Utility</strong>：<code>outline</code>、<code>outline-variant</code>、<code>inverse-surface</code>、<code>inverse-on-surface</code>、<code>inverse-primary</code>、<code>scrim</code>、<code>shadow</code></li>
+                <li><strong>延伸</strong>：<code>success</code>、<code>warning</code> 系列（M3 沒有），以及選用的 fixed 角色</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>間距：角色 × 單一階梯</h4>
+              <p style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem">名稱為 <code>sys/spacing/{角色}-{標籤}</code>。角色：<code>inset-horizontal</code>（左右 padding）、<code>inset-vertical</code>（上下 padding）、<code>inset</code>（四邊相同）、<code>gap-inline</code>（水平間距）、<code>gap-stack</code>（垂直間距）。同一個標籤在所有角色都代表同一個值。</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>標籤</th><th>3xs</th><th>2xs</th><th>xs</th><th>sm</th><th>md</th><th>lg</th><th>xl</th><th>2xl</th><th>3xl</th><th>4xl</th><th>5xl</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>值</td><td>2</td><td>4</td><td>8</td><td>12</td><td>16</td><td>20</td><td>24</td><td>32</td><td>40</td><td>48</td><td>64</td></tr>
                   </tbody>
                 </table>
               </div>
             </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>圓角（M3，含 M3 Expressive）</h4>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Sys token</th><th>值</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>corner-none</code> / <code>extra-small</code> / <code>small</code> / <code>medium</code> / <code>large</code></td><td>0 / 4 / 8 / 12 / 16</td></tr>
+                    <tr><td><code>corner-large-increased</code> / <code>extra-large</code> / <code>extra-large-increased</code> / <code>extra-extra-large</code></td><td>20 / 28 / 32 / 48</td></tr>
+                    <tr><td><code>corner-full</code></td><td>全圓，alias <code>ref/radius/9999</code>；圓角不小於短邊一半即視為全圓</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>文字：M3 typescale</h4>
+              <p style="color: var(--muted); margin: 0 0 12px; font-size: 0.9rem">每個 role 有 5 個 Sys variables：<code>sys/typescale/{role}/font</code>、<code>/weight</code>、<code>/size</code>、<code>/line-height</code>、<code>/tracking</code>（px）。Text Style 名稱為 <code>{role 類別}/{大小}</code>，例如 <code>label/large</code>。</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Role</th><th>字級 / 行高</th><th>字距</th><th>字重</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>display-large / medium / small</td><td>57/64 · 45/52 · 36/44</td><td>−0.25 · 0 · 0</td><td>400</td></tr>
+                    <tr><td>headline-large / medium / small</td><td>32/40 · 28/36 · 24/32</td><td>0</td><td>400</td></tr>
+                    <tr><td>title-large / medium / small</td><td>22/28 · 16/24 · 14/20</td><td>0 · 0.15 · 0.1</td><td>400 · 500 · 500</td></tr>
+                    <tr><td>body-large / medium / small</td><td>16/24 · 14/20 · 12/16</td><td>0.5 · 0.25 · 0.4</td><td>400</td></tr>
+                    <tr><td>label-large / medium / small</td><td>14/20 · 12/16 · 11/16</td><td>0.1 · 0.5 · 0.5</td><td>500</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card">
+              <h4>陰影（elevation）</h4>
+              <ul>
+                <li><code>level0</code>–<code>level5</code>：0 / 1 / 3 / 6 / 8 / 12 dp</li>
+                <li>每層陰影 5 個 variables：color、offset-x、offset-y、blur、spread</li>
+                <li>Effect Style：<code>elevation/level1</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>描邊寬度與尺寸</h4>
+              <ul>
+                <li><code>stroke/width-thin</code> 1 · <code>medium</code> 2 · <code>thick</code> 3</li>
+                <li><code>size/icon-xs</code>–<code>xl</code>：12 / 16 / 20 / 24 / 32</li>
+                <li><code>size/control-height-sm</code>–<code>xl</code>：32 / 40 / 48 / 56</li>
+                <li><code>size/touch-target-min</code>：48</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>狀態透明度</h4>
+              <ul>
+                <li>hover 8% · focus 10% · pressed 10% · dragged 16%</li>
+                <li>disabled 內容 38%</li>
+                <li>disabled 容器預設 12%（M3 Expressive 按鈕 10%、filled text field 4%，以檔案實際值為準）</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note note-warn">
+            <p><strong>不在階梯上的值</strong>（例如間距 14、圓角 10）會列入近似值比對板，由使用者選擇：貼齊較小的階梯、貼齊較大的階梯（兩者都是 Tier 3），或保留為自訂階梯 <code>{較小階梯}-plus</code>（例如 <code>corner-small-plus</code>）。</p>
+          </div>
+        </section>
+
+        <!-- Composite -->
+        <section id="composite">
+          <div class="section-head">
+            <h3>文字與陰影</h3>
+            <p>文字與陰影是由多個欄位組成的「複合屬性」，綁定方式和單一值屬性不同。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>Styles 模式（預設）</h4>
+              <ul>
+                <li>每個用到的 typescale role 建一個 Text Style，欄位綁定 Sys typescale variables</li>
+                <li>每個用到的 elevation 等級建一個 Effect Style，陰影欄位綁定 Sys elevation variables</li>
+                <li>節點套用 Style；不建立 Comp 的文字與陰影 tokens</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>Variables 模式</h4>
+              <ul>
+                <li>文字節點直接綁 Comp tokens，例如 <code>comp/filled-button/label-text/size</code></li>
+                <li>已套用 Text Style 的節點很可能會被 detach，列為 Tier 2</li>
+                <li>陰影直接綁 Sys elevation variables</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>模式判斷</h4>
+              <ul>
+                <li>範圍內至少一半文字使用 Text Styles → Styles 模式</li>
+                <li>否則文字節點已直接綁定文字 variables → Variables 模式</li>
+                <li>兩者都沒有 → Styles 模式；計畫中會說明並提供切換方式</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>行高與字距 variables 只支援 px：百分比會依字級換算，<code>AUTO</code> 行高維持不綁定並列在報告中。字重以 FLOAT 綁定（Figma 會取最接近的字重），字型的樣式名稱不標準時改綁 <code>fontStyle</code>。</p>
+          </div>
+        </section>
+
+        <!-- Translucent -->
+        <section id="translucent">
+          <div class="section-head">
+            <h3>半透明色彩</h3>
+            <p>填色綁定色彩變數後，很可能由變數的 alpha 決定透明度，原本 paint 的透明度不一定保留。因此 paint 透明度小於 100% 的填色，依序採用第一個可行的方法。</p>
+          </div>
+
+          <div class="panel">
+            <ol class="rules-list">
+              <li><div><strong>Composed 色彩（2026-09-17 新增）</strong><span>建立一個 COLOR variable，值由「不透明的基底色 alias」加「<code>COLOR_OPACITY</code> scope 的透明度 alias」組成，填色綁定它。例如 <code>comp/filled-button/disabled/container/background-color</code> = <code>sys/color/on-surface</code> + <code>sys/state/disabled/container-opacity</code>（12）。沒有版本旗標可偵測，因此在已核准的寫入中直接嘗試，失敗就改用下一個方法並回報。</span></div></li>
+              <li><div><strong>圖層透明度</strong><span>只適用於只有一個可見填色、沒有描邊、效果與子節點的圖層（例如 state layer、scrim）：填色綁不透明的 token、paint 透明度設為 100%，圖層 opacity 綁透明度 token。視覺等價，列為 Tier 2。</span></div></li>
+              <li><div><strong>帶 alpha 的色彩</strong><span>其他情況綁定最終指向帶 alpha 之 Ref 色彩的 token 鏈，例如 <code>ref/color/neutral/0-a12</code>。</span></div></li>
+            </ol>
+          </div>
+
+          <div class="note note-warn">
+            <p>三種方法綁定後都會讀回，確認實際呈現的色彩與透明度不變。Ref 不能使用 composed 值；Sys 的 composed 值 alias Ref，Comp 的 composed 值 alias Sys。</p>
           </div>
         </section>
 
@@ -1091,7 +1382,7 @@
 
           <div class="panel">
             <div class="panel-body">
-              <code class="token-path" style="display: block; margin-bottom: 16px">var(--{prefix}-{layer}-{category}-{name})</code>
+              <code class="token-path" style="display: block; margin-bottom: 16px">var(--{name 以 - 取代 / 與空白，全小寫})</code>
               <div class="specimen-grid">
                 <div class="specimen">
                   <div class="specimen-swatch" style="background: #6750a4"><span>#6750A4</span></div>
@@ -1116,7 +1407,7 @@
                 </div>
               </div>
               <div class="note note-info" style="margin-top: 16px">
-                <p>規則：層級以 <code>-</code> 分隔（非 <code>/</code>），全小寫，空格替換為 <code>-</code>。Ref 保持簡短且值導向；長元件路徑只存在於 <code>comp-</code> 下。</p>
+                <p>範例：<code>md/ref/type/tracking/neg-0_25</code> → <code>var(--md-ref-type-tracking-neg-0_25)</code>。ANDROID 與 iOS code syntax 只在使用者要求時加上。</p>
               </div>
             </div>
           </div>
@@ -1126,7 +1417,7 @@
         <section id="scopes">
           <div class="section-head">
             <h3>Variable Scope 對照表</h3>
-            <p>依 Token 角色設定 Figma scope。Scope 主要控制 picker 可見性；Plugin API 綁定仍需另外驗證型別與屬性相容性。</p>
+            <p>Scope 只影響 Figma 挑選器能看到哪些 token，不會阻止 API 綁定，所以綁定前仍要檢查型別。</p>
           </div>
 
           <div class="panel">
@@ -1134,78 +1425,39 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Token 角色</th>
+                    <th>Token</th>
                     <th>Figma Scope</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Ref 層（全部）</td>
-                    <td><code>[]</code>（空陣列，隱藏於 picker）</td>
-                  </tr>
-                  <tr>
-                    <td>背景 / 容器填色（Sys / Comp）</td>
-                    <td><code>["FRAME_FILL", "SHAPE_FILL"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>文字顏色（Sys / Comp）</td>
-                    <td><code>["TEXT_FILL"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>圖形 / 通用填色</td>
-                    <td><code>["ALL_FILLS"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>邊框顏色</td>
-                    <td><code>["STROKE_COLOR"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>Effect 顏色</td>
-                    <td><code>["EFFECT_COLOR"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>圓角半徑</td>
-                    <td><code>["CORNER_RADIUS"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>Padding / Gap</td>
-                    <td><code>["GAP"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>寬度 / 高度</td>
-                    <td><code>["WIDTH_HEIGHT"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>不透明度</td>
-                    <td><code>["OPACITY"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>Stroke / Effect 數值</td>
-                    <td><code>["STROKE_FLOAT"]</code> / <code>["EFFECT_FLOAT"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>文字內容</td>
-                    <td><code>["TEXT_CONTENT"]</code></td>
-                  </tr>
-                  <tr>
-                    <td>Font Family / Style / Size / Weight / Line Height / Letter Spacing</td>
-                    <td><code>["FONT_FAMILY"]</code> / <code>["FONT_STYLE"]</code> 等對應 scope</td>
-                  </tr>
-                  <tr>
-                    <td>Paragraph Spacing / Indent</td>
-                    <td><code>["PARAGRAPH_SPACING"]</code> / <code>["PARAGRAPH_INDENT"]</code></td>
-                  </tr>
+                  <tr><td>所有 Ref</td><td><code>[]</code>（隱藏）</td></tr>
+                  <tr><td>Accent 與狀態色（primary、secondary、tertiary、error、success、warning、inverse-primary）</td><td><code>ALL_FILLS</code>, <code>STROKE_COLOR</code></td></tr>
+                  <tr><td>容器與 surface 角色、scrim；Comp 的 container、state-layer、active-indicator 色彩</td><td><code>FRAME_FILL</code>, <code>SHAPE_FILL</code></td></tr>
+                  <tr><td>內容角色（on-*）</td><td><code>TEXT_FILL</code>, <code>SHAPE_FILL</code></td></tr>
+                  <tr><td>Comp 文字色 / icon 色</td><td><code>TEXT_FILL</code> / <code>SHAPE_FILL</code></td></tr>
+                  <tr><td>outline / outline-variant</td><td><code>STROKE_COLOR</code> / <code>STROKE_COLOR</code>, <code>SHAPE_FILL</code></td></tr>
+                  <tr><td>陰影色</td><td><code>EFFECT_COLOR</code></td></tr>
+                  <tr><td>圓角 / 間距 / 尺寸 / 描邊寬度</td><td><code>CORNER_RADIUS</code> / <code>GAP</code> / <code>WIDTH_HEIGHT</code> / <code>STROKE_FLOAT</code></td></tr>
+                  <tr><td>圖層透明度 / composed 色彩中的透明度</td><td><code>OPACITY</code> / <code>COLOR_OPACITY</code>（兩種用途都有則兩個都設）</td></tr>
+                  <tr><td>陰影的 offset、blur、spread</td><td><code>EFFECT_FLOAT</code></td></tr>
+                  <tr><td>字型 / 字型樣式</td><td><code>FONT_FAMILY</code> / <code>FONT_STYLE</code></td></tr>
+                  <tr><td>字重 / 字級 / 行高 / 字距</td><td><code>FONT_WEIGHT</code> / <code>FONT_SIZE</code> / <code>LINE_HEIGHT</code> / <code>LETTER_SPACING</code></td></tr>
+                  <tr><td>段落間距 / 縮排 / 文字內容</td><td><code>PARAGRAPH_SPACING</code> / <code>PARAGRAPH_INDENT</code> / <code>TEXT_CONTENT</code></td></tr>
                 </tbody>
               </table>
             </div>
+          </div>
+
+          <div class="note note-warn">
+            <p>禁止 <code>ALL_SCOPES</code>；<code>ALL_FILLS</code> 不可與 <code>FRAME_FILL</code>、<code>SHAPE_FILL</code>、<code>TEXT_FILL</code> 並用；scope 必須符合 variable 型別（COLOR、STRING、FLOAT 各有可用的 scope）。</p>
           </div>
         </section>
 
         <!-- Workflows -->
         <section id="workflows">
           <div class="section-head">
-            <h3>五大工作流程</h3>
-            <p>依觸發情境選擇對應流程。所有流程共享上方的通用規則。</p>
+            <h3>六大工作流程</h3>
+            <p>依觸發情境選擇對應流程。所有流程共用通用規則、變動分級與共用程序（P1 探索設計指南、P2 盤點 tokens、P3 檢查目標、P4 綁定、P5 驗證）。</p>
           </div>
 
           <div class="workflow-grid">
@@ -1213,16 +1465,16 @@
               <div class="workflow-header">
                 <div class="workflow-letter">A</div>
                 <div>
-                  <h4>套用現有 Variables 到元件</h4>
-                  <p>觸發：使用者提供 Figma URL + node-id、目前 selection 或單一元件，要求套用 Variables</p>
+                  <h4>套用現有 Variables 到單一目標</h4>
+                  <p>觸發：節點連結、目前的選取範圍或單一元件，加上套用 Variables 的要求</p>
                 </div>
               </div>
               <ol class="workflow-steps">
-                <li><strong>Inspect</strong> — 列出 variable collections、variables 與目標 node anatomy</li>
-                <li><strong>Evaluate</strong> — 確認命名符合 M3 三層結構；若缺失則切換至 Workflow B</li>
-                <li><strong>Match</strong> — 依元件類型找出 Comp 層 token，列出綁定提案供使用者確認</li>
-                <li><strong>Bind</strong> — 執行綁定（fills、strokes、radius、padding、gap、text、typography）</li>
-                <li><strong>Validate</strong> — 檢查 <code>boundVariables</code> 並呼叫 <code>get_screenshot</code></li>
+                <li><strong>盤點與檢查</strong> — P2，再對目標執行 P3</li>
+                <li><strong>評估</strong> — 有對應 token 就繼續；沒有 token 的數值改走 Workflow F；instance 改處理它的主元件；正確的既有綁定保留</li>
+                <li><strong>計畫</strong> — 每一列列出節點、屬性、目前的值、token、token 的值、信心度與級別</li>
+                <li><strong>確認</strong> — 依變動分級</li>
+                <li><strong>綁定與驗證</strong> — P4，再 P5</li>
               </ol>
             </article>
 
@@ -1230,18 +1482,17 @@
               <div class="workflow-header">
                 <div class="workflow-letter">B</div>
                 <div>
-                  <h4>建立 Variables（檔案中尚無）</h4>
-                  <p>觸發：檔案中找不到 M3 三層 Variables，或使用者明確要求建立</p>
+                  <h4>建立新的 token 系統</h4>
+                  <p>觸發：檔案沒有 token 系統，使用者要一套不從既有設計稿反推的新系統</p>
                 </div>
               </div>
               <ol class="workflow-steps">
-                <li><strong>Discover</strong> — 探索設計指南；若無則以 AskQuestion 收集視覺風格偏好</li>
-                <li><strong>Ask prefix</strong> — 讓使用者選擇 prefix（md、dd、bd 或自訂）</li>
-                <li><strong>Ask Collection 結構</strong> — 三個獨立 Collection（建議）或單一 Collection</li>
-                <li><strong>Inspect</strong> — 確認無重複 Collection 名稱</li>
-                <li><strong>Create</strong> — 依 token-spec 建立 Ref（原始值）→ Sys（alias Ref）→ Comp（alias Sys）</li>
-                <li><strong>Bind</strong> — 執行 Workflow A Step 4 綁定到目標節點</li>
-                <li><strong>Validate</strong> — 截圖確認並回報各層 variable 數量</li>
+                <li><strong>探索設計指南</strong> — P1；沒有指南時詢問產品類型、視覺風格、圓角偏好、品牌色與參考產品</li>
+                <li><strong>Prefix 與 collection 結構</strong> — 先從檔案推斷，否則詢問；預設三個 collection</li>
+                <li><strong>綁定模式</strong> — 文字與陰影預設 Styles 模式</li>
+                <li><strong>規劃</strong> — 依詞彙表規劃色彩角色、間距階梯、圓角、typescale、elevation 與狀態透明度；只為使用者指定的元件建立 Comp tokens</li>
+                <li><strong>確認（Tier 2）後建立</strong> — Ref → Sys → Comp，再建立 Text Styles 與 Effect Styles</li>
+                <li><strong>綁定與驗證</strong> — 只綁使用者指定的目標，數值不同屬於 Tier 3；P5 並回報各層數量</li>
               </ol>
             </article>
 
@@ -1249,16 +1500,16 @@
               <div class="workflow-header">
                 <div class="workflow-letter">C</div>
                 <div>
-                  <h4>稽核現有 Variables</h4>
-                  <p>觸發：使用者要求檢查、稽核，或詢問「命名是否正確？」</p>
+                  <h4>稽核</h4>
+                  <p>觸發：要求檢查或稽核 token 的命名、結構或覆蓋率</p>
                 </div>
               </div>
               <ol class="workflow-steps">
-                <li><strong>Inspect</strong> — 讀取所有 collections、variables、scopes、codeSyntax、valuesByMode</li>
-                <li><strong>Apply audit-rules</strong> — 依 alias、scope、syntax、mode、型別與命名規則編列問題清單</li>
-                <li><strong>Report</strong> — 以表格呈現：違規變數名稱、違規類型、建議修正</li>
-                <li><strong>Ask</strong> — 詢問是否自動修正</li>
-                <li><strong>Validate</strong> — 修正後再次 inspect，確認零違規</li>
+                <li><strong>盤點</strong> — P2</li>
+                <li><strong>執行規則</strong> — variables 與 styles 的規則跑一次，節點規則逐頁執行</li>
+                <li><strong>報告</strong> — 18 類規則依嚴重度（error、warning、info）分組</li>
+                <li><strong>詢問</strong> — 使用者選擇要修正的項目，每個修正標示級別；近似重複的合併使用比對板</li>
+                <li><strong>修正與重跑</strong> — 修正後重跑受影響的規則，回報仍未解決的項目</li>
               </ol>
             </article>
 
@@ -1267,17 +1518,16 @@
                 <div class="workflow-letter">D</div>
                 <div>
                   <h4>從現有 Variables 設計元件</h4>
-                  <p>觸發：使用者希望 AI 理解現有 token 並用它們建立或更新元件</p>
+                  <p>觸發：使用者希望 AI 用檔案中的 tokens 建立新元件</p>
                 </div>
               </div>
               <ol class="workflow-steps">
-                <li><strong>Discover guidelines</strong> — 掃描 paint styles、text styles、components；有則摘要確認，無則 AskQuestion 收集偏好</li>
-                <li><strong>Inspect variables</strong> — 分析三層結構與 token 語意</li>
-                <li><strong>Semantic mapping</strong> — 對照 design guidelines，衝突時標記給使用者</li>
-                <li><strong>Variants &amp; states</strong> — 以 AskQuestion 讓使用者選擇變體維度與互動狀態</li>
-                <li><strong>Plan state tokens</strong> — 確認現有 Comp token 是否涵蓋各狀態，不足則新增</li>
-                <li><strong>Build</strong> — 建立 Component 或 Component Set，綁定 variables</li>
-                <li><strong>Validate</strong> — 截圖確認視覺正確且各狀態可區分</li>
+                <li><strong>探索與盤點</strong> — P1 與 P2</li>
+                <li><strong>語意對應</strong> — 容器、文字、圓角、間距對應到 tokens；與設計指南衝突時標記</li>
+                <li><strong>Variants 與狀態</strong> — 讓使用者多選要包含的 variants 與互動狀態</li>
+                <li><strong>規劃狀態 tokens</strong> — M3 順序；state layer 使用 <code>on-{container}</code> 色彩與 Sys 狀態透明度；disabled 使用 composed 色彩或圖層透明度；沿用檔案既有的狀態用字</li>
+                <li><strong>建立</strong> — Component 或 Component Set（參考 figma-generate-library Phase 3），variant 命名如 <code>State=Hovered, Size=Medium</code>；文字用 Text Styles，陰影用 Effect Styles</li>
+                <li><strong>綁定與驗證</strong> — P4 與 P5；截圖確認每個狀態都能區分</li>
               </ol>
             </article>
 
@@ -1285,19 +1535,100 @@
               <div class="workflow-header">
                 <div class="workflow-letter">E</div>
                 <div>
-                  <h4>批次套用 Variables 到既有元件</h4>
-                  <p>觸發：使用者要求套用到多個 selected nodes、Component Set、目前 page 或符合名稱的元件</p>
+                  <h4>批次套用 Variables</h4>
+                  <p>觸發：多個選取的節點、component set、整頁，或符合名稱的元件</p>
                 </div>
               </div>
               <ol class="workflow-steps">
-                <li><strong>Define scope</strong> — 確認 selection、Component Set、page 或 name pattern</li>
-                <li><strong>Inspect candidates</strong> — 讀取 anatomy、layout、paint、text 與既有 <code>boundVariables</code></li>
-                <li><strong>Classify</strong> — 依 token-spec component patterns 標記 exact / inferred / unknown</li>
-                <li><strong>Dry-run plan</strong> — 回報 bind / review / skip 與 missing tokens 統計</li>
-                <li><strong>Confirm</strong> — 使用者確認後才批次寫入；review 項目不得靜默套用</li>
-                <li><strong>Apply &amp; Validate</strong> — 重新抓取 IDs、驗證型別、套用、再 inspect 與截圖</li>
+                <li><strong>確認範圍</strong> — 範圍太大時先詢問</li>
+                <li><strong>盤點與檢查</strong> — P2，再對每個候選節點執行 P3</li>
+                <li><strong>分類</strong> — exact / inferred / unknown</li>
+                <li><strong>Dry-run 計畫</strong> — bind（數值相同的 exact）、review（inferred 或數值不同，屬 Tier 3）、skip；缺少的 token 改走 Workflow F</li>
+                <li><strong>確認</strong> — Tier 2 一次確認，Tier 3 另外逐組確認；review 項目不得靜默套用</li>
+                <li><strong>分批套用與驗證</strong> — P4，再 P5</li>
               </ol>
             </article>
+
+            <article class="workflow-card" id="workflow-f">
+              <div class="workflow-header">
+                <div class="workflow-letter">F</div>
+                <div>
+                  <h4>把寫死的數值 token 化</h4>
+                  <p>觸發：分享節點、section、page 或元件並要求把寫死的樣式轉成 tokens；A 或 E 遇到沒有 token 的數值；figma-componentize 交來新建立的元件</p>
+                </div>
+              </div>
+              <ol class="workflow-steps">
+                <li><strong>範圍與基準截圖</strong> — 超過 50 個頂層 frame 或跨頁時先確認範圍；寫入前替每個範圍截圖</li>
+                <li><strong>推斷慣例</strong> — P2</li>
+                <li><strong>收集數值</strong> — 逐頁執行、唯讀：色彩、文字、圓角、間距、尺寸、描邊寬度、透明度、陰影</li>
+                <li><strong>完全相同的值</strong> — 直接合併；檔案已有相同數值的 Ref 或 Sys token 就重用</li>
+                <li><strong>近似值與不在階梯上的值</strong> — 絕不自動合併；建立<a href="#review-board">近似值比對板</a>、截圖並提供連結，逐組詢問；合併屬於 Tier 3</li>
+                <li><strong>語意與結構對應</strong> — 對應到 Sys 角色與 Comp 結構並標示信心度；needs-review 的項目先詢問</li>
+                <li><strong>Token 計畫</strong> — 列出並等待確認（Tier 2 以上）</li>
+                <li><strong>寫入</strong> — Ref → Sys → Comp → Styles → 綁定；半透明填色依序採用 composed 色彩、圖層透明度、帶 alpha 的色彩</li>
+                <li><strong>驗證</strong> — 讀回解析值、重新收集、截圖與基準比對；有差異就回報，不自行修正</li>
+                <li><strong>收尾</strong> — 刪除比對板並回報；由其他 skill 呼叫時回傳結構化結果</li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <!-- Review board -->
+        <section id="review-board">
+          <div class="section-head">
+            <h3>近似值比對板</h3>
+            <p>Workflow F 與稽核規則 13 用來呈現近似值差異的工具，讓使用者直接看到差異再決定是否合併。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>放在哪裡</h4>
+              <ul>
+                <li>範圍所在頁面、既有內容右側 400px 的 Section</li>
+                <li>名稱固定為 <code>Token Review — temporary</code></li>
+                <li>只新增這個 Section，不移動、不修改任何既有節點</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>每組內容</h4>
+              <ul>
+                <li>視覺樣本：色塊、間距條、圓角方塊、文字樣本、陰影卡片、透明度方塊</li>
+                <li>數值、使用次數、★ 建議值</li>
+                <li>連到來源節點的 sample 超連結</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>決定與收尾</h4>
+              <ul>
+                <li>截圖並提供 Figma 連結</li>
+                <li>逐組選擇：合併到建議值、合併到其他值、全部保留</li>
+                <li>套用後刪除 Section（使用者要求保留則保留）</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>類別</th>
+                    <th>近似門檻</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>色彩</td><td>CIE76 ΔE ≤ 3，且 paint 透明度相同</td></tr>
+                  <tr><td>間距、尺寸、圓角、描邊寬度</td><td>差 ≤ 1px，或 ≤ 較大值的 5%（取較大者）</td></tr>
+                  <tr><td>文字</td><td>同字型與字重，字級差 ≤ 1px、行高差 ≤ 2px、字距差 ≤ 0.2px</td></tr>
+                  <tr><td>陰影</td><td>陰影層數相同，各參數差 ≤ 1px，顏色 ΔE ≤ 3</td></tr>
+                  <tr><td>透明度</td><td>差 ≤ 5 個百分點</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>兩個值都在階梯上時（例如間距 2 與 4、hover 8% 與 focus 10%）不算近似值。建議值優先選擇在階梯上的值，否則選使用次數最多的值。</p>
           </div>
         </section>
 
@@ -1305,7 +1636,7 @@
         <section id="example-button">
           <div class="section-head">
             <h3>Filled Button — 完整 Token 範例</h3>
-            <p>以 Filled Button 示範三層 token 的建立、alias 鏈與節點綁定對照。</p>
+            <p>依 M3 baseline filled button：高度 40、左右 padding 24、全圓、<code>label-large</code> 文字、icon 與文字間距 8。</p>
           </div>
 
           <h4 style="margin-bottom: 12px"><span class="tier-tag ref">Ref</span> 原始值層</h4>
@@ -1316,17 +1647,19 @@
                   <tr>
                     <th>Token 名稱</th>
                     <th>類型</th>
-                    <th>範例值</th>
-                    <th>Scope</th>
+                    <th>值</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td><code>{p}/ref/palette/primary/40</code></td><td>COLOR</td><td>#FF0101</td><td><code>[]</code></td></tr>
-                  <tr><td><code>{p}/ref/palette/neutral/100</code></td><td>COLOR</td><td>#FFFFFF</td><td><code>[]</code></td></tr>
-                  <tr><td><code>{p}/ref/radius/12</code></td><td>FLOAT</td><td>12</td><td><code>[]</code></td></tr>
-                  <tr><td><code>{p}/ref/spacing/16</code></td><td>FLOAT</td><td>16</td><td><code>[]</code></td></tr>
-                  <tr><td><code>{p}/ref/spacing/12</code></td><td>FLOAT</td><td>12</td><td><code>[]</code></td></tr>
-                  <tr><td><code>{p}/ref/spacing/8</code></td><td>FLOAT</td><td>8</td><td><code>[]</code></td></tr>
+                  <tr><td><code>{p}/ref/palette/primary/40</code></td><td>COLOR</td><td>#6750A4</td></tr>
+                  <tr><td><code>{p}/ref/palette/neutral/100</code></td><td>COLOR</td><td>#FFFFFF</td></tr>
+                  <tr><td><code>{p}/ref/palette/neutral/10</code></td><td>COLOR</td><td>#1D1B20</td></tr>
+                  <tr><td><code>{p}/ref/radius/9999</code></td><td>FLOAT</td><td>9999</td></tr>
+                  <tr><td><code>{p}/ref/spacing/24</code>、<code>{p}/ref/spacing/8</code></td><td>FLOAT</td><td>24、8</td></tr>
+                  <tr><td><code>{p}/ref/size/40</code></td><td>FLOAT</td><td>40</td></tr>
+                  <tr><td><code>{p}/ref/opacity/8</code>、<code>/12</code>、<code>/38</code></td><td>FLOAT</td><td>8、12、38</td></tr>
+                  <tr><td><code>{p}/ref/type/family/roboto</code></td><td>STRING</td><td>Roboto</td></tr>
+                  <tr><td><code>{p}/ref/type/weight/500</code>、<code>size/14</code>、<code>line-height/20</code>、<code>tracking/0_1</code></td><td>FLOAT</td><td>500、14、20、0.1</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1344,12 +1677,16 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td><code>{p}/sys/color/primary</code></td><td>ref/palette/primary/40</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
-                  <tr><td><code>{p}/sys/color/on-primary</code></td><td>ref/palette/neutral/100</td><td>TEXT_FILL</td></tr>
-                  <tr><td><code>{p}/sys/shape/corner-full</code></td><td>ref/radius/12</td><td>CORNER_RADIUS</td></tr>
-                  <tr><td><code>{p}/sys/spacing/inset-horizontal-md</code></td><td>ref/spacing/16</td><td>GAP</td></tr>
-                  <tr><td><code>{p}/sys/spacing/inset-vertical-sm</code></td><td>ref/spacing/12</td><td>GAP</td></tr>
-                  <tr><td><code>{p}/sys/spacing/gap-inline-sm</code></td><td>ref/spacing/8</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/sys/color/primary</code></td><td>ref/palette/primary/40</td><td>ALL_FILLS, STROKE_COLOR</td></tr>
+                  <tr><td><code>{p}/sys/color/on-primary</code></td><td>ref/palette/neutral/100</td><td>TEXT_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/sys/color/on-surface</code></td><td>ref/palette/neutral/10</td><td>TEXT_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/sys/shape/corner-full</code></td><td>ref/radius/9999</td><td>CORNER_RADIUS</td></tr>
+                  <tr><td><code>{p}/sys/spacing/inset-horizontal-xl</code></td><td>ref/spacing/24</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/sys/spacing/gap-inline-xs</code></td><td>ref/spacing/8</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/sys/size/control-height-md</code></td><td>ref/size/40</td><td>WIDTH_HEIGHT</td></tr>
+                  <tr><td><code>{p}/sys/state/hover/state-layer-opacity</code></td><td>ref/opacity/8</td><td>OPACITY, COLOR_OPACITY</td></tr>
+                  <tr><td><code>{p}/sys/state/disabled/container-opacity</code> / <code>content-opacity</code></td><td>ref/opacity/12 / 38</td><td>OPACITY, COLOR_OPACITY</td></tr>
+                  <tr><td><code>{p}/sys/typescale/label-large/*</code></td><td>ref/type/…（font、weight、size、line-height、tracking）</td><td>對應的文字 scope</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1362,16 +1699,21 @@
                 <thead>
                   <tr>
                     <th>Token 名稱</th>
-                    <th>Alias 目標</th>
+                    <th>值</th>
                     <th>Scope</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td><code>{p}/comp/filled-button/container/background-color</code></td><td>sys/color/primary</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
-                  <tr><td><code>{p}/comp/filled-button/container/shape</code></td><td>sys/shape/corner-full</td><td>CORNER_RADIUS</td></tr>
-                  <tr><td><code>{p}/comp/filled-button/container/padding-horizontal</code></td><td>sys/spacing/inset-horizontal-md</td><td>GAP</td></tr>
-                  <tr><td><code>{p}/comp/filled-button/label-text/color</code></td><td>sys/color/on-primary</td><td>TEXT_FILL</td></tr>
-                  <tr><td><code>{p}/comp/filled-button/with-icon/icon-label-gap</code></td><td>sys/spacing/gap-inline-sm</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/background-color</code></td><td>→ sys/color/primary</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/shape</code></td><td>→ sys/shape/corner-full</td><td>CORNER_RADIUS</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/height</code></td><td>→ sys/size/control-height-md</td><td>WIDTH_HEIGHT</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/padding-horizontal</code></td><td>→ sys/spacing/inset-horizontal-xl</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/container/gap</code></td><td>→ sys/spacing/gap-inline-xs</td><td>GAP</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/label-text/color</code></td><td>→ sys/color/on-primary</td><td>TEXT_FILL</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/hovered/state-layer/color</code></td><td>→ sys/color/on-primary</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/hovered/state-layer/opacity</code></td><td>→ sys/state/hover/state-layer-opacity</td><td>OPACITY</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/disabled/container/background-color</code></td><td>composed：on-surface + disabled/container-opacity</td><td>FRAME_FILL, SHAPE_FILL</td></tr>
+                  <tr><td><code>{p}/comp/filled-button/disabled/label-text/color</code></td><td>composed：on-surface + disabled/content-opacity</td><td>TEXT_FILL</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1383,17 +1725,20 @@
               <table>
                 <thead>
                   <tr>
-                    <th>節點屬性</th>
-                    <th>綁定的 Comp Token</th>
+                    <th>節點 / 屬性</th>
+                    <th>綁定到</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr><td>Container <code>fills</code></td><td><code>…/container/background-color</code></td></tr>
-                  <tr><td>Container 四角 <code>radius</code></td><td><code>…/container/shape</code></td></tr>
+                  <tr><td>Container 四角圓角</td><td><code>…/container/shape</code></td></tr>
+                  <tr><td>Container 高度</td><td><code>…/container/height</code></td></tr>
                   <tr><td>Container <code>paddingLeft/Right</code></td><td><code>…/container/padding-horizontal</code></td></tr>
-                  <tr><td>Container <code>paddingTop/Bottom</code></td><td><code>…/container/padding-vertical</code></td></tr>
-                  <tr><td>Text node <code>fills</code></td><td><code>…/label-text/color</code></td></tr>
-                  <tr><td>Icon 與 label 間 <code>itemSpacing</code></td><td><code>…/with-icon/icon-label-gap</code></td></tr>
+                  <tr><td>Container <code>itemSpacing</code>（icon 與 label 之間）</td><td><code>…/container/gap</code></td></tr>
+                  <tr><td>Label <code>fills</code></td><td><code>…/label-text/color</code></td></tr>
+                  <tr><td>Label 文字樣式</td><td>Text Style <code>label/large</code></td></tr>
+                  <tr><td>State layer（Hovered variant）<code>fills</code> / 透明度</td><td><code>…/hovered/state-layer/color</code> / <code>…/hovered/state-layer/opacity</code></td></tr>
+                  <tr><td>Container 與 Label（Disabled variant）<code>fills</code></td><td><code>…/disabled/container/background-color</code> / <code>…/disabled/label-text/color</code></td></tr>
                 </tbody>
               </table>
             </div>
@@ -1402,15 +1747,18 @@
           <div class="panel" style="margin-top: 16px">
             <div class="panel-body">
               <h4>綁定 API 範例</h4>
-              <pre><code><span class="comment">// 背景 / 前景顏色</span>
-<span class="fn">figma.variables.setBoundVariableForPaint</span>(paint, <span class="string">"color"</span>, variable)
+              <pre><code><span class="comment">// 填色：建立新的 paint 並填入解析後的色彩，再綁定</span>
+node.fills = [<span class="fn">figma.variables.setBoundVariableForPaint</span>(freshPaint, <span class="string">"color"</span>, variable)]
 
-<span class="comment">// 圓角（四個角都要綁）</span>
+<span class="comment">// 圓角、padding、gap、尺寸、描邊寬度、圖層透明度</span>
 node.<span class="fn">setBoundVariable</span>(<span class="string">"topLeftRadius"</span>, variable)
 
-<span class="comment">// Padding / Gap</span>
-node.<span class="fn">setBoundVariable</span>(<span class="string">"paddingLeft"</span>, variable)
-node.<span class="fn">setBoundVariable</span>(<span class="string">"itemSpacing"</span>, variable)</code></pre>
+<span class="comment">// 文字（Styles 模式）：綁定 Text Style 欄位後套用</span>
+textStyle.<span class="fn">setBoundVariable</span>(<span class="string">"fontSize"</span>, variable)
+<span class="keyword">await</span> textNode.<span class="fn">setTextStyleIdAsync</span>(textStyle.id)
+
+<span class="comment">// 陰影：綁定 effect 欄位後指定給 Effect Style</span>
+effect = <span class="fn">figma.variables.setBoundVariableForEffect</span>(effect, <span class="string">"radius"</span>, variable)</code></pre>
             </div>
           </div>
         </section>
@@ -1419,52 +1767,55 @@ node.<span class="fn">setBoundVariable</span>(<span class="string">"itemSpacing"
         <section id="states">
           <div class="section-head">
             <h3>變體與互動狀態</h3>
-            <p>狀態 token 作為 Comp token 路徑的子屬性。M3 標準 state layer 不透明度如下。</p>
+            <p>Comp 名稱依 M3 目前的順序：元件 → variant → 選取狀態 → 互動狀態 → 結構 → 屬性。</p>
           </div>
 
           <div class="bento">
             <div class="bento-card">
               <h4>State Token 命名</h4>
               <ul>
-                <li><code>…/background-color</code> — Default</li>
-                <li><code>…/background-color/hovered</code></li>
-                <li><code>…/background-color/focused</code></li>
-                <li><code>…/background-color/pressed</code></li>
-                <li><code>…/background-color/disabled</code></li>
-                <li><code>…/background-color/error</code></li>
+                <li><code>…/container/background-color</code> — 預設</li>
+                <li><code>…/hovered/state-layer/opacity</code></li>
+                <li><code>…/pressed/state-layer/opacity</code></li>
+                <li><code>…/disabled/container/background-color</code></li>
+                <li><code>…/selected/container/background-color</code></li>
+                <li><code>…/error/outline/color</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>Variant 值對應</h4>
+              <ul>
+                <li>Hover、Hovered → <code>hovered</code></li>
+                <li>Focus、Focused → <code>focused</code></li>
+                <li>Press、Pressed → <code>pressed</code></li>
+                <li>Drag、Dragged → <code>dragged</code></li>
+                <li>Disabled、Selected、Unselected、Error → 同名小寫</li>
+                <li>Default、Enabled、Rest → 不加段落</li>
               </ul>
             </div>
             <div class="bento-card">
               <h4>State Layer 不透明度</h4>
               <ul>
                 <li>Hovered — 8%</li>
-                <li>Focused — 12%</li>
-                <li>Pressed — 12%</li>
+                <li>Focused — 10%</li>
+                <li>Pressed — 10%</li>
                 <li>Dragged — 16%</li>
-              </ul>
-            </div>
-            <div class="bento-card">
-              <h4>Disabled 覆寫規則</h4>
-              <ul>
-                <li>Container fill → <code>on-surface</code> @ 12%</li>
-                <li>Label / icon → <code>on-surface</code> @ 38%</li>
-                <li>Outline → <code>on-surface</code> @ 12%</li>
               </ul>
             </div>
           </div>
 
           <div class="note note-warn" style="margin-top: 16px">
-            <p>Disabled 狀態必須建立專用 token，不可重用 Default token。不透明度應透過 node 的 <code>opacity</code> 或 <code>OPACITY</code> variable 設定，不可 bake 進 color token 值。</p>
+            <p>Disabled 狀態必須建立專用 token，不可重用預設 token：容器用 <code>on-surface</code> 搭配 disabled 容器透明度，內容用 <code>on-surface</code> 搭配 38%。透明度以 composed 色彩或圖層透明度表達，不要另外做一個不透明的新色。檔案若已使用 <code>hover</code>、<code>focus</code> 或把狀態放在屬性之後的舊順序，在使用者遷移前沿用原寫法（稽核規則 17 提供改名遷移，綁定不受影響）。</p>
           </div>
 
           <div class="panel" style="margin-top: 16px">
             <div class="panel-body">
               <h4>Light / Dark 雙模式擴展</h4>
-              <p style="color: var(--muted); margin: 0 0 12px">Sys 層 Collection 可新增 Dark mode。每個 Sys color token 在 Dark mode 指向不同的 Ref palette token。Comp 層與節點綁定無需修改。</p>
+              <p style="color: var(--muted); margin: 0 0 12px">System collection 新增 Dark mode，每個 Sys color 在 Dark mode 指向不同 tone 的 Ref。Comp 層與節點綁定都不需要修改。需要付費方案（Starter 每個 collection 只有 1 個 mode）。</p>
               <pre><code><span class="comment">// Light mode</span>
-sysPrimary.<span class="fn">setValueForMode</span>(lightModeId, { type: <span class="string">'VARIABLE_ALIAS'</span>, id: refPrimary40.id })
+sysPrimary.<span class="fn">setValueForMode</span>(lightModeId, figma.variables.<span class="fn">createVariableAlias</span>(refPrimary40))
 <span class="comment">// Dark mode</span>
-sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span class="string">'VARIABLE_ALIAS'</span>, id: refPrimary80.id })</code></pre>
+sysPrimary.<span class="fn">setValueForMode</span>(darkModeId, figma.variables.<span class="fn">createVariableAlias</span>(refPrimary80))</code></pre>
             </div>
           </div>
         </section>
@@ -1472,88 +1823,29 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
         <!-- Audit -->
         <section id="audit">
           <div class="section-head">
-            <h3>稽核規則 — 十一種違規類型</h3>
-            <p>Workflow C 使用的完整違規偵測清單。零違規時回報「All Variables comply」。</p>
+            <h3>稽核規則 — 十八種規則</h3>
+            <p>Workflow C 使用的完整規則。修正前一定先詢問，每個修正依變動分級確認；沒有發現問題時回報「checked rules 1–18」。</p>
           </div>
 
           <div class="violation-list">
-            <div class="violation-item">
-              <div class="violation-num">1</div>
-              <div>
-                <h4>跨層直接 Alias（Comp → Ref，跳過 Sys）</h4>
-                <p>Comp 層 variable 直接 alias 到 Ref 層。修正：建立缺失的 Sys token，更新 Comp 指向正確 Sys。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">2</div>
-              <div>
-                <h4>Scope 使用 ALL_SCOPES 或非 Ref 空 scope</h4>
-                <p>scopes 包含 ALL_SCOPES 或非 Ref 層的空 scope。Scope 是 picker 治理規則，修正時依 scope 對照表設定明確 scope。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">3</div>
-              <div>
-                <h4>缺少或不正確的 WEB Code Syntax</h4>
-                <p>codeSyntax.WEB 為空、不存在，或與 canonical <code>var(--prefix-layer-name)</code> 不一致。修正：從 variable 名稱自動推導並覆寫。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">4</div>
-              <div>
-                <h4>Prefix 不一致</h4>
-                <p>同一檔案混用多個 prefix（如 md 與 bd）。修正：確認正確 prefix 後批次重新命名。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">5</div>
-              <div>
-                <h4>Ref 層 Variable 直接綁定到節點</h4>
-                <p>節點視覺屬性直接綁定 Ref 層 variable。修正：重新綁定到對應 Sys 或 Comp token。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">6</div>
-              <div>
-                <h4>空 Collection</h4>
-                <p>Collection 存在但 variableIds 為空。修正：詢問使用者是否刪除。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">7</div>
-              <div>
-                <h4>Ref 或 Sys 使用元件 / 區域特定命名</h4>
-                <p>Ref/Sys 名稱包含 button、bottom-bar 等僅屬 Comp 的詞彙。修正：Ref 改為 primitive 路徑，Sys 改為通用語意，Comp 新增 alias。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">8</div>
-              <div>
-                <h4>Alias 方向不合法</h4>
-                <p>Ref 必須存 raw value，Sys 只能 alias Ref，Comp 只能 alias Sys。修正：重建正確 Ref → Sys → Comp 鏈。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">9</div>
-              <div>
-                <h4>缺少 Mode 值</h4>
-                <p>Variable 在 collection 的某些 mode 中沒有 valuesByMode。修正：為缺值 mode 設定 raw value 或正確 alias。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">10</div>
-              <div>
-                <h4>綁定型別與節點屬性不相容</h4>
-                <p>例如 FLOAT 綁到 fill color 或 COLOR 綁到 radius。修正：重新綁定到 resolvedType 相容的 variable。</p>
-              </div>
-            </div>
-            <div class="violation-item">
-              <div class="violation-num">11</div>
-              <div>
-                <h4>元件節點略過既有 Comp Token</h4>
-                <p>Component node 直接綁 Sys，但已存在對應 Comp token。修正：改綁 matching Comp token，保留元件層控制。</p>
-              </div>
-            </div>
+            <div class="violation-item"><div class="violation-num">1</div><div><h4>Comp 直接 alias Ref<span class="sev sev-error">error</span></h4><p>Comp 的值（包含 composed 色彩的任一欄位）直接指向 Ref。修正：改指向對應的 Sys token。</p></div></div>
+            <div class="violation-item"><div class="violation-num">2</div><div><h4>Scope 錯誤<span class="sev sev-error">error</span></h4><p>ALL_SCOPES、非 Ref 的空 scope、Ref 有 scope、ALL_FILLS 與個別填色 scope 並用、scope 與型別不符。修正：依 scope 對照表設定。</p></div></div>
+            <div class="violation-item"><div class="violation-num">3</div><div><h4>WEB Code Syntax 缺少或不正確<span class="sev sev-warning">warning</span></h4><p>修正：從名稱推導並覆寫。</p></div></div>
+            <div class="violation-item"><div class="violation-num">4</div><div><h4>Prefix 不一致<span class="sev sev-error">error</span></h4><p>同一檔案有兩種以上的 prefix。修正：確認 prefix 後改名（Tier 3）。</p></div></div>
+            <div class="violation-item"><div class="violation-num">5</div><div><h4>節點直接綁定 Ref<span class="sev sev-error">error</span></h4><p>修正：改綁 alias 同一個 Ref 的 Comp 或 Sys token。</p></div></div>
+            <div class="violation-item"><div class="violation-num">6</div><div><h4>空的 Collection<span class="sev sev-info">info</span></h4><p>修正：詢問後刪除（Tier 3）。</p></div></div>
+            <div class="violation-item"><div class="violation-num">7</div><div><h4>Ref 或 Sys 出現元件或區域名稱<span class="sev sev-warning">warning</span></h4><p>修正：Ref 改為數值命名、Sys 改為共用語意，元件用法移到 Comp。</p></div></div>
+            <div class="violation-item"><div class="violation-num">8</div><div><h4>Alias 方向不合法<span class="sev sev-error">error</span></h4><p>只允許 Sys → Ref、Comp → Sys（composed 色彩的欄位也適用）。</p></div></div>
+            <div class="violation-item"><div class="violation-num">9</div><div><h4>缺少 Mode 值<span class="sev sev-error">error</span></h4><p>修正：補上缺少的值；Light/Dark 的 Sys 色彩指向正確的 Ref tone。</p></div></div>
+            <div class="violation-item"><div class="violation-num">10</div><div><h4>綁定型別與屬性不相容<span class="sev sev-error">error</span></h4><p>例如 FLOAT 綁到填色、COLOR 綁到圓角。修正：改綁正確型別的 variable（Tier 3）。</p></div></div>
+            <div class="violation-item"><div class="violation-num">11</div><div><h4>元件略過既有的 Comp token<span class="sev sev-warning">warning</span></h4><p>元件節點綁 Sys，但同元件已有 alias 同一個 Sys 的 Comp token。修正：改綁 Comp token。</p></div></div>
+            <div class="violation-item"><div class="violation-num">12</div><div><h4>Ref 名稱與數值不符<span class="sev sev-error">error</span></h4><p>例如 <code>ref/spacing/16</code> 的值是 12，或 <code>ref/color/blue/50</code> 的 L* 只有 28。修正：依數值改名，或修改數值（Tier 3）。</p></div></div>
+            <div class="violation-item"><div class="violation-num">13</div><div><h4>重複或近似重複的 Ref<span class="sev sev-warning">warning</span></h4><p>例如 #1A73E8 與 #1A73E9。修正：在比對板上確認後合併（Tier 3）或保留。</p></div></div>
+            <div class="violation-item"><div class="violation-num">14</div><div><h4>間距標籤不一致<span class="sev sev-warning">warning</span></h4><p>例如 <code>inset-vertical-sm</code> = 12、<code>gap-inline-sm</code> = 8。修正：改名讓每個標籤只代表一個值。</p></div></div>
+            <div class="violation-item"><div class="violation-num">15</div><div><h4>元件 token 覆蓋率<span class="sev sev-warning">warning</span></h4><p>元件中寫死的填色、描邊、圓角、padding、gap、描邊寬度、文字與陰影；例如 14 個屬性綁了 10 個，覆蓋率 71%。修正：對該元件執行 Workflow F。</p></div></div>
+            <div class="violation-item"><div class="violation-num">16</div><div><h4>Styles 未綁定 variables<span class="sev sev-warning">warning</span></h4><p>Text Style 或 Effect Style 的欄位仍是原始值。修正：綁定數值相同的 Sys tokens。</p></div></div>
+            <div class="violation-item"><div class="violation-num">17</div><div><h4>舊式狀態順序<span class="sev sev-warning">warning</span></h4><p><code>…/container/background-color/disabled</code> → <code>…/disabled/container/background-color</code>。修正：原地改名，綁定與 alias 都不受影響。</p></div></div>
+            <div class="violation-item"><div class="violation-num">18</div><div><h4>名稱格式<span class="sev sev-warning">warning</span></h4><p>大寫、空白或不允許的字元，例如 <code>sys/color/Primary</code>。修正：改名並更新 code syntax。</p></div></div>
           </div>
         </section>
 
@@ -1561,7 +1853,7 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
         <section id="skills">
           <div class="section-head">
             <h3>與其他 Skill 的分工</h3>
-            <p>此 skill 專注 Figma Variables 的 M3 三層管理，與程式碼端治理及完整 design system 建置互補。</p>
+            <p>此 skill 專注 Figma Variables 與綁定 variables 的 Styles，與元件化、程式碼端治理及完整 design system 建置互補。</p>
           </div>
 
           <div class="panel">
@@ -1574,22 +1866,11 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td><code>figma-use</code></td>
-                    <td>底層 Plugin API 規則（顏色 0–1、return、page switching 等）— <strong>必須優先讀取</strong></td>
-                  </tr>
-                  <tr>
-                    <td><code>figma-m3-variables</code></td>
-                    <td>在 Figma 中建立、套用、批次綁定、稽核與逆向工程 M3 Variables（本 skill）</td>
-                  </tr>
-                  <tr>
-                    <td><code>design-system-governance</code></td>
-                    <td>程式碼端 token 治理（CSS/SCSS tokens）— 與本 skill 互補</td>
-                  </tr>
-                  <tr>
-                    <td><code>figma-generate-library</code></td>
-                    <td>完整多階段 design system 建置；Workflow D 涉及元件建立時參考其 Phase 3</td>
-                  </tr>
+                  <tr><td><code>figma-use</code></td><td>底層 Plugin API 規則，<strong>必須優先讀取</strong>；文字欄位可否綁定與 modes 上限兩點，以 binding recipes 記錄的官方文件為準</td></tr>
+                  <tr><td><code>figma-m3-variables</code></td><td>在 Figma 中建立、套用、批次綁定、稽核與反推 M3 Variables、Text Styles 與 Effect Styles（本 skill）</td></tr>
+                  <tr><td><code>figma-componentize</code>（規劃中）</td><td>找出散圖層、在 Components 頁面建立元件並把原稿換成 instance；token 部分呼叫 Workflow F</td></tr>
+                  <tr><td><code>figma-generate-library</code></td><td>完整多階段 design system 建置；Workflow D 建立 Component Set 時參考其 Phase 3</td></tr>
+                  <tr><td><code>design-system-governance</code></td><td>程式碼端 token 治理（CSS/SCSS tokens）</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1600,9 +1881,11 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId,  { type: <span cl
           <p>
             來源：<code>figma-m3-variables/SKILL.md</code> ·
             <code>references/token-spec.md</code> ·
+            <code>references/value-harvest.md</code> ·
+            <code>references/binding-recipes.md</code> ·
             <code>references/audit-rules.md</code>
           </p>
-          <p style="margin-top: 6px">產生時間：2026-05-26 · 靜態 HTML，無外部依賴</p>
+          <p style="margin-top: 6px">產生時間：2026-09-30 · 靜態 HTML，無外部依賴</p>
         </footer>
       </main>
     </div>

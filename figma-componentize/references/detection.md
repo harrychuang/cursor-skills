@@ -14,7 +14,7 @@ Contents
 7. Reusing existing components
 8. Confidence
 9. Detection script
-10. Existing component signatures
+10. Existing component inventory
 11. Grouping review board
 12. Componentization plan
 
@@ -160,7 +160,42 @@ Group names come from the pattern (`Button`, `List Item`); without a pattern, fr
 
 ## 7. Reusing existing components
 
-Run the script in §10 on each page that holds local components (the Components page first) and pass its result as `KNOWN` to the detection script. A group whose core signature equals a known component's is marked `reuse`: its occurrences are later replaced with instances of the existing component, and no new component is built.
+Existing local components are used first; a new component is built only when none fits or the designer decides so. Components from team libraries are not matched.
+
+**Order**
+
+1. Run detection (§9) on each scope page with `KNOWN = []`.
+2. Run the inventory (§10) with the groups' `core`, `name`, and `pattern`.
+3. When the inventory is not empty, run detection again with `KNOWN`. The groups then carry `reuse`, `alternatives`, and `clash`, and every `MODE: 'members'` row carries `known`.
+
+**Candidates.** A local component (or component set) is a reuse candidate for a group only when one of its variants has the group's core signature, because content is carried over by structural position (replacement.md §4). Each candidate gets two kinds of evidence.
+
+| Name evidence | When |
+|---------------|------|
+| `agree` | At least half of the group's occurrences were recognized by layer name (`byName`) and the component's name gives the same pattern; or the group's most common meaningful layer name equals the component's name after normalization (last path segment, lowercase, letters and digits only) |
+| `conflict` | `byName` is true, the component's name gives a pattern, and the two patterns differ (Button vs Chip) |
+| `neutral` | Anything else. A pattern inferred only from anatomy or repetition is not name evidence: an unnamed chip is recognized as a Button by anatomy |
+
+**Style evidence** is per occurrence. An occurrence is **covered** when the component has a variant with the same core, the same layer opacity, a height within the near-value threshold, and a style within the near-value thresholds of §6; among several, the variant with the fewest differing fields is assigned. Otherwise the occurrence is **uncovered**.
+
+| Name evidence | Occurrences | `reuse.quality` | What happens |
+|---------------|-------------|-----------------|--------------|
+| `agree` | all covered | `exact` | Reused without a question; the group's `kind` is `reuse` |
+| `agree` | some or none covered | `partial` | Covered occurrences are reused; ask about the uncovered ones (§11); `needs-review` |
+| `neutral` | all covered | `unconfirmed` | Reuse is proposed; ask (§11); `needs-review` |
+| `neutral` | some or none covered | — | Not reused; listed in `alternatives` |
+| `conflict` | any | — | Not reused; listed in `alternatives` |
+
+**Ranking** when several components qualify: `agree` before `neutral`; then more covered occurrences; then fewer differing style fields in total; then the order of `KNOWN` (Components page first). When the two best are equal on the first three, nothing is chosen: the group is `needs-review`, both are in `alternatives`, and the designer picks.
+
+**Output**
+
+- `reuse`: `{ id, name, isSet, quality, evidence, covered, uncovered, forced }`. `id` is the component set, or the standalone component. `uncovered` maps each variant name of the uncovered occurrences (`default` for a group without variants) to `{ count, nearest }`; `nearest` is the existing variant with the fewest differing fields, used when a variant is added (build-recipes.md §8).
+- `alternatives`: at most three other components with the same core: `{ id, name, evidence, covered }`.
+- `known` (members rows): the assigned variant ID, or `null`. Replacement and the build use this ID as it is (replacement.md §2, build-recipes.md §1). For a covered occurrence, `drift` lists its differences from the assigned variant, so they reach Workflow F's review board like any other drift.
+- `clash`: `{ id, name }` of a local component whose normalized name equals the group's name and that is not the group's reuse target; the group is `needs-review` (§11). Never build a component whose normalized name equals a local component's.
+
+**Designer decisions** come back through `REUSE`, keyed by core signature (group names can change during the review): a component or set ID reuses that component without name evidence (`quality` is `exact` when every occurrence is covered, otherwise `partial`); `false` reuses nothing for that core.
 
 ---
 
@@ -170,7 +205,7 @@ Run the script in §10 on each page that holds local components (the Components 
 |------------|------|
 | `exact` | At least half of the members match the pattern by name, and the layout signatures agree |
 | `inferred` | Anatomy-only or repetition-only match |
-| `needs-review` | Layout signatures differ, a second color style exists, raw icons differ, more than 5 sizes or 30 variants, or a name collision could not be resolved |
+| `needs-review` | Layout signatures differ, a second color style exists, raw icons differ, more than 5 sizes or 30 variants, a name collision could not be resolved, a reuse match is `partial` or `unconfirmed`, two local components match equally, or a local component has the same name (§7) |
 
 Ask about every `needs-review` group before building. The designer can rename, split, merge, or exclude any group.
 
@@ -185,7 +220,8 @@ One script, split into blocks for reading — paste the blocks in order into one
 ```js
 const SCOPE_IDS = ['1:2'];    // scope roots on ONE page
 const SINGLE_ELEMENT = false; // true when the designer pointed at one UI element
-const KNOWN = [];             // [{ id, name, core }] from §10
+const KNOWN = [];             // inventory entries from §10; [] on the first run
+const REUSE = {};             // designer decisions by core: { 'H(T)': '40:9' } reuses that component or set, { 'H(T)': false } reuses nothing
 const MODE = 'groups';        // 'groups' | 'members' | 'candidates'
 const GROUP = null;           // group name, for MODE 'members'
 const OFFSET = 0;
@@ -211,6 +247,7 @@ const nearPaint = (a, b) => (!a && !b) || (!!a && !!b && Math.abs(a.o - b.o) < 0
 const uniq = list => [...new Set(list)];
 const mode = list => { const m = new Map(); for (const x of list) m.set(x, (m.get(x) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1])[0]?.[0]; };
 const title = s => s.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/\b\w/g, ch => ch.toUpperCase());
+const normName = s => String(s).split('/').pop().toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''); // last path segment, lowercase, letters and digits only
 function fit(list, offset = 0, budget = 16000) { // keeps each returned page under the 20 kB use_figma limit
   const items = [];
   let size = 0;
@@ -255,10 +292,10 @@ function role(n) {
   if (vis(n.fills).some(p => p.type === 'IMAGE')) return 'image';
   return isContainer(n) ? 'container' : 'shape';
 }
+const namePattern = (name, width = Infinity) => (PATTERNS.find(([p, re]) => re.test(name.toLowerCase()) && (!WIDE.includes(p) || width >= 240)) || [null])[0];
 function patternOf(n) {
-  const name = n.name.toLowerCase();
-  const hit = PATTERNS.find(([p, re]) => re.test(name) && (!WIDE.includes(p) || n.width >= 240));
-  if (hit) return { pattern: hit[0], by: 'name' };
+  const named = namePattern(n.name, n.width);
+  if (named) return { pattern: named, by: 'name' };
   if (!hasVisual(n)) return null;
   const kids = n.children.filter(c => c.visible !== false);
   const texts = kids.filter(c => role(c) === 'text').length, icons = kids.filter(c => role(c) === 'icon').length;
@@ -425,6 +462,24 @@ for (const c of cands) {
   c.content = contentOf(c.n);
   c.cat = category(c.st);
 }
+const diffCount = (a, b) => (a.shadow !== b.shadow ? 1 : 0) + (nearNum(a.h, b.h) ? 0 : 1) + ['fill', 'stroke', 'text'].filter(k => !nearPaint(a[k], b[k])).length + NUMS.filter(([, get]) => !nearNum(get(a), get(b))).length;
+const evidenceOf = (g, k) => ((g.byName && k.pattern === g.pattern) || (g.label && normName(g.label) === normName(k.name)) ? 'agree'
+  : g.byName && k.pattern && k.pattern !== g.pattern ? 'conflict' : 'neutral');
+function matchKnown(g, id, entries) { // one local component or set against one group: the nearest variant for every occurrence
+  const picks = new Map();
+  let fields = 0;
+  for (const m of g.members) {
+    let best = null;
+    for (const k of entries) {
+      if (Math.abs(k.op - (m.n.opacity ?? 1)) > 0.01 || !nearNum(k.st.h, m.st.h)) continue;
+      const d = compareStyle(k.st, m.st);
+      if (d && (!best || d.length < best.d.length)) best = { k, d };
+    }
+    if (best) { picks.set(m.id, best); fields += best.d.length; }
+  }
+  return { id, name: entries[0].name, isSet: !!entries[0].setId, evidence: evidenceOf(g, entries[0]), entries, picks, covered: picks.size, fields };
+}
+const rankOf = x => [['agree', 'neutral', 'conflict'].indexOf(x.evidence), -x.covered, x.fields];
 const SIZE_NAMES = { 2: ['Small', 'Large'], 3: ['Small', 'Medium', 'Large'], 4: ['XSmall', 'Small', 'Medium', 'Large'], 5: ['XSmall', 'Small', 'Medium', 'Large', 'XLarge'] };
 const byCore = new Map();
 for (const c of cands) { if (!byCore.has(c.core)) byCore.set(c.core, []); byCore.get(c.core).push(c); }
@@ -483,7 +538,34 @@ for (const [core, members] of byCore) {
   }
   if (uniq(members.map(m => m.content.images.join('|'))).length > 1) g.notes.push('image fills differ: kept as instance overrides');
   g.level = ['atom', 'molecule', 'organism'][Math.max(...members.map(m => level.get(m.id)))];
-  g.reuse = KNOWN.find(k => k.core === core) || null;
+  g.byName = !!g.pattern && members.filter(m => m.by === 'name').length * 2 >= members.length;
+  g.label = mode(members.filter(m => !AUTO_NAME.test(m.n.name)).map(m => m.n.name)) || null;
+  const sameCore = new Map(), forced = REUSE[core];
+  for (const k of KNOWN) if (k.core === core) { const id = k.setId || k.id; if (!sameCore.has(id)) sameCore.set(id, []); sameCore.get(id).push(k); }
+  const ranked = forced === false ? [] : [...sameCore].map(([id, entries]) => matchKnown(g, id, entries)).sort((a, b) => rankOf(a).map((v, i) => v - rankOf(b)[i]).find(v => v) || 0);
+  const usable = forced ? ranked.filter(x => x.id === forced) : ranked.filter(x => x.evidence === 'agree' || (x.evidence === 'neutral' && x.covered === members.length));
+  let top = usable[0] || null;
+  if (top && !forced && usable[1] && rankOf(usable[1]).join() === rankOf(top).join()) {
+    flag(`two local components match equally: ${top.name} (${top.id}), ${usable[1].name} (${usable[1].id}) — ask which one to reuse`);
+    top = null;
+  }
+  g.reuse = null;
+  for (const m of members) m.known = null;
+  if (top) {
+    const uncovered = {};
+    for (const m of members) {
+      const pick = top.picks.get(m.id);
+      if (pick) { m.known = pick.k.id; m.drift = pick.d; continue; }
+      const key = m.variant || 'default';
+      if (!uncovered[key]) uncovered[key] = { count: 0, nearest: [...top.entries].sort((a, b) => diffCount(a.st, m.st) - diffCount(b.st, m.st))[0].id };
+      uncovered[key].count++;
+    }
+    const quality = top.covered < members.length ? 'partial' : forced || top.evidence === 'agree' ? 'exact' : 'unconfirmed';
+    g.reuse = { id: top.id, name: top.name, isSet: top.isSet, quality, evidence: top.evidence, covered: top.covered, uncovered, forced: !!forced };
+    if (quality === 'partial') flag(`no variant of the local component ${top.name} fits ${members.length - top.covered} occurrence(s): ask to add a variant, build a new component, or keep them`);
+    if (quality === 'unconfirmed') flag(`same structure and look as the local component ${top.name}, but the names do not confirm it: ask whether to reuse it`);
+  }
+  g.alternatives = ranked.filter(x => x !== top).slice(0, 3).map(x => ({ id: x.id, name: x.name, evidence: x.evidence, covered: x.covered }));
   groups.push(g);
 }
 ```
@@ -500,56 +582,95 @@ for (const [i, g] of groups.entries()) {
   if (word) g.name = `${title(word)} ${bases[i]}`;
   else { g.name = `${bases[i]} ${groups.slice(0, i).filter((_, j) => bases[j] === bases[i]).length + 1}`; g.conf = 'needs-review'; g.notes.push('name collision'); }
 }
+for (const g of groups) { // a local component with the same name that is not the reuse target
+  const hit = g.reuse && g.reuse.quality === 'exact' ? null : KNOWN.find(k => normName(k.name) === normName(g.name) && (k.setId || k.id) !== (g.reuse && g.reuse.id));
+  g.clash = hit ? { id: hit.setId || hit.id, name: hit.name } : null;
+  if (hit) { g.conf = 'needs-review'; g.notes.push(`a local component named "${hit.name}" exists${hit.core === g.core ? '' : ' with a different layer structure'}: ask for a distinct name, or exclude`); }
+}
 const groupOf = new Map(groups.flatMap(g => g.members.map(m => [m.id, g.name])));
 groups.sort((a, b) => ['atom', 'molecule', 'organism'].indexOf(a.level) - ['atom', 'molecule', 'organism'].indexOf(b.level));
 const summary = groups.map(g => ({
-  name: g.name, pattern: g.pattern, level: g.level, kind: g.reuse ? 'reuse' : g.kind, conf: g.conf, axes: g.axes,
+  name: g.name, pattern: g.pattern, level: g.level, kind: g.reuse && g.reuse.quality === 'exact' ? 'reuse' : g.kind, conf: g.conf, axes: g.axes,
   props: g.props, count: g.members.length, reps: g.reps,
-  contains: uniq(g.members.flatMap(m => m.kids.map(k => groupOf.get(k.id)))), reuse: g.reuse ? { id: g.reuse.id, name: g.reuse.name } : null,
+  contains: uniq(g.members.flatMap(m => m.kids.map(k => groupOf.get(k.id)))),
+  core: g.core, byName: g.byName, reuse: g.reuse, alternatives: g.alternatives, clash: g.clash,
   drift: g.members.filter(m => m.drift.length).length, notes: g.notes,
 }));
 const rows = MODE === 'members'
-  ? (groups.find(g => g.name === GROUP)?.members || []).map(m => ({ id: m.id, variant: m.variant, parent: cands.find(c => c.kids.some(k => k.id === m.id))?.id || null, texts: m.content.texts, slots: m.content.slots.map(s => s.key), drift: m.drift }))
+  ? (groups.find(g => g.name === GROUP)?.members || []).map(m => ({ id: m.id, variant: m.variant, parent: cands.find(c => c.kids.some(k => k.id === m.id))?.id || null, texts: m.content.texts, slots: m.content.slots.map(s => s.key), drift: m.drift, known: m.known }))
   : MODE === 'candidates' ? cands.map(c => ({ id: c.id, name: c.n.name, pattern: c.pattern, by: c.by, level: c.level, group: groupOf.get(c.id) }))
   : summary;
 return { page: { id: page.id, name: page.name }, candidates: cands.length, excluded: { ...ex, locked: ex.locked.slice(0, 50) }, ...fit(rows, OFFSET) };
 ```
 
-`MODE: 'members'` rows carry `parent` (the enclosing candidate, so the plan can find the outermost occurrences), the texts and slots for content mapping, and the drift list that is handed to Workflow F.
+`MODE: 'members'` rows carry `parent` (the enclosing candidate, so the plan can find the outermost occurrences), the texts and slots for content mapping, the drift list that is handed to Workflow F, and `known` (the existing variant assigned in §7, or `null`).
 
 ---
 
-## 10. Existing component signatures
+## 10. Existing component inventory
 
-Run on each page that holds local components; paste blocks 9-2 to 9-4 first. Pass the result as `KNOWN`.
+The inventory lists the local component variants that can matter to the candidate groups, with the data the match in §7 needs. Run it **after** the first detection run, once per page that holds local components (the Components page first), and join the pages' `items` into `KNOWN`. Paste blocks 9-2 to 9-4 first.
+
+- `CORES`: the `core` of every group from the first detection run.
+- `NAMES`: the `name` and `pattern` of every group, as returned (the script normalizes them).
+- `IDS`: component or component set IDs the designer named (§11), otherwise empty.
+
+An entry is returned when its ID or its set's ID is in `IDS` (`why: 'id'`), its core signature is in `CORES` (`why: 'core'`), or its normalized name or its name's pattern is in `NAMES` (`why: 'name'`). Everything else is left out, so the inventory stays small even in a large library. Each page of the result stays within 18,000 characters; request further pages until `nextOffset` is `null`.
 
 ```js
 const PAGE_ID = '0:5', OFFSET = 0;
+const CORES = ['H(T)'], NAMES = ['Button'], IDS = [];
 const page = await figma.getNodeByIdAsync(PAGE_ID);
 await figma.setCurrentPageAsync(page);
-const comps = page.findAllWithCriteria({ types: ['COMPONENT'] }).filter(c => isContainer(c));
-const known = comps.map(c => ({
-  id: c.parent?.type === 'COMPONENT_SET' ? c.parent.id : c.id,
-  name: c.parent?.type === 'COMPONENT_SET' ? `${c.parent.name} (${c.name})` : c.name,
-  core: sigs(c).core,
-}));
+const wanted = new Set(NAMES.filter(Boolean).map(normName));
+const r5 = v => Math.round(v * 1e5) / 1e5;
+const slim = p => (p ? { c: { r: r5(p.c.r), g: r5(p.c.g), b: r5(p.c.b) }, o: p.o } : null);
+const known = [];
+for (const c of page.findAllWithCriteria({ types: ['COMPONENT'] }).filter(c => isContainer(c))) {
+  const set = c.parent?.type === 'COMPONENT_SET' ? c.parent : null;
+  const name = set ? set.name : c.name, core = sigs(c).core, pattern = namePattern(name, c.width);
+  const why = IDS.includes(c.id) || (set && IDS.includes(set.id)) ? 'id'
+    : CORES.includes(core) ? 'core'
+    : wanted.has(normName(name)) || (pattern && wanted.has(normName(pattern))) ? 'name' : null;
+  if (!why) continue;
+  const st = styleOf(c);
+  known.push({ id: c.id, setId: set ? set.id : null, name, variant: set ? c.name : null, core, pattern, op: r2(c.opacity ?? 1), st: { ...st, fill: slim(st.fill), stroke: slim(st.stroke), text: slim(st.text) }, why });
+}
 return fit(known, OFFSET);
 ```
+
+| Field | Meaning |
+|-------|---------|
+| `id` | The variant, or the standalone component |
+| `setId` | Its component set; `null` for a standalone component |
+| `name`, `variant` | The set (or component) name, and the variant name such as `Style=Filled` (`null` for a standalone component) |
+| `core` | Core signature (§6) |
+| `pattern` | The UI pattern recognized from the name alone (§3), or `null` |
+| `op`, `st` | Layer opacity, and the same style fields detection uses for grouping (9-4 `styleOf`) |
+| `why` | `core`, `name`, or `id` |
+
+When the inventory is empty on every page, skip the match: no group is reused, and the first detection run is the result. Otherwise run detection again with `KNOWN` (§7).
 
 ---
 
 ## 11. Grouping review board
 
-Built after detection, before the plan. It only **adds** a Section; it never moves or edits existing layers.
+Built after detection (the run with `KNOWN`, when the inventory is not empty), before the plan. It only **adds** a Section; it never moves or edits existing layers.
 
 - **Placement**: a Section named exactly `Componentize Review — temporary` on the page that contains the scope, 400 px to the right of the rightmost existing node.
 - **Rows**: one per proposed group — a heading (`Button · exact · set`), the mapping (`Style: Filled, Outlined · TEXT: Label`), the occurrence count, notes, then up to four clones of representative occurrences (the `reps` first), each scaled to fit 400 px wide.
-- Fonts used inside a sample are loaded before it is cloned (appending text layers with unloaded fonts fails).
+- **Pairing**: a group with `reuse` or `alternatives` (§7) also shows the existing components beside its raw samples, each with a caption (component name, variant name, and the match quality or the name evidence):
+  - `match`: at most two of the assigned variants (the most used `known` values; when no occurrence is covered, the `nearest` variants of `reuse.uncovered`), with `reuse.quality` as the tag;
+  - `alts`: at most three `alternatives`, one sample each, with their `evidence` as the tag.
+
+  These samples are **instances**. Never clone a main component or a component set: a clone of a main component is a new component in the file. The samples are removed with the board.
+- Fonts used inside a sample are loaded before it is cloned or instantiated (appending text layers with unloaded fonts fails). A sample whose fonts cannot be loaded is skipped and listed in `skippedSamples`; ask the questions anyway.
 - Paste helper blocks 9-2 to 9-4 first (`uniq`, `fontsOf`).
 
 ```js
 const PAGE_ID = '0:1';
-const ROWS = [{ name: 'Button', conf: 'exact', kind: 'set', mapping: 'Style: Filled, Outlined · TEXT: Label', count: 3, notes: [], samples: ['1:20', '1:31'] }];
+const ROWS = [{ name: 'Button', conf: 'needs-review', kind: 'set', mapping: 'Style: Filled, Outlined · TEXT: Label', count: 3, notes: [], samples: ['1:20', '1:31'],
+  match: { ids: ['40:2'], tag: 'partial' }, alts: [{ id: '12:30', tag: 'conflict' }] }]; // match: null and alts: [] for a group without existing components
 const page = await figma.getNodeByIdAsync(PAGE_ID);
 await figma.setCurrentPageAsync(page);
 await Promise.all(['Regular', 'Bold'].map(style => figma.loadFontAsync({ family: 'Inter', style })));
@@ -569,8 +690,20 @@ section.y = 0;
 const board = stack('Review groups', 'VERTICAL', 48);
 board.paddingTop = board.paddingBottom = board.paddingLeft = board.paddingRight = 40;
 board.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
-board.appendChild(label('Componentize review — accept, rename, split, merge, or exclude each group; this section is removed afterwards', 16, true));
+board.appendChild(label('Componentize review — accept, rename, split, merge, or exclude each group; for existing components: reuse, build new instead, or reuse another one; this section is removed afterwards', 16, true));
 const skipped = [];
+async function existing(line, id, prefix, tag) { // a sample of a local component: always an instance, never a clone of the main component
+  const node = await figma.getNodeByIdAsync(id);
+  const main = node && node.type === 'COMPONENT_SET' ? node.defaultVariant : node;
+  if (!main || main.type !== 'COMPONENT' || !(await loadFonts(main))) { skipped.push(id); return; }
+  const inSet = main.parent && main.parent.type === 'COMPONENT_SET';
+  const cell = stack(`${prefix} ${id}`, 'VERTICAL', 8);
+  cell.appendChild(label(`${prefix}: ${inSet ? `${main.parent.name} · ${main.name}` : main.name} · ${tag}`));
+  const inst = main.createInstance();
+  cell.appendChild(inst);
+  if (inst.width > 400) inst.rescale(400 / inst.width);
+  line.appendChild(cell);
+}
 for (const r of ROWS) {
   const row = stack(r.name, 'VERTICAL', 12);
   row.appendChild(label(`${r.name} · ${r.conf} · ${r.kind} · ${r.count} occurrences`, 14, true));
@@ -578,11 +711,13 @@ for (const r of ROWS) {
   const line = stack(`${r.name} samples`, 'HORIZONTAL', 24);
   for (const id of r.samples.slice(0, 4)) {
     const src = await figma.getNodeByIdAsync(id);
-    if (!src || !(await loadFonts(src))) { skipped.push(id); continue; }
+    if (!src || ['COMPONENT', 'COMPONENT_SET'].includes(src.type) || !(await loadFonts(src))) { skipped.push(id); continue; } // raw occurrences only
     const copy = src.clone();
     line.appendChild(copy);
     if (copy.width > 400) copy.rescale(400 / copy.width);
   }
+  if (r.match) for (const id of r.match.ids.slice(0, 2)) await existing(line, id, 'existing', r.match.tag);
+  for (const a of (r.alts || []).slice(0, 3)) await existing(line, a.id, 'same structure', a.tag);
   row.appendChild(line);
   board.appendChild(row);
 }
@@ -597,8 +732,32 @@ Then:
 
 1. `get_screenshot` of the Section, and the link `https://www.figma.com/design/{fileKey}/?node-id={sectionId with ":" replaced by "-"}`.
 2. Ask per group (up to four groups per question-tool call): accept, rename, split, merge with another group, or exclude. Ask every `needs-review` note explicitly.
-3. Re-run detection with the decisions applied where needed (for example after a split, run `MODE: 'members'` to list each new group's occurrences).
-4. Remove the board unless the user wants to keep it:
+3. Ask the reuse questions below for every group that has `reuse`, `alternatives`, or `clash`.
+4. Re-run detection with the decisions applied where needed: after a split, run `MODE: 'members'` to list each new group's occurrences; after a reuse decision, run `groups` and `members` again with `REUSE`.
+5. Remove the board unless the user wants to keep it (script below).
+
+**Reuse questions**
+
+| The group has | Ask | Options |
+|---------------|-----|---------|
+| `reuse.quality` `exact` | Nothing extra; show the pairing in the group question | **Reuse {name}** (accept) · **Build new instead** · **Reuse another component** |
+| `reuse.quality` `unconfirmed` | "These are built and look like the local component {name}. Reuse it?" | **Reuse {name}** · **Build new instead** · **Reuse another component** · **Keep as they are** |
+| `reuse.quality` `partial` | One question per key of `reuse.uncovered`: "{count} occurrence(s) ({variant}) have no matching variant in {name}." | **Add a variant to {name}** · **Build a new component** · **Keep as they are** |
+| No `reuse`, `alternatives` not empty | In the group question, name the components with the same structure and why none was chosen (`conflict`: the names say a different kind of UI; `neutral`: the look differs) | accept (the group is built as new) · **Reuse another component** |
+| The note "two local components match equally" | "Which one should be reused?" | Each listed component · **Build new instead** |
+| `clash` | "A local component named {name} already exists. What should the new one be called?" | A proposed distinct name · another name · **Exclude** |
+
+**Applying the answers**
+
+- **Reuse {name}** (for `unconfirmed`, or one of two equal components) and **Reuse another component** with a listed alternative: set `REUSE[core]` to that component or set ID and re-run detection. Name evidence is not required for a component the designer picked; style coverage is still computed, and a `partial` result leads to the uncovered question.
+- **Reuse another component** with a component the designer names by link or by name: run the inventory (§10) with its ID in `IDS`. When its `core` equals the group's, proceed as above. When it differs, do not use it as a reuse target: say that the layer structure differs, so an instance cannot be proven to look the same, and ask **Build a new component** or **Keep as they are**.
+- **Build new instead**: set `REUSE[core]` to `false`, re-run detection, and record in the plan that the reuse of {name} was declined.
+- **Add a variant to {name}** (only offered when `reuse.isSet` is true): record the set, the `nearest` variant, the representative (the first uncovered occurrence of that variant), and the occurrence IDs. Propose the variant name as the nearest variant's name with one property value changed, and ask the designer to confirm or edit it; the name must use the set's own variant properties (build-recipes.md §8). This is a Tier 2 change that only this explicit choice allows; an earlier "apply everything automatically" does not.
+- **Build a new component** (uncovered occurrences): the members rows with `known: null` and that `variant` become a separate group in the plan, with the first of them as the representative. Ask for its name.
+- **Keep as they are**: those occurrences are not replaced. List them in the plan and the report with the reason `no matching variant — kept by the designer`.
+- When `reuse.isSet` is false, offer only **Build a new component** and **Keep as they are**, and say why: "{name} is a single component, not a component set, so a variant cannot be added. To add one, combine it into a component set in Figma, then run detection again."
+- Covered occurrences are replaced with the existing component whatever the answer about the uncovered ones. Never leave an uncovered occurrence without a decision, and do not build, add, or replace anything for that group before the decision.
+- **Names**: a new component's normalized name must differ from every local component's. Propose a name that adds the style or a descriptive word from the layer names (`Outlined Button`). After every rename, split, **Build new instead**, and **Build a new component** answer, check the new name again (run the inventory with the name in `NAMES` when it was not covered before); when it equals a local component's name, ask again and build nothing for that group.
 
 ```js
 const s = await figma.getNodeByIdAsync(SECTION_ID);
@@ -615,14 +774,17 @@ Shown after the review, before any other write; wait for confirmation.
 ```
 ## Componentization plan — {scope}
 Target page: Components (existing) · Restore point: ask the user to save a version first
-Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections
+Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections · add 1 variant to an existing set
 Tier 3 (asked again later): replace 11 occurrences with instances
 ```
 
 | Section | Columns |
 |---------|---------|
 | Components | name, kind (component or set), level, variants (`axes`), properties, contains, representative per variant (`reps`), occurrence IDs (from `MODE: 'members'`), confidence |
-| Reused | group, existing component, occurrence IDs |
+| Reused | group, existing component (ID), match quality, occurrences per assigned variant (`Style=Filled` 40:2 × 6) |
+| Added variants | existing set, new variant name, nearest variant, representative, occurrence IDs |
+| Built instead of reused | group, the existing component whose reuse the designer declined, the new name |
+| Kept by decision | occurrence IDs, reason (`no matching variant — kept by the designer`) |
 | Excluded | node or count, reason (screen, wrapper, instance, hidden, locked IDs, lone) |
 | Drift for Workflow F | occurrence ID, drifting fields |
 | Questions | every `needs-review` note |

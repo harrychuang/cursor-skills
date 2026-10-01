@@ -1,0 +1,1889 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Figma Componentize — 元件化文件</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f3f0;
+        --surface: #ffffff;
+        --surface-alt: #ececea;
+        --ink: #1a1c1e;
+        --muted: #5c6066;
+        --line: #d6d4cf;
+        --line-strong: #a8a6a0;
+        --accent: #1a1c1e;
+        --accent-soft: #ebeae6;
+        --ref: #6750a4;
+        --ref-soft: #eaddff;
+        --sys: #00639b;
+        --sys-soft: #d3e4ff;
+        --comp: #386a20;
+        --comp-soft: #d9e7cb;
+        --warn: #7d5700;
+        --warn-soft: #ffecb3;
+        --code: #2b2f33;
+        --code-bg: #f0efec;
+        --sidebar-w: 260px;
+        --radius: 20px;
+        --radius-sm: 12px;
+        --shadow: 0 20px 60px rgba(26, 28, 30, 0.08);
+        --shadow-soft: 0 8px 24px rgba(26, 28, 30, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Noto Sans TC", sans-serif;
+        line-height: 1.65;
+        font-size: 15px;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -48px;
+        z-index: 100;
+        background: var(--ink);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+      }
+
+      .skip-link:focus {
+        top: 16px;
+      }
+
+      /* Layout */
+      .layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: var(--surface);
+        border-right: 1px solid var(--line);
+        padding: 28px 20px 40px;
+      }
+
+      .sidebar-brand {
+        margin-bottom: 28px;
+      }
+
+      .sidebar-brand .eyebrow {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-brand h1 {
+        margin: 0;
+        font-size: 1.15rem;
+        line-height: 1.3;
+        font-weight: 800;
+      }
+
+      .sidebar-brand p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      .nav-group {
+        margin-bottom: 22px;
+      }
+
+      .nav-group-label {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-list a {
+        display: block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+      }
+
+      .nav-list a:hover,
+      .nav-list a:focus-visible {
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      .nav-list a.active {
+        background: var(--ink);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .content {
+        padding: 0 48px 80px;
+        max-width: 920px;
+      }
+
+      /* Let grid tracks shrink so long tokens and tables wrap or scroll inside their panels */
+      .layout > * {
+        min-width: 0;
+      }
+
+      p code,
+      li code,
+      td code,
+      .token-path {
+        overflow-wrap: anywhere;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 56px 0 40px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 48px;
+      }
+
+      .hero .eyebrow {
+        margin: 0 0 12px;
+        color: var(--ref);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        font-weight: 800;
+      }
+
+      .hero .lead {
+        margin: 16px 0 0;
+        max-width: 640px;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        padding: 5px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--code);
+      }
+
+      .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .badge-dot.ref { background: var(--ref); }
+      .badge-dot.sys { background: var(--sys); }
+      .badge-dot.comp { background: var(--comp); }
+
+      /* Sections */
+      section {
+        scroll-margin-top: 32px;
+        margin-bottom: 56px;
+      }
+
+      .section-head {
+        margin-bottom: 24px;
+      }
+
+      .section-head h3 {
+        margin: 0;
+        font-size: 1.55rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+
+      .section-head p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        max-width: 680px;
+      }
+
+      h4 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      /* Cards & panels */
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+      }
+
+      .panel + .panel {
+        margin-top: 16px;
+      }
+
+      .panel-body {
+        padding: 20px 22px;
+      }
+
+      /* Three-tier diagram */
+      .tier-stack {
+        display: grid;
+        gap: 0;
+      }
+
+      .tier-row {
+        display: grid;
+        grid-template-columns: 100px minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+        padding: 20px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tier-row:last-child {
+        border-bottom: 0;
+      }
+
+      .tier-label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .tier-tag {
+        display: inline-block;
+        width: fit-content;
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .tier-tag.ref {
+        background: var(--ref-soft);
+        color: var(--ref);
+      }
+
+      .tier-tag.sys {
+        background: var(--sys-soft);
+        color: var(--sys);
+      }
+
+      .tier-tag.comp {
+        background: var(--comp-soft);
+        color: var(--comp);
+      }
+
+      .tier-label span {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .tier-content h4 {
+        margin-bottom: 6px;
+      }
+
+      .tier-content p {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .token-path {
+        display: block;
+        border-radius: var(--radius-sm);
+        background: var(--code-bg);
+        padding: 10px 14px;
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.82rem;
+        color: var(--code);
+        word-break: break-all;
+      }
+
+      .tier-arrow {
+        text-align: center;
+        padding: 6px;
+        color: var(--line-strong);
+        font-size: 1.1rem;
+      }
+
+      /* Bento grid */
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .bento-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .bento-card.wide {
+        grid-column: span 2;
+      }
+
+      .bento-card.full {
+        grid-column: span 3;
+      }
+
+      .bento-card h4 {
+        margin-bottom: 8px;
+      }
+
+      .bento-card p,
+      .bento-card ul {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .bento-card ul {
+        padding-left: 18px;
+      }
+
+      .bento-card li + li {
+        margin-top: 4px;
+      }
+
+      /* Rules list */
+      .rules-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: rule;
+      }
+
+      .rules-list li {
+        counter-increment: rule;
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 14px;
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .rules-list li:last-child {
+        border-bottom: 0;
+      }
+
+      .rules-list li::before {
+        content: counter(rule);
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .rules-list strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.95rem;
+      }
+
+      .rules-list span {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      /* Workflow cards */
+      .workflow-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .workflow-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .workflow-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+        background: var(--surface-alt);
+      }
+
+      .workflow-letter {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 900;
+        flex-shrink: 0;
+      }
+
+      .workflow-header h4 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .workflow-header p {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .workflow-steps {
+        margin: 0;
+        padding: 18px 22px 18px 42px;
+        list-style: decimal;
+      }
+
+      .workflow-steps li {
+        color: var(--muted);
+        font-size: 0.9rem;
+        padding-left: 6px;
+      }
+
+      .workflow-steps li + li {
+        margin-top: 8px;
+      }
+
+      .workflow-steps strong {
+        color: var(--ink);
+      }
+
+      /* Tables */
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.86rem;
+      }
+
+      thead th {
+        background: var(--surface-alt);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+
+      tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      tbody tr:hover td {
+        background: rgba(0, 0, 0, 0.015);
+      }
+
+      .cell-good {
+        color: var(--comp);
+        font-weight: 600;
+      }
+
+      .cell-bad {
+        color: #b3261e;
+        font-weight: 600;
+      }
+
+      /* Token specimens */
+      .specimen-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .specimen {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: var(--surface);
+      }
+
+      .specimen-swatch {
+        height: 56px;
+        display: flex;
+        align-items: flex-end;
+        padding: 8px 10px;
+      }
+
+      .specimen-swatch span {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      .specimen-info {
+        padding: 10px 12px;
+      }
+
+      .specimen-name {
+        display: block;
+        font-family: monospace;
+        font-size: 0.72rem;
+        color: var(--code);
+        word-break: break-all;
+        margin-bottom: 4px;
+      }
+
+      .specimen-css {
+        display: block;
+        font-family: monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        word-break: break-all;
+      }
+
+      /* Code blocks */
+      pre {
+        margin: 0;
+        border-radius: var(--radius-sm);
+        background: #1e2124;
+        color: #e8eaed;
+        padding: 16px 18px;
+        overflow-x: auto;
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+
+      code {
+        border-radius: 6px;
+        background: var(--code-bg);
+        color: var(--code);
+        padding: 0.1em 0.35em;
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.88em;
+      }
+
+      pre code {
+        background: none;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+      }
+
+      .comment { color: #8b949e; }
+      .keyword { color: #ff7b72; }
+      .string { color: #a5d6ff; }
+      .fn { color: #d2a8ff; }
+
+      /* Notes */
+      .note {
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        font-size: 0.88rem;
+        margin-top: 14px;
+      }
+
+      .note-warn {
+        background: var(--warn-soft);
+        border-left: 4px solid var(--warn);
+        color: #3d2e00;
+      }
+
+      .note-info {
+        background: var(--sys-soft);
+        border-left: 4px solid var(--sys);
+        color: #002a4d;
+      }
+
+      .note p {
+        margin: 0;
+      }
+
+      /* Audit violations */
+      .violation-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .violation-item {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+      }
+
+      .violation-num {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--warn-soft);
+        color: var(--warn);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .violation-item h4 {
+        margin: 0 0 4px;
+        font-size: 0.92rem;
+      }
+
+      .violation-item p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      /* Skill matrix */
+      .skill-matrix td:first-child {
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* Cascade visual */
+      .cascade {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 20px 22px;
+      }
+
+      .cascade-node {
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-family: monospace;
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .cascade-node.ref-node {
+        background: var(--ref-soft);
+        color: var(--ref);
+      }
+
+      .cascade-node.sys-node {
+        background: var(--sys-soft);
+        color: var(--sys);
+      }
+
+      .cascade-node.comp-node {
+        background: var(--comp-soft);
+        color: var(--comp);
+      }
+
+      .cascade-arrow {
+        color: var(--line-strong);
+        font-size: 1.2rem;
+        font-weight: 300;
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      /* Severity and tier pills */
+      .sev {
+        display: inline-block;
+        margin-left: 8px;
+        border-radius: 999px;
+        padding: 1px 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      td > .sev {
+        margin-left: 0;
+      }
+
+      .sev-error {
+        background: #f9dedc;
+        color: #b3261e;
+      }
+
+      .sev-warning {
+        background: var(--warn-soft);
+        color: var(--warn);
+      }
+
+      .sev-info {
+        background: var(--sys-soft);
+        color: var(--sys);
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+          padding: 20px;
+        }
+
+        .content {
+          padding: 0 20px 60px;
+        }
+
+        .bento {
+          grid-template-columns: 1fr;
+        }
+
+        .bento-card.wide,
+        .bento-card.full {
+          grid-column: span 1;
+        }
+
+        .tier-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .hero {
+          padding-top: 32px;
+        }
+
+        .cascade {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .cascade-arrow {
+          transform: rotate(90deg);
+        }
+
+        .cascade-node {
+          max-width: 100%;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      }
+
+      /* Componentize additions */
+      .cascade-node:not(.ref-node):not(.sys-node):not(.comp-node) {
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      .variant-demo {
+        display: grid;
+        grid-template-columns: max-content repeat(2, minmax(0, 1fr));
+        align-items: center;
+        gap: 12px 16px;
+        padding: 4px 22px 16px;
+      }
+
+      .variant-demo .vh {
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
+      .variant-demo .vb {
+        justify-self: start;
+        border-radius: 999px;
+        padding: 8px 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+
+      .vb.filled {
+        background: #6750a4;
+        color: #fff;
+      }
+
+      .vb.outlined {
+        border: 1px solid #79747e;
+        color: #6750a4;
+      }
+
+      .vb.disabled {
+        opacity: 0.38;
+      }
+
+      .vb.default {
+        outline: 2px dashed var(--comp);
+        outline-offset: 4px;
+      }
+
+      .note ul li + li {
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="文件導覽">
+        <div class="sidebar-brand">
+          <p class="eyebrow">Agent Skill</p>
+          <h1>Figma Componentize</h1>
+          <p>把設計稿中還不是元件的 UI 做成元件、套用 tokens，再把原稿換成 instance，外觀維持不變。</p>
+        </div>
+
+        <nav>
+          <div class="nav-group">
+            <p class="nav-group-label">概覽</p>
+            <ul class="nav-list">
+              <li><a href="#overview">簡介</a></li>
+              <li><a href="#prerequisites">前置條件</a></li>
+              <li><a href="#when">何時使用</a></li>
+              <li><a href="#rules">通用規則</a></li>
+              <li><a href="#tiers">變動分級</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">流程</p>
+            <ul class="nav-list">
+              <li><a href="#steps">步驟總覽</a></li>
+              <li><a href="#detection">偵測規則</a></li>
+              <li><a href="#grouping">分組規則</a></li>
+              <li><a href="#review-board">分組比對區塊</a></li>
+              <li><a href="#plan">元件化計畫</a></li>
+              <li><a href="#build">建立元件</a></li>
+              <li><a href="#tokens">Tokens 與 Workflow F</a></li>
+              <li><a href="#replacement">替換原稿</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">安全與報告</p>
+            <ul class="nav-list">
+              <li><a href="#verification">逐項驗證</a></li>
+              <li><a href="#kept">保留原稿的情況</a></li>
+              <li><a href="#safety">安全機制</a></li>
+              <li><a href="#report">報告</a></li>
+            </ul>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">參考</p>
+            <ul class="nav-list">
+              <li><a href="#skills">與其他 Skill 的分工</a></li>
+              <li><a href="#references">參考文件</a></li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      <main id="main" class="content">
+        <header class="hero" id="overview">
+          <p class="eyebrow">Componentization Workflow</p>
+          <h2>Figma Componentize</h2>
+          <p class="lead">
+            找出設計稿中還不是元件的 UI，在 Components 頁面由小到大建立元件、variants 與元件屬性，
+            透過 figma-m3-variables 的 Workflow F 建立並套用 tokens，最後把原稿換成 instance，並逐一證明外觀沒有改變。
+            無法證明一致的原稿一律保留。
+          </p>
+          <div class="hero-meta">
+            <span class="badge">偵測 → 分組 → 建立 → Tokens → 替換</span>
+            <span class="badge"><span class="badge-dot comp"></span> 原稿比對通過才刪除</span>
+            <span class="badge">Tier 0–3</span>
+            <span class="badge">Workflow F</span>
+          </div>
+        </header>
+
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+          <div class="section-head">
+            <h3>前置條件</h3>
+            <p>開始前先確認三項前置條件。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>前置條件</th>
+                    <th>如何確認</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>可寫入的 <code>use_figma</code> 工具</td><td>工具清單中有 <code>use_figma</code>；只有 <code>get_screenshot</code> 這類唯讀的 Figma 工具不夠</td></tr>
+                  <tr><td><code>figma-use</code> skill</td><td>可以讀取。第一次呼叫 <code>use_figma</code> 前先讀，每次呼叫都傳入 <code>skillNames: "figma-componentize"</code></td></tr>
+                  <tr><td>含 Workflow F 的 figma-m3-variables</td><td>SKILL.md 有「F. Tokenize hardcoded values」，且 <code>references/value-harvest.md</code> 存在</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-warn">
+            <p>缺少任何一項就停止，說明缺少什麼，不做任何寫入。</p>
+          </div>
+
+          <div class="note note-info">
+            <p><strong><code>use_figma</code> 的限制：</strong></p>
+            <ul style="margin: 6px 0 0; padding-left: 18px">
+              <li>每次呼叫都從第一頁開始，也不能一次載入所有頁面，所以要用 <code>setCurrentPageAsync</code> 逐頁作業。</li>
+              <li>只能使用 async getter。</li>
+              <li>每次呼叫最多回傳 20 kB，並有執行時間上限；失敗的呼叫可能留下部分變更。</li>
+              <li>無法儲存版本，也尚不支援自訂字型與新增圖片。</li>
+            </ul>
+            <p style="margin-top: 8px">提問時使用編輯器的提問工具（Cursor 為 <code>AskQuestion</code>、Claude Code 為 <code>AskUserQuestion</code>）；沒有提問工具時，以文字詢問並等待回覆。</p>
+          </div>
+        </section>
+
+        <!-- When to use -->
+        <section id="when">
+          <div class="section-head">
+            <h3>何時使用</h3>
+            <p>範圍由設計師決定：丟一個 section 就處理裡面的 UI，丟單一元件的連結就處理那個元件。不要求同一個 UI 重複出現，一個按鈕也能做成 <code>Button</code> 元件。範圍或分組不明確時，先詢問。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>需求</th>
+                    <th>使用</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>把 section、frame 或單一元素中的散圖層做成元件，並把原稿換成 instance</td><td>本 skill</td></tr>
+                  <tr><td>只把寫死的數值轉成 tokens，不建立元件</td><td>figma-m3-variables Workflow F</td></tr>
+                  <tr><td>套用現有 tokens、稽核 tokens，或建立 token 系統</td><td>figma-m3-variables（Workflow A–E）</td></tr>
+                  <tr><td>從零建立完整的 design system</td><td><code>figma-generate-library</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>不在範圍內</h4>
+              <ul style="margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem">
+                <li>team library 的元件：只重用本檔案的 local components</li>
+                <li>把散落的向量圖示整理成圖示庫：只列在報告中</li>
+                <li>prototype 互動與元件動畫</li>
+                <li>重新排版，例如把絕對定位改成 auto layout：元件保留原稿的圖層結構</li>
+                <li>在 Components 頁面產生說明文件 frame</li>
+                <li>Code Connect 與程式碼端元件</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rules -->
+        <section id="rules">
+          <div class="section-head">
+            <h3>通用規則</h3>
+            <p>適用於每一個步驟。</p>
+          </div>
+
+          <div class="panel">
+            <ol class="rules-list">
+              <li><div><strong>先檢查再寫入</strong><span>每個步驟都先以唯讀的呼叫確認目前狀態。</span></div></li>
+              <li><div><strong>一次一個呼叫</strong><span><code>use_figma</code> 不可平行執行；每個腳本都依 ID 重新取得節點，而且一次只處理一頁。</span></div></li>
+              <li><div><strong>回傳精簡</strong><span>偵測結果以 <code>OFFSET</code> 分頁，直到 <code>nextOffset</code> 為 <code>null</code>；建立時一次一個元件或一個 component set；替換一次最多 50 個；每次回傳都控制在 18,000 字元內。</span></div></li>
+              <li><div><strong>替換前不動原稿</strong><span>原稿只有在對應的 instance 通過驗證後才刪除。</span></div></li>
+              <li><div><strong>詢問，不猜測</strong><span>每個 <code>needs-review</code> 的分組都要詢問。近似值不自動合併，由使用者在 Workflow F 的比對板上決定。</span></div></li>
+              <li><div><strong>ID 對照表</strong><span>從第一次寫入起維護 ID 對照表（還原點、頁面、元件、實例），每次呼叫後更新。</span></div></li>
+              <li><div><strong>錯誤處理</strong><span>發生錯誤時停止並閱讀錯誤訊息，再依 ID 對照表重新讀取受影響的節點，只重試未完成的部分，不盲目重跑。</span></div></li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Tiers -->
+        <section id="tiers">
+          <div class="section-head">
+            <h3>變動分級</h3>
+            <p>沿用 figma-m3-variables 的 Tier 0–3 定義：0 是唯讀；1 是單一明確目標、外觀不變；2 是批次或結構性、外觀不變；3 會改變外觀或具破壞性。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>步驟</th>
+                    <th>級別</th>
+                    <th>確認方式</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>掃描、偵測、分組、計畫、報告</td><td><span class="sev sev-info">Tier 0</span></td><td>不需確認</td></tr>
+                  <tr><td>分組比對區塊（暫時的 Section，只新增）</td><td>—</td><td>決定前允許建立，決定後刪除</td></tr>
+                  <tr><td>Components 頁面、主元件、variants、元件屬性</td><td><span class="sev sev-warning">Tier 2</span></td><td>計畫確認；使用者明說不需審閱即可略過</td></tr>
+                  <tr><td>Tokens</td><td>依 Workflow F</td><td>Workflow F 的 token 計畫；合併近似值是 Tier 3</td></tr>
+                  <tr><td>解除鎖定（只在使用者同意時）</td><td><span class="sev sev-warning">Tier 2</span></td><td>明確確認</td></tr>
+                  <tr><td>把原稿換成 instance</td><td><span class="sev sev-error">Tier 3</span></td><td>一定要確認，並附上基準截圖與元件連結；即使之前說過「全部自動套用」也不能略過</td></tr>
+                  <tr><td>接受保留實例列出的差異</td><td><span class="sev sev-error">Tier 3</span></td><td>先顯示差異，再逐一確認</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Steps -->
+        <section id="steps">
+          <div class="section-head">
+            <h3>步驟總覽</h3>
+            <p>十個步驟依序進行；每個步驟的細節在後面各節與參考文件中。</p>
+          </div>
+
+          <div class="workflow-card">
+            <div class="workflow-header">
+              <span class="workflow-letter" aria-hidden="true">10</span>
+              <div>
+                <h4>從範圍到報告</h4>
+                <p>觸發：設計師分享 section、frame 或元素的連結，並要求元件化、建立元件或把散圖層換成 instance</p>
+              </div>
+            </div>
+            <ol class="workflow-steps">
+              <li><strong>範圍與基準</strong>（Tier 0）：接受節點連結或目前的選取範圍，找出每個範圍所在的頁面。超過 50 個頂層 frame 或跨頁時，先確認範圍。為每個範圍截圖作為基準。</li>
+              <li><strong>偵測</strong>（Tier 0）：先收集既有 local components 的簽章，再逐頁執行偵測腳本，取得分組與每組的實例清單。</li>
+              <li><strong>分組比對</strong>：在範圍旁建立 <code>Componentize Review — temporary</code> 區塊，逐組詢問接受、改名、拆分、合併或排除，決定後刪除。</li>
+              <li><strong>計畫</strong>：列出元件、重用、排除、近似值差異、問題與各 Tier 的寫入摘要，等待確認。</li>
+              <li><strong>還原點</strong>：請使用者手動存一個版本「Before figma-componentize — {範圍名稱}」，確認後才開始寫入，並開始維護 ID 對照表。</li>
+              <li><strong>建立</strong>（Tier 2）：找出或建立 Components 頁面，依 atom → molecule → organism 建立元件、合併並排列 variants、加上元件屬性。</li>
+              <li><strong>Tokens</strong>：以新元件為範圍呼叫 Workflow F；計畫中的近似值差異加入它的比對板。</li>
+              <li><strong>替換</strong>（Tier 3）：確認後只替換最外層的實例，每次最多 50 個，逐項驗證。</li>
+              <li><strong>驗證</strong>：為每個範圍截圖並與基準比對，回報非預期的差異；清除追蹤標記與暫時區塊。</li>
+              <li><strong>報告</strong>：元件、tokens、已替換與保留的實例、還原點、Components 頁面連結，以及 ID 對照表。</li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Detection -->
+        <section id="detection">
+          <div class="section-head">
+            <h3>偵測規則</h3>
+            <p>偵測完全唯讀，逐頁執行，結果精簡並分頁回傳。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card wide">
+              <h4>候選條件（任一成立即可）</h4>
+              <ul>
+                <li>符合 UI 模式：依圖層名稱（中英文皆可）判斷；按鈕與卡片也可以依結構判斷</li>
+                <li>結構簽章在範圍內出現兩次以上，且有自己的樣式或至少兩個子節點</li>
+                <li>設計師直接指向的單一元素本身</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>層級</h4>
+              <ul>
+                <li><strong>atom</strong>：不含其他候選，最先建立</li>
+                <li><strong>molecule</strong>：含 atom</li>
+                <li><strong>organism</strong>：含 molecule，最後建立</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>排除</th>
+                    <th>規則</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>既有元件與 instance</td><td><code>COMPONENT</code>、<code>COMPONENT_SET</code>、<code>INSTANCE</code> 與其中的所有內容</td></tr>
+                  <tr><td>畫面層級 frame</td><td>直接位於 page 或 section 下（或不是單一元素的範圍本身），寬 320–1920 px、高至少 480 px</td></tr>
+                  <tr><td>純排版外框</td><td>沒有自己的填色、描邊、效果或圓角，且至少一個直接子節點是候選（名稱符合模式者優先成為候選）</td></tr>
+                  <tr><td>隱藏圖層</td><td><code>visible === false</code>，連同其子節點</td></tr>
+                  <tr><td>鎖定圖層</td><td>連同其子節點；ID 列入報告。鎖定不會擋住外掛寫入，但代表設計師的意圖</td></tr>
+                  <tr><td>單獨的文字與形狀</td><td>不在任何候選內的文字與形狀</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>範例</h4>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>節點</th>
+                    <th>結果</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Frame「Screen / Home」，390 × 844，頂層</td><td class="cell-bad">排除</td><td>畫面層級 frame</td></tr>
+                  <tr><td>Frame「Button」，填色 #6750A4、圓角 20、一個文字子節點</td><td class="cell-good">atom 候選</td><td>按鈕模式</td></tr>
+                  <tr><td>Frame「Frame 12」，無填色，並排放兩個按鈕</td><td class="cell-bad">排除</td><td>純排版外框</td></tr>
+                  <tr><td>Frame「Card」，有填色與圓角，內含圖片、文字與一個按鈕</td><td class="cell-good">molecule 候選</td><td>卡片模式，含 atom</td></tr>
+                  <tr><td>既有元件「Icon/Star」的 instance</td><td class="cell-bad">排除</td><td>已經是 instance</td></tr>
+                  <tr><td>單獨的文字「Welcome back」</td><td class="cell-bad">排除</td><td>沒有模式的單獨文字</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>UI 模式</h4>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>模式</th>
+                    <th>名稱關鍵字</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Icon Button</td><td>icon button、icon btn、圖示按鈕</td></tr>
+                  <tr><td>Button</td><td>button、btn、cta、按鈕；或依結構：有自己的樣式、一段文字加最多兩個圖示、高 24–64 px、寬最多 400 px</td></tr>
+                  <tr><td>Chip · Badge · Avatar</td><td>chip、tag、pill、標籤 · badge、counter、徽章 · avatar、頭像</td></tr>
+                  <tr><td>Search Field · Text Field</td><td>search、搜尋 · input、text field、textbox、輸入框</td></tr>
+                  <tr><td>Selection Row · List Item</td><td>checkbox、radio、switch、toggle、勾選、開關 · list item、list row、cell、列表項</td></tr>
+                  <tr><td>Card</td><td>card、tile、卡片；或依結構：有圓角或陰影、至少兩個子節點與一段文字、至少 120 × 80 px</td></tr>
+                  <tr><td>Tab · Tab Bar</td><td>tab、頁籤 · tab bar、tabs、分頁列（至少 240 px 寬）</td></tr>
+                  <tr><td>Navigation Bar · Top App Bar</td><td>nav、navigation、bottom nav、導覽列 · app bar、top bar、header、toolbar、標題列（至少 240 px 寬）</td></tr>
+                  <tr><td>Dialog · Snackbar · Menu Item</td><td>dialog、modal、popup、sheet、對話框、彈窗 · snackbar、toast · menu item、option、選單項</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Grouping -->
+        <section id="grouping">
+          <div class="section-head">
+            <h3>分組規則</h3>
+            <p>以結構簽章分組，而不是以截圖的相似度分組，所以每一組都能說明為什麼分在一起，也能推導出元件屬性。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>描述</th>
+                    <th>內容</th>
+                    <th>用途</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>核心簽章</td><td>依子節點順序排列的結構角色與 auto layout 方向（遞迴）；不含圖示與巢狀 instance</td><td>核心簽章相同的候選成為同一個元件</td></tr>
+                  <tr><td>排版簽章</td><td>核心簽章，加上無 auto layout 時子節點的位置與 constraints，以及固定尺寸文字框的大小</td><td>instance 無法覆寫這些屬性；不同時提議為 <code>needs-review</code> 的 variants</td></tr>
+                  <tr><td>樣式</td><td>填色、描邊、陰影、圓角、padding、間距、高度，以及第一段文字的顏色與字級</td><td><code>Style</code>、<code>Size</code>、<code>State</code> variants，或近似值差異</td></tr>
+                  <tr><td>內容</td><td>文字、圖示與 instance 的位置（leading、trailing）、圖片填色</td><td>元件屬性</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>實例之間的差異</th>
+                    <th>結果</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>只有文字不同</td><td>同一個元件，TEXT 屬性</td></tr>
+                  <tr><td>巢狀圖示 instance 不同</td><td>同一個元件，INSTANCE_SWAP 屬性</td></tr>
+                  <tr><td>部分實例多一個 leading icon</td><td>同一個元件，BOOLEAN 屬性</td></tr>
+                  <tr><td>圖片不同</td><td>同一個元件，以 instance 覆寫圖片</td></tr>
+                  <tr><td>填色、描邊或陰影的類型不同，結構相同</td><td><code>Style</code> variants（Filled、Outlined、Text、Tonal、Elevated）</td></tr>
+                  <tr><td>高度差異超過近似門檻</td><td><code>Size</code> variants（Small／Large 等）</td></tr>
+                  <tr><td>透明度降低，或名稱含狀態字詞</td><td><code>State</code> variants（Enabled、Disabled、Hovered、Pressed、Focused、Selected）</td></tr>
+                  <tr><td>子節點結構不同</td><td>不同的元件</td></tr>
+                  <tr><td>數值在近似門檻內（例如 padding 15 與 16）</td><td>同一個 variant；差異列出並交給 Workflow F 的比對板</td></tr>
+                  <tr><td>子節點位置、constraints 或固定文字框尺寸不同</td><td>提議為 <code>Style</code> variants（例如 <code>Filled</code>、<code>Filled 2</code>），標為 <code>needs-review</code></td></tr>
+                  <tr><td>同類別、狀態與尺寸，但顏色、間距或排版差異超過門檻</td><td>第二種樣式（例如 <code>Filled 2</code>），標為 <code>needs-review</code></td></tr>
+                  <tr><td>非 instance 的向量圖示不同</td><td><code>needs-review</code>：先把圖示做成元件</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>近似門檻與 Workflow F 相同：顏色 CIE76 ΔE ≤ 3 且 paint 透明度相同；數值差 ≤ 1 px，或 ≤ 較大值的 5%（取較大者）。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>範例</h4>
+              <p style="margin: 0 0 10px; color: var(--muted); font-size: 0.9rem">390 px 的畫面中有一張卡片（內含一個按鈕），另有兩個按鈕：一個是 outlined，另一個的 padding 是 15 px。</p>
+              <ul style="margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem">
+                <li>畫面被排除，並排兩個按鈕的外框是純排版外框，也被排除</li>
+                <li>三個按鈕是 atom，卡片是 molecule</li>
+                <li><code>Button</code> 是 component set：<code>Style=Filled</code>、<code>Style=Outlined</code>，以及 TEXT 屬性 <code>Label</code></li>
+                <li>15 px 的按鈕留在 <code>Style=Filled</code>，padding 差異交給 Workflow F 的比對板</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>信心度</th>
+                    <th>條件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>exact</code></td><td>至少一半的成員依名稱符合模式，且排版簽章一致</td></tr>
+                  <tr><td><code>inferred</code></td><td>只依結構或重複出現判斷</td></tr>
+                  <tr><td><code>needs-review</code></td><td>排版簽章不同、出現第二種顏色樣式、非 instance 的圖示不同、超過 5 種尺寸或 30 種 variants，或名稱衝突無法解決；建立前一定先問</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>符合本檔案既有 local component 簽章的分組標為重用：不建立新元件，實例之後直接換成既有元件的 instance。</p>
+          </div>
+        </section>
+
+        <!-- Review board -->
+        <section id="review-board">
+          <div class="section-head">
+            <h3>分組比對區塊</h3>
+            <p>在 Figma 裡直接看到每一組的實際樣子，再決定分組、命名與拆併。數值的近似值差異則用 Workflow F 的 <code>Token Review — temporary</code> 比對板。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>放在哪裡</h4>
+              <ul>
+                <li>範圍所在頁面、既有內容右側 400 px 的 Section</li>
+                <li>名稱固定為 <code>Componentize Review — temporary</code></li>
+                <li>只新增這個 Section，不移動、不修改既有節點</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>每組內容</h4>
+              <ul>
+                <li>標題：名稱 · 信心度 · component 或 set</li>
+                <li>對應：variants 與元件屬性</li>
+                <li>實例數量與備註</li>
+                <li>最多四個代表實例的 clone，縮放到 400 px 寬內</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>決定與收尾</h4>
+              <ul>
+                <li>截圖並提供 Figma 連結</li>
+                <li>逐組選擇：接受、改名、拆分、合併或排除；每個 <code>needs-review</code> 都要問</li>
+                <li>需要時重新偵測，最後刪除 Section</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Plan -->
+        <section id="plan">
+          <div class="section-head">
+            <h3>元件化計畫</h3>
+            <p>比對完成後、任何其他寫入之前提出，等待確認。</p>
+          </div>
+
+          <pre><code>## Componentization plan — Home section
+Target page: Components (existing) · Restore point: ask the user to save a version first
+Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections
+Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>區塊</th>
+                    <th>欄位</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Components</td><td>名稱、種類（component 或 set）、層級、variants、屬性、包含的元件、每個 variant 的代表實例、實例 ID、信心度</td></tr>
+                  <tr><td>Reused</td><td>分組、既有元件、實例 ID</td></tr>
+                  <tr><td>Excluded</td><td>節點或數量與原因（畫面、外框、instance、隱藏、鎖定的 ID、單獨圖層）</td></tr>
+                  <tr><td>Drift for Workflow F</td><td>實例 ID 與有差異的欄位</td></tr>
+                  <tr><td>Questions</td><td>每個 <code>needs-review</code> 的備註</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Build -->
+        <section id="build">
+          <div class="section-head">
+            <h3>建立元件</h3>
+            <p>建立是 Tier 2：只新增頁面、Section 與元件，原稿在替換之前完全不動。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>還原點</h4>
+              <ul>
+                <li><code>use_figma</code> 無法存版本</li>
+                <li>寫入前請使用者按 ⌘⌥S（Windows 為 Ctrl+Alt+S）或選 File → Save to version history</li>
+                <li>名稱為「Before figma-componentize — {範圍名稱}」，確認後才寫入</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>Components 頁面</h4>
+              <ul>
+                <li>優先使用名稱含 components 或「元件」的頁面</li>
+                <li>沒有就建立 <code>Components</code></li>
+                <li>Starter 方案每個檔案最多 3 頁：改在使用者指定的頁面建立 <code>Components</code> Section</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>由小到大</h4>
+              <ul>
+                <li>atom → molecule → organism</li>
+                <li>每次呼叫只建立一個元件或一個 set</li>
+                <li>較大元件中的較小元件換成 exposed instance</li>
+              </ul>
+            </div>
+            <div class="bento-card wide">
+              <h4>從 clone 建立主元件</h4>
+              <ul>
+                <li>先載入代表實例用到的所有字型，再 clone 到元件的 Section 中</li>
+                <li>clone 中自動命名的子圖層改用結構名稱（<code>label</code>、<code>leading-icon</code>、<code>container</code>、<code>headline</code>、<code>supporting-text</code>）</li>
+                <li>轉成元件後檢查回傳節點的類型與子節點數量；轉換失敗時先包進 frame 再轉換，並記錄下來</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>元件屬性</h4>
+              <ul>
+                <li>合併成 set 後才加在 set 上，並連到每個 variant</li>
+                <li>TEXT、BOOLEAN、INSTANCE_SWAP</li>
+                <li>圖示差異一律用 INSTANCE_SWAP，不做成 variants</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>Variants 的格狀排列</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">合併後的 variants 會疊在同一個位置，所以要依 Figma 官方慣例排列：<code>State</code> 的值為欄，其餘屬性的組合為列，間距 20 px、內距 40 px，預設 variant 在左上角，最後依內容調整 set 的尺寸。一個 set 最多 30 種組合，超過就依某個屬性拆成多個 set。</p>
+            </div>
+            <div class="variant-demo" aria-label="Button 的 variants 排列示意">
+              <span></span>
+              <span class="vh">State=Enabled</span>
+              <span class="vh">State=Disabled</span>
+              <span class="vh">Style=Filled</span>
+              <span class="vb filled default">Label</span>
+              <span class="vb filled disabled">Label</span>
+              <span class="vh">Style=Outlined</span>
+              <span class="vb outlined">Label</span>
+              <span class="vb outlined disabled">Label</span>
+            </div>
+            <div class="panel-body" style="padding-top: 0">
+              <p style="margin: 0; color: var(--muted); font-size: 0.82rem">虛線框為預設 variant（<code>Style=Filled, State=Enabled</code>）。</p>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>規則</th>
+                    <th>範例</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>元件或 set</td><td>Title Case，取自 UI 模式或有意義的圖層名稱；重名時加上描述字或編號</td><td><code>Button</code>、<code>List Item</code>、<code>Product Card</code></td></tr>
+                  <tr><td>Variant</td><td><code>屬性=值</code>，順序為 Style、Size、State，只列有多個值的屬性</td><td><code>Style=Outlined, State=Disabled</code></td></tr>
+                  <tr><td>元件屬性</td><td>依結構命名</td><td><code>Label</code>、<code>Headline</code>、<code>Show leading icon</code>、<code>Leading icon</code></td></tr>
+                  <tr><td>Section</td><td>與元件或 set 同名，每個元件一個，不與既有內容重疊</td><td><code>Button</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tokens -->
+        <section id="tokens">
+          <div class="section-head">
+            <h3>Tokens 與 Workflow F</h3>
+            <p>建立完成後、替換之前，以新元件為範圍呼叫 figma-m3-variables 的 Workflow F，讓之後替換上去的 instance 直接繼承綁定。</p>
+          </div>
+
+          <pre><code>{ "scope": ["40:9", "42:7"], "components": ["Button", "Card"], "caller": "figma-componentize" }</code></pre>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card">
+              <h4>傳入</h4>
+              <ul>
+                <li><code>scope</code>：新主元件與 component set 的 ID（不含原稿）</li>
+                <li><code>components</code>：計畫中的元件名稱</li>
+                <li><code>caller</code>：<code>figma-componentize</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>回傳</h4>
+              <ul>
+                <li><code>variables</code>：Ref、Sys、Comp 的 variable ID</li>
+                <li><code>styles</code>：Text 與 Effect Style 的 ID</li>
+                <li><code>bindings</code>、<code>mergedGroups</code>、<code>skipped</code></li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>規則</h4>
+              <ul>
+                <li>Workflow F 的分級、比對板與 token 計畫確認不變</li>
+                <li>回傳內容全部寫進報告</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p><strong>近似值差異：</strong>計畫中只出現在原稿上的數值（例如某個按鈕的 padding 15）會以額外候選值加入 Workflow F 的比對板，樣本是那些實例，放在元件的數值旁邊，但不為它們建立 tokens 或綁定。使用者合併的值（<code>mergedGroups</code>）在替換驗證時視為預期變化；沒有合併的差異會讓該實例保留原稿。</p>
+          </div>
+          <div class="note note-warn">
+            <p>使用者拒絕 token 計畫或 Workflow F 失敗時，先詢問是否在沒有 tokens 的情況下繼續替換；確認後才繼續，報告中標示這些元件未 token 化。</p>
+          </div>
+        </section>
+
+        <!-- Replacement -->
+        <section id="replacement">
+          <div class="section-head">
+            <h3>替換原稿</h3>
+            <p>替換是 Tier 3：一定要確認，而且只在 instance 通過驗證後才刪除原稿。</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-body">
+              <h4>確認時附上</h4>
+              <ul style="margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem">
+                <li>每個元件與 variant 的實例數量、由外層 instance 一併處理的數量，以及已知會保留的實例與原因</li>
+                <li>偵測時截的基準圖</li>
+                <li>Components 頁面上每個元件 Section 的連結</li>
+                <li>還原點名稱，以及「每個原稿都要等 instance 通過驗證才刪除」的說明</li>
+              </ul>
+              <p style="margin: 10px 0 0; color: var(--muted); font-size: 0.9rem">選項：全部替換 · 選擇元件 · 先不要。選「先不要」時直接產生報告：元件保留，原稿不動。</p>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p><strong>最外層優先：</strong>只替換最外層的實例。卡片裡的按鈕不另外替換，因為卡片的主元件已經含有 exposed 的 <code>Button</code> instance，原本按鈕的文字會複製到這個巢狀 instance 上。外層實例被保留時，它裡面的實例才另外替換。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>每個實例的處理順序</h4>
+            </div>
+            <div class="cascade" aria-label="替換順序">
+              <span class="cascade-node">記錄原稿狀態</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">隱藏原稿</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">在同一個 parent 與 index 插入 instance</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">layoutPositioning</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">位置（relativeTransform）</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">resize()</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">sizing</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">複製內容</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node comp-node">比對</span>
+            </div>
+            <div class="panel-body" style="padding-top: 0">
+              <ul style="margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.88rem">
+                <li>記錄 parent、index、<code>relativeTransform</code>、尺寸、constraints、<code>layoutPositioning</code>、sizing、<code>layoutGrow</code>、<code>layoutAlign</code>、GRID 位置、可見性、名稱與絕對座標。</li>
+                <li>先隱藏原稿，新 instance 才不會在 auto layout 中推擠兄弟節點。</li>
+                <li><code>resize()</code> 會把 sizing 重設為 FIXED，所以 sizing 最後設定。HUG 只用在 instance 有 auto layout 時，FILL 只用在 auto layout 的子節點。</li>
+                <li>手動排列的 GRID 用 <code>setGridChildPosition</code>；自動流向（<code>ROW_AUTO_FLOW</code>）的 GRID 由圖層順序決定位置。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>內容如何複製到 instance</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">原稿與 instance 的結構簽章相同，所以依結構位置對應：文字與圖片依順序，圖示依位置（例如 <code>leading icon#0</code>），巢狀實例對應到相同位置的 exposed instance。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>原稿</th>
+                    <th>instance 得到</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>文字</td><td>連結的 TEXT 屬性；沒有屬性時直接覆寫</td></tr>
+                  <tr><td>少了選用的圖示</td><td>連結的 BOOLEAN 屬性設為 false；沒有屬性時直接隱藏</td></tr>
+                  <tr><td>不同的巢狀 instance（例如圖示）</td><td>連結的 INSTANCE_SWAP 屬性；沒有屬性時用 <code>swapComponent</code>，再遞迴複製它的內容</td></tr>
+                  <tr><td>圖片填色</td><td>沿用原稿的 <code>imageHash</code>（<code>use_figma</code> 不能新增圖片）</td></tr>
+                  <tr><td>巢狀實例（卡片裡的按鈕）</td><td>exposed instance 先切換到正確的 variant，再透過它自己的屬性複製內容</td></tr>
+                  <tr><td>圖層名稱</td><td>有意義的名稱保留（例如「Submit button」）；自動名稱（<code>Frame 12</code>、<code>Group 5</code>）改用元件名稱</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-warn">
+            <p><code>setProperties</code> 用錯 key 時不會報錯，所以每個屬性、切換與圖片覆寫都會讀回確認；讀回不一致就視為比對失敗。</p>
+          </div>
+        </section>
+
+        <!-- Verification -->
+        <section id="verification">
+          <div class="section-head">
+            <h3>逐項驗證</h3>
+            <p>刪除任何東西之前，先把 instance 和記錄的原稿狀態比對。一致才刪除原稿；不一致就刪掉 instance、恢復原稿的可見性，原稿完全不變並列入報告。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>檢查</th>
+                    <th>一致的條件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>位置與尺寸</td><td><code>absoluteBoundingBox</code> 的 x、y、寬、高相差都在 0.5 px 內</td></tr>
+                  <tr><td>文字</td><td>可見文字的內容與順序完全相同</td></tr>
+                  <tr><td>可見圖層</td><td>會繪製內容的可見圖層數量相同：文字、形狀、向量、圖片，以及有自己的填色、描邊、效果、透明度或 auto layout 的 frame；純排版外框不算</td></tr>
+                  <tr><td>樣式</td><td>每個圖層的填色與描邊（以 Workflow F 的正規化形式比對：8 位元 hex 加 paint 透明度）、圖層透明度、描邊寬度、圓角、效果、字型、字級、padding、間距</td></tr>
+                  <tr><td>讀回</td><td>每個屬性、切換與圖片覆寫都讀回為設定的值</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p><strong>可以解釋的差異：</strong></p>
+            <ul style="margin: 6px 0 0; padding-left: 18px">
+              <li>樣式差異：只有在 Workflow F 的近似門檻內，且使用者已在 Workflow F 合併該值時，才視為一致。</li>
+              <li>尺寸差異：同一個實例有這類已核准的合併，且差異在 1 px 或 5% 內時，才視為一致。</li>
+              <li>文字、圖層數量與讀回的差異：一律不能解釋。</li>
+            </ul>
+            <p style="margin-top: 8px">使用者看過差異後，可以接受個別實例的樣式與尺寸差異並重新替換（Tier 3）。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>比對結果</th>
+                    <th>處理</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>位置、文字、圖層都相同</td><td class="cell-good">刪除原稿</td></tr>
+                  <tr><td>位置相差 0.3 px</td><td class="cell-good">刪除原稿（在 0.5 px 內）</td></tr>
+                  <tr><td>寬度相差 2 px</td><td class="cell-bad">刪除 instance、保留原稿並回報（<code>width 120 → 122</code>）</td></tr>
+                  <tr><td>文字「Send」變成「Save」</td><td class="cell-bad">刪除 instance、保留原稿並回報</td></tr>
+                  <tr><td>padding 因已核准的合併改變（15 → 16）</td><td class="cell-good">刪除原稿，變化列為已核准</td></tr>
+                  <tr><td>填色不同且沒有合併</td><td class="cell-bad">刪除 instance、保留原稿並回報</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Kept -->
+        <section id="kept">
+          <div class="section-head">
+            <h3>保留原稿的情況</h3>
+            <p>以下情況不替換，原稿保持原樣並列入報告。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>原因</th>
+                    <th>何時</th>
+                    <th>接著怎麼做</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>在 instance 裡</td><td>祖先節點是 instance</td><td>只回報</td></tr>
+                  <tr><td>鎖定</td><td>圖層或祖先節點被鎖定</td><td>詢問是否納入；同意時先解除鎖定（Tier 2）、重新偵測，替換後重新鎖上</td></tr>
+                  <tr><td>缺字型或字型無法載入</td><td><code>hasMissingFont</code>，或 <code>loadFontAsync</code> 失敗（<code>use_figma</code> 尚不支援自訂字型）</td><td>報告中列出節點與字型</td></tr>
+                  <tr><td>多段文字樣式</td><td>文字有多段不同樣式，且與元件的文字不同</td><td>只回報</td></tr>
+                  <tr><td>結構無法以覆寫重現</td><td>結構、文字或圖片數量不同，或原稿有元件沒有的圖示位置</td><td>回報；設計師之後可以另外建立元件</td></tr>
+                  <tr><td>沒有相符的元件或 variant</td><td>重用的 set 中沒有近似的 variant，或元件沒有建立</td><td>只回報</td></tr>
+                  <tr><td>驗證不一致</td><td>例如 <code>width 120 → 122</code>、<code>fill color … #D32F2F → #6750A4</code></td><td>顯示差異；樣式與尺寸差異可由使用者接受後重新替換</td></tr>
+                  <tr><td>錯誤</td><td>處理這個實例時發生例外，變更已復原</td><td>閱讀訊息、修正原因後只重試這個實例</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Safety -->
+        <section id="safety">
+          <div class="section-head">
+            <h3>安全機制</h3>
+            <p>每一層都保留回頭的路：原稿直到驗證通過才刪除，失敗的呼叫可以追蹤與復原。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>還原點</h4>
+              <p>第一次寫入前，請使用者手動存一個命名版本，確認後才繼續。</p>
+            </div>
+            <div class="bento-card">
+              <h4>ID 對照表</h4>
+              <p>記錄原稿 → 元件 → instance，每次呼叫後更新，失敗時用來判斷哪些已完成。</p>
+            </div>
+            <div class="bento-card">
+              <h4>逐項驗證</h4>
+              <p>每個 instance 都和原稿比對；不一致就刪掉 instance、恢復原稿。</p>
+            </div>
+            <div class="bento-card">
+              <h4>追蹤標記與復原</h4>
+              <p>每個新 instance 以 shared plugin data 標記原稿 ID。呼叫中斷時，先清掉未完成的 instance、恢復原稿，再只重試未完成的部分。</p>
+            </div>
+            <div class="bento-card">
+              <h4>最終截圖比對</h4>
+              <p>替換完成後為每個範圍截圖，與基準比對；非預期的差異回報，不默默修正。</p>
+            </div>
+            <div class="bento-card">
+              <h4>收尾</h4>
+              <p>清除追蹤標記，刪除仍存在的暫時比對區塊。</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Report -->
+        <section id="report">
+          <div class="section-head">
+            <h3>報告</h3>
+            <p>最後的報告讓設計師知道建立了什麼、換了什麼、保留了什麼，以及如何回到原本的狀態。</p>
+          </div>
+
+          <pre><code>## Componentization report — Home section
+Restore point: "Before figma-componentize — Home section"
+Components page: Components — https://www.figma.com/design/{fileKey}/?node-id=40-1
+Components (2): Button (set, 40:9) · Card (component, 42:7) · Reused: Chip (12:30)
+Tokens (Workflow F): Ref 12 · Sys 9 · Comp 14 · Text Styles 2 · Effect Styles 1 · Merged: padding 15 → 16
+Replaced: 11 of 12 occurrences · Covered by an outer instance: 2
+  Approved: 1:31 paddingLeft of "Button" 15 → 16; width 118 → 120
+Kept: 1 — 1:44 missing font in 1:45: Brand Sans Bold
+Unexpected differences in the final screenshots: none</code></pre>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>欄位</th>
+                    <th>內容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>元件</td><td>ID、名稱、種類、variants、元件屬性、Section；另列重用、包進 frame 與建立失敗的元件</td></tr>
+                  <tr><td>Tokens</td><td>Workflow F 回傳的 variable ID、style ID（附名稱）、綁定、合併群組與略過項目；拒絕 tokens 時標示未 token 化</td></tr>
+                  <tr><td>替換結果</td><td>已替換、由外層處理、已核准的差異，以及保留的實例與原因</td></tr>
+                  <tr><td>最終比對</td><td>最終截圖中非預期的差異</td></tr>
+                  <tr><td>還原點與連結</td><td>還原點名稱與 Components 頁面連結</td></tr>
+                  <tr><td>ID 對照表</td><td>原稿 → 元件 → instance 的完整對照</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Skills -->
+        <section id="skills">
+          <div class="section-head">
+            <h3>與其他 Skill 的分工</h3>
+            <p>元件化（偵測、分組、建立、替換）與 tokens（數值、語意、綁定）是兩種不同的判斷，分別由兩個 skill 負責。</p>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table class="skill-matrix">
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th>職責</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>figma-use</code></td><td>Plugin API 基礎，<strong>必須優先讀取</strong></td></tr>
+                  <tr><td><code>figma-componentize</code></td><td>偵測散圖層、分組、在 Components 頁面建立元件、把原稿換成 instance 並驗證（本 skill）</td></tr>
+                  <tr><td><code>figma-m3-variables</code></td><td>Tokens：本 skill 的 token 步驟呼叫它的 Workflow F；另外也負責套用、稽核與建立 token 系統</td></tr>
+                  <tr><td><code>figma-generate-library</code></td><td>完整 design system 建置；本 skill 的 variants 格狀排列與命名沿用它的慣例</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- References -->
+        <section id="references">
+          <div class="section-head">
+            <h3>參考文件</h3>
+            <p>SKILL.md 只放步驟與規則；腳本與細節都在三份參考文件中，各自負責一段流程。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4><code>detection.md</code></h4>
+              <p>前置條件、範圍與基準、UI 模式、候選與排除、層級、簽章與分組規則、重用、信心度、偵測腳本、分組比對區塊、元件化計畫。</p>
+            </div>
+            <div class="bento-card">
+              <h4><code>build-recipes.md</code></h4>
+              <p>工作順序、還原點與 ID 對照表、Components 頁面、建立單一元件、variants 與格狀排列、元件屬性、命名。</p>
+            </div>
+            <div class="bento-card">
+              <h4><code>replacement.md</code></h4>
+              <p>確認、順序與工作清單、擺放、內容複製、驗證、替換迴圈、保留的實例、分批與復原、最終驗證、報告。</p>
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          <p>
+            來源：<code>figma-componentize/SKILL.md</code> ·
+            <code>references/detection.md</code> ·
+            <code>references/build-recipes.md</code> ·
+            <code>references/replacement.md</code>
+          </p>
+          <p style="margin-top: 6px">產生時間：2026-10-01 · 靜態 HTML，無外部依賴</p>
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        var links = document.querySelectorAll(".nav-list a");
+        var sections = [];
+
+        links.forEach(function (link) {
+          var id = link.getAttribute("href").slice(1);
+          var el = document.getElementById(id);
+          if (el) sections.push({ link: link, el: el });
+        });
+
+        function onScroll() {
+          var scrollY = window.scrollY + 120;
+          var current = sections[0];
+          sections.forEach(function (item) {
+            if (item.el.offsetTop <= scrollY) current = item;
+          });
+          links.forEach(function (l) {
+            l.classList.remove("active");
+          });
+          if (current) current.link.classList.add("active");
+        }
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+      })();
+    </script>
+  </body>
+</html>

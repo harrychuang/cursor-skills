@@ -1868,7 +1868,7 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId, figma.variables.<
                 <tbody>
                   <tr><td><code>figma-use</code></td><td>底層 Plugin API 規則，<strong>必須優先讀取</strong>；文字欄位可否綁定與 modes 上限兩點，以 binding recipes 記錄的官方文件為準</td></tr>
                   <tr><td><code>figma-m3-variables</code></td><td>在 Figma 中建立、套用、批次綁定、稽核與反推 M3 Variables、Text Styles 與 Effect Styles（本 skill）</td></tr>
-                  <tr><td><code>figma-componentize</code>（規劃中）</td><td>找出散圖層、在 Components 頁面建立元件並把原稿換成 instance；token 部分呼叫 Workflow F</td></tr>
+                  <tr><td><code>figma-componentize</code></td><td>找出散圖層、在 Components 頁面建立元件並把原稿換成 instance。token 部分呼叫 Workflow F：傳入新元件的 ID、元件名稱與 <code>caller: "figma-componentize"</code>，使用回傳的 variable ID、style ID、綁定、合併群組與略過項目</td></tr>
                   <tr><td><code>figma-generate-library</code></td><td>完整多階段 design system 建置；Workflow D 建立 Component Set 時參考其 Phase 3</td></tr>
                   <tr><td><code>design-system-governance</code></td><td>程式碼端 token 治理（CSS/SCSS tokens）</td></tr>
                 </tbody>

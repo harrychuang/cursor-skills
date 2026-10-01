@@ -189,7 +189,7 @@ Every confirmation request shows:
 |-------|----------------|
 | `figma-use` | Plugin API basics — read first; binding-recipes.md §0 records two points where the Plugin API reference differs |
 | `figma-m3-variables` (this skill) | Create, apply, batch-bind, audit, and derive M3 Variables, Text Styles, and Effect Styles |
-| `figma-componentize` (planned) | Detect raw UI, create components on the Components page, and replace the originals with instances; calls Workflow F for tokens |
+| `figma-componentize` | Detect raw UI, create components on the Components page, and replace the originals with instances. For its token step it calls Workflow F with the new component IDs, their names, and `caller: "figma-componentize"`, and uses the returned variable IDs, style IDs, bindings, merged groups, and skipped items ([value-harvest.md](references/value-harvest.md) §13) |
 | `figma-generate-library` | Multi-phase design system builds; Workflow D uses its Phase 3 for component set structure |
 | `design-system-governance` | Code-side token governance (CSS/SCSS tokens) |
 

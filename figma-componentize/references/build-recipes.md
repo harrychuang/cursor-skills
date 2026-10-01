@@ -25,7 +25,7 @@ Contents
    - new group with variants: build one component per variant (§4, `VARIANT` set), combine and arrange them (§5), then add the properties on the set (§6);
    - variant the designer chose to add to an existing set (detection.md §11): add it (§8) at its group's level, so before any larger component that contains one of its occurrences.
 4. Record every result in the ledger (§2) as soon as the call returns.
-5. Hand the new components and the added variants to figma-m3-variables Workflow F (SKILL.md step 7), then replace the originals (replacement.md).
+5. Hand the new components and the added variants to figma-m3-variables Workflow F (SKILL.md step 7), then replace the originals (replacement.md). The optional design system document comes after the replacement and its verification (documentation.md).
 
 Groups whose `kind` is `reuse` are not built. Their occurrences are replaced with the existing variants that detection assigned (`known` in the `MODE: 'members'` rows), and nothing picks a variant again at write time.
 
@@ -63,7 +63,8 @@ Keep a **ledger** in the conversation from the first write on, update it after e
     "1:60": { "group": "Chip", "variant": "Style=Filled", "main": "12:30", "status": "pending", "instanceId": null, "reason": null },
     "1:61": { "group": "Chip", "variant": "Style=Outlined", "main": "12:41", "status": "pending", "instanceId": null, "reason": null },
     "1:62": { "group": "Chip", "variant": "Style=Tonal", "main": null, "status": "kept", "instanceId": null, "reason": "no matching variant — kept by the designer" }
-  }
+  },
+  "doc": { "wanted": true, "language": "English", "font": "Inter", "pageId": null, "rootId": null, "sections": {} }
 }
 ```
 
@@ -75,6 +76,8 @@ Keep a **ledger** in the conversation from the first write on, update it after e
 | `added` | Variants added to the existing set (§8): `variantId` and `name`; empty when none |
 | `components[group].declined` | On a newly built group: the ID of the existing component whose reuse the designer declined (**Build new instead**); `null` when there was none |
 | `occurrences[id].main` | The existing variant assigned to that occurrence (`known`), or the added variant; `null` for an occurrence kept by the designer's decision |
+
+`doc` holds the designer's answers and the progress of the design system document: `doc.wanted` and `doc.language` are recorded when the ledger starts (detection.md §2), `doc.font` and the rest during the document step. Its full shape and how it is updated are in documentation.md §9. When `doc.wanted` is `false`, nothing else is recorded under `doc`.
 
 After a failed call: read the ledger, re-read the nodes it names (`getNodeByIdAsync`), and continue from the first step whose result is missing. A failed call can leave partial changes, so never assume nothing happened.
 

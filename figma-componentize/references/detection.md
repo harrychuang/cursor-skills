@@ -22,7 +22,7 @@ Contents
 
 ## 1. Prerequisites
 
-Check all three before anything else. If one is missing, stop, say what is missing, and write nothing.
+Check all three before anything else. If one is missing, stop, say what is missing, and write nothing. A document-only run (documentation.md §2) needs only the first two.
 
 | Prerequisite | How to check |
 |--------------|--------------|
@@ -39,6 +39,10 @@ Check all three before anything else. If one is missing, stop, say what is missi
 - Resolve each root's page by walking `parent` up to the `PAGE`; run detection once per page.
 - Ask the user to confirm or narrow the scope when it has more than 50 top-level frames or spans more than one page.
 - Before any write, call `get_screenshot` for every scope root (for a section or page, its top-level frames; at most 20, tell the user when there are more) and keep the images as the baseline.
+- After the scope is confirmed and before detection starts, ask whether a design system document is to be generated at the end: **Yes** · **No** (documentation.md §2).
+  - **Yes**: ask the language of its headings and labels — **English** (default), **繁體中文**, or another language the designer names.
+  - **No**: no inventory, no write, and no document part in the report. Do not ask again in this run.
+- Record the answers in the ledger as `doc.wanted` and `doc.language` when the ledger starts (build-recipes.md §2).
 
 ---
 
@@ -774,9 +778,11 @@ Shown after the review, before any other write; wait for confirmation.
 ```
 ## Componentization plan — {scope}
 Target page: Components (existing) · Restore point: ask the user to save a version first
-Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections · add 1 variant to an existing set
+Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections · add 1 variant to an existing set · generate the design system document (page Design System)
 Tier 3 (asked again later): replace 11 occurrences with instances
 ```
+
+When the designer answered **Yes** to the document question (§2), the Tier 2 line also lists the document step with its target page, as above. After a **No**, leave that part out.
 
 | Section | Columns |
 |---------|---------|
@@ -787,6 +793,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances
 | Kept by decision | occurrence IDs, reason (`no matching variant — kept by the designer`) |
 | Excluded | node or count, reason (screen, wrapper, instance, hidden, locked IDs, lone) |
 | Drift for Workflow F | occurrence ID, drifting fields |
+| Design system document | only after a **Yes** (§2): target page (or the fallback Section `Design System`), language (`doc.language`), and that it covers every local token and component of the file (documentation.md) |
 | Questions | every `needs-review` note |
 
 Build order: atoms, then molecules, then organisms (summary rows are already sorted by level). Outermost occurrences for the replacement are the members whose `parent` is `null` or belongs to a group that is not being replaced.

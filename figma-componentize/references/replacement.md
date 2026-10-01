@@ -1,6 +1,6 @@
 # Replacement — Swap Originals for Instances, Verify, Report
 
-> Used by `figma-componentize` steps 8–10, after the build (build-recipes.md) and the token step (figma-m3-variables Workflow F). Replacing originals is a **Tier 3** change: it deletes layers and can change the look.
+> Used by `figma-componentize` steps 8, 9, and 11 (replacement, final verification, and the report), after the build (build-recipes.md) and the token step (figma-m3-variables Workflow F). Step 10, between the final verification and the report, is the optional design system document (documentation.md). Replacing originals is a **Tier 3** change: it deletes layers and can change the look.
 > Scripts run through `use_figma` (pass `skillNames: "figma-componentize"`), sequentially, one page and at most 50 occurrences per call. Paste the helper blocks 9-2 to 9-4 from detection.md first, then the blocks of §3 to §6 in order.
 
 Contents
@@ -42,7 +42,7 @@ Components: https://www.figma.com/design/AbC123/?node-id=40-1
 Restore point: "Before figma-componentize — Home section"
 ```
 
-Options: **Replace all** · **Choose components** · **Not now**. "Not now" goes straight to the report (§10): the components stay and the originals are untouched.
+Options: **Replace all** · **Choose components** · **Not now**. "Not now" goes straight to the report (§10): the components stay and the originals are untouched. After a **Yes** to the document question, the design system document is still generated before that report (documentation.md §2).
 
 ---
 
@@ -481,7 +481,8 @@ return { cleared: tagged.length };
 ```
 
 4. Delete any temporary review board that is still there. `Componentize Review — temporary` is removed with the script in detection.md §11. `Token Review — temporary` belongs to Workflow F, which removes it itself; check that it is gone.
-5. Write the report (§10). It includes the final ledger as the ID map.
+5. When the designer answered **Yes** to the document question (detection.md §2), generate the design system document now (documentation.md). It comes between this final verification and the report, so the report can include it. After a **No**, skip this item.
+6. Write the report (§10). It includes the final ledger as the ID map.
 
 ---
 
@@ -516,6 +517,16 @@ Kept: 2
 Unexpected differences in the final screenshots: none
 Review boards: removed
 
+Design system document: Design System — https://www.figma.com/design/{fileKey}/?node-id=70-1
+  Language: 繁體中文 · Font: Noto Sans TC
+  Foundations: Color 96 (2 collections) · Typography 9 · Spacing & size 14 · Radius 6 · Elevation 3 · Other tokens 82
+  Components: 12 sections · Icons 180
+  Skipped: 1 — S:9f2c font could not be loaded: Brand Sans Bold · 57 / 64
+  Text the fonts do not cover: none
+  Replaced an earlier document: no · Omitted: none
+  Created no component, variable, or style (counts before and after are equal)
+  (this part is omitted when the designer answered No to the document question)
+
 ID map (ledger)
 { "restorePoint": "…", "page": { … }, "components": { … }, "occurrences": { "1:20": { "status": "replaced", "instanceId": "50:3" }, … } }
 ```
@@ -532,4 +543,5 @@ ID map (ledger)
 | Replaced, covered, approved, kept with reasons | Replacement results (§6) and §7 |
 | Unexpected differences | Final verification (§9) |
 | Restore point, Components page link | Ledger `restorePoint` and `page` |
+| Design system document | The ledger's `doc` object and documentation.md §11: page and frame link, language and font (`doc.language`, `doc.font`), items per section, skipped items with reasons, text the fonts do not cover, whether an earlier document was replaced, omitted parts, counts before and after. The whole part is omitted when the designer answered **No** (`doc.wanted` is `false`) |
 | ID map | The final ledger: original → component → instance |

@@ -946,6 +946,7 @@
               <li><a href="#build">建立元件</a></li>
               <li><a href="#tokens">Tokens 與 Workflow F</a></li>
               <li><a href="#replacement">替換原稿</a></li>
+              <li><a href="#document">設計系統文件</a></li>
             </ul>
           </div>
           <div class="nav-group">
@@ -1014,6 +1015,10 @@
           </div>
 
           <div class="note note-info">
+            <p>只產生或更新<a href="#document">設計系統文件</a>時（單獨執行），只需要前兩項：可寫入的 <code>use_figma</code> 與 <code>figma-use</code>，不需要 figma-m3-variables。</p>
+          </div>
+
+          <div class="note note-info">
             <p><strong><code>use_figma</code> 的限制：</strong></p>
             <ul style="margin: 6px 0 0; padding-left: 18px">
               <li>每次呼叫都從第一頁開始，也不能一次載入所有頁面，所以要用 <code>setCurrentPageAsync</code> 逐頁作業。</li>
@@ -1045,6 +1050,7 @@
                   <tr><td>把 section、frame 或單一元素中的散圖層做成元件，並把原稿換成 instance</td><td>本 skill</td></tr>
                   <tr><td>只把寫死的數值轉成 tokens，不建立元件</td><td>figma-m3-variables Workflow F</td></tr>
                   <tr><td>套用現有 tokens、稽核 tokens，或建立 token 系統</td><td>figma-m3-variables（Workflow A–E）</td></tr>
+                  <tr><td>只想產生或更新設計系統文件，不做元件化</td><td>本 skill（單獨執行，見<a href="#document">設計系統文件</a>）</td></tr>
                   <tr><td>從零建立完整的 design system</td><td><code>figma-generate-library</code></td></tr>
                 </tbody>
               </table>
@@ -1059,7 +1065,7 @@
                 <li>把散落的向量圖示整理成圖示庫：只列在報告中</li>
                 <li>prototype 互動與元件動畫</li>
                 <li>重新排版，例如把絕對定位改成 auto layout：元件保留原稿的圖層結構</li>
-                <li>在 Components 頁面產生說明文件 frame</li>
+                <li>由 AI 撰寫的用途說明：文件只顯示事實與設計師自己寫的元件描述</li>
                 <li>Code Connect 與程式碼端元件</li>
               </ul>
             </div>
@@ -1077,7 +1083,7 @@
             <ol class="rules-list">
               <li><div><strong>先檢查再寫入</strong><span>每個步驟都先以唯讀的呼叫確認目前狀態。</span></div></li>
               <li><div><strong>一次一個呼叫</strong><span><code>use_figma</code> 不可平行執行；每個腳本都依 ID 重新取得節點，而且一次只處理一頁。</span></div></li>
-              <li><div><strong>回傳精簡</strong><span>偵測結果以 <code>OFFSET</code> 分頁，直到 <code>nextOffset</code> 為 <code>null</code>；建立時一次一個元件或一個 component set；替換一次最多 50 個；每次回傳都控制在 18,000 字元內。</span></div></li>
+              <li><div><strong>回傳精簡</strong><span>偵測結果以 <code>OFFSET</code> 分頁，直到 <code>nextOffset</code> 為 <code>null</code>；建立時一次一個元件或一個 component set；替換一次最多 50 個；產生設計系統文件時，每次最多 20 個 tokens 或 styles、40 個圖示，或一個元件；每次回傳都控制在 18,000 字元內。</span></div></li>
               <li><div><strong>替換前不動原稿</strong><span>原稿只有在對應的 instance 通過驗證後才刪除。</span></div></li>
               <li><div><strong>詢問，不猜測</strong><span>每個 <code>needs-review</code> 的分組都要詢問。與現有元件的配對結果只要不是 <code>exact</code>，也要詢問，不自行決定是否沿用。近似值不自動合併，由使用者在 Workflow F 的比對板上決定。</span></div></li>
               <li><div><strong>ID 對照表</strong><span>從第一次寫入起維護 ID 對照表（還原點、頁面、元件、實例），每次呼叫後更新。</span></div></li>
@@ -1112,6 +1118,8 @@
                   <tr><td>解除鎖定（只在使用者同意時）</td><td><span class="sev sev-warning">Tier 2</span></td><td>明確確認</td></tr>
                   <tr><td>把原稿換成 instance</td><td><span class="sev sev-error">Tier 3</span></td><td>一定要確認，並附上基準截圖與元件連結；即使之前說過「全部自動套用」也不能略過</td></tr>
                   <tr><td>接受保留實例列出的差異</td><td><span class="sev sev-error">Tier 3</span></td><td>先顯示差異，再逐一確認</td></tr>
+                  <tr><td>產生設計系統文件（頁面或 Section、外框與區塊，只新增）</td><td><span class="sev sev-warning">Tier 2</span></td><td>開始時回答「要」，加上計畫確認；單獨執行時，由請求本身授權</td></tr>
+                  <tr><td>取代既有的產生文件（刪掉舊的 <code>Design System — generated</code>）</td><td><span class="sev sev-error">Tier 3</span></td><td>每次都要確認，並說明在舊外框裡做的修改會消失；即使之前說過「全部自動套用」也不能略過</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1122,28 +1130,29 @@
         <section id="steps">
           <div class="section-head">
             <h3>步驟總覽</h3>
-            <p>十個步驟依序進行；每個步驟的細節在後面各節與參考文件中。</p>
+            <p>十一個步驟依序進行，其中第 10 步是可選的；每個步驟的細節在後面各節與參考文件中。</p>
           </div>
 
           <div class="workflow-card">
             <div class="workflow-header">
-              <span class="workflow-letter" aria-hidden="true">10</span>
+              <span class="workflow-letter" aria-hidden="true">11</span>
               <div>
                 <h4>從範圍到報告</h4>
                 <p>觸發：設計師分享 section、frame 或元素的連結，並要求元件化、建立元件或把散圖層換成 instance</p>
               </div>
             </div>
             <ol class="workflow-steps">
-              <li><strong>範圍與基準</strong>（Tier 0）：接受節點連結或目前的選取範圍，找出每個範圍所在的頁面。超過 50 個頂層 frame 或跨頁時，先確認範圍。為每個範圍截圖作為基準。</li>
+              <li><strong>範圍與基準</strong>（Tier 0）：接受節點連結或目前的選取範圍，找出每個範圍所在的頁面。超過 50 個頂層 frame 或跨頁時，先確認範圍。為每個範圍截圖作為基準。範圍確認後、偵測之前，先問兩件事：最後要不要產生<a href="#document">設計系統文件</a>（「要」或「不要」）；選「要」再問文件上的標題與欄位名稱要用哪一種語言（English（預設）、繁體中文，或設計師指定的其他語言）。</li>
               <li><strong>偵測</strong>（Tier 0）：先逐頁執行偵測腳本取得分組，再依偵測到的骨架與名稱，收集相關的現有元件清單。清單不是空的，才帶著清單再偵測一次，確定每個實例要沿用哪個現有的 variant；清單是空的，第一次偵測的結果就是最終結果。最後取得每組的實例清單。</li>
               <li><strong>分組比對</strong>：在範圍旁建立 <code>Componentize Review — temporary</code> 區塊，逐組詢問接受、改名、拆分、合併或排除。與現有元件有關的分組另外詢問：是否沿用、沒有合適 variant 的實例怎麼處理，以及與現有元件同名時的新名稱。決定後刪除區塊。</li>
-              <li><strong>計畫</strong>：列出元件、沿用的現有元件、要新增的 variants、不沿用而新建的元件、設計師決定保留的實例、排除、近似值差異、問題與各 Tier 的寫入摘要，等待確認。</li>
+              <li><strong>計畫</strong>：列出元件、沿用的現有元件、要新增的 variants、不沿用而新建的元件、設計師決定保留的實例、排除、近似值差異、問題與各 Tier 的寫入摘要，等待確認。開始時選了「要」，Tier 2 摘要會多一項：產生設計系統文件。</li>
               <li><strong>還原點</strong>：請使用者手動存一個版本「Before figma-componentize — {範圍名稱}」，確認後才開始寫入，並開始維護 ID 對照表。</li>
               <li><strong>建立</strong>（Tier 2）：找出或建立 Components 頁面，依 atom → molecule → organism 建立元件、合併並排列 variants、加上元件屬性。設計師選了「在現有元件加一個 variant」的分組，在這一步把 variant 加進現有的 component set；沿用的分組不建立元件。</li>
               <li><strong>Tokens</strong>：以新元件與新增的 variants 為範圍呼叫 Workflow F；計畫中的近似值差異加入它的比對板。</li>
               <li><strong>替換</strong>（Tier 3）：確認後只替換最外層的實例，每次最多 50 個，逐項驗證。</li>
               <li><strong>驗證</strong>：為每個範圍截圖並與基準比對，回報非預期的差異；清除追蹤標記與暫時區塊。</li>
-              <li><strong>報告</strong>：元件、沿用的現有元件與新增的 variants、tokens、已替換與保留的實例、還原點、Components 頁面連結，以及 ID 對照表。</li>
+              <li><strong>設計系統文件（可選）</strong>（Tier 2）：只在開始時選了「要」才執行。先確認字型、盤點檔案裡所有的 tokens 與元件並回報數量，再分批產生 <code>Design System — generated</code>，最後檢查元件、variables、styles 的數量和產生前相同。就算設計師拒絕了 tokens 步驟，或在替換時選「先不要」，文件仍會產生。細節見<a href="#document">設計系統文件</a>。</li>
+              <li><strong>報告</strong>：元件、沿用的現有元件與新增的 variants、tokens、已替換與保留的實例、設計系統文件（連結、語言與字型、各區塊項目數、略過的項目）、還原點、Components 頁面連結，以及 ID 對照表。</li>
             </ol>
           </div>
         </section>
@@ -1567,7 +1576,7 @@
 
           <pre><code>## Componentization plan — Home section
 Target page: Components (existing) · Restore point: ask the user to save a version first
-Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections · add 1 variant to an existing set
+Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections · add 1 variant to an existing set · generate the design system document (page Design System)
 Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
 
           <div class="panel" style="margin-top: 16px">
@@ -1588,6 +1597,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                   <tr><td>Excluded</td><td>節點或數量與原因（畫面、外框、instance、隱藏、鎖定的 ID、單獨圖層）</td></tr>
                   <tr><td>Drift for Workflow F</td><td>實例 ID 與有差異的欄位</td></tr>
                   <tr><td>Questions</td><td>每個 <code>needs-review</code> 的備註</td></tr>
+                  <tr><td>設計系統文件</td><td>開始時選了「要」才列出：Tier 2 摘要多一項 <code>generate the design system document</code>，並寫明文件要放在哪一頁（例如 <code>page Design System</code>）。選「不要」時沒有這一項</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1762,7 +1772,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                 <li>Components 頁面上每個元件 Section 的連結</li>
                 <li>還原點名稱，以及「每個原稿都要等 instance 通過驗證才刪除」的說明</li>
               </ul>
-              <p style="margin: 10px 0 0; color: var(--muted); font-size: 0.9rem">選項：全部替換 · 選擇元件 · 先不要。選「先不要」時直接產生報告：元件保留，原稿不動。</p>
+              <p style="margin: 10px 0 0; color: var(--muted); font-size: 0.9rem">選項：全部替換 · 選擇元件 · 先不要。選「先不要」時不替換：元件保留，原稿不動，接著產生報告。開始時選了「要」的話，報告之前仍會產生<a href="#document">設計系統文件</a>。</p>
             </div>
           </div>
 
@@ -1830,6 +1840,295 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
 
           <div class="note note-warn">
             <p><code>setProperties</code> 用錯 key 時不會報錯，所以每個屬性、切換與圖片覆寫都會讀回確認；讀回不一致就視為比對失敗。</p>
+          </div>
+        </section>
+
+        <!-- Design system document -->
+        <section id="document">
+          <div class="section-head">
+            <h3>設計系統文件</h3>
+            <p>可選的步驟：在 Figma 檔案裡產生一份文件，列出本檔案所有的 tokens 與元件，不只這次建立的。文件只呈現檔案裡已經有的內容，不會建立、修改或刪除任何 token、style 或元件。它是第 10 步，排在最終驗證之後、報告之前。</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-body">
+              <h4>開始時先問兩件事</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">兩個問題在確認範圍之後、偵測之前就先問；文件本身到最後才產生。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>問題</th>
+                    <th>什麼時候問</th>
+                    <th>選項</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>最後要不要產生設計系統文件</td><td>確認範圍之後、偵測之前</td><td>「要」、「不要」</td></tr>
+                  <tr><td>文件上的標題與欄位名稱要用哪一種語言</td><td>回答「要」之後；每次產生文件都會問</td><td>English（預設）、繁體中文，或設計師指定的其他語言</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p><strong>回答之後：</strong></p>
+            <ul style="margin: 6px 0 0; padding-left: 18px">
+              <li>選「不要」：完全不產生文件，流程和原本一樣，之後也不再問。</li>
+              <li>選「要」：元件化計畫的 Tier 2 摘要會多一項文件步驟。之後就算拒絕了 tokens 步驟，或在替換時選「先不要」，文件仍會產生，因為那時元件已經建立。</li>
+              <li>語言沒有偏好（例如回答「預設」或「都可以」）就用 English。</li>
+            </ul>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>哪些文字會跟著語言變</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">只有 skill 自己產生的文字會跟著語言變：區塊標題、欄位名稱、標題區的提示文字、連結文字，以及「另有 3 個」這類註記。來自檔案的文字全部照原樣顯示、不翻譯：token、collection 與 mode 的名稱，元件、variant 與屬性的名稱與值，數值，以及設計師寫在元件描述欄位的文字。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>文字</th>
+                    <th>英文文件</th>
+                    <th>繁體中文文件</th>
+                    <th>規則</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>區塊標題</td><td><code>Color</code></td><td><code>顏色</code></td><td class="cell-good">跟著語言</td></tr>
+                  <tr><td>欄位名稱</td><td><code>Properties</code></td><td><code>屬性</code></td><td class="cell-good">跟著語言</td></tr>
+                  <tr><td>註記</td><td><code>+3 more</code></td><td><code>另有 3 個</code></td><td class="cell-good">跟著語言</td></tr>
+                  <tr><td>token 名稱</td><td><code>sys/color/primary</code></td><td><code>sys/color/primary</code></td><td>照檔案原樣</td></tr>
+                  <tr><td>元件描述</td><td>主要操作，每個畫面一個</td><td>主要操作，每個畫面一個</td><td>照檔案原樣，不翻譯</td></tr>
+                  <tr><td>外框的圖層名稱</td><td><code>Design System — generated</code></td><td><code>Design System — generated</code></td><td>一律英文</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>圖層名稱與頁面名稱一律是英文：頁面 <code>Design System</code>、外框 <code>Design System — generated</code>，以及外框裡以 <code>DS / </code> 開頭的區塊。skill 靠這些名稱辨識哪些內容是它產生的。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>字型</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">文件的字型由語言決定。寫入之前，先確認字型能載入。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>語言</th>
+                    <th>文件字型</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>English，以及其他用拉丁、西里爾或希臘字母書寫的語言</td><td>Inter</td></tr>
+                  <tr><td>繁體中文</td><td>Noto Sans TC</td></tr>
+                  <tr><td>簡體中文</td><td>Noto Sans SC</td></tr>
+                  <tr><td>日文</td><td>Noto Sans JP</td></tr>
+                  <tr><td>韓文</td><td>Noto Sans KR</td></tr>
+                  <tr><td>其他文字系統（例如阿拉伯文、希伯來文、泰文）</td><td>由設計師指定字型</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-warn">
+            <p>字型載入不了就不寫入，並詢問：「改用英文標題與預設字型」、「指定另一個字型」或「略過文件」。</p>
+          </div>
+
+          <div class="note note-info">
+            <p>英文文件裡如果有中文的名稱或描述，那段文字會改用涵蓋中文的字型（Noto Sans TC；含日文假名時用 Noto Sans JP，含韓文時用 Noto Sans KR）。真的載入不了，才照文件字型寫入，並列在報告裡。</p>
+          </div>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card">
+              <h4>放在哪一頁</h4>
+              <ul>
+                <li>新增一個名為 <code>Design System</code> 的頁面，排在最後一頁之後</li>
+                <li>檔案裡已經有名稱含 design system、「設計系統」或 foundation 的頁面時，沿用那一頁；兩種都有時，優先用含 design system 或「設計系統」的那一頁</li>
+                <li>沿用時放在既有內容右側 400 px，原有的東西不移動、不改名、不改樣式、不刪除</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>頁數已滿時</h4>
+              <ul>
+                <li>Starter（免費）方案每個檔案最多 3 頁，頁數已滿就無法新增頁面</li>
+                <li>請設計師指定一頁，在那一頁放一個名為 <code>Design System</code> 的區塊（Section）</li>
+                <li>設計師回答之前不寫入</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>固定名稱的外框</h4>
+              <ul>
+                <li>所有產生的內容都在外框 <code>Design System — generated</code> 裡</li>
+                <li>寬 1440 px，內容由上往下排列</li>
+                <li>裡面每個區塊的圖層名稱以 <code>DS / </code> 開頭，例如 <code>DS / Color / Brand · System</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>文件內容：標題區與 Foundations</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">最上面是標題區：檔名、產生日期、tokens、styles、元件與圖示的數量，以及兩句提示（token 改動後請重新產生；自己的說明請放在外框之外，或寫在元件的描述欄位）。接著是 Foundations，依 collection 與群組排列；檔案自己的分層（例如 Reference、System、Component）照原樣呈現，不重新分類。沒有內容的區塊不會出現。下表括號內是選繁體中文時的區塊標題。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>區塊</th>
+                    <th>來源</th>
+                    <th>樣本</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code style="white-space: nowrap">Color</code>（顏色）</td><td>顏色 variables，每個 collection 一個區塊</td><td>色票，填色綁定該 variable；collection 有多個 modes（例如 Light / Dark）時每個 mode 一格，最多 4 格</td></tr>
+                  <tr><td><code style="white-space: nowrap">Color styles</code>（顏色樣式）</td><td>Paint Styles</td><td>套用該 style 的色票</td></tr>
+                  <tr><td><code style="white-space: nowrap">Typography</code>（文字樣式）</td><td>Text Styles</td><td>套用該 style 的文字樣本，附字型、字級、行高</td></tr>
+                  <tr><td><code style="white-space: nowrap">Spacing &amp; size</code>（間距與尺寸）</td><td>用於間距或寬高的數值 variables（數值 1 到 640）</td><td>寬度綁定該 variable 的色條</td></tr>
+                  <tr><td><code style="white-space: nowrap">Radius</code>（圓角）</td><td>用於圓角的數值 variables</td><td>圓角綁定該 variable 的方塊</td></tr>
+                  <tr><td><code style="white-space: nowrap">Elevation</code>（陰影）</td><td>Effect Styles</td><td>套用該 style 的卡片</td></tr>
+                  <tr><td><code style="white-space: nowrap">Other tokens</code>（其他 tokens）</td><td>其餘的 variables：其他用途或沒有限定用途的數值、1 到 640 以外的數值、文字、布林</td><td>只有名稱與數值</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>每個樣本旁有 token 名稱、每個 mode 的值，以及它指向哪個 token（alias，例如 <code>→ ref/primary/40</code>）。<strong>樣本是綁定的，token 改了會跟著變；旁邊的文字是產生當下的快照，token 改動後要重新產生才會更新。</strong></p>
+          </div>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card wide">
+              <h4>Components：每個元件一區</h4>
+              <ul>
+                <li>名稱、種類（component set 或單一元件）、variant 數量、所在頁面</li>
+                <li>元件描述：設計師寫在描述欄位的文字；沒寫就不顯示</li>
+                <li>連回主元件的連結（<code>Open main component</code>）</li>
+                <li>每個 variant 的 instance 與名稱，最多 30 個，其餘以「另有 N 個」註記</li>
+                <li>屬性：名稱、類型、預設值、可選值</li>
+                <li>用到的 tokens：主元件（component set 取預設 variant）上綁定的 variables 與 styles 的名稱，最多列 40 個</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>Icons：圖示格</h4>
+              <ul>
+                <li>小圖示集中成一個圖示格，不各自佔一區；每格是一個 instance 與元件名稱</li>
+                <li>條件：每個 variant 都不超過 48 × 48 px，而且是正方形或名稱含 icon</li>
+                <li>例如 24 × 24 的 <code>Icon/Star</code> 進圖示格；32 × 20 的 <code>Badge</code> 自己佔一區</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>只寫事實</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">文件只顯示檔案裡有的東西：名稱、數值、variants、屬性與綁定的 tokens。用途說明只來自設計師寫在元件「描述」欄位的文字；沒寫就不顯示，AI 不會自己撰寫用途、使用時機或注意事項，也不翻譯描述。想讓文件出現用途說明：在 Figma 的元件描述欄位寫好，再重新產生。</p>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>範例</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">檔案裡有一個 <code>Brand · System</code> collection，裡面的顏色有 Light 與 Dark 兩個 modes；一個 <code>Button</code> component set，描述欄位寫了「主要操作，每個畫面一個」；以及一個描述欄位空白的 <code>Card</code>。設計師選「要」，語言選 English。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>對象</th>
+                    <th>文件上看到什麼</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code style="white-space: nowrap">Brand · System</code></td><td>標題為 <code>Color · Brand · System</code> 的區塊。每個顏色 token 有 Light 與 Dark 兩格色票，旁邊是 token 名稱與兩個 mode 的值，例如 <code>Light #6750A4 → ref/primary/40</code></td><td>collection 有多個 modes，每個 mode 一格；collection 名稱照檔案原樣</td></tr>
+                  <tr><td><code style="white-space: nowrap">Button</code></td><td>自己的一區：名稱與 variant 數量、描述「主要操作，每個畫面一個」、<code>Open main component</code> 連結、每個 variant 的 instance，以及 <code>Properties</code> 與 <code>Tokens</code></td><td>描述是設計師寫的，照原樣顯示、不翻譯；這段中文改用 Noto Sans TC</td></tr>
+                  <tr><td><code style="white-space: nowrap">Card</code></td><td>同樣的一區，但名稱下方沒有描述：不留空位，也不放預留文字</td><td>描述欄位是空的，AI 不會代寫</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>同一個檔案改選繁體中文時，標題與欄位名稱變成 <code>顏色 · Brand · System</code>、<code>屬性</code>、<code>使用的 tokens</code>；<code>Brand · System</code>、token 名稱與「主要操作，每個畫面一個」都不變。</p>
+          </div>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card">
+              <h4>不改動檔案</h4>
+              <ul>
+                <li>不建立、不修改、不刪除任何 token、style 或元件</li>
+                <li>文件裡的元件樣本都是 instance，檔案不會多出元件</li>
+                <li>外框以外的圖層不會被動到</li>
+                <li>產生後檢查元件、variables、styles 的數量和產生前相同；有差異只回報，不自行修正</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>先盤點，數量大先問</h4>
+              <ul>
+                <li>產生前先回報數量與預估的寫入次數</li>
+                <li>tokens（variables 加 styles）超過 300 個、非圖示元件超過 40 個，或預估超過 60 次寫入時，先問：「全部產生」、「只產生 Foundations」、「只產生 Components」或「略過文件」</li>
+                <li>檔案沒有 tokens 也沒有元件時，不建立任何東西；只有其中一種時，省略另一部分並在報告說明</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>分批寫入</h4>
+              <ul>
+                <li>每次最多 20 個 tokens 或 styles、40 個圖示，或一個元件</li>
+                <li>中途失敗可以接著做，已經寫入的項目不會重複</li>
+                <li>個別項目做不出來（例如字型無法載入）只略過那一項，並在報告說明原因</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>重新產生</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">文件上的名稱與數值是快照，tokens 或元件改動後要重新產生。放文件的頁面（或 <code>Design System</code> Section）上已經有 <code>Design System — generated</code> 時，先問要怎麼處理；有好幾個時，列出來並詢問要取代哪一個。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>選項</th>
+                    <th>結果</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>「取代」</td><td>先把新的文件完整建好並驗證，才刪掉舊的，再把新的移到原位置。新的建不成就保留舊的，並回報原因</td></tr>
+                  <tr><td>「保留舊的，在旁邊產生新的」</td><td>舊的外框不動；新的外框放在既有內容右側</td></tr>
+                  <tr><td>「略過文件」</td><td>不產生新的，舊的文件保持原樣</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-warn">
+            <p>「取代」屬於 Tier 3，每次都要確認，之前說過「全部自動套用」也不能略過，因為設計師在舊外框裡做的修改會消失。被設計師改過名字的舊文件視為設計師自己的內容，不會被詢問，也不會被更動。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>單獨執行</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">只說「幫我產生設計系統文件」或「幫我更新設計系統文件」時，不做元件化，也不會再問要不要產生，因為這個請求本身就是同意。這時只需要可寫入的 <code>use_figma</code> 與 <code>figma-use</code>，不需要 figma-m3-variables。</p>
+            </div>
+            <div class="cascade" aria-label="單獨執行的順序">
+              <span class="cascade-node">確認語言與字型</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">請設計師存還原點</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">盤點</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">產生</span>
+              <span class="cascade-arrow" aria-hidden="true">→</span>
+              <span class="cascade-node">報告</span>
+            </div>
           </div>
         </section>
 
@@ -1957,6 +2256,10 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
               <h4>收尾</h4>
               <p>清除追蹤標記，刪除仍存在的暫時比對區塊。</p>
             </div>
+            <div class="bento-card">
+              <h4>設計系統文件</h4>
+              <p>文件步驟只新增內容：不建立、不修改、不刪除任何 token、style 或元件，產生後檢查數量和產生前相同。取代舊文件每次都要確認，新的建好並驗證後才刪掉舊的。</p>
+            </div>
           </div>
         </section>
 
@@ -1978,7 +2281,15 @@ Tokens (Workflow F): Ref 12 · Sys 9 · Comp 14 · Text Styles 2 · Effect Style
 Replaced: 12 of 13 occurrences · Covered by an outer instance: 2
   Approved: 1:31 paddingLeft of "Button" 15 → 16; width 118 → 120
 Kept: 2 — 1:44 missing font in 1:45: Brand Sans Bold · 1:62 no matching variant — kept by the designer
-Unexpected differences in the final screenshots: none</code></pre>
+Unexpected differences in the final screenshots: none
+Design system document: Design System — https://www.figma.com/design/{fileKey}/?node-id=70-1
+  Language: 繁體中文 · Font: Noto Sans TC
+  Foundations: Color 96 (2 collections) · Typography 9 · Spacing &amp; size 14 · Radius 6 · Elevation 3 · Other tokens 82
+  Components: 12 sections · Icons 180
+  Skipped: 1 — S:9f2c font could not be loaded: Brand Sans Bold · 57 / 64
+  Text the fonts do not cover: none
+  Replaced an earlier document: no · Omitted: none
+  Created no component, variable, or style (counts before and after are equal)</code></pre>
 
           <div class="panel" style="margin-top: 16px">
             <div class="table-wrap">
@@ -1997,6 +2308,7 @@ Unexpected differences in the final screenshots: none</code></pre>
                   <tr><td>Tokens</td><td>Workflow F 回傳的 variable ID、style ID（附名稱）、綁定、合併群組與略過項目；拒絕 tokens 時標示未 token 化</td></tr>
                   <tr><td>替換結果</td><td>已替換、由外層處理、已核准的差異，以及保留的實例與原因</td></tr>
                   <tr><td>最終比對</td><td>最終截圖中非預期的差異</td></tr>
+                  <tr><td>設計系統文件</td><td>文件頁與外框的連結、語言與字型、各區塊的項目數、略過的項目與原因、字型未涵蓋的文字、是否取代了舊文件、省略的部分，以及「沒有建立任何元件、variable 或 style」。這一段的數量是整個檔案的 tokens 與元件，不只這次建立的；開始時選「不要」就沒有這一段</td></tr>
                   <tr><td>還原點與連結</td><td>還原點名稱與 Components 頁面連結</td></tr>
                   <tr><td>ID 對照表</td><td>原稿 → 元件 → instance 的完整對照</td></tr>
                 </tbody>
@@ -2023,7 +2335,7 @@ Unexpected differences in the final screenshots: none</code></pre>
                 </thead>
                 <tbody>
                   <tr><td><code>figma-use</code></td><td>Plugin API 基礎，<strong>必須優先讀取</strong></td></tr>
-                  <tr><td><code>figma-componentize</code></td><td>偵測散圖層、分組、在 Components 頁面建立元件、把原稿換成 instance 並驗證（本 skill）</td></tr>
+                  <tr><td><code>figma-componentize</code></td><td>偵測散圖層、分組、在 Components 頁面建立元件、把原稿換成 instance 並驗證；設計師選擇時產生設計系統文件（本 skill）</td></tr>
                   <tr><td><code>figma-m3-variables</code></td><td>Tokens：本 skill 的 token 步驟呼叫它的 Workflow F；另外也負責套用、稽核與建立 token 系統</td></tr>
                   <tr><td><code>figma-generate-library</code></td><td>完整 design system 建置；本 skill 的 variants 格狀排列與命名沿用它的慣例</td></tr>
                 </tbody>
@@ -2036,7 +2348,7 @@ Unexpected differences in the final screenshots: none</code></pre>
         <section id="references">
           <div class="section-head">
             <h3>參考文件</h3>
-            <p>SKILL.md 只放步驟與規則；腳本與細節都在三份參考文件中，各自負責一段流程。</p>
+            <p>SKILL.md 只放步驟與規則；腳本與細節都在四份參考文件中，各自負責一段流程。</p>
           </div>
 
           <div class="bento">
@@ -2052,6 +2364,10 @@ Unexpected differences in the final screenshots: none</code></pre>
               <h4><code>replacement.md</code></h4>
               <p>確認、順序與工作清單、擺放、內容複製、驗證、替換迴圈、保留的實例、分批與復原、最終驗證、報告。</p>
             </div>
+            <div class="bento-card">
+              <h4><code>documentation.md</code></h4>
+              <p>設計系統文件：開始時的兩個問題、標題語言與字型、盤點、數量確認、頁面與外框、Foundations 區塊、元件區塊與圖示格、分批與復原、既有的產生文件、驗證與報告。</p>
+            </div>
           </div>
         </section>
 
@@ -2060,7 +2376,8 @@ Unexpected differences in the final screenshots: none</code></pre>
             來源：<code>figma-componentize/SKILL.md</code> ·
             <code>references/detection.md</code> ·
             <code>references/build-recipes.md</code> ·
-            <code>references/replacement.md</code>
+            <code>references/replacement.md</code> ·
+            <code>references/documentation.md</code>
           </p>
           <p style="margin-top: 6px">產生時間：2026-10-01 · 靜態 HTML，無外部依賴</p>
         </footer>

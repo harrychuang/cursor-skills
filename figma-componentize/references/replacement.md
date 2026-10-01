@@ -22,15 +22,21 @@ Contents
 
 Ask after the token step, even when the user said "apply everything automatically" earlier: no blanket instruction waives this Tier 3 confirmation. Show:
 
-- the number of occurrences per component and variant, how many are carried inside outer instances, and the occurrences already known to be kept, with reasons;
+- the number of occurrences per component and variant, and how many are carried inside outer instances;
+- for each reused component: the existing component (ID), the match quality, and the variants used, with counts (ledger `quality`, `chosen`, and `occurrences[id].main`);
+- the variants added to existing sets (ledger `added`);
+- the occurrences kept by the designer's decision (`no matching variant — kept by the designer`), and the occurrences that will be kept without trying, with reasons;
 - the baseline screenshots taken in detection.md §2;
 - a link to each component's Section on the Components page: `https://www.figma.com/design/{fileKey}/?node-id={sectionId with ":" replaced by "-"}`;
 - the restore point name, and that each original is deleted only after its instance passes verification (§5); otherwise the original stays as it is.
 
 ```
-Replace 12 occurrences with instances? (Tier 3)
+Replace 13 occurrences with instances? (Tier 3)
 - Button: 8 (Style=Filled 6, Style=Outlined 2), plus 2 carried inside Card instances
-- Card: 3 · Chip (existing component): 1
+- Card: 3
+- Reused: Chip (existing 12:9, partial) — 2 (Style=Filled 12:30 × 1, Style=Outlined 12:41 × 1)
+- Added variants: Chip · Style=Outlined (12:41)
+- Kept by decision: 1 (1:62 no matching variant — kept by the designer)
 - Kept without trying: 1 locked layer (1:90)
 Components: https://www.figma.com/design/AbC123/?node-id=40-1
 Restore point: "Before figma-componentize — Home section"
@@ -44,11 +50,15 @@ Options: **Replace all** · **Choose components** · **Not now**. "Not now" goes
 
 Replace the **outermost** occurrences only. An occurrence nested inside one that is being replaced (a button inside a card) is reproduced by the outer instance: the card's main component already holds an exposed `Button` instance, and §4 copies the label into it. It is never replaced separately.
 
-Build one job list per page from the plan (`MODE: 'members'` rows: `id`, `variant`, `parent`) and the ledger (build-recipes.md §2):
+Build one job list per page from the plan (`MODE: 'members'` rows: `id`, `variant`, `parent`, `known`) and the ledger (build-recipes.md §2):
 
-1. **Outermost**: `parent` is `null`, or the parent belongs to a group that is not replaced (excluded, skipped in the build, or deselected by the user).
-2. **`main`**: the ledger's variant ID (`components[group].variants[variant]`), the component ID for a group without variants, or, for a `reuse` group, the existing component or component set. For a set, the script picks the nearest variant (`pickVariant`, detection.md 9-4).
-3. **`nested`**: every occurrence below this one, at all levels (follow the `parent` links down), mapped to its main by the same rule. The script swaps an exposed instance to that main when it differs. An exposed instance without an entry keeps the representative's variant, and verification decides.
+1. **Outermost**: `parent` is `null`, or the parent belongs to a group that is not replaced (excluded, skipped in the build, or deselected by the user), or the parent itself is kept by the designer's decision (`main: null`).
+2. **`main`**: always a component (variant) ID, never a component set ID.
+   - Newly built group: the ledger's variant ID (`components[group].variants[variant]`), or the component ID for a group without variants.
+   - Reused group (`kind: "reuse"`): the occurrence's `occurrences[id].main` from the ledger. It is detection's `known` (detection.md §7), or the ID of a variant added for that occurrence (**Add a variant to {name}**, build-recipes.md §8). Use it as it is: nothing picks a variant again at write time.
+
+   The script's `pickVariant` fallback for a set ID (detection.md 9-4) stays only as a guard.
+3. **`nested`**: every occurrence below this one, at all levels (follow the `parent` links down), mapped to its `main` by the same rule, so a nested occurrence of a reused group maps to its assigned variant. A nested occurrence with `main: null` gets no entry. The script swaps an exposed instance to that main when it differs. An exposed instance without an entry keeps the representative's variant, and verification decides.
 4. **`lock: true`**: only for layers that were locked and that the user allowed to replace (§7).
 5. **`accept: true`**: only when re-running occurrences whose listed differences the user accepted (§7).
 6. **`MERGES`**: from Workflow F's `mergedGroups`, one `[merged value, kept value]` pair per merged value, in Workflow F's normal form:
@@ -58,15 +68,21 @@ Build one job list per page from the plan (`MODE: 'members'` rows: `id`, `varian
 
    The plan's drift values were shown on Workflow F's review board (SKILL.md, token step), so the user's decisions about them arrive here as well. Drift the user did not merge stays a difference, and verification keeps that occurrence.
 
+Occurrences with `main: null` (kept by the designer's decision, **Keep as they are**) are not sent to the script. They are listed as kept with the reason `no matching variant — kept by the designer` (§7).
+
 When an outer occurrence is kept, the occurrences nested in it become outermost. Replace them in a follow-up job list, which the same confirmation covers.
 
 ```json
 [
   { "id": "1:20", "main": "40:2" },
   { "id": "1:31", "main": "40:2" },
-  { "id": "1:50", "main": "41:3", "nested": { "1:55": "40:5" } }
+  { "id": "1:50", "main": "41:3", "nested": { "1:55": "40:5" } },
+  { "id": "1:60", "main": "12:30" },
+  { "id": "1:61", "main": "12:41" }
 ]
 ```
+
+Here `1:60` and `1:61` belong to the reused set `Chip` (12:9): `12:30` is the existing variant that detection assigned, and `12:41` is the variant added for `1:61`. `1:62` (`main: null`) is not in the list.
 
 ---
 
@@ -409,11 +425,11 @@ Kept occurrences are never changed: the instance is deleted and the original is 
 | `missing font in {id}: {family style}`, `font could not be loaded: {family style}` | `hasMissingFont`, or `loadFontAsync` fails (`use_figma` does not support custom fonts yet) | Name the node and the font in the report |
 | `mixed text styles in {id}` | A text has several styled ranges that differ from the component's text | Report only |
 | `structure differs from the component`, `text or image layers differ from the component`, `{slot} is not in the component` | Overrides cannot reproduce the occurrence | Report; the designer may build a separate component later |
-| `no matching component or variant` | A reused set has no variant within the near-value thresholds, or the component was not built | Report only |
+| `no matching component or variant` | The assigned variant no longer exists (the existing component was changed after detection), or the component was not built | Keep the occurrence unchanged and report it. For a reused group, re-run detection for that group (detection.md §7) and ask the designer again (detection.md §11) |
 | Differences such as `width 120 → 122`, `text "Send" → "Save"`, `fill color of "label" #D32F2F → #1C1B1F`, `read-back failed: property Label` | Verification failed (§5) | Show the differences. Style and size differences can be accepted by the user (Tier 3): re-run those occurrences with `accept: true`. Text, layer count, and read-back failures cannot be accepted |
 | `error: …` | An exception in this occurrence; its changes were undone | Read the message, fix the cause, and retry that occurrence |
 
-Occurrences of groups that were not built, or that the user did not select, are not sent to the script. They are listed in the report as kept, with that reason.
+Occurrences of groups that were not built, or that the user did not select, and occurrences kept by the designer's decision (**Keep as they are**; `main: null` in the ledger) are not sent to the script. They are listed in the report as kept, each with its reason. For the designer's decision, the reason is exactly `no matching variant — kept by the designer`.
 
 ---
 
@@ -421,7 +437,7 @@ Occurrences of groups that were not built, or that the user did not select, are 
 
 - **Calls**: at most 50 occurrences per call and one page per call; 130 occurrences on one page take three calls (50, 50, 30). Every call re-fetches its nodes by ID.
 - **Ledger**: after each call, update the ledger (build-recipes.md §2):
-  - `replaced`: status `replaced` and the `instanceId`; the occurrences nested in it get status `covered` and `by` (the outer occurrence ID).
+  - `replaced`: status `replaced` and the `instanceId`; the occurrences nested in it get status `covered` and `by` (the outer occurrence ID). A nested occurrence the designer decided to keep (`main: null`) keeps `status: "kept"` and its reason and also gets `by`: its layers are now raw layers inside that outer instance, not an instance of their own.
   - `kept`: status `kept` and the reason.
   - `approved`: the approved differences.
 - **Failed call** (error or timeout): a failed call can leave partial changes, so never re-run the same chunk blindly. Run the recovery script for its IDs, update the ledger, then retry only the occurrences that are `pending`. If timeouts repeat, use chunks of 20.
@@ -480,16 +496,23 @@ Components (2)
 | Component | ID | Kind | Variants | Properties | Section |
 | Button | 40:9 | set | Style=Filled, Style=Outlined | Label (TEXT), Show leading icon (BOOLEAN), Leading icon (INSTANCE_SWAP) | 40:1 |
 | Card | 42:7 | component | — | Headline (TEXT), Supporting text (TEXT) | 42:1 |
-Reused: Chip (existing 12:30) for 1 occurrence · Wrapped: none · Skipped in build: none
+Reused: Chip (existing 12:9, partial) — Style=Filled 12:30 × 1, Style=Outlined 12:41 × 1
+  (add "chosen by the designer" after the quality when the designer confirmed or picked the component)
+Added variants: Chip · Style=Outlined (12:41)
+  (or: "Added variants: none")
+Built instead of reused: none
+  (when present: the group, the existing component whose reuse was declined, and the new name)
+Wrapped: none · Skipped in build: none
 
-Tokens (Workflow F): Ref 12 · Sys 9 · Comp 14 · Text Styles 2 (Label/Large, Body/Medium) · Effect Styles 1
+Tokens (Workflow F; scope: the new components and the added variants): Ref 12 · Sys 9 · Comp 14 · Text Styles 2 (Label/Large, Body/Medium) · Effect Styles 1
   Bindings: 31 · Merged: G2 padding 15 → 16 · Skipped: 4 (AUTO line height 2 · gradient 1 · instance children 1)
   (or: "Not tokenized: the user declined the token plan" when the token step was skipped)
 
-Replaced: 11 of 12 occurrences · Covered by an outer instance: 2
+Replaced: 12 of 13 occurrences · Covered by an outer instance: 2
   Approved: 1:31 paddingLeft of "Button" 15 → 16; width 118 → 120
-Kept: 1
+Kept: 2
   1:44 missing font in 1:45: Brand Sans Bold
+  1:62 no matching variant — kept by the designer
 Unexpected differences in the final screenshots: none
 Review boards: removed
 
@@ -500,8 +523,12 @@ ID map (ledger)
 | Field | Source |
 |-------|--------|
 | Components: ID, name, kind, variants, properties, section | Ledger `components` (build-recipes.md §2, §5, §6) |
-| Reused, wrapped, skipped in build | Plan and build results |
-| Tokens | Workflow F's returned `variables` (Ref, Sys, Comp IDs), `styles` (Text and Effect Style IDs; show their names), `bindings`, `mergedGroups`, and `skipped`, copied in full into the ID map section. When the user declined the token step, the components are marked untokenized |
+| Reused | Plan section `Reused` (detection.md §12) and the ledger (build-recipes.md §2): `components[group].kind: "reuse"`, `existingId`, `quality` (`exact`, `partial`, or `unconfirmed`), `chosen`, and each occurrence's `occurrences[id].main`, counted per variant |
+| Added variants | Plan section `Added variants` (detection.md §12) and the ledger's `added: [{ variantId, name }]` (build-recipes.md §2, §8) |
+| Built instead of reused | Plan section `Built instead of reused` (detection.md §12) and the ledger's `components[group].declined` (the ID of the existing component whose reuse was declined) |
+| Kept by decision | Plan section `Kept by decision` (detection.md §12) and the ledger: the occurrences with `main: null`, `status: "kept"`, and the reason `no matching variant — kept by the designer`. Listed under `Kept` |
+| Wrapped, skipped in build | Plan and build results |
+| Tokens | Workflow F's returned `variables` (Ref, Sys, Comp IDs), `styles` (Text and Effect Style IDs; show their names), `bindings`, `mergedGroups`, and `skipped`, copied in full into the ID map section. The scope is the new components and the added variants (build-recipes.md §1). When the user declined the token step, the components are marked untokenized |
 | Replaced, covered, approved, kept with reasons | Replacement results (§6) and §7 |
 | Unexpected differences | Final verification (§9) |
 | Restore point, Components page link | Ledger `restorePoint` and `page` |

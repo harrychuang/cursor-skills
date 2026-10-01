@@ -940,6 +940,7 @@
               <li><a href="#steps">步驟總覽</a></li>
               <li><a href="#detection">偵測規則</a></li>
               <li><a href="#grouping">分組規則</a></li>
+              <li><a href="#reuse">沿用現有元件</a></li>
               <li><a href="#review-board">分組比對區塊</a></li>
               <li><a href="#plan">元件化計畫</a></li>
               <li><a href="#build">建立元件</a></li>
@@ -1054,7 +1055,7 @@
             <div class="panel-body">
               <h4>不在範圍內</h4>
               <ul style="margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem">
-                <li>team library 的元件：只重用本檔案的 local components</li>
+                <li>team library 的元件：只沿用本檔案的 local components</li>
                 <li>把散落的向量圖示整理成圖示庫：只列在報告中</li>
                 <li>prototype 互動與元件動畫</li>
                 <li>重新排版，例如把絕對定位改成 auto layout：元件保留原稿的圖層結構</li>
@@ -1078,7 +1079,7 @@
               <li><div><strong>一次一個呼叫</strong><span><code>use_figma</code> 不可平行執行；每個腳本都依 ID 重新取得節點，而且一次只處理一頁。</span></div></li>
               <li><div><strong>回傳精簡</strong><span>偵測結果以 <code>OFFSET</code> 分頁，直到 <code>nextOffset</code> 為 <code>null</code>；建立時一次一個元件或一個 component set；替換一次最多 50 個；每次回傳都控制在 18,000 字元內。</span></div></li>
               <li><div><strong>替換前不動原稿</strong><span>原稿只有在對應的 instance 通過驗證後才刪除。</span></div></li>
-              <li><div><strong>詢問，不猜測</strong><span>每個 <code>needs-review</code> 的分組都要詢問。近似值不自動合併，由使用者在 Workflow F 的比對板上決定。</span></div></li>
+              <li><div><strong>詢問，不猜測</strong><span>每個 <code>needs-review</code> 的分組都要詢問。與現有元件的配對結果只要不是 <code>exact</code>，也要詢問，不自行決定是否沿用。近似值不自動合併，由使用者在 Workflow F 的比對板上決定。</span></div></li>
               <li><div><strong>ID 對照表</strong><span>從第一次寫入起維護 ID 對照表（還原點、頁面、元件、實例），每次呼叫後更新。</span></div></li>
               <li><div><strong>錯誤處理</strong><span>發生錯誤時停止並閱讀錯誤訊息，再依 ID 對照表重新讀取受影響的節點，只重試未完成的部分，不盲目重跑。</span></div></li>
             </ol>
@@ -1106,6 +1107,7 @@
                   <tr><td>掃描、偵測、分組、計畫、報告</td><td><span class="sev sev-info">Tier 0</span></td><td>不需確認</td></tr>
                   <tr><td>分組比對區塊（暫時的 Section，只新增）</td><td>—</td><td>決定前允許建立，決定後刪除</td></tr>
                   <tr><td>Components 頁面、主元件、variants、元件屬性</td><td><span class="sev sev-warning">Tier 2</span></td><td>計畫確認；使用者明說不需審閱即可略過</td></tr>
+                  <tr><td>在現有的 component set 新增 variant</td><td><span class="sev sev-warning">Tier 2</span></td><td>只有設計師為該分組選了「在現有元件加一個 variant」才執行；即使之前說過「全部自動套用」也不能略過</td></tr>
                   <tr><td>Tokens</td><td>依 Workflow F</td><td>Workflow F 的 token 計畫；合併近似值是 Tier 3</td></tr>
                   <tr><td>解除鎖定（只在使用者同意時）</td><td><span class="sev sev-warning">Tier 2</span></td><td>明確確認</td></tr>
                   <tr><td>把原稿換成 instance</td><td><span class="sev sev-error">Tier 3</span></td><td>一定要確認，並附上基準截圖與元件連結；即使之前說過「全部自動套用」也不能略過</td></tr>
@@ -1133,15 +1135,15 @@
             </div>
             <ol class="workflow-steps">
               <li><strong>範圍與基準</strong>（Tier 0）：接受節點連結或目前的選取範圍，找出每個範圍所在的頁面。超過 50 個頂層 frame 或跨頁時，先確認範圍。為每個範圍截圖作為基準。</li>
-              <li><strong>偵測</strong>（Tier 0）：先收集既有 local components 的簽章，再逐頁執行偵測腳本，取得分組與每組的實例清單。</li>
-              <li><strong>分組比對</strong>：在範圍旁建立 <code>Componentize Review — temporary</code> 區塊，逐組詢問接受、改名、拆分、合併或排除，決定後刪除。</li>
-              <li><strong>計畫</strong>：列出元件、重用、排除、近似值差異、問題與各 Tier 的寫入摘要，等待確認。</li>
+              <li><strong>偵測</strong>（Tier 0）：先逐頁執行偵測腳本取得分組，再依偵測到的骨架與名稱，收集相關的現有元件清單。清單不是空的，才帶著清單再偵測一次，確定每個實例要沿用哪個現有的 variant；清單是空的，第一次偵測的結果就是最終結果。最後取得每組的實例清單。</li>
+              <li><strong>分組比對</strong>：在範圍旁建立 <code>Componentize Review — temporary</code> 區塊，逐組詢問接受、改名、拆分、合併或排除。與現有元件有關的分組另外詢問：是否沿用、沒有合適 variant 的實例怎麼處理，以及與現有元件同名時的新名稱。決定後刪除區塊。</li>
+              <li><strong>計畫</strong>：列出元件、沿用的現有元件、要新增的 variants、不沿用而新建的元件、設計師決定保留的實例、排除、近似值差異、問題與各 Tier 的寫入摘要，等待確認。</li>
               <li><strong>還原點</strong>：請使用者手動存一個版本「Before figma-componentize — {範圍名稱}」，確認後才開始寫入，並開始維護 ID 對照表。</li>
-              <li><strong>建立</strong>（Tier 2）：找出或建立 Components 頁面，依 atom → molecule → organism 建立元件、合併並排列 variants、加上元件屬性。</li>
-              <li><strong>Tokens</strong>：以新元件為範圍呼叫 Workflow F；計畫中的近似值差異加入它的比對板。</li>
+              <li><strong>建立</strong>（Tier 2）：找出或建立 Components 頁面，依 atom → molecule → organism 建立元件、合併並排列 variants、加上元件屬性。設計師選了「在現有元件加一個 variant」的分組，在這一步把 variant 加進現有的 component set；沿用的分組不建立元件。</li>
+              <li><strong>Tokens</strong>：以新元件與新增的 variants 為範圍呼叫 Workflow F；計畫中的近似值差異加入它的比對板。</li>
               <li><strong>替換</strong>（Tier 3）：確認後只替換最外層的實例，每次最多 50 個，逐項驗證。</li>
               <li><strong>驗證</strong>：為每個範圍截圖並與基準比對，回報非預期的差異；清除追蹤標記與暫時區塊。</li>
-              <li><strong>報告</strong>：元件、tokens、已替換與保留的實例、還原點、Components 頁面連結，以及 ID 對照表。</li>
+              <li><strong>報告</strong>：元件、沿用的現有元件與新增的 variants、tokens、已替換與保留的實例、還原點、Components 頁面連結，以及 ID 對照表。</li>
             </ol>
           </div>
         </section>
@@ -1329,14 +1331,189 @@
                 <tbody>
                   <tr><td><code>exact</code></td><td>至少一半的成員依名稱符合模式，且排版簽章一致</td></tr>
                   <tr><td><code>inferred</code></td><td>只依結構或重複出現判斷</td></tr>
-                  <tr><td><code>needs-review</code></td><td>排版簽章不同、出現第二種顏色樣式、非 instance 的圖示不同、超過 5 種尺寸或 30 種 variants，或名稱衝突無法解決；建立前一定先問</td></tr>
+                  <tr><td><code>needs-review</code></td><td>排版簽章不同、出現第二種顏色樣式、非 instance 的圖示不同、超過 5 種尺寸或 30 種 variants、名稱衝突無法解決、與現有元件的配對結果是 <code>partial</code> 或 <code>unconfirmed</code>、兩個現有元件配對程度相同，或與現有元件同名；建立前一定先問</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           <div class="note note-info">
-            <p>符合本檔案既有 local component 簽章的分組標為重用：不建立新元件，實例之後直接換成既有元件的 instance。</p>
+            <p>分組與本檔案現有元件的比對方式、配對結果，以及設計師可以選擇的做法，見<a href="#reuse">沿用現有元件</a>。</p>
+          </div>
+        </section>
+
+        <!-- Reuse -->
+        <section id="reuse">
+          <div class="section-head">
+            <h3>沿用現有元件</h3>
+            <p>本檔案已經有合適的元件時，優先沿用，不另外建立；沒有合適的元件，或設計師決定不沿用時，才建立新元件。每個分組都會和現有元件比對三件事：骨架、名稱、外觀。</p>
+          </div>
+
+          <div class="bento">
+            <div class="bento-card">
+              <h4>骨架</h4>
+              <ul>
+                <li>圖層種類、順序與 auto layout 方向，也就是分組規則中的核心簽章</li>
+                <li>骨架相同是必要條件：原稿的文字與圖示依圖層位置帶進 instance，骨架不同就無法證明外觀不變</li>
+                <li>骨架相同的現有元件全部列為候選</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>名稱</h4>
+              <ul>
+                <li>名稱或 UI 類型與分組相同的現有元件優先</li>
+                <li>名稱明顯是不同類型的（按鈕對上 <code>Chip</code>），不會自動沿用</li>
+                <li>圖層沒有命名、只靠結構推測出類型的分組，不算有名稱證據</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>外觀</h4>
+              <ul>
+                <li>顏色、描邊、陰影、圓角、padding、間距、高度與字級</li>
+                <li>每個實例各自比對：現有元件有 variant 落在近似門檻內，才算有外觀相近的 variant</li>
+                <li>相近的 variant 不只一個時，取差異最少的那一個</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>三種配對結果</h4>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>結果</th>
+                    <th>什麼情況</th>
+                    <th>會發生什麼</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td style="white-space: nowrap"><code>exact</code></td><td>骨架相同、名稱相符，而且每個實例都有外觀相近的 variant</td><td>直接沿用，不另外詢問</td></tr>
+                  <tr><td style="white-space: nowrap"><code>partial</code></td><td>骨架相同、名稱相符，但有些實例沒有外觀相近的 variant</td><td>有相近 variant 的實例照樣沿用；沒有的由設計師決定</td></tr>
+                  <tr><td style="white-space: nowrap"><code>unconfirmed</code></td><td>骨架與外觀都相符，但名稱無法確認是同一種 UI</td><td>提議沿用，並詢問設計師：「沿用 {名稱}」、「不沿用，建立新的」、「改沿用另一個元件」或「維持原樣」</td></tr>
+                  <tr><td>不自動沿用</td><td>名稱是不同類型；或名稱無法確認，而且有實例的外觀不相近</td><td>不沿用。這些元件列為「骨架相同的其他元件」，設計師可以改選其中一個</td></tr>
+                  <tr><td>由設計師選擇</td><td>兩個現有元件的配對程度相同</td><td>不自行挑選，詢問要沿用哪一個</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>每個實例在偵測階段就確定要用哪個 variant，替換時直接使用，不會到替換時才發現沒有 variant 可用。這裡的 <code>exact</code> 是配對結果，和分組信心度的 <code>exact</code> 是兩件事。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>沒有合適的 variant 時</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">配對結果是 <code>partial</code> 時，沒有相近 variant 的實例依 variant 分開詢問，例如 Outlined 的那幾個問一次。有相近 variant 的實例不受影響，仍會換成現有元件的 instance。設計師決定之前，這個分組不建立、不新增，也不替換任何東西。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>選項</th>
+                    <th>結果</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>「在現有元件加一個 variant」</td><td>在現有的 component set 裡新增一個 variant，這些實例換成它的 instance。只有現有元件是 component set 時才提供</td></tr>
+                  <tr><td>「建立新元件」</td><td>這些實例另成一組，建立新的元件；名稱由設計師確認，不能與現有元件同名</td></tr>
+                  <tr><td>「維持原樣」</td><td>不替換，原稿保持原樣；列入計畫與報告，原因是「沒有相符的 variant，設計師決定保留」</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>現有元件是單一元件（不是 component set）時，只提供「建立新元件」與「維持原樣」，並說明原因：單一元件不能加 variant。想加的話，可以先在 Figma 把它合併成 component set，再重新執行。</p>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>範例</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">檔案裡有 <code>Chip</code>，以及只有 <code>Style=Filled</code> 的 <code>Button</code> component set。畫面上有兩個填色按鈕和一個外框按鈕，圖層名稱都是「Button」。這一組配對到 <code>Button</code>，配對結果是 <code>partial</code>。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>對象</th>
+                    <th>結果</th>
+                    <th>原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>現有元件 <code style="white-space: nowrap">Button</code></td><td class="cell-good">配對到這個元件</td><td>骨架相同，圖層名稱「Button」與元件名稱相符</td></tr>
+                  <tr><td>現有元件 <code style="white-space: nowrap">Chip</code></td><td class="cell-bad">不自動沿用</td><td>骨架相同，但名稱是不同類型；列為「骨架相同的其他元件」</td></tr>
+                  <tr><td>兩個填色按鈕</td><td class="cell-good">沿用</td><td>外觀與 <code>Button</code> 的 <code>Style=Filled</code> 相近，之後換成它的 instance</td></tr>
+                  <tr><td>一個外框按鈕</td><td>詢問設計師</td><td><code>Button</code> 沒有外觀相近的 variant，提供三個選項：「在現有元件加一個 variant」、「建立新元件」、「維持原樣」</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>在現有 component set 加 variant 的做法與保護</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">這會改到設計師原有的 component set，屬於 Tier 2 的變動，而且只在設計師為該分組選了「在現有元件加一個 variant」時才執行；之前說過「全部自動套用」也不算同意。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>做法</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>來源</td><td>從原稿的 clone 建立，原稿本身不動</td></tr>
+                  <tr><td>名稱</td><td>使用這個 set 自己的屬性名稱，不強制改成 Style、Size、State。例如屬性是 Type 與 Size 的 set，新 variant 命名為 <code>Type=Secondary, Size=md</code>。名稱由設計師確認</td></tr>
+                  <tr><td>圖層名稱與屬性連結</td><td>比照最接近的現有 variant，所以 set 原有的元件屬性在新 variant 上同樣有效</td></tr>
+                  <tr><td>位置</td><td>放在現有 variants 下方 20 px</td></tr>
+                  <tr><td>現有內容</td><td>現有的 variant 不移動、不改名、不改樣式、不刪除；set 不新增任何屬性</td></tr>
+                  <tr><td>寫入後的檢查</td><td>新 variant 在 set 裡、variant 剛好多一個、每個現有 variant 的位置與尺寸都沒變、沒有多出屬性</td></tr>
+                  <tr><td>檢查不通過</td><td>移除新 variant、把 set 還原，再請設計師選「建立新元件」或「維持原樣」</td></tr>
+                  <tr><td>旁邊的圖層</td><td>set 變大後如果蓋到旁邊的圖層，只回報，不移動任何東西</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card">
+              <h4>「不沿用，建立新的」</h4>
+              <ul>
+                <li>分組比對時，有配對到現有元件的分組可以選</li>
+                <li>這一組不沿用現有元件，改為建立新元件</li>
+                <li>計畫與報告會記錄沒有沿用哪一個元件</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>「改沿用另一個元件」</h4>
+              <ul>
+                <li>從列出的「骨架相同的其他元件」中選一個，或提供本檔案中某個元件的連結或名稱</li>
+                <li>設計師指定的元件不需要名稱相符，外觀仍會逐一比對</li>
+                <li>指定元件的圖層結構不同時，會說明無法證明外觀不變，不沿用它，改問「建立新元件」或「維持原樣」</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>同名時先問名稱</h4>
+              <ul>
+                <li>不會建立與本檔案現有元件同名的新元件</li>
+                <li>先請設計師提供可以區分的名稱（例如 <code>Outlined Button</code>），或排除這個分組</li>
+                <li>改名、拆分或決定建立新元件之後，都會再檢查一次名稱</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note note-warn">
+            <p><strong>限制：</strong></p>
+            <ul style="margin: 6px 0 0; padding-left: 18px">
+              <li>只比對本檔案的元件；team library 的元件不比對。</li>
+              <li>圖層結構略有不同的現有元件（例如多包一層 frame）仍然認不出來，不會沿用。但如果它與分組同名，名稱檢查會先詢問，不會默默建立一個重複的元件。</li>
+            </ul>
           </div>
         </section>
 
@@ -1344,7 +1521,7 @@
         <section id="review-board">
           <div class="section-head">
             <h3>分組比對區塊</h3>
-            <p>在 Figma 裡直接看到每一組的實際樣子，再決定分組、命名與拆併。數值的近似值差異則用 Workflow F 的 <code>Token Review — temporary</code> 比對板。</p>
+            <p>在 Figma 裡直接看到每一組的實際樣子，再決定分組、命名與拆併。有配對到現有元件的分組，現有元件會並排顯示在原稿樣本旁邊。數值的近似值差異則用 Workflow F 的 <code>Token Review — temporary</code> 比對板。</p>
           </div>
 
           <div class="bento">
@@ -1359,10 +1536,13 @@
             <div class="bento-card">
               <h4>每組內容</h4>
               <ul>
-                <li>標題：名稱 · 信心度 · component 或 set</li>
+                <li>標題：名稱 · 信心度 · component、set 或 reuse（直接沿用）</li>
                 <li>對應：variants 與元件屬性</li>
                 <li>實例數量與備註</li>
                 <li>最多四個代表實例的 clone，縮放到 400 px 寬內</li>
+                <li>原稿樣本旁並排現有元件的樣本：配對到的元件最多兩個 variants，「骨架相同的其他元件」最多三個</li>
+                <li>每個現有元件的樣本標示元件名稱與 variant 名稱；配對到的元件另標配對結果，「骨架相同的其他元件」另標名稱比對的結果</li>
+                <li>現有元件的樣本是 instance，會隨區塊一起刪除；區塊不會在檔案中新增任何元件</li>
               </ul>
             </div>
             <div class="bento-card">
@@ -1370,6 +1550,8 @@
               <ul>
                 <li>截圖並提供 Figma 連結</li>
                 <li>逐組選擇：接受、改名、拆分、合併或排除；每個 <code>needs-review</code> 都要問</li>
+                <li>有現有元件的分組多兩個選項：「不沿用，建立新的」與「改沿用另一個元件」</li>
+                <li>另外會問：是否「沿用 {名稱}」、沒有合適 variant 的實例怎麼處理、兩個元件配對程度相同時沿用哪一個，以及同名時的新名稱</li>
                 <li>需要時重新偵測，最後刪除 Section</li>
               </ul>
             </div>
@@ -1385,7 +1567,7 @@
 
           <pre><code>## Componentization plan — Home section
 Target page: Components (existing) · Restore point: ask the user to save a version first
-Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections
+Tier 2: create 3 components (1 set with 2 variants), 4 properties, 3 sections · add 1 variant to an existing set
 Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
 
           <div class="panel" style="margin-top: 16px">
@@ -1399,7 +1581,10 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                 </thead>
                 <tbody>
                   <tr><td>Components</td><td>名稱、種類（component 或 set）、層級、variants、屬性、包含的元件、每個 variant 的代表實例、實例 ID、信心度</td></tr>
-                  <tr><td>Reused</td><td>分組、既有元件、實例 ID</td></tr>
+                  <tr><td>Reused</td><td>分組、現有元件（ID）、配對結果、每個 variant 對應的實例數量（例如 <code>Style=Filled</code> 40:2 × 6）</td></tr>
+                  <tr><td>Added variants</td><td>現有的 component set、新 variant 的名稱、最接近的現有 variant、代表實例、實例 ID</td></tr>
+                  <tr><td>Built instead of reused</td><td>分組、設計師決定不沿用的現有元件、新元件的名稱</td></tr>
+                  <tr><td>Kept by decision</td><td>實例 ID 與原因（「沒有相符的 variant，設計師決定保留」）</td></tr>
                   <tr><td>Excluded</td><td>節點或數量與原因（畫面、外框、instance、隱藏、鎖定的 ID、單獨圖層）</td></tr>
                   <tr><td>Drift for Workflow F</td><td>實例 ID 與有差異的欄位</td></tr>
                   <tr><td>Questions</td><td>每個 <code>needs-review</code> 的備註</td></tr>
@@ -1413,7 +1598,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
         <section id="build">
           <div class="section-head">
             <h3>建立元件</h3>
-            <p>建立是 Tier 2：只新增頁面、Section 與元件，原稿在替換之前完全不動。</p>
+            <p>建立是 Tier 2：只新增頁面、Section 與元件，以及設計師選擇加進現有 component set 的 variant；原稿在替換之前完全不動。</p>
           </div>
 
           <div class="bento">
@@ -1457,6 +1642,23 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                 <li>圖示差異一律用 INSTANCE_SWAP，不做成 variants</li>
               </ul>
             </div>
+            <div class="bento-card wide">
+              <h4>在現有 component set 加 variant</h4>
+              <ul>
+                <li>只在設計師為該分組選了「在現有元件加一個 variant」時執行，每次呼叫只加一個</li>
+                <li>從原稿的 clone 建立，名稱使用該 set 自己的屬性，放在現有 variants 下方 20 px</li>
+                <li>現有的 variant 不移動、不改名、不改樣式、不刪除，set 也不新增屬性</li>
+                <li>寫入後檢查不通過，就移除新 variant、把 set 還原，再詢問「建立新元件」或「維持原樣」</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>沿用的分組</h4>
+              <ul>
+                <li>不建立元件</li>
+                <li>實例之後直接換成偵測時確定的現有 variant</li>
+                <li>細節見<a href="#reuse">沿用現有元件</a></li>
+              </ul>
+            </div>
           </div>
 
           <div class="panel" style="margin-top: 16px">
@@ -1491,8 +1693,8 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>元件或 set</td><td>Title Case，取自 UI 模式或有意義的圖層名稱；重名時加上描述字或編號</td><td><code>Button</code>、<code>List Item</code>、<code>Product Card</code></td></tr>
-                  <tr><td>Variant</td><td><code>屬性=值</code>，順序為 Style、Size、State，只列有多個值的屬性</td><td><code>Style=Outlined, State=Disabled</code></td></tr>
+                  <tr><td>元件或 set</td><td>Title Case，取自 UI 模式或有意義的圖層名稱；重名時加上描述字或編號；不與本檔案的現有元件同名</td><td><code>Button</code>、<code>List Item</code>、<code>Product Card</code></td></tr>
+                  <tr><td>Variant</td><td><code>屬性=值</code>，順序為 Style、Size、State，只列有多個值的屬性；加進現有 set 的 variant 使用該 set 自己的屬性</td><td><code>Style=Outlined, State=Disabled</code></td></tr>
                   <tr><td>元件屬性</td><td>依結構命名</td><td><code>Label</code>、<code>Headline</code>、<code>Show leading icon</code>、<code>Leading icon</code></td></tr>
                   <tr><td>Section</td><td>與元件或 set 同名，每個元件一個，不與既有內容重疊</td><td><code>Button</code></td></tr>
                 </tbody>
@@ -1505,7 +1707,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
         <section id="tokens">
           <div class="section-head">
             <h3>Tokens 與 Workflow F</h3>
-            <p>建立完成後、替換之前，以新元件為範圍呼叫 figma-m3-variables 的 Workflow F，讓之後替換上去的 instance 直接繼承綁定。</p>
+            <p>建立完成後、替換之前，以新元件為範圍呼叫 figma-m3-variables 的 Workflow F，讓之後替換上去的 instance 直接繼承綁定。加進現有 component set 的 variant 也在範圍內。</p>
           </div>
 
           <pre><code>{ "scope": ["40:9", "42:7"], "components": ["Button", "Card"], "caller": "figma-componentize" }</code></pre>
@@ -1514,7 +1716,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
             <div class="bento-card">
               <h4>傳入</h4>
               <ul>
-                <li><code>scope</code>：新主元件與 component set 的 ID（不含原稿）</li>
+                <li><code>scope</code>：新主元件、component set，以及加進現有 set 的 variant 的 ID（不含原稿）</li>
                 <li><code>components</code>：計畫中的元件名稱</li>
                 <li><code>caller</code>：<code>figma-componentize</code></li>
               </ul>
@@ -1713,7 +1915,8 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                   <tr><td>缺字型或字型無法載入</td><td><code>hasMissingFont</code>，或 <code>loadFontAsync</code> 失敗（<code>use_figma</code> 尚不支援自訂字型）</td><td>報告中列出節點與字型</td></tr>
                   <tr><td>多段文字樣式</td><td>文字有多段不同樣式，且與元件的文字不同</td><td>只回報</td></tr>
                   <tr><td>結構無法以覆寫重現</td><td>結構、文字或圖片數量不同，或原稿有元件沒有的圖示位置</td><td>回報；設計師之後可以另外建立元件</td></tr>
-                  <tr><td>沒有相符的元件或 variant</td><td>重用的 set 中沒有近似的 variant，或元件沒有建立</td><td>只回報</td></tr>
+                  <tr><td>沒有相符的元件或 variant</td><td>偵測時確定的 variant 已經不存在（元件在偵測後被修改），或元件沒有建立</td><td>保留並回報；重新偵測該分組，再詢問一次</td></tr>
+                  <tr><td>設計師決定保留</td><td>現有元件沒有外觀相近的 variant，設計師選了「維持原樣」</td><td>不替換；列入計畫與報告，原因為「沒有相符的 variant，設計師決定保留」</td></tr>
                   <tr><td>驗證不一致</td><td>例如 <code>width 120 → 122</code>、<code>fill color … #D32F2F → #6750A4</code></td><td>顯示差異；樣式與尺寸差異可由使用者接受後重新替換</td></tr>
                   <tr><td>錯誤</td><td>處理這個實例時發生例外，變更已復原</td><td>閱讀訊息、修正原因後只重試這個實例</td></tr>
                 </tbody>
@@ -1767,11 +1970,14 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
           <pre><code>## Componentization report — Home section
 Restore point: "Before figma-componentize — Home section"
 Components page: Components — https://www.figma.com/design/{fileKey}/?node-id=40-1
-Components (2): Button (set, 40:9) · Card (component, 42:7) · Reused: Chip (12:30)
+Components (2): Button (set, 40:9) · Card (component, 42:7)
+Reused: Chip (existing 12:9, partial) — Style=Filled 12:30 × 1, Style=Outlined 12:41 × 1
+Added variants: Chip · Style=Outlined (12:41)
+Built instead of reused: none
 Tokens (Workflow F): Ref 12 · Sys 9 · Comp 14 · Text Styles 2 · Effect Styles 1 · Merged: padding 15 → 16
-Replaced: 11 of 12 occurrences · Covered by an outer instance: 2
+Replaced: 12 of 13 occurrences · Covered by an outer instance: 2
   Approved: 1:31 paddingLeft of "Button" 15 → 16; width 118 → 120
-Kept: 1 — 1:44 missing font in 1:45: Brand Sans Bold
+Kept: 2 — 1:44 missing font in 1:45: Brand Sans Bold · 1:62 no matching variant — kept by the designer
 Unexpected differences in the final screenshots: none</code></pre>
 
           <div class="panel" style="margin-top: 16px">
@@ -1784,7 +1990,10 @@ Unexpected differences in the final screenshots: none</code></pre>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>元件</td><td>ID、名稱、種類、variants、元件屬性、Section；另列重用、包進 frame 與建立失敗的元件</td></tr>
+                  <tr><td>元件</td><td>ID、名稱、種類、variants、元件屬性、Section；另列包進 frame 與建立失敗的元件</td></tr>
+                  <tr><td>沿用的現有元件</td><td>現有元件、配對結果，以及每個 variant 對應的實例數量</td></tr>
+                  <tr><td>新增的 variants</td><td>加進現有 component set 的 variant：所屬的 set、名稱與 ID</td></tr>
+                  <tr><td>沿用決定</td><td>設計師的決定各有對應的欄位：確認或指定沿用的元件標在 Reused；加 variant 列在 Added variants；不沿用而建立新元件列在 Built instead of reused；維持原樣列在 Kept，原因為「沒有相符的 variant，設計師決定保留」</td></tr>
                   <tr><td>Tokens</td><td>Workflow F 回傳的 variable ID、style ID（附名稱）、綁定、合併群組與略過項目；拒絕 tokens 時標示未 token 化</td></tr>
                   <tr><td>替換結果</td><td>已替換、由外層處理、已核准的差異，以及保留的實例與原因</td></tr>
                   <tr><td>最終比對</td><td>最終截圖中非預期的差異</td></tr>
@@ -1833,11 +2042,11 @@ Unexpected differences in the final screenshots: none</code></pre>
           <div class="bento">
             <div class="bento-card">
               <h4><code>detection.md</code></h4>
-              <p>前置條件、範圍與基準、UI 模式、候選與排除、層級、簽章與分組規則、重用、信心度、偵測腳本、分組比對區塊、元件化計畫。</p>
+              <p>前置條件、範圍與基準、UI 模式、候選與排除、層級、簽章與分組規則、沿用現有元件、信心度、偵測腳本、現有元件清單與配對、分組比對區塊、元件化計畫。</p>
             </div>
             <div class="bento-card">
               <h4><code>build-recipes.md</code></h4>
-              <p>工作順序、還原點與 ID 對照表、Components 頁面、建立單一元件、variants 與格狀排列、元件屬性、命名。</p>
+              <p>工作順序、還原點與 ID 對照表、Components 頁面、建立單一元件、variants 與格狀排列、元件屬性、命名、在現有 component set 新增 variant。</p>
             </div>
             <div class="bento-card">
               <h4><code>replacement.md</code></h4>

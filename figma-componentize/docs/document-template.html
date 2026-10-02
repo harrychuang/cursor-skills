@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="figma-componentize：設計系統文件的固定版型參考頁。數值與 references/documentation.md §12 的 TEMPLATE 相同。">
+<title>Design System Doc Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500&display=swap">
+<style>
+/* Layout: the page previews one 1440 px Figma frame ("Design System — generated") on a grey canvas.
+   Inside: 120 px margins, 1200 px content, 12 columns with 24 px gutters.
+   Single light theme by choice: the generated Figma document is always light. */
+:root {
+  /* Template chrome — the same in every project */
+  --canvas: #E8E8ED;   /* Figma canvas behind the frame (preview only) */
+  --paper: #FFFFFF;    /* document background */
+  --panel: #F5F5F7;    /* stages, tiles, pills */
+  --line: #D2D2D7;     /* hairlines */
+  --ink: #1D1D1F;      /* primary text */
+  --ink-2: #6E6E73;    /* secondary text */
+  --ink-3: #86868B;    /* tertiary text: paths, aliases */
+  --link: #0066CC;     /* links and spacing bars */
+  --font-en: "Inter", "Noto Sans TC", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-zh: "Noto Sans TC", "Inter", system-ui, -apple-system, "PingFang TC", sans-serif;
+  --track-display: -0.025em;
+  --track-title: -0.02em;
+  --track-headline: -0.015em;
+  /* Sample project "Orbit Travel" — stands in for any project's own tokens */
+  --s-font: "Roboto", system-ui, sans-serif;
+  --s-primary: #4355B9;
+  --s-on-primary: #FFFFFF;
+  --s-primary-container: #DEE0FF;
+  --s-surface: #FEFBFF;
+  --s-on-surface: #1B1B1F;
+  --s-on-surface-variant: #46464F;
+  --s-outline: #767680;
+  --s-outline-variant: #C6C5D0;
+  --s-disabled-container: rgba(27, 27, 31, 0.12);
+  --s-disabled-content: rgba(27, 27, 31, 0.38);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-en);
+  -webkit-font-smoothing: antialiased;
+  padding-inline: 16px;
+  padding-block: 0 56px;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- Toolbar (preview only) ---------- */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  margin-inline: -16px; padding: 10px 16px;
+  background: rgba(232, 232, 237, 0.88);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.bar-in { max-width: 1440px; margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.bar-name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+.bar-name span { color: var(--ink-2); font-weight: 400; }
+.bar-controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.seg { display: inline-flex; background: rgba(0, 0, 0, 0.06); border-radius: 9px; padding: 2px; }
+.seg button { border: 0; background: transparent; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 7px; cursor: pointer; color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--paper); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.04); }
+
+.frame-label { max-width: 1440px; margin: 28px auto 8px; display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.frame {
+  max-width: 1440px; margin-inline: auto; background: var(--paper);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 10px 40px rgba(0, 0, 0, 0.06);
+  padding-inline: clamp(20px, 8.34vw, 120px);
+  padding-block: clamp(48px, 8.34vw, 120px);
+  display: flex; flex-direction: column; gap: clamp(72px, 8.34vw, 120px);
+}
+.frame[lang="zh-Hant"] { font-family: var(--font-zh); --track-display: 0; --track-title: 0; --track-headline: 0; }
+
+/* ---------- Type scale of the template ---------- */
+.t-display { font-size: clamp(44px, 5.56vw, 80px); line-height: 1.05; font-weight: 700; letter-spacing: var(--track-display); margin: 0; text-wrap: balance; }
+.t-title { font-size: clamp(34px, 3.34vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: var(--track-title); margin: 0; text-wrap: balance; }
+.t-headline { font-size: clamp(26px, 2.23vw, 32px); line-height: 1.25; font-weight: 700; letter-spacing: var(--track-headline); margin: 0; text-wrap: balance; }
+.t-subhead { font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.005em; margin: 0; }
+.t-body { font-size: 19px; line-height: 28px; font-weight: 400; margin: 0; }
+.t-callout { font-size: 15px; line-height: 22px; font-weight: 400; margin: 0; }
+.t-caption { font-size: 12px; line-height: 18px; font-weight: 400; margin: 0; }
+.strong { font-weight: 600; }
+.ink-2 { color: var(--ink-2); }
+.ink-3 { color: var(--ink-3); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Cover ---------- */
+.cover { display: flex; flex-direction: column; gap: 40px; }
+.cover-top { display: flex; flex-direction: column; gap: 12px; }
+.eyebrow { font-size: 19px; line-height: 28px; font-weight: 600; color: var(--ink-2); margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-top: 1px solid var(--line); padding-top: 32px; }
+.stat { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.stat b { font-size: clamp(34px, 3.34vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: var(--track-title); font-variant-numeric: tabular-nums; }
+.notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.notes p { max-width: 52ch; }
+.contents { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 28px; border-top: 1px solid var(--line); padding-top: 24px; }
+.contents a { color: var(--link); text-decoration: none; font-size: 15px; line-height: 22px; }
+.contents a:hover { text-decoration: underline; }
+
+/* ---------- Parts and sections ---------- */
+.part { display: flex; flex-direction: column; gap: 64px; }
+.part-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+.section { display: flex; flex-direction: column; gap: 32px; scroll-margin-top: 72px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; border-top: 1px solid var(--line); padding-top: 24px; }
+.block { display: flex; flex-direction: column; gap: 24px; }
+.block-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.pill { font-size: 12px; line-height: 18px; font-weight: 500; color: var(--ink-2); background: var(--panel); border-radius: 999px; padding: 3px 10px; }
+.group { display: flex; flex-direction: column; gap: 16px; }
+.path { font-size: 12px; line-height: 18px; font-weight: 500; color: var(--ink-3); }
+
+/* Swatches */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 32px 24px; }
+.swatch { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.chip { position: relative; height: 104px; border-radius: 16px; overflow: hidden; display: flex; }
+.chip i { flex: 1; }
+.chip::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07); pointer-events: none; }
+.swatch figcaption { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.val { color: var(--ink-2); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.val .mode { display: inline-block; min-width: 38px; color: var(--ink-3); }
+.alias { color: var(--ink-3); padding-left: 38px; overflow-wrap: anywhere; }
+.alias.single { padding-left: 0; }
+
+/* Rows: typography and spacing */
+.rows { border-top: 1px solid var(--line); }
+.type-row { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: 8px 32px; align-items: baseline; padding-block: 28px; border-bottom: 1px solid var(--line); }
+.specimen { font-family: var(--s-font); color: var(--ink); overflow-wrap: anywhere; min-width: 0; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 280px) 72px minmax(0, 1fr); gap: 8px 24px; align-items: center; padding-block: 16px; border-bottom: 1px solid var(--line); }
+.bar-fill { height: 12px; border-radius: 6px; background: var(--link); max-width: 100%; }
+
+/* Radius tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 32px 24px; }
+.tile { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.shape { width: 112px; max-width: 100%; aspect-ratio: 1; background: var(--panel); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07); }
+
+/* Elevation */
+.elev-stage { background: var(--panel); border-radius: 24px; padding: clamp(24px, 3.34vw, 48px); display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 40px; }
+.elev-card { background: var(--paper); border-radius: 18px; min-height: 140px; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 22px; }
+.tbl th { text-align: left; font-size: 12px; line-height: 18px; font-weight: 600; color: var(--ink-2); padding: 0 16px 10px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl td { padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; font-variant-numeric: tabular-nums; }
+.tbl td.dim { color: var(--ink-2); }
+
+/* Components */
+.comps { display: flex; flex-direction: column; gap: 64px; }
+.comp { display: flex; flex-direction: column; gap: 32px; border-top: 1px solid var(--line); padding-top: 24px; scroll-margin-top: 72px; }
+.comp-head { display: flex; flex-direction: column; gap: 8px; }
+.comp-link { color: var(--link); text-decoration: none; font-size: 15px; line-height: 22px; width: fit-content; }
+.comp-link:hover { text-decoration: underline; }
+.desc { max-width: 680px; }
+.stage { background: var(--panel); border-radius: 24px; padding: clamp(24px, 3.9vw, 56px); display: flex; flex-wrap: wrap; align-items: flex-end; gap: 40px 48px; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0; }
+.cell .t-caption { color: var(--ink-2); text-align: center; }
+.comp-info { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px; }
+.info-h { font-size: 15px; line-height: 22px; font-weight: 600; margin: 0 0 8px; }
+.tok-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.tok-list li { font-size: 15px; line-height: 22px; padding-block: 10px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+
+/* Icons */
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 24px 16px; }
+.icon-tile { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+.icon-box { width: 100%; max-width: 104px; aspect-ratio: 1; background: var(--panel); border-radius: 18px; display: grid; place-items: center; color: var(--ink); }
+.icon-box svg { width: 28px; height: 28px; }
+.icon-tile .t-caption { color: var(--ink-2); text-align: center; overflow-wrap: anywhere; }
+
+.foot { border-top: 1px solid var(--line); padding-top: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: var(--ink-3); }
+
+/* ---------- Sample project components (the project's own look) ---------- */
+.btn { font-family: var(--s-font); font-weight: 500; font-size: 14px; line-height: 20px; height: 40px; padding: 0 24px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid transparent; white-space: nowrap; }
+.btn-filled { background: var(--s-primary); color: var(--s-on-primary); }
+.btn-outlined { border-color: var(--s-outline); color: var(--s-primary); }
+.btn-text { color: var(--s-primary); padding: 0 12px; }
+.btn.is-disabled { color: var(--s-disabled-content); }
+.btn-filled.is-disabled { background: var(--s-disabled-container); }
+.btn-outlined.is-disabled { border-color: var(--s-disabled-container); }
+.s-chip { font-family: var(--s-font); font-weight: 500; font-size: 14px; line-height: 20px; height: 32px; padding: 0 16px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--s-outline); color: var(--s-on-surface); background: transparent; white-space: nowrap; }
+.s-chip.is-selected { background: var(--s-primary-container); border-color: transparent; padding-left: 8px; }
+.s-chip svg { width: 18px; height: 18px; }
+.s-card { width: 264px; max-width: 100%; border-radius: 12px; background: var(--s-surface); border: 1px solid var(--s-outline-variant); overflow: hidden; font-family: var(--s-font); text-align: left; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15); }
+.s-card-media { height: 120px; background: var(--s-primary-container); }
+.s-card-body { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.s-card-title { font-size: 22px; line-height: 28px; color: var(--s-on-surface); }
+.s-card-sub { font-size: 14px; line-height: 20px; color: var(--s-on-surface-variant); }
+
+/* ---------- Template spec view ---------- */
+.spec { font-family: var(--font-zh); --track-display: 0; --track-title: 0; --track-headline: 0; }
+.grid12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(4px, 1.67vw, 24px); height: 96px; }
+.grid12 i { background: rgba(0, 102, 204, 0.08); border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(0, 102, 204, 0.18); }
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0 24px; border-top: 1px solid var(--line); }
+.fact { display: flex; justify-content: space-between; gap: 12px; padding-block: 14px; border-bottom: 1px solid var(--line); }
+.fact b { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 32px 24px; }
+.scale-row { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 8px 32px; align-items: baseline; padding-block: 24px; border-bottom: 1px solid var(--line); }
+.scale-row .samples { display: flex; flex-direction: column; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.rules { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
+
+@media (max-width: 760px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .notes, .comp-info { grid-template-columns: minmax(0, 1fr); }
+  .type-row, .scale-row { grid-template-columns: minmax(0, 1fr); }
+  .bar-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .bar-row .bar-cell { grid-column: 1 / -1; }
+  .stage { gap: 28px 32px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="bar-name">Design System Doc Template <span>· figma-componentize</span></div>
+    <div class="bar-controls">
+      <div class="seg" role="group" aria-label="View">
+        <button id="v-doc" type="button" aria-pressed="true">文件預覽</button>
+        <button id="v-spec" type="button" aria-pressed="false">版型規格</button>
+      </div>
+      <div class="seg" role="group" aria-label="Document language">
+        <button id="l-en" type="button" aria-pressed="true">English</button>
+        <button id="l-zh" type="button" aria-pressed="false">繁體中文</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="frame-label"><span id="frame-name">Design System — generated</span><span id="frame-size">1440 × auto · sample project: Orbit Travel</span></div>
+<main id="doc" class="frame" lang="en"></main>
+<main id="spec" class="frame spec" lang="zh-Hant" hidden></main>
+
+<script type="application/json" id="template">
+{
+  "frame": {
+    "width": 1440,
+    "padding": 120,
+    "gap": 64,
+    "partTop": 56
+  },
+  "content": {
+    "width": 1200,
+    "columns": 12,
+    "gutter": 24
+  },
+  "color": {
+    "paper": "#FFFFFF",
+    "panel": "#F5F5F7",
+    "line": "#D2D2D7",
+    "ink": "#1D1D1F",
+    "ink2": "#6E6E73",
+    "ink3": "#86868B",
+    "link": "#0066CC",
+    "inner": {
+      "hex": "#000000",
+      "opacity": 0.07
+    }
+  },
+  "type": {
+    "display": {
+      "size": 80,
+      "lineHeight": 84,
+      "weight": "bold",
+      "tracking": -2.5
+    },
+    "title": {
+      "size": 48,
+      "lineHeight": 52,
+      "weight": "bold",
+      "tracking": -2
+    },
+    "headline": {
+      "size": 32,
+      "lineHeight": 40,
+      "weight": "bold",
+      "tracking": -1.5
+    },
+    "subhead": {
+      "size": 24,
+      "lineHeight": 32,
+      "weight": "semibold",
+      "tracking": -0.5
+    },
+    "body": {
+      "size": 19,
+      "lineHeight": 28,
+      "weight": "regular",
+      "tracking": 0
+    },
+    "callout": {
+      "size": 15,
+      "lineHeight": 22,
+      "weight": "regular",
+      "tracking": 0
+    },
+    "caption": {
+      "size": 12,
+      "lineHeight": 18,
+      "weight": "regular",
+      "tracking": 0
+    }
+  },
+  "radius": {
+    "stage": 24,
+    "tile": 18,
+    "chip": 16,
+    "bar": 6,
+    "pill": 999
+  },
+  "space": {
+    "section": 64,
+    "block": 32,
+    "item": 24,
+    "group": 16,
+    "inner": 12,
+    "tag": 10,
+    "head": 8,
+    "stat": 4,
+    "line": 2,
+    "cover": 40,
+    "sectionTop": 24,
+    "statsTop": 32
+  },
+  "size": {
+    "card": 180,
+    "chipHeight": 104,
+    "modeLabel": 38,
+    "shape": 112,
+    "icon": 104,
+    "description": 680,
+    "rowLabel": 280,
+    "rowValue": 72,
+    "bar": 12,
+    "typeRowPadding": 28,
+    "barRowPadding": 16,
+    "tableGap": 16,
+    "tablePadding": 14,
+    "tableHeadPadding": 10,
+    "listPadding": 10,
+    "valueName": 480,
+    "propColumns": [
+      200,
+      144,
+      168,
+      160
+    ],
+    "swatchGap": {
+      "column": 24,
+      "row": 32
+    },
+    "iconGap": {
+      "column": 16,
+      "row": 24
+    },
+    "statsGap": 24,
+    "notesGap": 24,
+    "contentsGap": {
+      "column": 28,
+      "row": 10
+    },
+    "pill": {
+      "x": 10,
+      "y": 3
+    },
+    "elevation": {
+      "width": 246,
+      "height": 140,
+      "padding": 20,
+      "gap": 40,
+      "stagePadding": 48
+    },
+    "stage": {
+      "padding": 56,
+      "column": 48,
+      "row": 40,
+      "cell": 14
+    },
+    "info": {
+      "left": 672,
+      "right": 480,
+      "gap": 48
+    }
+  }
+}
+</script>
+<script>
+/* ---------- Labels: the only text the template itself writes ---------- */
+const LABELS = {
+  "en": {
+    "title": "Design System",
+    "generated": "Generated {date}",
+    "contents": "Contents",
+    "foundations": "Foundations",
+    "components_part": "Components",
+    "color": "Color",
+    "color_styles": "Color styles",
+    "typography": "Typography",
+    "spacing": "Spacing & size",
+    "radius": "Radius",
+    "elevation": "Elevation",
+    "other": "Other tokens",
+    "icons": "Icons",
+    "stat_tokens": "Tokens",
+    "stat_styles": "Styles",
+    "stat_components": "Components",
+    "stat_icons": "Icons",
+    "n_tokens": "{n} tokens",
+    "n_styles": "{n} styles",
+    "n_components": "{n} components",
+    "n_icons": "{n} icons",
+    "kind_set": "Component set",
+    "kind_component": "Component",
+    "variants_count": "{n} variants",
+    "variants_one": "1 variant",
+    "page": "Page: {name}",
+    "open_main": "Open main component",
+    "variants": "Variants",
+    "properties": "Properties",
+    "prop_name": "Name",
+    "prop_type": "Type",
+    "prop_default": "Default",
+    "prop_options": "Options",
+    "tokens": "Tokens",
+    "token": "Token",
+    "more": "+{n} more",
+    "effects": "{n} effects",
+    "modes_more": "Showing 4 of {n} modes",
+    "no_font": "Font not available",
+    "note_regenerate": "Samples are bound to the tokens and follow them. Names and values in text are a snapshot: regenerate this document after tokens change.",
+    "note_own": "Keep your own notes outside this frame, or write them in the component description field.",
+    "footer": "Generated by figma-componentize"
+  },
+  "zh": {
+    "title": "設計系統",
+    "generated": "產生日期 {date}",
+    "contents": "目錄",
+    "foundations": "基礎",
+    "components_part": "元件",
+    "color": "顏色",
+    "color_styles": "顏色樣式",
+    "typography": "文字樣式",
+    "spacing": "間距與尺寸",
+    "radius": "圓角",
+    "elevation": "陰影",
+    "other": "其他 tokens",
+    "icons": "圖示",
+    "stat_tokens": "Tokens",
+    "stat_styles": "樣式",
+    "stat_components": "元件",
+    "stat_icons": "圖示",
+    "n_tokens": "{n} 個 tokens",
+    "n_styles": "{n} 個樣式",
+    "n_components": "{n} 個元件",
+    "n_icons": "{n} 個圖示",
+    "kind_set": "Component set",
+    "kind_component": "元件",
+    "variants_count": "{n} 個 variants",
+    "variants_one": "1 個 variant",
+    "page": "頁面：{name}",
+    "open_main": "開啟主元件",
+    "variants": "Variants",
+    "properties": "屬性",
+    "prop_name": "名稱",
+    "prop_type": "類型",
+    "prop_default": "預設值",
+    "prop_options": "選項",
+    "tokens": "使用的 tokens",
+    "token": "Token",
+    "more": "另有 {n} 個",
+    "effects": "{n} 個效果",
+    "modes_more": "僅顯示 {n} 個 modes 中的 4 個",
+    "no_font": "字型無法載入",
+    "note_regenerate": "樣本綁定 token，會跟著 token 變。文字中的名稱與數值是產生當下的快照：token 改動後請重新產生這份文件。",
+    "note_own": "自己的說明請放在這個外框之外，或寫在元件的描述欄位。",
+    "footer": "由 figma-componentize 產生"
+  }
+};
+
+/* ---------- Sample project data (what the inventory returns for "Orbit Travel") ---------- */
+const DATA = {
+  file: 'Orbit Travel', date: '2026-10-02', page: 'Components',
+  collections: [
+    { name: 'Orbit · Reference', modes: ['Default'], groups: [
+      { path: 'ref/primary', tokens: [
+        ['ref/primary/10', ['#00105C']], ['ref/primary/20', ['#08218A']], ['ref/primary/30', ['#293CA0']], ['ref/primary/40', ['#4355B9']],
+        ['ref/primary/80', ['#BAC3FF']], ['ref/primary/90', ['#DEE0FF']], ['ref/primary/100', ['#FFFFFF']]] },
+      { path: 'ref/neutral', tokens: [
+        ['ref/neutral/10', ['#1B1B1F']], ['ref/neutral/20', ['#303034']], ['ref/neutral/90', ['#E4E1E6']], ['ref/neutral/95', ['#F2F0F4']], ['ref/neutral/99', ['#FEFBFF']]] },
+      { path: 'ref/neutral-variant', tokens: [['ref/neutral-variant/50', ['#767680']], ['ref/neutral-variant/60', ['#90909A']]] },
+      { path: 'ref/error', tokens: [['ref/error/40', ['#BA1A1A']], ['ref/error/80', ['#FFB4AB']]] }
+    ] },
+    { name: 'Orbit · System', modes: ['Light', 'Dark'], groups: [
+      { path: 'sys/color', tokens: [
+        ['sys/color/primary', ['#4355B9', '#BAC3FF'], ['ref/primary/40', 'ref/primary/80']],
+        ['sys/color/on-primary', ['#FFFFFF', '#08218A'], ['ref/primary/100', 'ref/primary/20']],
+        ['sys/color/primary-container', ['#DEE0FF', '#293CA0'], ['ref/primary/90', 'ref/primary/30']],
+        ['sys/color/surface', ['#FEFBFF', '#1B1B1F'], ['ref/neutral/99', 'ref/neutral/10']],
+        ['sys/color/on-surface', ['#1B1B1F', '#E4E1E6'], ['ref/neutral/10', 'ref/neutral/90']],
+        ['sys/color/outline', ['#767680', '#90909A'], ['ref/neutral-variant/50', 'ref/neutral-variant/60']],
+        ['sys/color/error', ['#BA1A1A', '#FFB4AB'], ['ref/error/40', 'ref/error/80']]] }
+    ] }
+  ],
+  text: [
+    ['Display/Large', 'Roboto', 'Regular', 57, 64, '−0.25', 400],
+    ['Headline/Medium', 'Roboto', 'Regular', 28, 36, '0', 400],
+    ['Title/Large', 'Roboto', 'Regular', 22, 28, '0', 400],
+    ['Body/Large', 'Roboto', 'Regular', 16, 24, '0.5', 400],
+    ['Body/Medium', 'Roboto', 'Regular', 14, 20, '0.25', 400],
+    ['Label/Large', 'Roboto', 'Medium', 14, 20, '0.1', 500]
+  ],
+  spacing: [['sys/spacing/xs', 4], ['sys/spacing/sm', 8], ['sys/spacing/md', 16], ['sys/spacing/lg', 24], ['sys/spacing/xl', 32], ['sys/spacing/2xl', 48], ['sys/size/icon', 24], ['sys/size/touch-target', 48], ['sys/size/container', 1200]],
+  radius: [['sys/shape/corner-none', 0], ['sys/shape/corner-xs', 4], ['sys/shape/corner-sm', 8], ['sys/shape/corner-md', 12], ['sys/shape/corner-lg', 16], ['sys/shape/corner-xl', 28], ['sys/shape/corner-full', 999]],
+  elevation: [
+    ['Elevation/1', '0 1px 2px rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15)', 2],
+    ['Elevation/2', '0 1px 2px rgba(0,0,0,.3), 0 2px 6px 2px rgba(0,0,0,.15)', 2],
+    ['Elevation/3', '0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.3)', 2]
+  ],
+  other: { modes: ['Light', 'Dark'], rows: [
+    ['sys/state/hover-opacity', ['0.08', '0.08']], ['sys/state/pressed-opacity', ['0.12', '0.12']],
+    ['sys/font/brand', ['Roboto', 'Roboto']], ['sys/motion/duration-short', ['150', '150']]] },
+  icons: ['Icon/Add', 'Icon/Calendar', 'Icon/Check', 'Icon/Chevron Right', 'Icon/Close', 'Icon/Favorite', 'Icon/Home', 'Icon/Notifications', 'Icon/Person', 'Icon/Place', 'Icon/Search', 'Icon/Star', 'Icon/Tune'],
+  components: [
+    { id: 'button', name: 'Button', kind: 'set', description: 'Primary actions. Use one filled button per view.',
+      variants: [['Style=Filled, State=Enabled', 'filled', false], ['Style=Filled, State=Disabled', 'filled', true], ['Style=Outlined, State=Enabled', 'outlined', false],
+                 ['Style=Outlined, State=Disabled', 'outlined', true], ['Style=Text, State=Enabled', 'text', false], ['Style=Text, State=Disabled', 'text', true]],
+      props: [['Label', 'TEXT', 'Book trip', ''], ['Show leading icon', 'BOOLEAN', 'false', ''], ['Leading icon', 'INSTANCE_SWAP', 'Icon/Add', ''],
+              ['Style', 'VARIANT', 'Filled', 'Filled, Outlined, Text'], ['State', 'VARIANT', 'Enabled', 'Enabled, Disabled']],
+      tokens: ['Label/Large', 'comp/button/filled/container-color', 'comp/button/filled/label-color', 'comp/button/outlined/outline-color', 'sys/color/primary', 'sys/color/on-primary', 'sys/shape/corner-full', 'sys/spacing/lg', 'sys/spacing/sm'] },
+    { id: 'chip', name: 'Filter Chip', kind: 'set', description: '用於篩選條件，可以多選。',
+      variants: [['Selected=False', false], ['Selected=True', true]],
+      props: [['Label', 'TEXT', 'Beach', ''], ['Selected', 'VARIANT', 'False', 'False, True']],
+      tokens: ['Label/Large', 'sys/color/outline', 'sys/color/primary-container', 'sys/color/on-surface', 'sys/shape/corner-sm', 'sys/spacing/sm'] },
+    { id: 'card', name: 'Trip Card', kind: 'component', description: '',
+      variants: [['Trip Card']],
+      props: [['Headline', 'TEXT', 'Kyoto in autumn', ''], ['Supporting text', 'TEXT', '5 nights · from $1,240', '']],
+      tokens: ['Title/Large', 'Body/Medium', 'Elevation/1', 'sys/color/surface', 'sys/color/primary-container', 'sys/color/outline', 'sys/shape/corner-md', 'sys/spacing/md'] }
+  ]
+};
+
+const ICONS = {
+  'Icon/Add': '<path d="M12 5v14M5 12h14"/>',
+  'Icon/Calendar': '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+  'Icon/Check': '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  'Icon/Chevron Right': '<path d="M9 6l6 6-6 6"/>',
+  'Icon/Close': '<path d="M6 6l12 12M18 6L6 18"/>',
+  'Icon/Favorite': '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  'Icon/Home': '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',
+  'Icon/Notifications': '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  'Icon/Person': '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+  'Icon/Place': '<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
+  'Icon/Search': '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/>',
+  'Icon/Star': '<path d="M12 3.5l2.6 5.5 6 .6-4.5 4 1.3 5.9L12 16.5l-5.4 3 1.3-5.9-4.5-4 6-.6z"/>',
+  'Icon/Tune': '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>'
+};
+const svg = (d, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+
+/* ---------- Helpers ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let L = LABELS.en;
+const TEMPLATE = JSON.parse(document.getElementById('template').textContent);
+const t = (key, vars = {}) => esc(L[key] ?? key).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? esc(vars[k]) : m));
+const leaf = name => name.split('/').pop();
+
+const counts = () => {
+  const colors = DATA.collections.reduce((n, c) => n + c.groups.reduce((m, g) => m + g.tokens.length, 0), 0);
+  return { tokens: colors + DATA.spacing.length + DATA.radius.length + DATA.other.rows.length, styles: DATA.text.length + DATA.elevation.length, components: DATA.components.length, icons: DATA.icons.length };
+};
+
+/* ---------- Template blocks ---------- */
+function swatch([name, values, aliases], modes) {
+  const many = modes.length > 1;
+  const lines = values.map((v, i) => `<div class="t-caption val">${many ? `<span class="mode">${esc(modes[i])}</span>` : ''}${esc(v)}</div>${aliases && aliases[i] ? `<div class="t-caption alias${many ? '' : ' single'}">→ ${esc(aliases[i])}</div>` : ''}`).join('');
+  return `<figure class="swatch"><div class="chip">${values.map(v => `<i style="background:${esc(v)}"></i>`).join('')}</div><figcaption><div class="t-callout strong">${esc(leaf(name))}</div>${lines}</figcaption></figure>`;
+}
+function sectionHead(id, title, count) {
+  return `<div class="sec-head"><h3 class="t-headline">${title}</h3><p class="t-callout ink-2 num">${count}</p></div>`;
+}
+function colorSection() {
+  const n = DATA.collections.reduce((a, c) => a + c.groups.reduce((m, g) => m + g.tokens.length, 0), 0);
+  const blocks = DATA.collections.map(c => `
+    <div class="block">
+      <div class="block-head"><h4 class="t-subhead">${esc(c.name)}</h4>${c.modes.length > 1 ? c.modes.map(m => `<span class="pill">${esc(m)}</span>`).join('') : ''}</div>
+      ${c.groups.map(g => `<div class="group"><div class="path">${esc(g.path)}</div><div class="swatches">${g.tokens.map(tk => swatch(tk, c.modes)).join('')}</div></div>`).join('')}
+    </div>`).join('');
+  return `<section class="section" id="sec-color">${sectionHead('color', t('color'), t('n_tokens', { n }))}${blocks}</section>`;
+}
+function typeSection() {
+  const rows = DATA.text.map(([name, family, weight, size, lh, ls, w]) => `
+    <div class="type-row">
+      <div><div class="t-callout strong">${esc(name)}</div><div class="t-caption ink-2 num">${esc(`${family} ${weight} · ${size} / ${lh} · ${ls}`)}</div></div>
+      <div class="specimen" style="font-size:clamp(14px, ${(size / 14.4).toFixed(3)}vw, ${size}px);line-height:${(lh / size).toFixed(3)};font-weight:${w}">${esc(name.replace(/\//g, ' '))}</div>
+    </div>`).join('');
+  return `<section class="section" id="sec-typography">${sectionHead('typography', t('typography'), t('n_styles', { n: DATA.text.length }))}<div class="rows">${rows}</div></section>`;
+}
+function spacingSection() {
+  const rows = DATA.spacing.map(([name, v]) => `
+    <div class="bar-row">
+      <div class="t-callout strong">${esc(name)}</div>
+      <div class="t-callout ink-2 num">${v}</div>
+      <div class="bar-cell">${v >= 1 && v <= 640 ? `<div class="bar-fill" style="width:${v}px"></div>` : ''}</div>
+    </div>`).join('');
+  return `<section class="section" id="sec-spacing">${sectionHead('spacing', t('spacing'), t('n_tokens', { n: DATA.spacing.length }))}<div class="rows">${rows}</div></section>`;
+}
+function radiusSection() {
+  const tiles = DATA.radius.map(([name, v]) => `
+    <div class="tile"><div class="shape" style="border-radius:${Math.min(v, 999)}px"></div>
+      <div><div class="t-callout strong">${esc(leaf(name))}</div><div class="t-caption ink-2 num">${v}</div></div></div>`).join('');
+  return `<section class="section" id="sec-radius">${sectionHead('radius', t('radius'), t('n_tokens', { n: DATA.radius.length }))}<div class="path">sys/shape</div><div class="tiles">${tiles}</div></section>`;
+}
+function elevationSection() {
+  const cards = DATA.elevation.map(([name, css, n]) => `
+    <div class="elev-card" style="box-shadow:${css}"><div class="t-callout strong">${esc(name)}</div><div class="t-caption ink-2">${t('effects', { n })}</div></div>`).join('');
+  return `<section class="section" id="sec-elevation">${sectionHead('elevation', t('elevation'), t('n_styles', { n: DATA.elevation.length }))}<div class="elev-stage">${cards}</div></section>`;
+}
+function otherSection() {
+  const o = DATA.other;
+  return `<section class="section" id="sec-other">${sectionHead('other', t('other'), t('n_tokens', { n: o.rows.length }))}
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('token')}</th>${o.modes.map(m => `<th>${esc(m)}</th>`).join('')}</tr></thead>
+    <tbody>${o.rows.map(([name, vals]) => `<tr><td>${esc(name)}</td>${vals.map(v => `<td class="dim">${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`;
+}
+function iconsSection() {
+  const tiles = DATA.icons.map(name => `<div class="icon-tile"><div class="icon-box">${svg(ICONS[name])}</div><div class="t-caption">${esc(name)}</div></div>`).join('');
+  return `<section class="section" id="sec-icons">${sectionHead('icons', t('icons'), t('n_icons', { n: DATA.icons.length }))}<div class="icons">${tiles}</div></section>`;
+}
+function instance(comp, v) {
+  if (comp.id === 'button') { const [, style, disabled] = v; return `<span class="btn btn-${style}${disabled ? ' is-disabled' : ''}">Book trip</span>`; }
+  if (comp.id === 'chip') { const [, selected] = v; return `<span class="s-chip${selected ? ' is-selected' : ''}">${selected ? svg(ICONS['Icon/Check']) : ''}Beach</span>`; }
+  return `<div class="s-card"><div class="s-card-media"></div><div class="s-card-body"><div class="s-card-title">Kyoto in autumn</div><div class="s-card-sub">5 nights · from $1,240</div></div></div>`;
+}
+function componentBlock(c) {
+  const n = c.variants.length;
+  const meta = [c.kind === 'set' ? t('kind_set') : t('kind_component'), n === 1 ? t('variants_one') : t('variants_count', { n }), t('page', { name: DATA.page })].join(' · ');
+  const shown = c.tokens.slice(0, 40);
+  return `<article class="comp" id="comp-${c.id}">
+    <div class="comp-head">
+      <h3 class="t-headline">${esc(c.name)}</h3>
+      <p class="t-callout ink-2">${meta}</p>
+      <a class="comp-link" href="#comp-${c.id}">${t('open_main')} ›</a>
+    </div>
+    ${c.description ? `<p class="t-body desc">${esc(c.description)}</p>` : ''}
+    <div class="stage" aria-label="${t('variants')}">${c.variants.map(v => `<div class="cell">${instance(c, v)}<div class="t-caption">${esc(c.kind === 'set' ? v[0] : c.name)}</div></div>`).join('')}</div>
+    <div class="comp-info">
+      <div><h4 class="info-h">${t('properties')}</h4>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t('prop_name')}</th><th>${t('prop_type')}</th><th>${t('prop_default')}</th><th>${t('prop_options')}</th></tr></thead>
+        <tbody>${c.props.map(([name, type, def, opts]) => `<tr><td>${esc(name)}</td><td class="dim">${esc(type)}</td><td class="dim">${esc(def)}</td><td class="dim">${esc(opts || '—')}</td></tr>`).join('')}</tbody></table></div></div>
+      <div><h4 class="info-h">${t('tokens')} <span class="ink-2 num">(${c.tokens.length})</span></h4>
+        <ul class="tok-list">${shown.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+        ${c.tokens.length > 40 ? `<p class="t-caption ink-2">${t('more', { n: c.tokens.length - 40 })}</p>` : ''}</div>
+    </div>
+  </article>`;
+}
+
+/* ---------- The document ---------- */
+function renderDoc() {
+  const c = counts();
+  const sections = [['sec-color', 'color'], ['sec-typography', 'typography'], ['sec-spacing', 'spacing'], ['sec-radius', 'radius'], ['sec-elevation', 'elevation'], ['sec-other', 'other'], ['sec-icons', 'icons'], ...DATA.components.map(x => [`comp-${x.id}`, null, x.name])];
+  document.getElementById('doc').innerHTML = `
+    <section class="cover">
+      <div class="cover-top">
+        <p class="eyebrow">${t('title')}</p>
+        <h1 class="t-display">${esc(DATA.file)}</h1>
+        <p class="t-body ink-2 num">${t('generated', { date: DATA.date })}</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>${c.tokens}</b><span class="t-callout ink-2">${t('stat_tokens')}</span></div>
+        <div class="stat"><b>${c.styles}</b><span class="t-callout ink-2">${t('stat_styles')}</span></div>
+        <div class="stat"><b>${c.components}</b><span class="t-callout ink-2">${t('stat_components')}</span></div>
+        <div class="stat"><b>${c.icons}</b><span class="t-callout ink-2">${t('stat_icons')}</span></div>
+      </div>
+      <div class="notes"><p class="t-caption ink-2">${t('note_regenerate')}</p><p class="t-caption ink-2">${t('note_own')}</p></div>
+      <nav class="contents" aria-label="${t('contents')}"><span class="t-callout strong">${t('contents')}</span>
+        ${sections.map(([id, key, name]) => `<a href="#${id}">${key ? t(key) : esc(name)} ›</a>`).join('')}
+      </nav>
+    </section>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">${t('foundations')}</h2><p class="t-callout ink-2 num">${t('n_tokens', { n: c.tokens })} · ${t('n_styles', { n: c.styles })}</p></div>
+      ${colorSection()}${typeSection()}${spacingSection()}${radiusSection()}${elevationSection()}${otherSection()}
+    </div>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">${t('components_part')}</h2><p class="t-callout ink-2 num">${t('n_components', { n: c.components })} · ${t('n_icons', { n: c.icons })}</p></div>
+      ${iconsSection()}
+      <div class="comps">${DATA.components.map(componentBlock).join('')}</div>
+    </div>
+    <footer class="foot t-caption"><span>${t('footer')} · ${esc(DATA.date)}</span><span>Design System — generated</span></footer>`;
+}
+
+/* ---------- The template spec (for review) ---------- */
+function renderSpec() {
+  const tc = TEMPLATE.color;
+  const chrome = [
+    ['Paper', tc.paper, '文件底色'], ['Panel', tc.panel, '樣本舞台、圖示格、標籤底色'], ['Line', tc.line, '分隔線（1 px）'],
+    ['Ink', tc.ink, '主要文字'], ['Ink 2', tc.ink2, '次要文字：資訊列、數值'], ['Ink 3', tc.ink3, '第三層文字：路徑、alias'], ['Link', tc.link, '連結、間距長條']
+  ];
+  const weightName = { regular: 'Regular', medium: 'Medium', semibold: 'Semibold', bold: 'Bold' };
+  const uses = { display: '封面標題（檔名）', title: '大段標題、封面數字', headline: '小段標題、元件名稱', subhead: 'Collection 名稱', body: '產生日期、元件描述', callout: '項目名稱、資訊列、連結、表格、目錄', caption: '數值、alias、路徑、圖說、頁尾' };
+  const scale = Object.entries(TEMPLATE.type).map(([key, v]) => [key[0].toUpperCase() + key.slice(1), `${v.size} / ${v.lineHeight} · ${weightName[v.weight]}${v.tracking ? ` · ${String(v.tracking).replace('-', '−')}%` : ''}`, `t-${key}`, uses[key]]);
+  const blocks = [
+    ['封面', '設計系統、檔名、產生日期、四個數字、兩則提示、目錄', 'Display 80；數字 Title 48，四欄'],
+    ['大段標題', '基礎（Foundations）、元件（Components）', 'Title 48；與上一段相隔 120'],
+    ['小段標題', '顏色、文字樣式、間距與尺寸⋯⋯', 'Headline 32；上方 1 px 分隔線，右側數量'],
+    ['色票', '色塊（每個 mode 一格）、名稱、各 mode 數值、alias', '最小寬 168；色塊高 104、圓角 16'],
+    ['字級列', '左：名稱與規格；右：套用該樣式的樣本', '左欄 280；上下 28；分隔線'],
+    ['間距列', '名稱、數值、寬度綁定 token 的長條（1 到 640 才畫長條）', '名稱欄 280、數值欄 72；長條高 12、圓角 6'],
+    ['圓角方塊', '圓角綁定 token 的方塊、名稱、數值', '卡寬 180；方塊 112 × 112'],
+    ['陰影卡', '套用 Effect Style 的白卡，放在灰色舞台上', '舞台圓角 24、內距 48；卡片 246 × 140、圓角 18'],
+    ['數值表', 'Token 名稱與每個 mode 的值', '全寬表格；分隔線'],
+    ['圖示格', '圖示 instance 與名稱', '方塊 104 × 104、圓角 18'],
+    ['元件區塊', '名稱、資訊列、描述、連結、Variants 舞台、屬性表、Tokens', '舞台圓角 24、內距 56；資訊兩欄 7 : 5'],
+    ['頁尾', '產生工具與日期、外框名稱', 'Caption 12；上方分隔線'],
+    ['目錄', '連到每個段落的連結，最後的收尾步驟建立', 'Callout 15、Link 色；上方分隔線']
+  ];
+  document.getElementById('spec').innerHTML = `
+    <section class="cover">
+      <div class="cover-top">
+        <p class="eyebrow">版型規格</p>
+        <h1 class="t-display">設計系統文件版型</h1>
+        <p class="t-body ink-2" style="max-width:40em">版型固定文件本身的樣子：版面、字級、顏色、圓角，以及每一種區塊怎麼排。專案只提供內容：tokens、元件與描述。所以不同專案產生的文件長得一樣，只有內容不同。這頁的數值與 figma-componentize 的 <code>references/documentation.md</code> §12 相同。</p>
+      </div>
+    </section>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">版面</h2><p class="t-callout ink-2">Figma 外框寬度固定 1440 px</p></div>
+      <div class="grid12" aria-hidden="true">${'<i></i>'.repeat(12)}</div>
+      <div class="facts">
+        ${[['外框寬度', TEMPLATE.frame.width], ['四邊內距', TEMPLATE.frame.padding], ['內容寬度', TEMPLATE.content.width], ['欄數', TEMPLATE.content.columns], ['欄距', TEMPLATE.content.gutter], ['大段間距', TEMPLATE.frame.gap + TEMPLATE.frame.partTop], ['小段間距', TEMPLATE.frame.gap], ['區塊內間距', TEMPLATE.space.block], ['項目間距', TEMPLATE.space.item], ['文字群組間距', TEMPLATE.space.inner]].map(([k, v]) => `<div class="fact t-callout"><span class="ink-2">${k}</span><b>${v}</b></div>`).join('')}
+      </div>
+    </div>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">顏色</h2><p class="t-callout ink-2">文件本身的顏色，不使用專案的 tokens</p></div>
+      <div class="palette">${chrome.map(([name, hex, role]) => `<figure class="swatch"><div class="chip"><i style="background:${hex}"></i></div><figcaption><div class="t-callout strong">${name}</div><div class="t-caption val">${hex}</div><div class="t-caption ink-3">${role}</div></figcaption></figure>`).join('')}</div>
+    </div>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">字級</h2><p class="t-callout ink-2">英文 Inter；中文 Noto Sans TC，字距 0</p></div>
+      <div class="rows">${scale.map(([name, specText, cls, use]) => `
+        <div class="scale-row"><div><div class="t-callout strong">${name}</div><div class="t-caption ink-2">${specText}</div><div class="t-caption ink-3">${use}</div></div>
+        <div class="samples"><div class="${cls}" style="font-family:var(--font-en);letter-spacing:${cls === 't-display' ? '-0.025em' : cls === 't-title' ? '-0.02em' : cls === 't-headline' ? '-0.015em' : 'normal'}">Orbit Travel</div><div class="${cls}" style="font-family:var(--font-zh)">設計系統文件</div></div></div>`).join('')}</div>
+    </div>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">圓角與線條</h2></div>
+      <div class="facts">
+        ${[['舞台（Variants、陰影）', TEMPLATE.radius.stage], ['圖示格、陰影卡', TEMPLATE.radius.tile], ['色塊', TEMPLATE.radius.chip], ['長條', TEMPLATE.radius.bar], ['標籤（pill）', TEMPLATE.radius.pill], ['分隔線', '1 px · Line'], ['內框', `1 px · 黑 ${Math.round(TEMPLATE.color.inner.opacity * 100)}%`]].map(([k, v]) => `<div class="fact t-callout"><span class="ink-2">${k}</span><b>${v}</b></div>`).join('')}
+      </div>
+    </div>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">區塊</h2><p class="t-callout ink-2">沒有內容的區塊不出現</p></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>區塊</th><th>內容</th><th>尺寸與排法</th></tr></thead>
+      <tbody>${blocks.map(([a, b, c]) => `<tr><td><span class="strong">${a}</span></td><td>${b}</td><td class="dim">${c}</td></tr>`).join('')}</tbody></table></div>
+    </div>
+    <div class="part">
+      <div class="part-head"><h2 class="t-title">規則</h2></div>
+      <ul class="rules t-body">
+        <li>文件本身的顏色、字型、圓角與間距固定，不使用專案的 tokens，所以每個專案的文件長得一樣。</li>
+        <li>專案的內容一律是活的：色票、長條、圓角方塊綁定專案的 token；文字樣本與陰影卡套用專案的 style；元件是 instance。</li>
+        <li>檔案裡的文字照原樣顯示，包括 token 名稱、元件名稱與描述；只有版型自己的標題和欄位名稱跟著語言變。</li>
+        <li>字型用 Inter 與 Noto Sans TC。SF Pro 不是 Figma 內建字型，產生文件的工具也無法載入電腦上安裝的字型，Inter 是最接近的中性無襯線字。</li>
+        <li>沒有內容的區塊整段省略，例如檔案沒有 Color styles 時就不出現。</li>
+      </ul>
+    </div>
+    <footer class="foot t-caption"><span>Design System Doc Template · figma-componentize</span><span>references/documentation.md §12</span></footer>`;
+}
+
+/* ---------- Controls ---------- */
+const state = { view: 'doc', lang: 'en' };
+try { Object.assign(state, JSON.parse(localStorage.getItem('dsdoc-template') || '{}')); } catch (e) { /* storage unavailable */ }
+function apply() {
+  L = LABELS[state.lang] || LABELS.en;
+  const doc = document.getElementById('doc');
+  doc.setAttribute('lang', state.lang === 'zh' ? 'zh-Hant' : 'en');
+  renderDoc();
+  document.getElementById('doc').hidden = state.view !== 'doc';
+  document.getElementById('spec').hidden = state.view !== 'spec';
+  document.getElementById('frame-size').textContent = state.view === 'doc' ? '1440 × auto · sample project: Orbit Travel' : 'Template spec';
+  document.getElementById('frame-name').textContent = state.view === 'doc' ? 'Design System — generated' : 'Design System Doc Template';
+  for (const [id, on] of [['v-doc', state.view === 'doc'], ['v-spec', state.view === 'spec'], ['l-en', state.lang === 'en'], ['l-zh', state.lang === 'zh']]) document.getElementById(id).setAttribute('aria-pressed', String(on));
+  try { localStorage.setItem('dsdoc-template', JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+}
+document.getElementById('v-doc').addEventListener('click', () => { state.view = 'doc'; apply(); });
+document.getElementById('v-spec').addEventListener('click', () => { state.view = 'spec'; apply(); });
+document.getElementById('l-en').addEventListener('click', () => { state.lang = 'en'; state.view = 'doc'; apply(); });
+document.getElementById('l-zh').addEventListener('click', () => { state.lang = 'zh'; state.view = 'doc'; apply(); });
+renderSpec();
+apply();
+</script>
+</body>
+</html>

@@ -1,26 +1,19 @@
-# componentize-design-system-doc Specification
+## MODIFIED Requirements
 
-## Purpose
+### Requirement: Generated root frame and section naming
 
-Let a designer opt in to a generated design system document inside the Figma file: one page that shows every local token and every local component of the file from facts only, with samples bound to the tokens, produced as the last optional step of figma-componentize or on its own, without creating or changing any token, style, component, or existing layer.
+All generated content SHALL live inside one frame named exactly `Design System — generated`: 1440 px wide, vertical auto layout, with the padding, child spacing, and fill of the fixed document template (120 px on every side, 64 px between children, Paper white). On a new page the frame SHALL be placed at the origin; on an existing page or inside the fallback Section it SHALL be placed 400 px to the right of the rightmost existing node, and the skill SHALL NOT move, rename, restyle, or delete any existing node. The frame SHALL start with the cover described in "Cover and contents", which includes a note that token changes require regenerating and that the designer's own notes belong outside the frame or in the component description field. Every direct child of the frame — the cover, the part headers, the sections, and the footer — SHALL have a name that starts with `DS / `; color collections SHALL be blocks named `DS collection / {collection name}` inside the single `DS / Color` section; and every item inside a section SHALL carry the ID of its source variable, style, or component in its name. These names SHALL be the only way generated content is recognised.
 
-## Requirements
+#### Scenario: Existing page with the designer's content
 
-### Requirement: Opt-in question before detection
+- **WHEN** the page "Foundations" already holds the designer's own frames
+- **THEN** `Design System — generated` is placed 400 px to the right of the rightmost of them, and those frames keep their position, size, name, and content
 
-After the scope is confirmed and before detection starts, the skill SHALL ask the designer whether a design system document is to be generated at the end, with the options "yes" and "no". The answer SHALL be recorded in the ledger. When the answer is "no", the skill SHALL NOT inventory, write, or report anything for the document and SHALL NOT ask again during that run. When the answer is "yes", the componentization plan SHALL list the document step in its Tier 2 summary, and the document SHALL be generated even when the designer later declines the token step or answers "not now" to the replacement.
+#### Scenario: Root frame follows the template
 
-#### Scenario: Designer declines the document
+- **WHEN** the document is generated for any project
+- **THEN** the root frame is 1440 px wide with 120 px padding on every side, 64 px between its children, and a Paper white fill
 
-- **WHEN** the designer answers "no" to the document question
-- **THEN** the run proceeds exactly as it does without the document feature, no page, Section, or frame is added for a document, and the report has no document part
-
-#### Scenario: Designer accepts, then postpones replacement
-
-- **WHEN** the designer answers "yes" to the document question and later answers "not now" to the replacement confirmation
-- **THEN** the originals stay untouched and the design system document is still generated from the components and tokens in the file
-
----
 ### Requirement: Document language question
 
 After the designer answers "yes" to the document question, and at the start of a document-only run before the inventory, the skill SHALL ask which language the document's headings and labels use, offering **English** (the default), **繁體中文**, and another language the designer names. When the designer states no preference, the document SHALL be in English. The question SHALL be asked in every run that generates the document, and the answer and the font SHALL be recorded in the ledger. Only text the skill itself produces SHALL follow the chosen language: section headings, field labels, the header notes, the link text, and notes such as "and N more". Token, collection, and mode names and values, component, variant, and property names and values, and the text of the component description field SHALL be shown exactly as they are in the file and SHALL NOT be translated. Layer names — the root frame name `Design System — generated`, section names starting with `DS / `, and item names — and the page or Section name `Design System` SHALL stay in English in every language, because generated content is recognised by them. All labels SHALL come from one table of label keys, with English and Traditional Chinese texts provided for every key the template uses, including the cover counts, the part headings, the contents label, and the footer; for another language the same keys SHALL be translated before the first write, and the scripts SHALL contain no heading or label text of their own.
@@ -75,99 +68,6 @@ The document font SHALL follow the language: Inter for English and other languag
 - **WHEN** the document language is 繁體中文 and Noto Sans TC can be loaded in Regular, Medium, and Bold but in no Semibold style name
 - **THEN** text the template sets in Semibold uses Bold, nothing is asked, and the Traditional Chinese headings have zero letter spacing
 
----
-### Requirement: Document-only run
-
-When the designer asks only for the design system document to be generated or updated, the skill SHALL skip detection, grouping review, build, tokens, replacement, and verification. It SHALL check that a write-capable `use_figma` tool and the `figma-use` skill are available (figma-m3-variables Workflow F SHALL NOT be required), SHALL ask the designer to save a restore point and wait for the answer, SHALL then run the document step, and SHALL report. The request itself SHALL count as the opt-in, so the document question is not asked; the language question SHALL still be asked.
-
-#### Scenario: Designer asks only for the document
-
-- **WHEN** the designer writes "generate the design system document for this file" and shares no scope to componentize
-- **THEN** the skill asks for the document language and for a restore point, inventories the file's tokens and components, generates the document, and creates no component and replaces no layer
-
----
-### Requirement: Document page selection
-
-The skill SHALL place the document on an existing page whose name, ignoring case, emoji, and other prefixes, contains "design system" or "設計系統"; when no such page exists, on an existing page whose name contains "foundation". When several pages qualify, the first in page order within the higher-priority rule SHALL be used. When no page qualifies, the skill SHALL create a page named `Design System` at the end of the page list as a Tier 2 change. When page creation fails with the plan's page-limit error, the skill SHALL ask the designer which existing page is to hold a Section named `Design System`, and SHALL write nothing for the document until the designer answers. When page creation fails for any other reason, the skill SHALL stop the document step, report the error, and leave the results of the earlier steps as they are.
-
-#### Scenario: File without a design system page
-
-- **WHEN** the file's pages are "Cover", "Components", and "Home", and page creation succeeds
-- **THEN** a page named `Design System` is added after "Home" and the document is generated there
-
-#### Scenario: Starter file with three pages
-
-- **WHEN** the file already has three pages, none of which qualifies, and page creation fails with the page-limit error
-- **THEN** the skill asks which page is to hold the `Design System` Section and writes nothing for the document until the designer answers
-
-##### Example: Page selection
-
-| Existing pages (in order) | Page creation | Outcome |
-| --- | --- | --- |
-| Cover, Components, Home | succeeds | New page `Design System`, last in the list |
-| Cover, 🎨 Design System, Components | not attempted | Uses "🎨 Design System" |
-| Foundations, Components | not attempted | Uses "Foundations" |
-| 設計系統, Components | not attempted | Uses "設計系統" |
-| Foundations, Design System Document, Components | not attempted | Uses "Design System Document" ("design system" has priority over "foundation") |
-| Home, Components, Archive | page-limit error | Asks for a page; a Section `Design System` is created on the chosen page |
-
----
-### Requirement: Generated root frame and section naming
-
-All generated content SHALL live inside one frame named exactly `Design System — generated`: 1440 px wide, vertical auto layout, with the padding, child spacing, and fill of the fixed document template (120 px on every side, 64 px between children, Paper white). On a new page the frame SHALL be placed at the origin; on an existing page or inside the fallback Section it SHALL be placed 400 px to the right of the rightmost existing node, and the skill SHALL NOT move, rename, restyle, or delete any existing node. The frame SHALL start with the cover described in "Cover and contents", which includes a note that token changes require regenerating and that the designer's own notes belong outside the frame or in the component description field. Every direct child of the frame — the cover, the part headers, the sections, and the footer — SHALL have a name that starts with `DS / `; color collections SHALL be blocks named `DS collection / {collection name}` inside the single `DS / Color` section; and every item inside a section SHALL carry the ID of its source variable, style, or component in its name. These names SHALL be the only way generated content is recognised.
-
-#### Scenario: Existing page with the designer's content
-
-- **WHEN** the page "Foundations" already holds the designer's own frames
-- **THEN** `Design System — generated` is placed 400 px to the right of the rightmost of them, and those frames keep their position, size, name, and content
-
-#### Scenario: Root frame follows the template
-
-- **WHEN** the document is generated for any project
-- **THEN** the root frame is 1440 px wide with 120 px padding on every side, 64 px between its children, and a Paper white fill
-
----
-### Requirement: Complete inventory before writing
-
-Before any write for the document, the skill SHALL take a read-only inventory of the whole file: every local variable collection with its modes and its variables (name, type, scopes, and the value or alias target per mode), every local Text Style, Effect Style, and Paint Style, and, one page per `use_figma` call, every local component set and standalone component (name, page, number of variants, and whether it is an icon). A component SHALL be classified as an icon when every variant is at most 48 px wide and 48 px tall and is either square (width and height differ by less than 1 px) or has a name containing "icon". Components located inside a frame named `Design System — generated` SHALL NOT be listed. Every inventory result SHALL be paged within 18,000 characters and SHALL report `nextOffset` until it is `null`. When the file has neither tokens nor components, the skill SHALL create nothing and SHALL report that there is nothing to document; when it has only one of the two, the other part of the document SHALL be omitted and the report SHALL say so.
-
-#### Scenario: Components on several pages
-
-- **WHEN** local components exist on the pages "Components" and "Home"
-- **THEN** the inventory lists the components of both pages, each with its page name, from one call per page
-
-#### Scenario: File with tokens but no components
-
-- **WHEN** the file has 120 variables and no local component
-- **THEN** the document has the Foundations sections only, and the report states that there were no components to document
-
-##### Example: Inventory classification
-
-| Node | Listed as |
-| --- | --- |
-| Component set `Button`, variants 96 × 40 | Component (set), `icon` false |
-| Component `Icon/Star`, 24 × 24 | Icon |
-| Component `Avatar`, 40 × 40 | Icon (square, not larger than 48 px) |
-| Component set `Badge`, variants 32 × 20 and 44 × 20 | Component (set), `icon` false (not square, name has no "icon") |
-| Component `icon-button`, 56 × 56 | Component, `icon` false (larger than 48 px) |
-| Component placed inside `Design System — generated` | Not listed |
-
----
-### Requirement: Scale confirmation
-
-After the inventory the skill SHALL tell the designer the number of tokens, styles, components, and icons and the estimated number of write calls. When the tokens (variables plus styles) exceed 300, the non-icon components exceed 40, or the estimated write calls exceed 60, the skill SHALL ask before writing, offering: generate everything, generate the Foundations only, generate the Components only, or skip the document. When none of the thresholds is exceeded, the skill SHALL proceed without this question.
-
-#### Scenario: Large library
-
-- **WHEN** the inventory finds 520 variables and 75 non-icon components
-- **THEN** the skill reports the counts and the estimated number of write calls and asks which of the four options the designer wants before writing anything
-
-#### Scenario: Small file
-
-- **WHEN** the inventory finds 60 variables, 4 Text Styles, and 6 components
-- **THEN** the skill reports the counts and proceeds to generate the whole document without the scale question
-
----
 ### Requirement: Foundations samples bound to tokens
 
 The Foundations part SHALL show every local token of the inventory without reclassifying the file's own layers. All color variables SHALL be shown in one Color section that holds one block per collection, titled with the collection name and, when the collection has more than one mode, its mode names; within a section or a collection block, tokens SHALL be grouped by their group path. Swatches, rows, tiles, cards, and tables SHALL use the sizes, colors, radii, and spacing of the fixed document template. Each color variable SHALL be shown as a swatch whose fill is bound to that variable; when its collection has more than one mode, the swatch SHALL have one cell per mode, each rendered with that mode set explicitly, for at most four modes, with a note when there are more. Each Paint Style SHALL be shown as a swatch that uses the style. Each Text Style SHALL be shown as a text sample that uses the style, with its font, size, and line height. Number variables whose scopes include gap or width and height SHALL be shown as a bar whose width is bound to the variable when the value is at most 640, and as a name and value otherwise; number variables scoped to corner radius SHALL be shown as a shape whose corner radius is bound to the variable; each Effect Style SHALL be shown as a card that uses the style; all remaining variables SHALL be listed with name and value. Next to every sample the skill SHALL show the token name, the value per mode at generation time, and the alias target's name when the variable is an alias. The skill SHALL NOT fill a sample with a hardcoded value in place of a binding. A single item that fails (a font that cannot be loaded, a variable that cannot be bound, a style that cannot be applied) SHALL be skipped and recorded with its reason, and the rest of the section SHALL still be built; a Text Style whose font cannot be loaded SHALL be listed with its name and specifications in the document font.
@@ -187,7 +87,6 @@ The Foundations part SHALL show every local token of the inventory without recla
 - **WHEN** the file has the collections "Brand · Reference" (one mode) and "Brand · System" (Light and Dark), both with color variables
 - **THEN** the document has one Color section with two collection blocks, and only the "Brand · System" block shows the mode names Light and Dark
 
----
 ### Requirement: Component sections show facts only
 
 For every non-icon component set and standalone component of the inventory, the document SHALL have one section that shows: the name, the kind, the number of variants, and the page; the text of the component's description field, omitted entirely when that field is empty; a line that links to the main component; one instance per variant with the variant name, for at most 30 variants, with the total when there are more; the component properties with name, type, default value, and options; and the names of the variables and styles bound on the main component (the default variant for a set), without duplicates, for at most 40 names, with the total. The section SHALL be laid out as the template's component block: the name, the details line, the description, and the link; the variant instances on a panel stage; and below the stage, the properties table and the token list in two columns. Samples of components SHALL be instances; the skill SHALL NOT clone a main component or a component set. The skill SHALL NOT write usage guidance, descriptions, or recommendations of its own. When the fonts of a component cannot be loaded, its section SHALL show the text information without instances and the component SHALL be recorded as skipped with the reason.
@@ -202,7 +101,6 @@ For every non-icon component set and standalone component of the inventory, the 
 - **WHEN** the component `Card` has an empty description field
 - **THEN** its section has no description line and no text about how or when to use the component
 
----
 ### Requirement: Icon components are shown as a grid
 
 Components classified as icons SHALL NOT get their own sections. They SHALL be shown together in one section as a grid of instances, each centered on a panel square of the template's icon size and labelled with the component name.
@@ -212,7 +110,6 @@ Components classified as icons SHALL NOT get their own sections. They SHALL be s
 - **WHEN** the file has 180 icon components and 12 other components
 - **THEN** the document has one icon grid with 180 named instances and 12 component sections
 
----
 ### Requirement: Batched and resumable writes
 
 The document SHALL be written in batches, one `use_figma` call per batch: at most 20 tokens or styles (for colors, from one collection), at most 40 icons, or one component section; the first call creates the root frame and its header. Before adding an item, the script SHALL check whether an item with the same name already exists in the section and SHALL skip it when it does, so that running a batch twice adds nothing. Every call SHALL return only IDs, counts, and skipped items with reasons, within 18,000 characters. The ledger SHALL record the designer's answers (whether to generate, the language, and the font), the page and root frame IDs, each section's status, item count, and next offset, the skipped items, and the inventory counts. After a failed call or a timeout, the skill SHALL read the ledger and the root frame and SHALL then continue with only the batches that are not complete; when timeouts repeat, it SHALL halve the batch size. After the last batch, a finishing call SHALL build the contents row of the cover and the footer; it SHALL be safe to run again, leaving exactly one contents row and one footer, and the ledger SHALL record whether it is done.
@@ -232,47 +129,6 @@ The document SHALL be written in batches, one `use_figma` call per batch: at mos
 - **WHEN** the finishing call times out after it built the contents row, and it is run again
 - **THEN** the cover has exactly one contents row and the frame has exactly one footer
 
----
-### Requirement: Replacing an existing generated document
-
-When the document page already holds a frame named `Design System — generated`, the skill SHALL ask before generating: replace it, keep it and generate a new one beside it, or skip the document. Replacing SHALL be a Tier 3 change that is confirmed every time, with the statement that changes made inside the old frame will be lost, and no blanket auto-apply instruction SHALL waive it. To replace, the skill SHALL first build and verify the new frame beside the old one, and only then delete the old frame and move the new frame to the old frame's position; when the new frame cannot be completed, the skill SHALL keep the old frame, remove the incomplete new frame, and report the reason. When several frames with that name exist, the skill SHALL list them and ask which one to replace. Nodes outside the frame being replaced, and frames the designer renamed, SHALL NOT be changed.
-
-#### Scenario: Designer replaces the old document
-
-- **WHEN** the page holds one `Design System — generated` frame and the designer's own notes frame beside it, and the designer chooses to replace and confirms
-- **THEN** the page ends with exactly one `Design System — generated` frame at the old frame's position, and the notes frame keeps its position and content
-
-#### Scenario: New document fails while replacing
-
-- **WHEN** the designer chose to replace and the new frame cannot be completed
-- **THEN** the old frame is still on the page unchanged, the incomplete new frame is removed, and the report gives the reason
-
-#### Scenario: Designer renamed the old document
-
-- **WHEN** the only earlier document on the page was renamed by the designer to "DS v1"
-- **THEN** no question about replacing is asked, a new `Design System — generated` frame is built beside the existing content, and "DS v1" is unchanged
-
----
-### Requirement: Additive-only step and verification
-
-Creating the document page or Section, the root frame, and its sections SHALL be a Tier 2 change authorised by the opt-in answer together with the plan confirmation, or by the request itself in a document-only run. The document step SHALL NOT create, edit, or delete any variable, collection, style, or main component, and SHALL NOT change any node outside the frame it generates, except for deleting an earlier generated frame under "Replacing an existing generated document". After generating, the skill SHALL verify that the sections in the root frame match the ledger and that the numbers of local components, variables, Text Styles, Effect Styles, and Paint Styles equal the inventory counts taken before writing; it SHALL report any difference without correcting it, and SHALL capture a screenshot of the root frame and give its link.
-
-#### Scenario: Counts are unchanged
-
-- **WHEN** the inventory counted 34 components, 210 variables, 9 Text Styles, 3 Effect Styles, and 0 Paint Styles before writing
-- **THEN** the verification after generating counts the same five numbers, and the report states that the document step created no component, variable, or style
-
----
-### Requirement: Document step in the plan and report
-
-When the designer opted in, the componentization plan SHALL list the document step with its target page in the Tier 2 summary. The final report SHALL include a design system document part with the links to the page and the root frame, the document language and font, the number of items per section, the skipped items with reasons, the items whose text the available fonts do not cover, whether an earlier document was replaced, and the omitted parts when the file had no tokens or no components.
-
-#### Scenario: Report after a run with the document
-
-- **WHEN** the document was generated with 210 tokens, 12 component sections, 180 icons, and one Text Style skipped for a font that could not be loaded
-- **THEN** the report's document part shows the page and frame links, those counts per section, and the skipped Text Style with its reason
-
----
 ### Requirement: Guide and documentation for the document step
 
 SKILL.md SHALL describe the document question and the language question in the first step, the document step after verification and before the report, the document-only run, and the tiers of generating and of replacing a document; SHALL no longer list documentation frames as out of scope; SHALL state that the skill writes no usage guidance of its own; SHALL include trigger phrases for a design system document in English and Traditional Chinese; and SHALL keep its description within 1024 characters, embed no script longer than 15 lines, and cite only reference sections that exist. The inventory, layout, section, batching, replacement, and verification rules and scripts, and the template definition, SHALL live in a documentation reference file, and SKILL.md SHALL name the finishing call in the document step and cite the template section. The Traditional Chinese documentation page and the README SHALL explain, in terms of what the designer sees, the questions at the start (whether to generate, and in which language), what the document contains, which text follows the chosen language, that descriptions come from the component description field, how to regenerate, that nothing in the file is changed apart from the added document, and that every document uses the same template, with a link to the template reference page. The root frame name, the page name, the section prefix, and the option names, including the language options, SHALL be the same in SKILL.md, the reference files, the documentation page, and the README.
@@ -287,7 +143,8 @@ SKILL.md SHALL describe the document question and the language question in the f
 - **WHEN** SKILL.md tells the agent to generate the design system document
 - **THEN** it cites the documentation reference file and section that contain the scripts, and they exist
 
----
+## ADDED Requirements
+
 ### Requirement: Fixed document template
 
 The look of the generated document SHALL be defined once, in one template definition in the documentation reference file: the frame width (1440 px) and padding (120 px), the spacing between the frame's children (64 px), the seven colors (Paper #FFFFFF, Panel #F5F5F7, Line #D2D2D7, Ink #1D1D1F, Ink 2 #6E6E73, Ink 3 #86868B, Link #0066CC), the seven text levels, the radii, the spacing, and the sizes of every block. Every script that builds the document SHALL take these values from that definition, and no build script SHALL contain a color value or a font size of its own. The template SHALL NOT use the project's tokens; samples of the project's tokens, styles, and components SHALL still be bound to them, use them, or be instances. The template SHALL be the same for every project and every run, and SHALL NOT be stored as Figma components, a template file, or a library.
@@ -309,7 +166,6 @@ The look of the generated document SHALL be defined once, in one template defini
 | Callout | 15 / 22 | Regular; Semibold for names and headings | 0 |
 | Caption | 12 / 18 | Regular; Medium for paths and tags | 0 |
 
----
 ### Requirement: Cover and contents
 
 The cover SHALL show, in this order: the label for the design system, the file name in the Display level, the generation date, four counts with their labels — tokens (the number of local variables), styles (Text, Effect, and Paint Styles together), components (non-icon components), and icons — the two notes, and a contents row. The contents row SHALL hold one link per section present in the frame, in the frame's order, labelled with that section's heading text and linked to the section node. The counts and notes SHALL be written by the first call; the contents row SHALL be written by the finishing call.
@@ -324,7 +180,6 @@ The cover SHALL show, in this order: the label for the design system, the file n
 - **WHEN** the designer chose to generate the Components only
 - **THEN** the cover still shows all four counts, and the contents row links only to the icon grid and the component sections
 
----
 ### Requirement: Part headers, section headers, and footer
 
 A part header SHALL be placed before the first Foundations section and before the first section of the Components part (the icon grid or a component section), showing the part title in the Title level and the part's counts on the right; a part header SHALL NOT be created for a part without sections. Part headers and the footer SHALL have 56 px of top padding, so that together with the frame's 64 px spacing they start 120 px after the content above them. Every section SHALL start with a section header: a 1 px Line hairline on top, the section title in the Headline level, and the section's count on the right. The footer SHALL be the last child of the frame and SHALL show the generator label with the generation date and the frame name; a section created while the footer exists SHALL be inserted before it.
@@ -339,7 +194,6 @@ A part header SHALL be placed before the first Foundations section and before th
 - **WHEN** the file has components but no variables and no styles
 - **THEN** the frame has no Foundations part header, and the Components part header comes right after the cover
 
----
 ### Requirement: Template reference page
 
 The skill SHALL include a standalone HTML template reference page that renders a sample document with the template and lists the template's values. The template values embedded in the page SHALL equal the template definition in the documentation reference file, and the page's color variables SHALL equal the template colors. The page SHALL let the reader switch the sample document between English and Traditional Chinese labels, and SHALL have no horizontal overflow at 500, 768, and 1280 px wide. The documentation reference file and the documentation page SHALL link to it.
@@ -348,3 +202,4 @@ The skill SHALL include a standalone HTML template reference page that renders a
 
 - **WHEN** a template value is changed in the documentation reference file but not in the reference page
 - **THEN** the consistency check reports the value that differs
+

@@ -1,0 +1,97 @@
+{
+  "policyVersion": "2.0",
+  "description": "Default parity policy. Copy into the target repo and pass it with --policy to override any value; keys that are left out keep these defaults.",
+
+  "tolerance": {
+    "geometry": 0.5,
+    "textWidth": 1,
+    "textWidthRatio": 0.015,
+    "value": 0.25,
+    "letterSpacing": 0.05,
+    "color": 2,
+    "alpha": 0.012,
+    "opacity": 0.011,
+    "declared": 0.75,
+    "estimatedMinimum": 2
+  },
+
+  "formFactor": {
+    "sameViewportToleranceRatio": 0.15,
+    "comment": "Surface widths within this ratio of each other are the same form factor. Otherwise spacing, sizing, and position are adaptations and the geometry and pixel checks do not decide the verdict."
+  },
+
+  "engines": {
+    "web": "css",
+    "figma": "css",
+    "react-native": "native",
+    "flutter": "native",
+    "ios": "native",
+    "android": "native"
+  },
+
+  "crossEngineAdaptive": ["type.lineHeight", "type.letterSpacing"],
+  "crossEngineIgnored": ["shadow"],
+
+  "touchTargets": {
+    "ios": 44,
+    "android": 48,
+    "react-native": 44,
+    "flutter": 48,
+    "web": null,
+    "figma": null
+  },
+
+  "fontAliases": [
+    ["Inter", "SF Pro Text", "SF Pro Display", "Roboto", "-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI"],
+    ["Helvetica", "Helvetica Neue", "Arial", "Liberation Sans"],
+    ["SF Mono", "Menlo", "Monaco", "Roboto Mono", "Consolas", "ui-monospace"],
+    ["Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Source Han Sans TC"],
+    ["Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC"],
+    ["Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Source Han Sans JP"]
+  ],
+
+  "ignoredNodeNamePatterns": [
+    "status bar",
+    "statusbar",
+    "home indicator",
+    "notch",
+    "dynamic island",
+    "navigation bar background",
+    "scrollbar",
+    "safe area",
+    "browser chrome"
+  ],
+
+  "platformOnlyNodes": [],
+
+  "statePolicy": {
+    "touchOnlyPlatforms": ["ios", "android", "react-native", "flutter"],
+    "pointerOnlyStates": ["hover"],
+    "touchOnlyStates": ["pressed"]
+  },
+
+  "severity": {
+    "missingNode": "high",
+    "extraNode": "medium",
+    "text": "high",
+    "structural": "high",
+    "color": "medium",
+    "other": "medium",
+    "numeric": [
+      { "maxDeltaRatio": 0.05, "maxDeltaPx": 2, "severity": "low" },
+      { "maxDeltaRatio": 0.25, "maxDeltaPx": 8, "severity": "medium" },
+      { "severity": "high" }
+    ],
+    "adaptiveCap": "low",
+    "requiredAdaptation": "high"
+  },
+
+  "pixel": {
+    "sameRenderer": { "threshold": 0.02, "tolerance": 1 },
+    "otherRenderer": { "threshold": 0.05, "tolerance": 1 }
+  },
+
+  "loop": {
+    "maxCycles": 8
+  }
+}

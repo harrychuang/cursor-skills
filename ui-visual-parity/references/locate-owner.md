@@ -1,17 +1,34 @@
 # Locating the Owning Declaration
 
-The diff says *what* is wrong ("padding is 16, expected 24"). This document is the fastest mechanical route to *where* — the file and declaration that owns the value. Searching by eye is what makes each finding expensive; every platform below has a tool that answers "which rule set this" directly.
+A finding says *what* is wrong ("td padding-left 16 → 12"). This document is the fastest mechanical route to *where* — the file and declaration that owns the value. Searching by eye is what makes each finding expensive; the finding already carries most of the answer, and every platform below has a tool that answers "which rule set this" directly.
 
 Work the ladder top-down. Each rung is cheaper and more precise than the one below it.
 
 ## Rung 1 — the finding already names the owner
 
-Before opening any inspector:
+Before opening any inspector, read the finding in `parity.json` (its fields are listed in `reading-results.md`). Go through these in order; each one that is present narrows the search:
 
-- **`tokens` / `tokenRefs` on the finding or spec node:** a token name is half the answer. Grep the token's definition (`--sys-space-6`, `theme.space[6]`, `Spacing.lg`) to find the token file, then grep its *usages* filtered by the component name to find the assigning declaration. If the token's value is right but the rendered value is wrong, the component ignores the token — the bug is at the usage site, not the definition.
-- **`implementationReference` on the finding:** `diff_spec.mjs` derives it from the spec node's `component`/`id`. Trust it first.
-- **`files` on the finding:** empty on fresh `findings.candidates.json` — the script does not fill it. It is populated during the review pass, so it is only trustworthy in a reviewed `findings.json` from `ui-pixel-align-report`.
-- **`component` on the spec node:** grep the component name; the style usually lives in its co-located file.
+1. **`differsAt[].selector` and the differing part.** A spacing finding such as `td padding-left 16 → 12` names the element, the property, and both values. Go to that element's declaration of that property: `differsAt[].selector` is the element, `design` is the value to reach, and `build` is the value to replace. The finding's own `selector` is only the element the distance was seen from.
+2. **`builtFrom` and `designedAs`**, when `differs` is absent, as it is across tools. Compare the two part lists. The build's parts (`section.balance-card padding-left 16`) name the elements and properties to look at. A side with no list does not declare the distance, so look at how the container aligns or distributes its children.
+3. **`selector`**, for appearance and size findings. It is the implementation element; a web capture writes it as up to three levels of `tag.class` or `tag#id`. Search for the class or component name, then for the property `specField` names.
+4. **`tokens`.** Grep the token's definition (`--space-6`, `theme.space[6]`, `Spacing.lg`) to find the token file, then grep its *usages* filtered by the element to find the assigning declaration. If the token's value is right and the rendered value is wrong, the usage site ignores the token: an override or a hardcoded value wins there, and the bug is at the usage site, not the definition. `implementation.spec.json` lists every custom property with its resolved value under `tokens`. A name in Figma's form (`space/4`, `Title/Medium`) came from the reference; map it to the project's token first. An empty `tokens` proves nothing: a web capture records token names only on elements that paint, hold text, or are positioned, and only from stylesheets it can read.
+5. **The owner of an unexplained region.** A region has no finding; start from `regions[].owner.selector`.
+
+A findings file from the pixel alignment report skill (`ui-pixel-align-report`) is an accepted input and can carry two more fields: `implementationReference`, the element or component the finding sits on, and `files`, the source paths confirmed when that report was reviewed. Trust `files` when it is filled; a cycle's own findings leave it empty.
+
+### From a redline to the declaration
+
+| The finding shows | What it is | Where the fix goes |
+|---|---|---|
+| A part only the build has: `div padding-top 0 → 3`, or an extra entry on the `build:` line | A stray wrapper | Remove the wrapper or its spacing. Do not compensate on a neighbour. |
+| `border-top 0 → 1`, or a `border-<side>` entry among the build's parts | A border that takes layout space and pushes the content in | Draw the line without taking space, or reduce the padding by its width (strokes: `figma-to-css.md`). |
+| `— centred vertically in the reference, not in the implementation`, with no `design:` parts | An alignment difference | An alignment property on the container (`align-items`, `justify-content`, or the platform's equivalent). Not a padding: a padding that lines up one child moves the others. |
+| A size marked `— set explicitly` | A width or height written in the source | The declaration that sets that size on the element in `selector`. |
+| A size marked `— max-width 640px → 720px` | A minimum or maximum the two sides declare differently | That limit's declaration on the element in `selector`. |
+| `form.form row-gap 20 → 16` | The gap between the rows of a grid, or between the lines of a row that wraps | `row-gap`, or the first value of a two-value `gap`, on the container named. |
+| `span.badge offset-top -4 → 0` | The offset of a positioned element | `top`, `right`, `bottom`, `left`, or `inset` on the element named. |
+| `input.input padding-left 12 → 16`, seen from the control's own words | The space between a form control's edge and its text | The control's padding. |
+| `— unexplained: nothing measured accounts for it` | A size no measured property explains | Go to Rung 2 and read the layout rules of the element and its container: flex factors, grid tracks, minimum and maximum sizes. |
 
 ## Rung 2 — ask the renderer, not the source tree
 
@@ -34,12 +51,14 @@ Sequence for any single finding: select the rendered node → read the winning d
 
 When the renderer route is unavailable (no running surface, generated class names, third-party wrapper):
 
-- Grep the **odd value**, not the common one. `13px` and `#e4e4e4` locate instantly; `16px` returns the whole codebase. From a delta like `expected 24, actual 16`, search the *actual* value scoped to the component's folder first, then the styling system's folder.
+- Grep the **odd value**, not the common one. `13px` and `#e4e4e4` locate instantly; `16px` returns the whole codebase. From a finding such as `16 → 12`, search the *build* value scoped to the component's folder first, then the styling system's folder.
 - Tailwind: the rendered class *is* the declaration. `p-4` → padding 16; arbitrary values (`p-[13px]`) grep verbatim; ambiguous scales resolve in `tailwind.config.*` under `theme`/`theme.extend`.
 - CSS-in-JS with hashed class names: search the *property:value* pair (`padding: 16`) or enable the library's displayName/babel plugin; the component name from React DevTools narrows the file.
 - Generated/utility CSS you cannot map: fall back to Rung 2's CDP matched-rules — it reports the source even for generated stylesheets.
 
 ## Deciding the layer from what you found
+
+The finding's `ownership` is a first guess. The trace decides:
 
 | What the trace shows | Owner | Fix location |
 |---|---|---|

@@ -1151,7 +1151,7 @@
               <li><strong>Tokens</strong>：以新元件與新增的 variants 為範圍呼叫 Workflow F；計畫中的近似值差異加入它的比對板。</li>
               <li><strong>替換</strong>（Tier 3）：確認後只替換最外層的實例，每次最多 50 個，逐項驗證。</li>
               <li><strong>驗證</strong>：為每個範圍截圖並與基準比對，回報非預期的差異；清除追蹤標記與暫時區塊。</li>
-              <li><strong>設計系統文件（可選）</strong>（Tier 2）：只在開始時選了「要」才執行。先確認字型、盤點檔案裡所有的 tokens 與元件並回報數量，再分批產生 <code>Design System — generated</code>，最後檢查元件、variables、styles 的數量和產生前相同。就算設計師拒絕了 tokens 步驟，或在替換時選「先不要」，文件仍會產生。細節見<a href="#document">設計系統文件</a>。</li>
+              <li><strong>設計系統文件（可選）</strong>（Tier 2）：只在開始時選了「要」才執行。先確認字型、盤點檔案裡所有的 tokens 與元件並回報數量，再用固定版型分批產生 <code>Design System — generated</code>；最後一批寫完後收尾，建立封面的目錄與頁尾；完成後檢查元件、variables、styles 的數量和產生前相同。就算設計師拒絕了 tokens 步驟，或在替換時選「先不要」，文件仍會產生。細節見<a href="#document">設計系統文件</a>。</li>
               <li><strong>報告</strong>：元件、沿用的現有元件與新增的 variants、tokens、已替換與保留的實例、設計系統文件（連結、語言與字型、各區塊項目數、略過的項目）、還原點、Components 頁面連結，以及 ID 對照表。</li>
             </ol>
           </div>
@@ -1884,7 +1884,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
           <div class="panel" style="margin-top: 16px">
             <div class="panel-body">
               <h4>哪些文字會跟著語言變</h4>
-              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">只有 skill 自己產生的文字會跟著語言變：區塊標題、欄位名稱、標題區的提示文字、連結文字，以及「另有 3 個」這類註記。來自檔案的文字全部照原樣顯示、不翻譯：token、collection 與 mode 的名稱，元件、variant 與屬性的名稱與值，數值，以及設計師寫在元件描述欄位的文字。</p>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">只有 skill 自己產生的文字會跟著語言變：封面的標籤、數量名稱與提示文字，基礎與元件兩個大標題，區塊標題、欄位名稱、連結文字、頁尾，以及「另有 3 個」這類註記。來自檔案的文字全部照原樣顯示、不翻譯：token、collection 與 mode 的名稱，元件、variant 與屬性的名稱與值，數值，以及設計師寫在元件描述欄位的文字。</p>
             </div>
             <div class="table-wrap">
               <table>
@@ -1915,7 +1915,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
           <div class="panel" style="margin-top: 16px">
             <div class="panel-body">
               <h4>字型</h4>
-              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">文件的字型由語言決定。寫入之前，先確認字型能載入。</p>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">文件的字型由語言決定。版型用到四種粗細：Regular、Medium、Semibold、Bold；字型缺少某一種粗細時，改用最接近的粗細。寫入之前，先確認字型能載入。</p>
             </div>
             <div class="table-wrap">
               <table>
@@ -1938,7 +1938,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
           </div>
 
           <div class="note note-warn">
-            <p>字型載入不了就不寫入，並詢問：「改用英文標題與預設字型」、「指定另一個字型」或「略過文件」。</p>
+            <p>字型載入不了（連 Regular 都載入不了）就不寫入，並詢問：「改用英文標題與預設字型」、「指定另一個字型」或「略過文件」。</p>
           </div>
 
           <div class="note note-info">
@@ -1967,15 +1967,80 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
               <ul>
                 <li>所有產生的內容都在外框 <code>Design System — generated</code> 裡</li>
                 <li>寬 1440 px，內容由上往下排列</li>
-                <li>裡面每個區塊的圖層名稱以 <code>DS / </code> 開頭，例如 <code>DS / Color / Brand · System</code></li>
+                <li>裡面每個區塊的圖層名稱以 <code>DS / </code> 開頭，例如 <code>DS / Color</code>、<code>DS / Typography</code></li>
               </ul>
             </div>
           </div>
 
           <div class="panel" style="margin-top: 16px">
             <div class="panel-body">
-              <h4>文件內容：標題區與 Foundations</h4>
-              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">最上面是標題區：檔名、產生日期、tokens、styles、元件與圖示的數量，以及兩句提示（token 改動後請重新產生；自己的說明請放在外框之外，或寫在元件的描述欄位）。接著是 Foundations，依 collection 與群組排列；檔案自己的分層（例如 Reference、System、Component）照原樣呈現，不重新分類。沒有內容的區塊不會出現。下表括號內是選繁體中文時的區塊標題。</p>
+              <h4>版型</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">每份文件都用同一個固定的版型排版，風格接近 Apple：大量留白、粗體的大標題、深灰色的文字，連結與間距條用同一種藍色，樣本放在淺灰色的底上。所以不同專案產生的文件長得一樣，只有內容不同。下表是文件由上到下的樣子；括號內是選繁體中文時的文字。</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>部分</th>
+                    <th>內容</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>封面</td><td><code>Design System</code>（設計系統）標籤、檔名、產生日期；<code>Tokens</code>、<code>Styles</code>（樣式）、<code>Components</code>（元件）、<code>Icons</code>（圖示）四個數量；兩句提示（token 改動後請重新產生；自己的說明請放在外框之外，或寫在元件的描述欄位）；最後是 <code>Contents</code>（目錄）：每個區塊一個連結，點一下就跳到那一段</td></tr>
+                  <tr><td><code style="white-space: nowrap">Foundations</code>（基礎）</td><td>大標題，旁邊是 tokens 與 styles 的數量；接著是 tokens 的各個區塊。所有顏色都在同一個 <code>Color</code>（顏色）區塊裡，每個 collection 一小塊：標出 collection 名稱，有多個 modes 時，用小標籤列出 mode 名稱</td></tr>
+                  <tr><td><code style="white-space: nowrap">Components</code>（元件）</td><td>大標題，旁邊是元件與圖示的數量；接著是圖示格，以及每個元件各自的區塊</td></tr>
+                  <tr><td>區塊標題</td><td>上方有一條細線；tokens、styles 與圖示的區塊，標題右邊有數量，例如 <code>23 tokens</code>（23 個 tokens）</td></tr>
+                  <tr><td>頁尾</td><td>一條細線，下方是 <code>Generated by figma-componentize</code>（由 figma-componentize 產生）、產生日期與外框名稱</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note note-info">
+            <p>版型自己的顏色、字型與字級都是固定的，<strong>不使用專案的 tokens</strong>。只有樣本會綁定或套用專案的 tokens 與 styles：色票、間距條、圓角方塊、文字樣本、陰影卡片，以及元件的 instance。版型也不會存成元件、範本檔或 library，檔案裡只會多出這份文件。</p>
+            <p style="margin-top: 8px">英文標題（Display、Title、Headline、Subhead）的字距稍微收緊，像 Apple 的標題；中文不調整字距。</p>
+            <p style="margin-top: 8px"><a href="document-template.html">查看版型參考頁</a>：用英文與繁體中文各預覽一份範例文件，並列出版型的所有數值。</p>
+          </div>
+
+          <div class="bento" style="margin-top: 16px">
+            <div class="bento-card">
+              <h4>尺寸與圓角</h4>
+              <ul>
+                <li>外框寬 1440 px，四周留白 120 px</li>
+                <li>各部分之間相隔 64 px；基礎、元件與頁尾上方再多留 56 px，所以新的一部分和上方內容相隔 120 px</li>
+                <li>圓角：放樣本的灰底 24、陰影卡片與圖示方塊 18、色票 16</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>七種顏色</h4>
+              <ul>
+                <li>Paper <code>#FFFFFF</code>：背景</li>
+                <li>Panel <code>#F5F5F7</code>：放樣本的灰底、圖示方塊、mode 標籤</li>
+                <li>Line <code>#D2D2D7</code>：細線</li>
+                <li>Ink <code>#1D1D1F</code>：文字</li>
+                <li>Ink 2 <code>#6E6E73</code>：說明與數值</li>
+                <li>Ink 3 <code>#86868B</code>：路徑與 alias</li>
+                <li>Link <code>#0066CC</code>：連結與間距條</li>
+              </ul>
+            </div>
+            <div class="bento-card">
+              <h4>七個字級</h4>
+              <ul>
+                <li>Display 80：檔名</li>
+                <li>Title 48：大標題、封面的四個數量</li>
+                <li>Headline 32：區塊標題、元件名稱</li>
+                <li>Subhead 24：collection 名稱</li>
+                <li>Body 19：封面的標籤與日期、元件描述</li>
+                <li>Callout 15：名稱、說明、連結、表格、目錄</li>
+                <li>Caption 12：數值、alias、群組路徑、variant 名稱、提示、頁尾</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 16px">
+            <div class="panel-body">
+              <h4>文件內容：Foundations（基礎）</h4>
+              <p style="margin: 0; color: var(--muted); font-size: 0.9rem">封面之後是 Foundations。所有顏色 variables 都在同一個 <code>Color</code> 區塊，每個 collection 一小塊，依檔案裡 collection 的順序排列；其他區塊與每一小塊裡，tokens 依群組（名稱的路徑）排列。檔案自己的分層（例如 Reference、System、Component）照原樣呈現，不重新分類。沒有內容的區塊不會出現。下表括號內是選繁體中文時的區塊標題。</p>
             </div>
             <div class="table-wrap">
               <table>
@@ -1987,7 +2052,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td><code style="white-space: nowrap">Color</code>（顏色）</td><td>顏色 variables，每個 collection 一個區塊</td><td>色票，填色綁定該 variable；collection 有多個 modes（例如 Light / Dark）時每個 mode 一格，最多 4 格</td></tr>
+                  <tr><td><code style="white-space: nowrap">Color</code>（顏色）</td><td>所有顏色 variables 都在這一區，每個 collection 一小塊，標出 collection 名稱；有多個 modes 時，也列出 mode 名稱</td><td>色票，填色綁定該 variable；collection 有多個 modes（例如 Light / Dark）時每個 mode 一格，最多 4 格</td></tr>
                   <tr><td><code style="white-space: nowrap">Color styles</code>（顏色樣式）</td><td>Paint Styles</td><td>套用該 style 的色票</td></tr>
                   <tr><td><code style="white-space: nowrap">Typography</code>（文字樣式）</td><td>Text Styles</td><td>套用該 style 的文字樣本，附字型、字級、行高</td></tr>
                   <tr><td><code style="white-space: nowrap">Spacing &amp; size</code>（間距與尺寸）</td><td>用於間距或寬高的數值 variables（數值 1 到 640）</td><td>寬度綁定該 variable 的色條</td></tr>
@@ -2047,7 +2112,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td><code style="white-space: nowrap">Brand · System</code></td><td>標題為 <code>Color · Brand · System</code> 的區塊。每個顏色 token 有 Light 與 Dark 兩格色票，旁邊是 token 名稱與兩個 mode 的值，例如 <code>Light #6750A4 → ref/primary/40</code></td><td>collection 有多個 modes，每個 mode 一格；collection 名稱照檔案原樣</td></tr>
+                  <tr><td><code style="white-space: nowrap">Brand · System</code></td><td><code>Color</code> 區塊裡的一小塊，標題是 collection 名稱 <code>Brand · System</code>，旁邊有 Light 與 Dark 兩個 mode 標籤。每個顏色 token 有 Light 與 Dark 兩格色票，下方是 token 名稱與兩個 mode 的值，例如 <code>Light #6750A4 → ref/primary/40</code></td><td>所有顏色都在同一個 <code>Color</code> 區塊，每個 collection 一小塊；collection 有多個 modes，每個 mode 一格；collection 名稱照檔案原樣</td></tr>
                   <tr><td><code style="white-space: nowrap">Button</code></td><td>自己的一區：名稱與 variant 數量、描述「主要操作，每個畫面一個」、<code>Open main component</code> 連結、每個 variant 的 instance，以及 <code>Properties</code> 與 <code>Tokens</code></td><td>描述是設計師寫的，照原樣顯示、不翻譯；這段中文改用 Noto Sans TC</td></tr>
                   <tr><td><code style="white-space: nowrap">Card</code></td><td>同樣的一區，但名稱下方沒有描述：不留空位，也不放預留文字</td><td>描述欄位是空的，AI 不會代寫</td></tr>
                 </tbody>
@@ -2056,7 +2121,7 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
           </div>
 
           <div class="note note-info">
-            <p>同一個檔案改選繁體中文時，標題與欄位名稱變成 <code>顏色 · Brand · System</code>、<code>屬性</code>、<code>使用的 tokens</code>；<code>Brand · System</code>、token 名稱與「主要操作，每個畫面一個」都不變。</p>
+            <p>同一個檔案改選繁體中文時，標題與欄位名稱變成 <code>基礎</code>、<code>顏色</code>、<code>屬性</code>、<code>使用的 tokens</code>；<code>Brand · System</code>、token 名稱與「主要操作，每個畫面一個」都不變。</p>
           </div>
 
           <div class="bento" style="margin-top: 16px">
@@ -2078,11 +2143,12 @@ Tier 3 (asked again later): replace 11 occurrences with instances</code></pre>
               </ul>
             </div>
             <div class="bento-card">
-              <h4>分批寫入</h4>
+              <h4>分批寫入與收尾</h4>
               <ul>
                 <li>每次最多 20 個 tokens 或 styles、40 個圖示，或一個元件</li>
                 <li>中途失敗可以接著做，已經寫入的項目不會重複</li>
                 <li>個別項目做不出來（例如字型無法載入）只略過那一項，並在報告說明原因</li>
+                <li>收尾：最後一批寫完後，建立封面的目錄與頁尾。收尾可以重跑，目錄會重建，不會重複</li>
               </ul>
             </div>
           </div>
@@ -2366,7 +2432,7 @@ Design system document: Design System — https://www.figma.com/design/{fileKey}
             </div>
             <div class="bento-card">
               <h4><code>documentation.md</code></h4>
-              <p>設計系統文件：開始時的兩個問題、標題語言與字型、盤點、數量確認、頁面與外框、Foundations 區塊、元件區塊與圖示格、分批與復原、既有的產生文件、驗證與報告。</p>
+              <p>設計系統文件：開始時的兩個問題、標題語言與字型、盤點、數量確認、頁面與外框、收尾步驟、Foundations 區塊、元件區塊與圖示格、分批與復原、既有的產生文件、驗證與報告、固定版型（§12）。</p>
             </div>
           </div>
         </section>

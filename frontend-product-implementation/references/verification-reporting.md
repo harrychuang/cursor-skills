@@ -41,7 +41,7 @@ For UI changes, verify:
 - Storybook stories cover changed shared components when Storybook exists
 - a newly created component with a prototype counterpart matches it: compare the implemented variants and states against the prototype component source and stories args, and record any intentional divergence (platform adaptation, production token differences) with its reason
 
-Use browser or screenshot verification when the app can be run locally and visual risk is meaningful. For prototype parity on newly created components, run a side-by-side visual comparison when the prototype Storybook can be run; the `ui-compare-to-reference` or `ui-pixel-align-report` skill can own that check.
+Use browser or screenshot verification when the app can be run locally and visual risk is meaningful. For prototype parity on newly created components, run a side-by-side visual comparison when the prototype Storybook can be run; the `ui-visual-parity` or `ui-pixel-align-report` skill can own that check.
 
 ## Final Response Contract
 

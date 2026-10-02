@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team settings — reference</title>
+<style>
+:root{
+  --bg:#0b0d12; --panel:#12151c; --panel-2:#171b24; --line:#262b36; --line-soft:#1d222c;
+  --text:#e6e8ee; --muted:#8b93a3; --faint:#5d6575;
+  --accent:#6ea8fe; --accent-strong:#3d7ff5; --ok:#3ecf8e; --warn:#f5a524; --bad:#f31260;
+  --r-sm:6px; --r-md:10px; --r-lg:12px;
+  --sans:"Helvetica Neue",Helvetica,Arial,sans-serif; --serif:Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#000}
+.app{width:1280px;min-height:800px;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:20px;position:relative}
+.nav{position:sticky;top:0;z-index:5;height:64px;padding:0 24px;display:flex;align-items:center;gap:32px;background:rgba(18,21,28,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:20px;line-height:24px;font-weight:700;letter-spacing:-.2px}
+.brand svg{width:24px;height:24px}
+.links{display:flex;gap:24px;list-style:none;margin:0;padding:0;height:100%}
+.links a{position:relative;display:flex;align-items:center;height:100%;color:var(--muted);text-decoration:none;font-weight:500}
+.links a.on{color:var(--text)}
+.links a.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);border-radius:2px 2px 0 0}
+.search{position:relative;margin-left:auto;width:260px}
+.search svg{position:absolute;left:12px;top:10px;width:16px;height:16px;color:var(--faint)}
+.search input{width:100%;height:36px;padding:0 12px 0 36px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--panel-2);color:var(--text);font:inherit;outline:none}
+.search input::placeholder{color:var(--faint)}
+.me{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);font-weight:500}
+.me i{width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,#6ea8fe,#a78bfa);display:block}
+.shell{display:flex}
+.side{width:240px;flex:none;padding:24px 16px;border-right:1px solid var(--line);min-height:736px}
+.side h6{margin:0 0 8px 8px;font-size:11px;line-height:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.side ul{list-style:none;margin:0 0 24px;padding:0;display:flex;flex-direction:column;gap:2px}
+.side a{display:flex;align-items:center;gap:10px;height:34px;padding:0 8px;border-radius:var(--r-sm);color:var(--muted);text-decoration:none;font-weight:500}
+.side a svg{width:16px;height:16px;flex:none}
+.side a.on{background:var(--panel-2);color:var(--text)}
+.side a b{margin-left:auto;min-width:22px;height:18px;padding:0 6px;border-radius:9px;background:var(--line);color:var(--text);font-size:11px;line-height:18px;font-weight:600;text-align:center}
+.main{flex:1;min-width:0;padding:32px 40px 40px}
+h1{margin:0;font-size:28px;line-height:36px;font-weight:700;letter-spacing:-.4px}
+.lede{margin:8px 0 0;max-width:640px;font-size:15px;line-height:24px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.stat{padding:20px;border-radius:var(--r-lg);background:var(--panel);border:1px solid var(--line);display:grid;grid-template-columns:1fr auto;row-gap:6px;align-items:end}
+.stat span{grid-column:1/-1;font-size:13px;line-height:18px;color:var(--muted)}
+.stat strong{font-size:26px;line-height:32px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.stat em{font-style:normal;justify-self:start;align-self:center;grid-column:1;height:22px;padding:0 8px;border-radius:11px;font-size:12px;line-height:22px;font-weight:600;background:rgba(62,207,142,.14);color:var(--ok)}
+.stat em.down{background:rgba(243,18,96,.14);color:var(--bad)}
+.stat svg{grid-row:2/4;grid-column:2;width:96px;height:36px;color:var(--accent);stroke-width:2}
+h2{margin:36px 0 12px;font-size:18px;line-height:26px;font-weight:600}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+th{padding:10px 16px;text-align:left;font-size:12px;line-height:16px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:var(--panel-2);border-bottom:1px solid var(--line)}
+td{padding:12px 16px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.who{display:flex;align-items:center;gap:12px}
+.who i{flex:none;width:32px;height:32px;border-radius:50%;background:#243049;color:var(--accent);font-style:normal;font-size:12px;line-height:32px;font-weight:600;text-align:center}
+.who p{margin:0;font-weight:600}
+.who small{display:block;font-size:12px;line-height:16px;font-weight:400;color:var(--muted)}
+.tag{display:inline-block;height:22px;padding:0 8px;border-radius:var(--r-sm);font-size:12px;line-height:22px;font-weight:600;background:rgba(110,168,254,.14);color:var(--accent)}
+.tag.owner{background:rgba(245,165,36,.14);color:var(--warn)}
+.state{display:inline-flex;align-items:center;gap:8px;color:var(--muted)}
+.state::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.state.off::before{background:var(--faint)}
+.num{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.form{margin-top:16px;padding:24px;border-radius:var(--r-lg);background:var(--panel);border:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:20px 24px}
+.form label{display:block;font-size:13px;line-height:18px;font-weight:500;color:var(--muted)}
+.form input[type=text],.form select{display:block;width:100%;height:40px;margin-top:6px;padding:0 12px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;outline:none;box-shadow:inset 0 1px 2px rgba(0,0,0,.5);appearance:none}
+.form .toggle{grid-column:1/-1;display:flex;align-items:center;gap:12px;color:var(--text)}
+.toggle span{position:relative;flex:none;width:36px;height:20px;border-radius:10px;background:var(--accent-strong)}
+.toggle span::after{content:"";position:absolute;top:2px;left:18px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.drop{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px;border-radius:var(--r-md);border:1px dashed #3a4253;color:var(--muted);font-size:13px;line-height:18px}
+.drop svg{width:20px;height:20px;color:var(--faint)}
+.actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
+.btn{height:36px;padding:0 16px;border-radius:var(--r-md);border:1px solid var(--line);background:transparent;color:var(--text);font:inherit;font-weight:600}
+.btn.go{background:var(--accent-strong);border-color:var(--accent-strong);color:#fff}
+.foot{margin:32px 0 0;text-align:center;font-size:12px;line-height:16px;color:var(--faint)}
+svg{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="nav">
+    <div class="brand"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Northwind</div>
+    <ul class="links"><li><a href="#">Overview</a></li><li><a class="on" href="#">Team</a></li><li><a href="#">Billing</a></li><li><a href="#">Audit log</a></li></ul>
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" placeholder="Search members"></div>
+    <div class="me"><i></i>Dana</div>
+  </header>
+  <div class="shell">
+    <aside class="side">
+      <h6>Workspace</h6>
+      <ul>
+        <li><a href="#"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8z"/></svg>General</a></li>
+        <li><a class="on" href="#"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.500 1.500 6.500 5M16 5a3.500 3.500 0 0 1 0 6.500M18 15c2 .6 3.200 2.300 3.800 5"/></svg>Members<b>12</b></a></li>
+        <li><a href="#"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Security</a></li>
+      </ul>
+      <h6>Developers</h6>
+      <ul>
+        <li><a href="#"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>API keys<b>3</b></a></li>
+        <li><a href="#"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg>Webhooks</a></li>
+      </ul>
+    </aside>
+    <main class="main">
+      <h1>Team members</h1>
+      <p class="lede">Invite teammates, set what each role can reach, and review who was active this month. Changes apply to every project in the Northwind workspace as soon as they are saved.</p>
+      <section class="stats">
+        <div class="stat"><span>Active seats</span><strong>12 / 20</strong><svg viewBox="0 0 96 36"><path d="M2 28l12-6 12 3 12-10 12 4 12-9 12 2 16-8"/></svg><em>+2 this month</em></div>
+        <div class="stat"><span>Pending invites</span><strong>3</strong><svg viewBox="0 0 96 36"><path d="M2 20l12 2 12-8 12 6 12-4 12 8 12-5 16 3"/></svg><em class="down">-1 this week</em></div>
+        <div class="stat"><span>Admins</span><strong>2</strong><svg viewBox="0 0 96 36"><path d="M2 18h30l8-6h54"/></svg><em>No change</em></div>
+      </section>
+      <h2>Members</h2>
+      <table>
+        <thead><tr><th>Member</th><th>Role</th><th>Status</th><th style="text-align:right">Last active</th></tr></thead>
+        <tbody>
+          <tr><td><div class="who"><i>DK</i><p>Dana Kim<small>dana@northwind.dev</small></p></div></td><td><span class="tag owner">Owner</span></td><td><span class="state">Active</span></td><td class="num">2 min ago</td></tr>
+          <tr><td><div class="who"><i>RS</i><p>Ravi Shah<small>ravi@northwind.dev</small></p></div></td><td><span class="tag">Admin</span></td><td><span class="state">Active</span></td><td class="num">1 hr ago</td></tr>
+          <tr><td><div class="who"><i>MO</i><p>Mele Okafor<small>mele@northwind.dev</small></p></div></td><td><span class="tag">Editor</span></td><td><span class="state off">Away</span></td><td class="num">3 days ago</td></tr>
+        </tbody>
+      </table>
+      <h2>Invite</h2>
+      <form class="form" onsubmit="return false">
+        <label>Email<input type="text" placeholder="name@company.com"></label>
+        <label>Role<select><option>Editor</option></select></label>
+        <label class="toggle"><span></span>Send a welcome email</label>
+        <div class="drop"><svg viewBox="0 0 24 24"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg>Drop a CSV to invite in bulk</div>
+        <div class="actions"><button class="btn" type="button">Cancel</button><button class="btn go" type="button">Send invite</button></div>
+      </form>
+      <p class="foot">Northwind Labs · Workspace ID nw-48213</p>
+    </main>
+  </div>
+</div>
+</body>
+</html>

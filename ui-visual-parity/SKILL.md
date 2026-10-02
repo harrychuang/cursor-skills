@@ -1,23 +1,38 @@
 ---
-name: ui-compare-to-reference
+name: ui-visual-parity
 description: >-
-  Compare an implemented UI against a reference and apply the visual fixes. The
-  reference can be a Figma file or frame, a design export or screenshot, or
-  another platform's source code — a web implementation used as the truth for an
-  app, or an app implementation used as the truth for web. Use when an app or web
-  UI does not match its design, when porting a screen between web and
-  React Native / Flutter / iOS / Android, or when auditing and repairing layout
-  and token drift. Enforces token-first and component-first repair, and refuses
-  to "fix" legitimate platform adaptations.
+  Compare an implemented UI against a reference and fix the visual differences
+  until the two match in detail. The reference can be a Figma file or frame, a
+  design export or screenshot, or another platform's source code — a web
+  implementation used as the truth for an app, or an app implementation used as
+  the truth for web. Use when an app or web UI does not match its design, when
+  spacing, type, colours, borders, or icons are slightly off, when porting a
+  screen between web and React Native / Flutter / iOS / Android, or when auditing
+  and repairing layout and token drift. Measures every visible element, how it
+  looks and where it sits, overlays the two pictures, and repeats until they
+  agree. Enforces token-first and component-first repair, and refuses to "fix"
+  legitimate platform adaptations.
 ---
 
-# UI Compare to Reference
+# UI Visual Parity
 
-Compare a reference UI with the current implementation, then apply focused visual fixes. Project-agnostic: discover the repository's screenshot locations, routing conventions, component structure, styling system, and design tokens before changing code.
+Measure a reference UI and its implementation, fix what differs, and measure again until the two match. Project-agnostic: discover the repository's routing, component structure, styling system, and design tokens before changing code.
 
-Treat visual repair as a design-system exercise. Trace the UI back to its tokens, theme, shared primitives, and composed components before editing the screen. Do not patch differences with one-off styles unless the difference is truly unique to the selected screen and no shared abstraction owns it.
+The skill's promise is detail parity, and detail cannot be eyeballed. Everything is measured by the scripts in this folder; the agent's judgement is spent on what to fix and where, never on spotting differences. A difference the measurement does not show does not get fixed, so the measurement is exhaustive by design: every element that puts pixels on screen is captured, nothing is sampled, and no spec is written by hand.
 
-To produce a reviewable evidence report instead of (or before) fixing, use `ui-pixel-align-report`.
+Treat repair as a design-system exercise. Trace each difference to its token, theme, shared component, or composition before editing the screen. Do not patch with one-off styles unless the difference is unique to this screen and no shared abstraction owns it.
+
+## The three checks
+
+A cycle compares the two surfaces three ways. Parity means all three pass.
+
+| Check | Compares | Catches |
+|---|---|---|
+| Appearance | Every visible property of every painted element: fills, gradients, each border side, radii, shadows, opacity, type, text, icons, images, placeholders, `::before` / `::after` decorations, interaction states | A wrong colour, weight, radius, line height, missing divider, wrong icon |
+| Geometry | Each element's size and its redlines — the distance from each side to its nearest neighbour or to the edge of the box it sits in | A wrong padding or gap, a stray wrapper, something off-centre, something 1px too tall, text sitting wrong inside an input |
+| Pixels | The two pictures, overlaid | Whatever no property can express: image content, rendering inside a canvas or an icon, anything the first two checks missed |
+
+Declared layout values (padding, gap, margin) are never compared directly. They are read only to explain a distance that differs, so two ways of producing the same picture are never reported as a difference.
 
 ## What can be compared
 
@@ -30,141 +45,146 @@ To produce a reviewable evidence report instead of (or before) fixing, use `ui-p
 | Screenshot / design export | web or app | no Figma access |
 | App on one OS | app on the other OS | iOS ↔ Android parity |
 
-## Inputs
+Web surfaces and Figma frames are measured automatically. Image-only references and native apps are covered by the pixel check and by the estimated path below; `references/measure.md` says exactly what each can and cannot establish.
 
-Accept any of these from the user message:
+The web path is verified end to end by the bundled benchmark. The Figma capture is tested against a stand-in for Figma's API and has not yet been run on a real file: on its first use in a project, check a few recorded values (a padding, a line height, a gradient) against the design before trusting a clean result, and say in the report that you did.
 
-- **A findings file:** `reports/design-pixel-align/wallet/findings.json` — the strongest input. Skip straight to the fix loop.
-- **Figma + target:** `https://figma.com/design/...?node-id=1-234 src/screens/WalletHome.tsx`, or with a URL, route, or story.
-- **Reference code + target:** `apps/web/src/pages/Wallet.tsx apps/mobile/src/screens/WalletHome.tsx`, or two repo paths, or a reference URL plus an app screen.
-- **Screenshot + target:** `screen-2.png http://localhost:3000/dashboard`, `screen-2.png /dashboard`, `screen-2.png src/pages/Dashboard.tsx`.
-- **Screenshot only:** `screen-2`, `designs/dashboard.png`.
-- **Target only:** `http://localhost:3000/dashboard`, `/dashboard`, `Dashboard.stories.tsx`.
-- **Empty target:** compare all discoverable reference/implementation pairs.
-- **Design-system package (optional but strongly preferred when present):** token files, `TOKEN_ARCHITECTURE.md` with `a11y-remap` records, and evidence/source-trace docs from `design-system-extractor`. Token names accelerate ownership tracing, and the remap records prevent "fixing" sanctioned accessibility values back to the reference.
+## Before you start
 
-An explicit reference + target pair is authoritative. Do not override it with auto-discovery unless a side cannot be found or loaded.
+- **Node 22 or later and a Chromium-family browser** (Chrome, Chromium, Edge — found automatically; set `CHROME_PATH` otherwise). Nothing to install. If the environment has its own browser tool instead, it can evaluate `scripts/extract_dom.js`; see `references/measure.md`.
+- Commands below are written from this skill's folder. From a project, call the script by its path and keep outputs in the project, for example `reports/parity/<surface>/`.
+- **Inputs.** An explicit reference + target pair is authoritative. A `findings.json` from the `ui-pixel-align-report` skill is an accepted starting list; verify every fix with a cycle. A design-system package (token files, `a11y-remap` records) sharpens ownership and prevents "fixing" sanctioned accessibility values — pass the records with `--remaps`.
+- **Discovery.** Identify both platforms, the implementation entry point (route, screen, story, file), the styling system, and the token layer. Check what can be rendered before starting a server. If the reference or the target is ambiguous, list the candidates and ask before editing.
 
-## Discovery
+## Workflow
 
-Before comparing or editing:
+### 1. Match the capture context
 
-1. **Identify both platforms.** Web, React Native, Flutter, iOS, Android, or Figma — for the reference and for the target. Everything downstream depends on this pair.
-2. **Find the reference.** Explicit paths first, then `reference/`, `references/`, `screenshots/`, `design/`, `designs/`, `mockups/`, `spec/`, `specs/`, `public/`. For a monorepo, the reference implementation is often a sibling workspace (`apps/web`, `apps/mobile`, `packages/ui`).
-3. **Find the implementation entry point.** Explicit files first, then `src/pages/`, `src/screens/`, `src/app/`, `app/`, `pages/`, `src/routes/`, `src/components/`, `components/`, `lib/`, and Storybook stories.
-4. **Identify the styling system** on the target: Tailwind, CSS modules, vanilla CSS, Sass, styled-components, CSS-in-JS, StyleSheet, ThemeData, MaterialTheme, SwiftUI constants, or a component library.
-5. **Identify design guidance:** `README.md`, `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, theme files, token files, Storybook docs, component documentation.
-6. **Check what can be rendered.** If a URL is provided, verify whether a server is already running before starting one. For app targets, check for a running simulator, an Expo/Metro process, or a Storybook.
+Both sides must show the same thing: same surface width, density, theme, locale, content, and state. A cycle takes the width, the density, and the colour scheme from the reference; the locale, the content, and the state are yours to match. Different content is not a visual difference — load the same content, or exclude the area (`--ignore`), which takes it out of all three checks. Capture the reference once for each state, theme, and breakpoint the design defines; each gets its own cycles. Details: `references/measure.md`.
 
-## Target Resolution
+### 2. Capture the reference
 
-1. **findings.json:** use it as-is. Only re-derive when a finding is stale against the current code.
-2. **Reference + target pair:** compare exactly that pair.
-3. **Reference + route:** find the route's implementation, then compare.
-4. **Reference only:** match by filename, nearby docs, route names, component names, story names, visible copy, and visual intent.
-5. **Target only:** capture the current UI, then find the closest reference.
-6. **Empty target:** compare all plausible pairs, but ask before editing when multiple matches are ambiguous.
+| Reference | How |
+|---|---|
+| Web URL, story, or file | `capture_web.mjs` (below) |
+| Figma frame, script-capable Figma tool | run `scripts/extract_figma.js` in pages, merge with `figma_to_spec.mjs --parts`, export the frame as PNG |
+| Figma frame, read-only tools | save the frame's metadata, `figma_to_spec.mjs --metadata`, export or screenshot the frame |
+| Image only, or a native app | no spec — see the estimated path |
 
-If either side is ambiguous, list the likely candidates and ask before applying fixes.
+```sh
+node scripts/capture_web.mjs --url <reference url or file> --root <selector> \
+  --viewport 390x844 --dpr 2 --states hover,focus-visible \
+  --out reports/parity/home --name reference
+```
 
-## Comparison
+`--root` is the element that is the surface (the screen, the card, the story root); `--theme dark` captures the dark colour scheme. The capture writes `reference.spec.json` and `reference.png`, and stops with a message when the page cannot be loaded. Step-by-step instructions for every kind of reference, including the Figma script's paging, are in `references/measure.md`; how Figma properties map to CSS is in `references/figma-to-css.md`.
 
-When a `findings.json` from `ui-pixel-align-report` exists, skip to **Fix Strategy** — the diagnosis is done.
+### 3. Run a cycle
 
-Without one, run the **measured pipeline** whenever both sides can produce concrete values — a rendered surface, Figma via MCP (no rendering needed), or readable source code (`inspected` fidelity per the sibling's `references/extract-code.md`). That covers almost every real case, and it is the default, not the thorough option. A condensed eyeball pass under-enumerates, and the differences it misses are exactly what forces a second run:
+One command captures the implementation, runs the three checks, and prints the verdict.
 
-1. **Align the font environment first.** Before measuring anything, confirm the rendering environment loads the same fonts as the source platform and record what actually loaded into `surface.fonts` (`requested`, `loaded`, `aligned`) on each spec. A fallback font shifts ink height by up to ~30% and fabricates type-size and box-height drift. If fonts cannot be aligned, set `aligned: false` — the diff downgrades type metrics to untrusted, and you must not fix them.
-2. **Extract both sides into UI Specs** using `ui-pixel-align-report`'s `references/ui-spec.md`, `references/extract-figma.md`, and `references/extract-code.md`. Populate `tokenRefs` — a finding that names a token is half-located already.
-3. **Collect accessibility remaps.** If the project's design system records `a11y-remap` decisions (in `TOKEN_ARCHITECTURE.md` or token CSS comments), copy them into `accessibilityRemaps` so sanctioned replacements classify as `required-adaptation` instead of drift you would wrongly "fix".
-4. **Diff mechanically:**
+```sh
+node scripts/parity.mjs --reference reports/parity/home/reference.spec.json \
+  --reference-image reports/parity/home/reference.png \
+  --url <implementation url, story, or file> --root <selector> \
+  --out reports/parity/home/cycle-01
+```
 
-   ```sh
-   node <ui-pixel-align-report-root>/scripts/diff_spec.mjs \
-     --reference spec/reference.json --implementation spec/implementation.json \
-     --output findings.candidates.json
-   ```
+It captures the implementation the way the reference was captured: the same viewport, the density of the reference picture, the same colour scheme, the same states. Add `--previous <the last cycle's folder>` from the second cycle on. Other flags: `--remaps` (accessibility remap records), `--policy` (project policy), `--ignore` (areas to exclude), `--map` (explicit pairs when something exists on both sides but is reported as having no counterpart), `--theme dark` (a dark Figma frame, which records no scheme), `--renderer other` (the reference image came from a design tool; the default when the platforms differ).
 
-   Note the reported **field convergence** percentage — it is the progress meter for the fix loop.
-5. **Review the candidates** (drop false positives, classify per Parity Rules below), then continue to Fix Strategy with the surviving findings.
+Exit code `0` is parity, `1` is not at parity, `2` means the cycle could not run. The output folder holds the implementation's spec and screenshot, `parity.json`, the overlay `pixel-diff.png`, and an enlarged crop per differing region.
 
-Fall back to the **condensed comparison** only when a side offers nothing to measure *or* read — an image-only reference with no Figma access, a binary-only or third-party implementation — or when the user explicitly asks for a quick single-block spot fix where writing spec files costs more than it saves:
+### 4. Read the result
 
-1. **Read the reference into concrete values.**
-   - Figma: use the Figma MCP tools — node metadata for the tree, variable definitions for token names, design context for layout/typography/fills/radii/effects, a screenshot for visual confirmation. Exact numbers and variable names come from here; do not estimate off a PNG when MCP is available.
-   - Reference source code: read the layout and style declarations, resolving the theme layer. Convert units to CSS-equivalent px at 1x — RN dp, Flutter logical px, iOS pt, and Android dp are all 1:1 with CSS px; `rem` needs the root font size; `sp` scales with user settings.
-   - Screenshot only: establish scale from one element of known size, measure relative to it, round spacing to 4px and type to 1px, and say the values are approximate.
-2. **Read the implementation the same way.** Prefer measuring a rendered surface (`getComputedStyle`, layout inspector, widget inspector) over reading source. Source reading misses inherited and themed values.
-3. **Compare viewports first.** A reference frame that is an exact 2x or 3x multiple of the target viewport is a scale error, not drift — fix the capture instead of filing findings.
-4. **Trace ownership** for each differing block: shared component, design-system primitive, third-party wrapper, page composition, or ad hoc markup. Use `references/locate-owner.md` to go from a rendered difference to the owning declaration mechanically.
-5. **Classify each difference** before touching code — see Parity Rules below.
-6. **List the differences** before editing:
+```
+NOT AT PARITY
+  appearance   100%   primitives that look the same
+  geometry    34.7%   primitives exactly where the reference has them
+  pixels     93.88%   of the picture identical · 14 differing region(s), 0 with no measured explanation
+  paired 49/49 primitives · 1 to fix · 1 consequences · 0 leave-alone · 0 untrusted
 
-   `| Block | Expected (reference) | Actual (implementation) | Class | Owner | Fix |`
+PV-001  fix  div padding-top 0 → 3  [div.card-inner > div]
+             seen as: "Total balance": gap below 4px → 7px (+3), measured to "$12,480.50"
+PV-002   ↳   section.balance-card: height 146px → 149px (+3)  [main.content > section.balance-card]
+```
 
-Condensed results are estimated: do not apply sub-2px fixes from them, and say so in the report-back.
+Every finding says what to do with it:
 
-When the implementation is a Storybook with the design system's `fidelity` toolbar (authored | accessible), capture in **accessible** mode — that is the shipped state — and record which mode was active. Authored mode is for design review, not for driving fixes.
+- **`fix`** — a cause. This is the work.
+- **`↳`** (follows) — a consequence of a cause above it. Never edit code for it; it disappears when its cause is fixed and is re-measured in the next cycle.
+- **`leave`** — an adaptation or a sanctioned value. Do not touch.
+- **`?`** (untrusted) — the measurement cannot be relied on. Fix the measurement (usually the fonts), not the code.
 
-## Parity Rules
+Regions the pixel check finds are either explained by a finding or listed as **unexplained** — the picture differs there and no measured property says why. Open each one's crop. A region that lies only on a `leave` difference is named on the last line and does not block parity. Lines starting `left out` say what the verdict does not cover; carry them into the report. `references/reading-results.md` explains every line and field.
 
-Cross-platform repair fails when every difference is treated as a defect. Classify before fixing:
+### 5. Fix the causes, in ownership order
 
-- **Drift** — must match, does not. Fix it. Covers color, radius, border, font weight, structure, reading order, copy, and — at the same form factor — spacing, sizing, and font size.
-- **Adaptation** — the platform or form factor justifies the difference. Leave it. Covers sanctioned font substitution (Inter → SF Pro Text on iOS, Roboto on Android), shadow rendering across engines, and density differences between a desktop reference and a phone target.
-- **Required adaptation** — the implementation copied the reference where it should have diverged. Fix it by *diverging further*: raise touch targets to 44pt on iOS / 48dp on Android, respect safe-area insets on top of the design's padding, let text containers grow under Dynamic Type, add `:hover` and `:focus-visible` when porting native → web, and add `pressed` when porting web → native. Recorded accessibility remaps (`a11y-remap` in the design system) also live here: the accessible value is the sanctioned state — never "fix" it back to the authored reference value, no matter how much closer that looks to Figma. If the implementation shows the *authored* value, the fix is to apply the accessible one.
-- **Ignored** — OS chrome, status bars, home indicators, scrollbars, absolute positions, hover states on touch-only surfaces.
-- **Untrusted** — type-size, line-height, letter-spacing, and text-box dimensions measured under a mismatched font environment (`fontEnvironment: mismatched`). These are measurement artifacts, not drift. Align the fonts and re-measure; never change tokens or sizes from them.
+Fix only findings marked `fix`, one layer at a time:
 
-Form factor is the deciding axis. Same viewport class → compare absolute values strictly. Desktop reference vs phone target → preserve ratio, rhythm, and hierarchy, not absolute pixels.
+1. **Token/theme.** A repeated colour, spacing, type, radius, shadow, or elevation value → update or apply the existing token.
+2. **Shared component.** Several screens expect the same behaviour → fix the primitive or its variant, not the page instance.
+3. **Composition.** Correct components composed wrongly → adjust layout, props, slots, or wrappers at the screen level.
+4. **Page-only.** Only when the difference is unique to this target and nothing shared owns it.
 
-State which class each planned fix falls into. Never silently "fix" an adaptation.
+A finding names the element (`selector`), the token when one is behind the value, and for spacing the exact part that differs on each side. Go from there to the declaration with `references/locate-owner.md`, and write the fix in the target platform's idiom with `references/apply-to-platform.md`.
 
-## Fix Strategy
+For every **unexplained region**: open its crop, say in words what differs, trace the owning declaration, then fix it or record why it stays. Never dismiss one without a recorded reason.
 
-Use the layered repair model of mature design systems:
+Fixing rules:
 
-1. **Token/theme layer.** A repeated color, spacing, typography, radius, shadow, elevation, breakpoint, or motion value → update or apply the existing token first.
-2. **Primitive/shared component layer.** Multiple screens would expect the same behavior → fix the shared primitive or component variant, not the page instance.
-3. **Composition layer.** Correct components composed incorrectly → adjust layout, props, slots, wrappers, or responsive structure at the screen level.
-4. **Page-only layer.** Only when the difference is unique to this target and no token, primitive, variant, or composition API owns it.
-
-State which layer owns each planned fix before editing. If ownership is ambiguous, use `references/locate-owner.md` to trace the rendered difference to its owning declaration mechanically, and inspect nearby stories, docs, call sites, and token files.
-
-`references/apply-to-platform.md` covers how to express each correction idiomatically per platform — where tokens live, how gap/padding/radius/typography/elevation are written in web, React Native, Flutter, SwiftUI, and Compose, how to implement the required adaptations, and the layout traps that break naive ports.
-
-### Convergence loop
-
-Do not apply every fix in one flat pass and measure once at the end — that is what makes a second manual run necessary. Fix in layer order, re-measuring between layers, because an upstream fix closes and invalidates downstream findings:
-
-1. **Token/theme fixes first.** Apply only this layer, re-render, re-extract the implementation spec, re-diff. One token fix typically closes many findings at once — re-diffing now prevents patching symptoms the token already cured.
-2. **Primitive/shared component fixes.** Apply, re-measure, re-diff.
-3. **Composition and page-only fixes.** Apply, re-measure, re-diff.
-4. **Exit check.** The loop is done when every remaining finding is one of: an adaptation, a *satisfied* accessibility remap (the informational `required-adaptation` whose recommended fix says no fix is needed), or explicitly accepted with a recorded reason. Open `drift` findings are work; so are `required-adaptation` **defects** — touch targets, safe areas, Dynamic Type, or an authored value the implementation copied where the remap demands the accessible one. Track the diff script's **field convergence** percentage per cycle — it should rise monotonically; a drop means a fix regressed something.
-5. **Cycle cap.** If three full cycles have not converged, stop and report the residuals with their blockers (missing token, design-system decision needed, untrusted font environment) instead of thrashing.
-
-The measured re-diff between layers is cheap — the reference spec is already extracted; only the implementation side is re-captured.
-
-On the condensed path (no specs, nothing to re-diff mechanically), keep the same layer cadence: apply one layer, re-measure with the same instruments used to compare (computed styles, layout/widget inspectors), and update the difference table. The convergence percentage is unavailable — the exit check is the table instead: every row ends `closed`, `sanctioned`, or `blocked` with a reason.
-
-## Fixing Rules
-
-- Apply fixes only for the selected target.
 - Prefer existing components, tokens, utility classes, theme variables, and project conventions.
-- Do not introduce one-off hardcoded values when a token or shared primitive exists. When the reference calls for a value that has no token and it recurs, propose adding the token rather than inlining it.
-- Do not bypass shared components by restyling their rendered markup from the page. Update the component, variant, props, or token that owns the behavior.
-- If a shared component change may affect other screens, inspect representative call sites or stories and keep the change compatible with existing intended variants.
-- When a one-off is unavoidable, keep it local, explain why no shared owner exists, and still avoid raw values an existing token can express.
-- Never port a value across platforms without converting it: line height is absolute in CSS/RN/Compose, a multiplier in Flutter, and extra leading in SwiftUI.
-- Keep changes scoped to visual parity unless the user asks for broader refactoring.
+- Do not introduce a hardcoded value where a token or shared primitive exists. When the reference calls for a value that has no token and it recurs, propose the token instead of inlining it.
+- Do not restyle a shared component's markup from the page. Update the component, variant, props, or token that owns the behaviour, and check representative call sites or stories before changing a shared default.
+- Never port a value across platforms without converting it: line height is absolute in CSS, React Native, and Compose, a multiplier in Flutter, and extra leading in SwiftUI.
+- Keep changes scoped to visual parity. Stop and ask before changing product behaviour, copy, data flow, or accessibility semantics.
 
-## Verification
+### 6. Measure again
 
-A fix is not done until it is measured again. The convergence loop already re-measures between layers; this is the final gate.
+Re-run the cycle after each layer's fixes, into a new folder, with `--previous` pointing at the last one. An upstream fix closes downstream findings; measuring between layers is what keeps symptoms from being patched.
 
-1. Re-render the changed surface on **its own platform** — reload the URL or story, hot reload the simulator, rebuild the preview.
-2. Re-measure the nodes you changed. Confirm each one now matches the reference value — or run the full re-diff and confirm the finding no longer appears.
-3. When working from a `findings.json`, update each finding's `status` to `fixed`, `open`, or `accepted` (for adaptations and recorded accessibility remaps), and say which ones remain.
-4. Run the project's cheapest reliable check: typecheck, lint, tests, or a build.
-5. Report honestly: the final field convergence percentage and open drift count when the measured pipeline ran, which differences were closed, which were left as adaptations, which were untrusted due to the font environment, and which could not be fixed without a design-system decision.
+- **Keep going** while the number of causes plus unexplained regions goes down.
+- **Stop** when it does not go down. Report what remains and what blocks it.
+- **A score dropped or a new finding appeared** — the last edit broke something. Revert it before continuing; treat the finding it addressed as blocked or find a different owner.
+- **Never more than 8 cycles** for one surface. A cycle counts itself through `--previous` and warns once the cap is passed.
 
-If a URL was provided, verify against that URL. If a file was provided with no renderable target, validate with the project's cheapest reliable check and say that no visual confirmation was possible.
+### 7. Finish
+
+Parity (exit code `0`) ends the loop. Otherwise give every remaining cause and unexplained region exactly one status with a reason: adaptation, sanctioned accessibility remap, untrusted because of the font environment, blocked by a missing token or a design-system decision, or accepted by the user.
+
+Then run the project's cheapest reliable check (typecheck, lint, tests, or a build) and report:
+
+- the last cycle's verdict and its three scores, and how many cycles ran;
+- what was fixed, grouped by ownership layer;
+- every remaining item with its status and reason;
+- which checks did not run (for example, no reference image, so the picture was not compared) and which policy file was used.
+
+When working from a `findings.json`, also update each finding's `status` to `fixed`, `open`, or `accepted`.
+
+## Parity rules in brief
+
+Cross-platform repair fails when every difference is treated as a defect. The cycle classifies each finding; `references/parity-policy.md` has the full rules, tolerances, and how to override them.
+
+- **Drift** — must match and does not. Fix it. Between Figma and web at the same size this includes line height, letter spacing, and 1px differences.
+- **Adaptation** — the platform or form factor justifies the difference (sanctioned font substitution, a desktop reference against a phone target). Leave it.
+- **Required adaptation** — matching the reference would be the defect: touch targets under 44pt on iOS or 48dp on Android, or an authored colour shipped where the design system records an accessible replacement. A recorded accessibility remap is the sanctioned state; never change it back to the reference value.
+- **Untrusted** — measured under a font the page did not ask for. Never change a token, a size, or a line height from it. Align the fonts and measure again.
+
+State which class each fix falls into. Never silently "fix" an adaptation.
+
+## When a side cannot be measured
+
+An image-only reference, a surface that cannot be rendered, or a native app without a spec leaves nothing for a cycle to compare. The pixel check still runs whenever two images exist, and its regions say where to look. Compare what can be read for those regions, mark the result as estimated, and do not apply fixes under 2px from estimated values. The procedure is in `references/measure.md`.
+
+When the implementation is a Storybook with the design system's `fidelity` toolbar (authored | accessible), capture in **accessible** mode — that is the shipped state — and record which mode was active.
+
+## Reference files
+
+- `references/measure.md` — capturing each kind of surface: web, Figma with a script tool, Figma read-only, image-only, native; capture context; what a capture cannot see.
+- `references/ui-spec.md` — the UI Spec format the captures produce.
+- `references/figma-to-css.md` — where Figma properties and CSS differ, and the right translation.
+- `references/reading-results.md` — every line of a cycle's output, the result file, regions, and adjudication.
+- `references/parity-policy.md` — classes, tolerances, accessibility remaps, font rules, policy override.
+- `references/locate-owner.md` — from a finding to the declaration to edit.
+- `references/apply-to-platform.md` — writing the fix on web, React Native, Flutter, SwiftUI, and Compose.
+
+After changing anything under `scripts/`, run `node tests/run_benchmark.mjs` and `node --test tests/unit.test.mjs`: the first checks that every seeded difference is still reported and that equal pictures still pass.

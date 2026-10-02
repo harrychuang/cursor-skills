@@ -1,0 +1,166 @@
+################ wallet — baseline (current documented pipeline)
+id      as-documented  best-case     what  →  best case's first findings
+D01     drift×3        drift×6       card padding 24 → 16  →  t010 · padding top -8px (expected 24, actual 16) | t010 · height -16px (expected 146, actual 130)
+D02     —              drift×2       button label weight 600 → 500  →  t017 · font weight -100 (expected 600, actual 500) | t018 · font weight -100 (expected 600, actual 500)
+D03     —              drift×2       button radius 12 → 8  →  t017 · corner radius top-left -4px (expected 12, actual 8) | t018 · corner radius top-left -4px (expected 12, actual 8)
+D04     —              drift×6       row title colour #111827 → #374151  →  t027 · text/icon color expected #111827, actual #374151 | t027 · border color expected #111827, actual #374151
+D05     —              drift×1       primary button fill #4f46e5 → #6366f1  →  t017 · background color expected #4f46e5, actual #6366f1
+D06     —              drift×3       gap between the two buttons 12 → 16  →  t016 · gap +4px (expected 12, actual 16) | t017 · width -2px (expected 172, actual 170)
+D07     —              drift×3       row subtitle size 13 → 12  →  t028 · font size -1px (expected 13, actual 12) | t035 · font size -1px (expected 13, actual 12)
+D08     drift×1        drift×5       row vertical padding 12 → 11 (1px)  →  t009 · height -6px (expected 592, actual 586) | t022 · height -6px (expected 196, actual 190)
+D09     drift×2        drift×3       card label line-height 18 → 22  →  t011 · height +4px (expected 18, actual 22) | t009 · height +4px (expected 592, actual 596)
+D10     —              leave-alone   balance letter-spacing -0.5 → 0  →  t012 · letter spacing +0.5px (expected -0.5, actual 0)
+D11     drift×2        drift×3       section title line-height 24 → not set  →  t019 · height -3px (expected 24, actual 21) | t020 · height -3px (expected 24, actual 21)
+D12     drift×1        drift×1       card shadow 0 8 24 → 0 4 12  →  t010 · shadow expected "rgba(79, 70, 229, 0.24) 0px 8px 24px 0px", actual "rgba(79, 70, 229, 0.24) 0px 4px 12px 0px"
+D13     —              —             card gradient end stop #7c3aed → #6d28d9  →  (nothing)
+D14     drift×1        drift×2       row dividers missing  →  t009 · height -2px (expected 592, actual 590) | t022 · height -2px (expected 196, actual 194)
+D15     —              drift×6       row icon glyph 20 → 24  →  t025 · width +4px (expected 20, actual 24) | t025 · height +4px (expected 20, actual 24)
+D16     —              —             tab icon stroke 1.5 → 2  →  (nothing)
+D17     —              —             'See all' link gains an underline  →  (nothing)
+D18     drift×2        drift×2       balance pushed down 3px by a stray wrapper  →  t009 · height +3px (expected 592, actual 595) | t010 · height +3px (expected 146, actual 149)
+D19     —              —             avatar image stretched (cover → fill)  →  (nothing)
+D20     —              —             primary button hover colour wrong  →  (nothing)
+D21     drift×1        drift×5       long subtitle wraps instead of truncating  →  t030 · height +18px (expected 65, actual 83) | t033 · height +18px (expected 40, actual 58)
+D22     —              drift×1       caption opacity .72 → .6  →  t015 · opacity -0.12 (expected 0.72, actual 0.6)
+D23     —              drift×1       input border 1 → 2  →  t046 · border width +1px (expected 1, actual 2)
+D24     —              drift×3       row items top-aligned instead of centred  →  t023 · cross-axis alignment expected "center", actual "flex-start" | t030 · cross-axis alignment expected "center", actual "flex-start"
+D25     —              —             badge offset -4/-4 → 0/0  →  (nothing)
+D26     —              drift×4       avatar 36 → 32  →  t006 · width -4px (expected 36, actual 32) | t006 · height -4px (expected 36, actual 32)
+D27     drift×1        drift×3       outline button 2px taller (border added outside)  →  t009 · height +2px (expected 592, actual 594) | t016 · height +2px (expected 48, actual 50)
+D28     —              drift×6       active tab colour #4f46e5 → #6366f1  →  t048 · text/icon color expected #4f46e5, actual #6366f1 | t048 · border color expected #4f46e5, actual #6366f1
+D29     —              drift×1       chip pill radius → 8  →  t014 · corner radius top-left -991px (expected 999, actual 8)
+D31     —              —             field label loses uppercase  →  (nothing)
+D32     —              —             placeholder colour #9ca3af → #6b7280  →  (nothing)
+D33     drift×3        drift×3       tab bar top hairline missing  →  t047 · border style expected "solid", actual "none" | t047 · border color expected #e5e7eb, actual #111827
+D34     —              drift×12      gap inside a row 12 → 10  →  t023 · gap -2px (expected 12, actual 10) | t026 · width +4px (expected 216, actual 220)
+D35     —              —             app bar hairline colour #e5e7eb → #d1d5db  →  (nothing)
+D36     —              —             wrong menu icon (3 bars → 2 bars)  →  (nothing)
+D37     —              drift×2       one row's positive amount not green  →  t036 · text/icon color expected #059669, actual #111827 | t036 · border color expected #059669, actual #111827
+FP1     —              drift×1       badge radius written as 9999px (same pill)  →  t008 · corner radius top-left +9990px (expected 9, actual 9999)
+FP2     —              drift×2       same 8px spacing via margin instead of gap  →  t013 · gap -8px (expected 8, actual 0) | t015 · margin left +8px (expected 0, actual 8)
+FP3     —              drift×2       same 48px button via padding instead of height  →  t017 · padding top +14px (expected 0, actual 14) | t018 · padding top +13px (expected 0, actual 13)
+all     drift×7        drift×73      all 36 at once  →  t010 · shadow expected "rgba(79, 70, 229, 0.24) 0px 8px 24px 0px", actual "rgba(79, 70, 229, 0.24) 0px 4px 12px 0px" | t014 · corner radius top-left -991px (expected 999, actual 8)
+
+################ wallet — prototype
+id      verdict  spec diff        pixels             what  →  what the prototype says first
+control PARITY   —                —                  identical picture, different element tree  →  (no finding)
+D01     differs  3 fix +1↳        1r (0 unexpl.)     card padding 24 → 16  →  section.balance-card padding-top 24 → 16
+D02     differs  2 fix +1↳        2r (0 unexpl.)     button label weight 600 → 500  →  "Send": font weight 600 → 500
+D03     differs  2 fix +0↳        8r (0 unexpl.)     button radius 12 → 8  →  button.btn.btn-primary: corner radius 12px → 8px
+D04     differs  1 fix +0↳        3r (0 unexpl.)     row title colour #111827 → #374151  →  "Spotify": text colour #111827 → #374151 ×3
+D05     differs  1 fix +0↳        1r (0 unexpl.)     primary button fill #4f46e5 → #6366f1  →  button.btn.btn-primary: fill #4f46e5 → #6366f1
+D06     differs  1 fix +2↳        4r (0 unexpl.)     gap between the two buttons 12 → 16  →  div.actions gap 12 → 16
+D07     differs  1 fix +2↳        3r (0 unexpl.)     row subtitle size 13 → 12  →  "Subscription · Sep 28": font size 13px → 12px ×3
+D08     differs  2 fix +2↳        7r (0 unexpl.)     row vertical padding 12 → 11 (1px)  →  li.tx-row padding-top 12 → 11 ×4
+D09     differs  1 fix +2↳        14r (0 unexpl.)    card label line-height 18 → 22  →  "Total balance": line height 18px → 22px
+D10     differs  1 fix +1↳        1r (0 unexpl.)     balance letter-spacing -0.5 → 0  →  "$12,480.50": letter spacing -0.5px → 0px
+D11     differs  1 fix +3↳        8r (0 unexpl.)     section title line-height 24 → not set  →  "Recent activity": line height 24px → 21px (not set in the implementation — the browser default applies)
+D12     differs  1 fix +0↳        1r (0 unexpl.)     card shadow 0 8 24 → 0 4 12  →  section.balance-card: shadow 0 8 24 0 #4f46e53d → 0 4 12 0 #4f46e53d
+D13     differs  1 fix +0↳        1r (0 unexpl.)     card gradient end stop #7c3aed → #6d28d9  →  section.balance-card: gradient linear(135deg, #4f46e5 0%, #7c3aed 100%) → linear(135deg, #4f46e5 0%, #6d28d9 100%)
+D14     differs  2 fix +2↳        9r (0 unexpl.)     row dividers missing  →  li.tx-row: bottom border is missing (1px #e5e7eb) ×2  (not visible in this capture)
+D15     differs  2 fix +0↳        3r (0 unexpl.)     row icon glyph 20 → 24  →  svg: width 20px → 24px (+4) ×3
+D16     differs  1 fix +0↳        —                  tab icon stroke 1.5 → 2  →  svg: icon stroke 1.5px → 2px ×4
+D17     differs  1 fix +0↳        1r (0 unexpl.)     'See all' link gains an underline  →  "See all": text decoration none → underline
+D18     differs  1 fix +1↳        15r (0 unexpl.)    balance pushed down 3px by a stray wrapper  →  div padding-top 0 → 3
+D19     differs  1 fix +0↳        1r (0 unexpl.)     avatar image stretched (cover → fill)  →  img.avatar: image fit cover → fill
+D20     differs  1 fix +0↳        —                  primary button hover colour wrong  →  button.btn.btn-primary: hover background #4338ca → #3730a3  (not visible in this capture)
+D21     differs  5 fix +4↳        3r (0 unexpl.)     long subtitle wraps instead of truncating  →  span.tx-icon: top inset 12px → 21px (+9), measured to the top edge of li.tx-row
+D22     differs  1 fix +0↳        1r (0 unexpl.)     caption opacity .72 → .6  →  "vs last month": opacity 0.72 → 0.6
+D23     differs  1 fix +0↳        1r (0 unexpl.)     input border 1 → 2  →  input.input: border width 1px → 2px
+D24     differs  2 fix +0↳        3r (0 unexpl.)     row items top-aligned instead of centred  →  "-$9.99": top inset 22px → 12px (-10), measured to the top edge of li.tx-row — centred vertically in the reference, not in the implementation ×2
+D25     differs  2 fix +0↳        1r (0 unexpl.)     badge offset -4/-4 → 0/0  →  span.badge: top inset 5.5px → 9.5px (+4), measured to the top edge of header.app-bar
+D26     differs  2 fix +2↳        2r (0 unexpl.)     avatar 36 → 32  →  img.avatar: width 36px → 32px (-4)
+D27     differs  2 fix +0↳        10r (0 unexpl.)    outline button 2px taller (border added outside)  →  "Recent activity": gap above 19.5px → 21.5px (+2), measured to button.btn.btn-primary
+D28     differs  2 fix +0↳        1r (0 unexpl.)     active tab colour #4f46e5 → #6366f1  →  svg: icon colour #4f46e5 → #6366f1
+D29     differs  1 fix +0↳        2r (0 unexpl.)     chip pill radius → 8  →  span.chip: corner radius 12px → 8px
+D31     differs  1 fix +1↳        1r (0 unexpl.)     field label loses uppercase  →  "Note": text-transform uppercase → none (reads "NOTE" → "Note")
+D32     differs  1 fix +0↳        1r (0 unexpl.)     placeholder colour #9ca3af → #6b7280  →  input.input: placeholder colour #9ca3af → #6b7280
+D33     differs  1 fix +0↳        5r (0 unexpl.)     tab bar top hairline missing  →  nav.tab-bar: top border is missing (1px #e5e7eb)
+D34     differs  1 fix +1↳        3r (0 unexpl.)     gap inside a row 12 → 10  →  li.tx-row gap 12 → 10 ×7
+D35     differs  1 fix +0↳        1r (0 unexpl.)     app bar hairline colour #e5e7eb → #d1d5db  →  header.app-bar: bottom border colour #e5e7eb → #d1d5db
+D36     differs  1 fix +0↳        1r (0 unexpl.)     wrong menu icon (3 bars → 2 bars)  →  svg: icon artwork differs — not the same glyph
+D37     differs  1 fix +0↳        1r (0 unexpl.)     one row's positive amount not green  →  "+$4,200.00": text colour #059669 → #111827
+FP1     PARITY   —                —                  badge radius written as 9999px (same pill)  →  (no finding)
+FP2     PARITY   —                —                  same 8px spacing via margin instead of gap  →  (no finding)
+FP3     PARITY   —                —                  same 48px button via padding instead of height  →  (no finding)
+all     differs  48 fix +22↳      17r (0 unexpl.)    all 36 at once  →  header.app-bar: bottom border colour #e5e7eb → #d1d5db
+
+################ settings — baseline (current documented pipeline)
+id      as-documented  best-case     what  →  best case's first findings
+H01     drift×1        drift×10      stats grid gap 16 → 24  →  t045 · gap +8px (expected 16, actual 24) | t046 · width -5px (expected 309, actual 304)
+H02     drift×3        drift×17      stat card padding 20 → 16  →  t045 · height -8px (expected 126, actual 118) | t046 · padding top -4px (expected 20, actual 16)
+H03     drift×1        drift×1       h1 size 28 → 26  →  t043 · font size -2px (expected 28, actual 26)
+H04     drift×2        drift×5       intro paragraph line-height 24 → 22  →  t044 · height -4px (expected 48, actual 44) | t001 · height -4px (expected 1119, actual 1115)
+H05     —              drift×1       intro paragraph max-width 640 → 720  →  t044 · width +80px (expected 640, actual 720)
+H06     drift×1        drift×1       nav background alpha .8 → .6  →  t002 · background color expected #12151ccc, actual #12151c99
+H07     —              —             active tab underline colour (pseudo-element)  →  (nothing)
+H08     —              drift×19      table header letter-spacing .06em → 0  →  t068 · width -13px (expected 235, actual 222) | t080 · width -13px (expected 235, actual 222)
+H09     —              drift×27      table cell horizontal padding 16 → 12  →  t066 · width -9px (expected 172, actual 163) | t071 · padding right -4px (expected 16, actual 12)
+H10     —              drift×3       owner tag uses the default tag colours  →  t077 · text/icon color expected #f5a524, actual #6ea8fe | t077 · background color expected #f5a52424, actual #6ea8fe24
+H11     —              drift×14      status dot 8 → 6 (pseudo-element)  →  t065 · width +2px (expected 378, actual 380) | t067 · width -4px (expected 174, actual 170)
+H12     —              —             last-active column left-aligned  →  (nothing)
+H13     —              drift×3       avatar initials weight 600 → 700  →  t073 · font weight +100 (expected 600, actual 700) | t084 · font weight +100 (expected 600, actual 700)
+H14     —              drift×1       toggle track 36 → 40  →  t110 · width +4px (expected 36, actual 40)
+H15     —              drift×1       drop zone border dashed → solid  →  t111 · border style expected "dashed", actual "solid"
+H16     —              drift×4       button horizontal padding 16 → 20  →  t114 · padding right +4px (expected 16, actual 20) | t114 · width +8px (expected 80, actual 88)
+H17     —              drift×1       gap between buttons 8 → 12  →  t113 · gap +4px (expected 8, actual 12)
+H18     drift×2        drift×9       form control height 40 → 36  →  t105 · height -4px (expected 64, actual 60) | t106 · height -4px (expected 40, actual 36)
+H19     —              drift×5       card radius 12 → 10  →  t046 · corner radius top-left -2px (expected 12, actual 10) | t051 · corner radius top-left -2px (expected 12, actual 10)
+H20     —              —             input inner shadow missing  →  (nothing)
+H21     drift×4        drift×54      sidebar width 240 → 232  →  t029 · margin left -8px (expected 69.8125, actual 61.8125) | t038 · margin left -8px (expected 76.7031, actual 68.7031)
+H22     —              drift×1       active sidebar item fill  →  t027 · background color expected #171b24, actual #1f2633
+H23     —              drift×4       count badge padding 6 → 4  →  t029 · padding right -2px (expected 6, actual 4) | t029 · margin left +2.23px (expected 69.8125, actual 72.0469)
+H24     —              drift×6       sparkline colour  →  t049 · text/icon color expected #6ea8fe, actual #a78bfa | t049 · border color expected #6ea8fe, actual #a78bfa
+H25     —              —             footer centred → left  →  (nothing)
+H26     —              drift×2       brand font serif → sans  →  t003 · width -14px (expected 145, actual 131) | t014 · margin left +13.59px (expected 385.25, actual 398.844)
+H27     —              —             row divider colour  →  (nothing)
+H28     —              drift×23      table header size 12 → 11  →  t065 · width +6px (expected 378, actual 384) | t065 · font size -1px (expected 12, actual 11)
+H29     —              —             search icon offset 12 → 8  →  (nothing)
+H30     —              —             toggle thumb position (pseudo-element) 18 → 16  →  (nothing)
+H31     —              —             nav blur 12 → 4  →  (nothing)
+H32     —              —             delta chip vertical alignment  →  (nothing)
+HF1     drift×2        drift×4       same grid gap via margins  →  t045 · layout direction expected "grid", actual "row" | t045 · gap -16px (expected 16, actual 0)
+HF2     —              —             same colours written as hsl()  →  (nothing)
+HF3     —              drift×3       same 1px outline drawn as a ring shadow instead of a border  →  t017 · border style expected "solid", actual "none" | t017 · border color expected #262b36, actual #e6e8ee
+all     drift×10       drift×132     all at once  →  t111 · border style expected "dashed", actual "solid" | t002 · background color expected #12151ccc, actual #12151c99
+
+################ settings — prototype
+id      verdict  spec diff        pixels             what  →  what the prototype says first
+control PARITY   —                —                  identical page  →  (no finding)
+H01     differs  1 fix +2↳        13r (0 unexpl.)    stats grid gap 16 → 24  →  section.stats gap 16 → 24 ×2
+H02     differs  8 fix +3↳        25r (0 unexpl.)    stat card padding 20 → 16  →  div.stat padding-top 20 → 16 ×3
+H03     differs  1 fix +1↳        1r (0 unexpl.)     h1 size 28 → 26  →  "Team members": font size 28px → 26px
+H04     differs  1 fix +3↳        38r (0 unexpl.)    intro paragraph line-height 24 → 22  →  "Invite teammates, set what each role …": line height 24px → 22px
+H05     differs  1 fix +0↳        2r (0 unexpl.)     intro paragraph max-width 640 → 720  →  "Invite teammates, set what each role …": width 583.97px → 705.41px (+121.44)
+H06     differs  1 fix +0↳        —                  nav background alpha .8 → .6  →  header.nav: fill #12151ccc → #12151c99  (not visible in this capture)
+H07     differs  1 fix +0↳        1r (0 unexpl.)     active tab underline colour (pseudo-element)  →  a.on: ::after fill #6ea8fe → #a78bfa
+H08     differs  1 fix +14↳       10r (0 unexpl.)    table header letter-spacing .06em → 0  →  "Member": letter spacing 0.72px → 0px ×4
+H09     differs  4 fix +11↳       14r (0 unexpl.)    table cell horizontal padding 16 → 12  →  td padding-left 16 → 12 ×7
+H10     differs  2 fix +0↳        1r (0 unexpl.)     owner tag uses the default tag colours  →  "Owner": text colour #f5a524 → #6ea8fe
+H11     differs  2 fix +11↳       8r (0 unexpl.)     status dot 8 → 6 (pseudo-element)  →  span.state: ::before size 8×8px → 6×6px ×2
+H12     differs  1 fix +6↳        6r (0 unexpl.)     last-active column left-aligned  →  "2 min ago": text alignment right → left ×3
+H13     differs  1 fix +0↳        —                  avatar initials weight 600 → 700  →  "DK": font weight 600 → 700 ×3  (not visible in this capture)
+H14     differs  1 fix +0↳        1r (0 unexpl.)     toggle track 36 → 40  →  span: width 36px → 40px (+4) — set explicitly
+H15     differs  1 fix +0↳        1r (0 unexpl.)     drop zone border dashed → solid  →  div.drop: border style dashed → solid
+H16     differs  4 fix +2↳        1r (0 unexpl.)     button horizontal padding 16 → 20  →  button.btn padding-right 16 → 20
+H17     differs  2 fix +0↳        1r (0 unexpl.)     gap between buttons 8 → 12  →  div.actions gap 8 → 12
+H18     differs  2 fix +3↳        9r (0 unexpl.)     form control height 40 → 36  →  input: height 40px → 36px (-4) — set explicitly
+H19     differs  3 fix +0↳        20r (0 unexpl.)    card radius 12 → 10  →  div.stat: corner radius 12px → 10px ×3
+H20     differs  2 fix +0↳        —                  input inner shadow missing  →  input: shadow inset 0 1 2 0 #00000080 → none  (not visible in this capture)
+H21     differs  1 fix +19↳       40r (0 unexpl.)    sidebar width 240 → 232  →  aside.side: width 240px → 232px (-8) — set explicitly
+H22     differs  1 fix +0↳        1r (0 unexpl.)     active sidebar item fill  →  a.on: fill #171b24 → #1f2633
+H23     differs  2 fix +1↳        1r (0 unexpl.)     count badge padding 6 → 4  →  "12": right inset 6px → 4.89px (-1.11), measured to the right edge of b
+H24     differs  1 fix +0↳        3r (0 unexpl.)     sparkline colour  →  svg: icon colour #6ea8fe → #a78bfa ×3
+H25     differs  1 fix +1↳        2r (0 unexpl.)     footer centred → left  →  "Northwind Labs · Workspace ID nw-48213": text alignment center → left
+H26     differs  2 fix +1↳        6r (0 unexpl.)     brand font serif → sans  →  "Northwind": font Georgia → Helvetica Neue
+H27     differs  2 fix +0↳        2r (0 unexpl.)     row divider colour  →  td: bottom border colour #1d222c → #2f3644 ×6
+H28     differs  2 fix +14↳       10r (0 unexpl.)    table header size 12 → 11  →  "Member": font size 12px → 11px ×4
+H29     differs  1 fix +0↳        1r (0 unexpl.)     search icon offset 12 → 8  →  svg: left inset 12px → 8px (-4), measured to the left edge of input
+H30     differs  1 fix +0↳        1r (0 unexpl.)     toggle thumb position (pseudo-element) 18 → 16  →  span: ::after offset right 2px → 4px
+H31     differs  1 fix +0↳        —                  nav blur 12 → 4  →  header.nav: backdropFilter blur(12px) → blur(4px)  (not visible in this capture)
+H32     PARITY   —                —                  delta chip vertical alignment  →  (no finding)
+HF1     PARITY   —                —                  same grid gap via margins  →  (no finding)
+HF2     PARITY   —                —                  same colours written as hsl()  →  (no finding)
+HF3     PARITY   —                —                  same 1px outline drawn as a ring shadow instead of a border  →  (no finding)
+all     differs  50 fix +40↳      26r (0 unexpl.)    all at once  →  header.nav: fill #12151ccc → #12151c99
+

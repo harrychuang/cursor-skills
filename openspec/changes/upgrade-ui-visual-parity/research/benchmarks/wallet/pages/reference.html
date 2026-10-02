@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wallet — reference</title>
+<style>
+:root{
+  --color-bg:#f5f6fa; --color-surface:#ffffff; --color-text:#111827; --color-text-muted:#6b7280;
+  --color-primary:#4f46e5; --color-primary-hover:#4338ca; --color-primary-2:#7c3aed; --color-border:#e5e7eb;
+  --color-success:#059669; --color-danger:#dc2626; --color-tint:#eef2ff; --color-placeholder:#9ca3af;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px;
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-pill:999px;
+  --font:"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#d8dbe6}
+.screen{width:390px;min-height:844px;background:var(--color-bg);font-family:var(--font);color:var(--color-text);position:relative;padding-bottom:84px}
+.app-bar{height:56px;padding:0 var(--space-4);display:flex;align-items:center;justify-content:space-between;background:var(--color-surface);border-bottom:1px solid var(--color-border)}
+.icon-btn{width:40px;height:40px;border-radius:var(--radius-md);background:transparent;border:none;padding:0;display:flex;align-items:center;justify-content:center;color:var(--color-text)}
+.icon-btn svg{width:20px;height:20px;stroke-width:1.5}
+.app-title{margin:0;font-size:20px;line-height:28px;font-weight:700;letter-spacing:-0.2px}
+.avatar-wrap{position:relative;width:36px;height:36px}
+.avatar{display:block;width:36px;height:36px;border-radius:50%;object-fit:cover}
+.badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 3px;border-radius:9px;background:var(--color-danger);color:#fff;font-size:11px;line-height:14px;font-weight:700;text-align:center;border:2px solid var(--color-surface)}
+.content{padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-5)}
+.balance-card{padding:var(--space-6);border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary-2) 100%);color:#fff;box-shadow:0 8px 24px rgba(79,70,229,.24)}
+.label{margin:0;font-size:13px;line-height:18px;font-weight:500;opacity:.8}
+.amount{margin:var(--space-1) 0 0;font-size:32px;line-height:40px;font-weight:700;letter-spacing:-0.5px}
+.delta-row{display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-3)}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:var(--radius-pill);background:rgba(255,255,255,.18);font-size:12px;line-height:16px;font-weight:600}
+.caption{font-size:12px;line-height:16px;font-weight:400;opacity:.72}
+.actions{display:flex;gap:var(--space-3)}
+.btn{flex:1;height:48px;border-radius:var(--radius-md);font-family:inherit;font-size:15px;line-height:20px;font-weight:600;border:none;padding:0;display:flex;align-items:center;justify-content:center}
+.btn-primary{background:var(--color-primary);color:#fff}
+.btn-primary:hover{background:var(--color-primary-hover)}
+.btn-outline{background:var(--color-surface);color:var(--color-primary);border:1px solid var(--color-border)}
+.section-head{display:flex;justify-content:space-between;align-items:baseline}
+.section-title{margin:0;font-size:17px;line-height:24px;font-weight:600}
+.link{font-size:13px;line-height:18px;font-weight:500;color:var(--color-primary);text-decoration:none}
+.tx-list{list-style:none;margin:0;padding:0 var(--space-4);background:var(--color-surface);border-radius:var(--radius-lg);border:1px solid var(--color-border)}
+.tx-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:1px solid var(--color-border)}
+.tx-row:last-child{border-bottom:none}
+.tx-icon{flex:none;width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-tint);color:var(--color-primary);display:flex;align-items:center;justify-content:center}
+.tx-icon svg{width:20px;height:20px;stroke-width:1.5}
+.tx-text{flex:1;min-width:0}
+.tx-title{margin:0;font-size:15px;line-height:20px;font-weight:600;color:var(--color-text)}
+.tx-sub{margin:2px 0 0;font-size:13px;line-height:18px;font-weight:400;color:var(--color-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-amount{margin:0;font-size:15px;line-height:20px;font-weight:600}
+.tx-amount.is-positive{color:var(--color-success)}
+.field{display:block}
+.field-label{display:block;font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-muted);margin-bottom:6px}
+.input{display:block;width:100%;height:44px;padding:0 var(--space-3);border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface);font-family:inherit;font-size:15px;line-height:20px;color:var(--color-text);outline:none}
+.input::placeholder{color:var(--color-placeholder);opacity:1}
+.tab-bar{position:absolute;left:0;right:0;bottom:0;height:64px;padding:0 var(--space-2);background:var(--color-surface);border-top:1px solid var(--color-border);display:flex;justify-content:space-around;align-items:center}
+.tab{width:64px;display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--color-text-muted);font-size:11px;line-height:14px;font-weight:500;text-decoration:none}
+.tab.is-active{color:var(--color-primary)}
+.tab svg{width:22px;height:22px;stroke-width:1.5}
+svg{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="app-bar">
+    <button class="icon-btn" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <h1 class="app-title">Wallet</h1>
+    <div class="avatar-wrap">
+      <img class="avatar" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='60' viewBox='0 0 90 60'%3E%3Crect width='90' height='60' fill='%23fde68a'/%3E%3Ccircle cx='45' cy='24' r='13' fill='%23b45309'/%3E%3Crect x='20' y='40' width='50' height='30' rx='14' fill='%2392400e'/%3E%3Crect x='0' y='0' width='12' height='60' fill='%2334d399'/%3E%3C/svg%3E">
+      <span class="badge">3</span>
+    </div>
+  </header>
+  <main class="content">
+    <section class="balance-card">
+      <p class="label">Total balance</p>
+      <p class="amount">$12,480.50</p>
+      <div class="delta-row"><span class="chip">+2.4%</span><span class="caption">vs last month</span></div>
+    </section>
+    <div class="actions">
+      <button class="btn btn-primary">Send</button>
+      <button class="btn btn-outline">Request</button>
+    </div>
+    <div class="section-head"><h2 class="section-title">Recent activity</h2><a class="link" href="#">See all</a></div>
+    <ul class="tx-list">
+      <li class="tx-row">
+        <span class="tx-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 10c2.5-1 5.5-1 8 0M8.5 13c2-.8 5-.8 7 0M9 16c1.8-.6 4.2-.6 6 0"/></svg></span>
+        <div class="tx-text"><p class="tx-title">Spotify</p><p class="tx-sub">Subscription · Sep 28</p></div>
+        <p class="tx-amount">-$9.99</p>
+      </li>
+      <li class="tx-row">
+        <span class="tx-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
+        <div class="tx-text"><p class="tx-title">Salary</p><p class="tx-sub">Acme Corp · Monthly payroll deposit for September</p></div>
+        <p class="tx-amount is-positive">+$4,200.00</p>
+      </li>
+      <li class="tx-row">
+        <span class="tx-icon"><svg viewBox="0 0 24 24"><path d="M5 8h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5V8zM17 9h2a2 2 0 0 1 0 4h-2M8 3v2M12 3v2"/></svg></span>
+        <div class="tx-text"><p class="tx-title">Coffee</p><p class="tx-sub">Blue Bottle · Sep 27</p></div>
+        <p class="tx-amount">-$4.50</p>
+      </li>
+    </ul>
+    <label class="field"><span class="field-label">Note</span><input class="input" type="text" placeholder="Add a note"></label>
+  </main>
+  <nav class="tab-bar">
+    <a class="tab is-active" href="#"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-8z"/></svg><span>Home</span></a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg><span>Cards</span></a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg><span>Stats</span></a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Profile</span></a>
+  </nav>
+</div>
+</body>
+</html>

@@ -19,17 +19,31 @@ Enforces token-first, composition-first governance for any design system project
 
 ### [`ui-visual-parity`](./ui-visual-parity/)
 
-Compares a UI implementation against reference screenshots and applies focused, design-system-aware visual fixes.
+Compares an implemented UI against a reference and fixes the visual differences until the two match in detail.
+
+**References it accepts:** a Figma frame, a design export or screenshot, or another platform's implementation (a web build as the truth for an app, or the reverse).
 
 **What it does:**
-- Supports both manual pairing (`screenshot + URL/route/file/story`) and automatic discovery of likely screenshot-to-implementation matches
-- Stabilizes visual comparison with consistent render conditions, region-level analysis, computed styles, token mapping, and screenshot diff checks when practical
-- Requires evidence for each fix, such as reference observations, rendered screenshots, computed styles, token values, component source, stories, or representative call sites
-- Fixes visual drift from the most reusable owner first: design tokens/theme, shared primitives/components, component variants, then screen composition and page-only styles
-- Avoids one-off hardcoded CSS unless no token, component, variant, or composition owner exists for the visual difference
-- Stops and asks before editing when the target is ambiguous, cannot render, needs missing auth/data, or would require changing product behavior, copy, data flow, accessibility semantics, or risky shared defaults
+- Measures both sides exhaustively — every element that puts pixels on screen, with no sampling and no hand-written spec
+- Runs three checks per cycle: **appearance** (fills, borders, radii, shadows, type, icons, pseudo-element decorations, interaction states), **geometry** (sizes and redline distances between elements), and **pixels** (the two screenshots overlaid, with an enlarged crop of every differing region)
+- Separates causes from consequences, so one wrong padding is one thing to fix rather than a list of everything it moved
+- Never reports two ways of drawing the same picture as a difference (a pill written as `9999px`, a gap made with margins, a border drawn as a ring, a divider drawn as its own element)
+- Fixes from the most reusable owner first: design tokens/theme, shared components, composition, then page-only styles
+- Leaves platform adaptations and recorded accessibility remaps alone, and refuses to change type values measured under the wrong font
+- Stops when a cycle reports parity, or when a cycle makes no progress — and then reports what remains and why
 
-**Use when:** auditing visual parity, fixing layout/token/component drift, or aligning implemented UI with reference screenshots across frontend projects.
+**Prerequisites:** Node 22 or later and a Chromium-family browser (Chrome, Chromium, or Edge). Nothing to install; the skill runs from its own folder.
+
+```bash
+# capture the reference once, then run a cycle after each round of fixes
+node ui-visual-parity/scripts/capture_web.mjs --url <reference> --root <selector> --out reports/parity/home --name reference
+node ui-visual-parity/scripts/parity.mjs --reference reports/parity/home/reference.spec.json \
+  --reference-image reports/parity/home/reference.png --url <implementation> --root <selector> --out reports/parity/home/cycle-01
+```
+
+Exit code `0` means the implementation is at parity. A cycle captures the implementation the way the reference was captured: same viewport, density, and colour scheme. Figma references are captured with a read-only script (see `ui-visual-parity/references/measure.md`); that path is tested against a stand-in for Figma's API and has not yet been run on a real Figma file.
+
+**Use when:** an app or web UI does not match its design, spacing or type is slightly off, a screen is being ported between platforms, or layout and token drift needs auditing and repair.
 
 ---
 

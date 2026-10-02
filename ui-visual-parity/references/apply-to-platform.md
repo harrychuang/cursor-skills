@@ -1,6 +1,6 @@
 # Applying a Fix on the Target Platform
 
-The diff tells you *what* is wrong in platform-neutral terms. This document is the write direction: how to express that correction idiomatically in the target codebase without introducing one-off values.
+A finding says *what* is wrong in platform-neutral terms. This document is the write direction: how to express that correction idiomatically in the target codebase without introducing one-off values.
 
 Read this after ownership is decided. It answers "how do I write it here", not "where does it belong".
 
@@ -63,13 +63,13 @@ Never set font size, weight, and line height as three loose numbers when the pro
 |---|---|
 | Web | a class or token bundle: `.text-title-md`, `font: var(--sys-title-md)` |
 | React Native | a `Text` variant component or a `typography.titleMd` style object |
-| Flutter | `Theme.of(context).textTheme.titleMedium` — remember `height` is a multiplier: `lineHeight ÷ fontSize` |
-| SwiftUI | `.font(.title2)` or a custom `Font` extension; use `.lineSpacing()` (extra leading), not absolute line height |
+| Flutter | `Theme.of(context).textTheme.titleMedium` |
+| SwiftUI | `.font(.title2)` or a custom `Font` extension |
 | Compose | `MaterialTheme.typography.titleMedium` |
 
-`lineHeight` is absolute in CSS-px, React Native, and Compose (`lineHeight = 24.sp`), but a **multiplier** in Flutter and **extra leading** in SwiftUI. Convert; do not copy the number across.
+When the ramp entry itself needs a new line height or letter spacing, the number does not carry across platforms: see Letter spacing and line height below.
 
-### Elevation and shadow (`shadow`, `elevation`)
+### Elevation and shadow (`shadow`)
 
 Do not port a CSS `box-shadow` string to native. Map through the elevation level.
 
@@ -81,9 +81,126 @@ Do not port a CSS `box-shadow` string to native. Map through the elevation level
 | SwiftUI | `.shadow(color:radius:x:y:)` |
 | Compose | `Modifier.shadow(1.dp)` or `Surface(tonalElevation = 1.dp)` — Material 3 uses tonal elevation, which tints rather than casts |
 
-### Color (`fill`, `background`, `border.color`)
+### Colour (`fill`, `background`, `border.color`)
 
 Apply the semantic role, not the hex. `--sys-on-surface-variant`, `colorScheme.onSurfaceVariant`, `Color.onSurfaceVariant`. If the target has no semantic layer, use the closest existing constant and flag the gap.
+
+### Gradients
+
+`gradient` on a box, captured as `linear(135deg, #4f46e5 0%, #7c3aed 100%)` with the CSS angle: 0deg points up, 90deg right. Native APIs take start and end points instead, and corner-to-corner points equal 135deg only on a square box, so confirm the result with the pixel check.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | `background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-2) 100%)` |
+| Tailwind | v4: `bg-linear-135/srgb from-primary to-primary-2`; without `/srgb`, v4 blends in oklab, which a design tool does not. v3: `bg-[linear-gradient(135deg,#4f46e5,#7c3aed)]`. The `to-br` direction aims at the corner, not at 135deg |
+| React Native | No stable gradient style in core. `<LinearGradient colors={[c1, c2]} locations={[0, 1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />` from `expo-linear-gradient`; `react-native-linear-gradient` also takes `useAngle angle={135}` |
+| Flutter | `BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c1, c2], stops: [0, 1]))`; add `transform: GradientRotation(radians)` for an exact angle |
+| SwiftUI | `LinearGradient(stops: [.init(color: c1, location: 0), .init(color: c2, location: 1)], startPoint: .topLeading, endPoint: .bottomTrailing)` |
+| Compose | `Modifier.background(Brush.linearGradient(0f to c1, 1f to c2))`, top-left to bottom-right by default; `start` and `end` are pixel offsets, not fractions |
+
+### Per-side borders
+
+`border.width`, `border.color`, and `border.style` hold one value per side; a finding reads `bottom border is missing (1px #e5e7eb)`. A border takes layout space in CSS, React Native, and a Flutter `Container`; an overlay or a drawn line does not, so adjust the padding to keep the redlines.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | `border-bottom: 1px solid var(--color-border)` |
+| Tailwind | `border-b border-gray-200` (`border-b-2` for 2px) |
+| React Native | `{ borderBottomWidth: 1, borderBottomColor: colors.border }` |
+| Flutter | `BoxDecoration(border: Border(bottom: BorderSide(color: border, width: 1)))` |
+| SwiftUI | No direct equivalent; `.border` draws all four sides. `.overlay(alignment: .bottom) { Rectangle().fill(border).frame(height: 1) }` |
+| Compose | No direct equivalent; `Modifier.border` draws all four sides. `Modifier.drawBehind { val w = 1.dp.toPx(); drawLine(border, Offset(0f, size.height - w / 2), Offset(size.width, size.height - w / 2), w) }`, or a `HorizontalDivider` between rows |
+
+### Rings and outlines
+
+`outline` in the spec: a line around the box that takes no layout space, such as a focus ring or a Figma outside stroke. A border is not a substitute, because it takes layout space.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | `outline: 2px solid var(--ring); outline-offset: 2px`, or `box-shadow: 0 0 0 2px var(--ring)` |
+| Tailwind | `ring-2 ring-indigo-600 ring-offset-2`, or `outline-2 outline-offset-2 outline-indigo-600` (v3 also needs `outline`) |
+| React Native | `outlineWidth`, `outlineColor`, `outlineOffset` (0.77+, New Architecture) or `boxShadow: '0 0 0 2px #4f46e5'` (0.76+, New Architecture). Otherwise an absolutely positioned sibling `View` with `borderWidth`, inset by the negative offset |
+| Flutter | `Border.all(color: ring, width: 2, strokeAlign: BorderSide.strokeAlignOutside)`, or `BoxShadow(color: ring, spreadRadius: 2)` in `boxShadow` |
+| SwiftUI | `.overlay { RoundedRectangle(cornerRadius: r + 4).strokeBorder(ring, lineWidth: 2).padding(-4) }` |
+| Compose | No direct equivalent; `Modifier.border` draws inside the bounds. `Modifier.drawBehind { drawRoundRect(ring, topLeft = Offset(-o, -o), size = Size(size.width + 2 * o, size.height + 2 * o), cornerRadius = CornerRadius(r + o), style = Stroke(w)) }` with `o`, `r`, `w` in pixels |
+
+### Truncation and line clamping
+
+`type.truncated` and `type.lines`: findings read `should truncate with … but does not` or `wraps to 2 lines, reference has 1`. Text truncates only inside a bounded width, which in a row means the text item must be allowed to shrink.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | One line: `white-space: nowrap; overflow: hidden; text-overflow: ellipsis`. Several: `display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden`. In a flex row add `min-width: 0` |
+| Tailwind | `truncate`, or `line-clamp-2`; `min-w-0` on the flex item |
+| React Native | `<Text numberOfLines={1} ellipsizeMode="tail">`; `flexShrink: 1` on the text in a row |
+| Flutter | `Text(s, maxLines: 1, overflow: TextOverflow.ellipsis)` inside `Expanded` or `Flexible` in a `Row` |
+| SwiftUI | `.lineLimit(1).truncationMode(.tail)` |
+| Compose | `Text(s, maxLines = 1, overflow = TextOverflow.Ellipsis)`, with `Modifier.weight(1f)` in a `Row` |
+
+### Text decoration and transform
+
+`type.decoration` and `type.transform`. Copy is compared as rendered, so keep the string in its source case and apply the transform in style where the platform has one.
+
+| Target | Decoration | Transform |
+|---|---|---|
+| Web CSS | `text-decoration: underline` | `text-transform: uppercase` |
+| Tailwind | `underline`, `line-through`, `no-underline` | `uppercase`, `lowercase`, `capitalize`, `normal-case` |
+| React Native | `{ textDecorationLine: 'underline' }` | `{ textTransform: 'uppercase' }` |
+| Flutter | `TextStyle(decoration: TextDecoration.underline)` | No direct equivalent; `s.toUpperCase()` at the widget |
+| SwiftUI | `.underline()`, `.strikethrough()` | `.textCase(.uppercase)` or `.lowercase`; `s.capitalized` for title case |
+| Compose | `TextStyle(textDecoration = TextDecoration.Underline)` | No direct equivalent; `s.uppercase()` at the call site |
+
+### Letter spacing and line height
+
+`type.letterSpacing` and `type.lineHeight`, both captured in px. The number does not travel: line height is an absolute length in CSS, React Native, and Compose, a **multiplier** of the font size in Flutter, and **extra leading** on top of the font's own line height in SwiftUI. Convert; do not copy the number across. Against a web or Figma reference a native target reports both as adaptations (`parity-policy.md`); change them there only where the design system sets the value.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | `line-height: 24px; letter-spacing: -0.2px` |
+| Tailwind | `leading-6 tracking-[-0.2px]`, or `text-base/6`; a bare `text-*` utility brings its own line height |
+| React Native | `{ lineHeight: 24, letterSpacing: -0.2 }` |
+| Flutter | `TextStyle(fontSize: 16, height: 24 / 16, letterSpacing: -0.2)`; `leadingDistribution: TextLeadingDistribution.even` splits the leading above and below the glyphs as CSS does |
+| SwiftUI | `.lineSpacing(24 - font.lineHeight)` with half that as vertical padding, where `font` is the `UIFont`; `.kerning(-0.2)` |
+| Compose | `TextStyle(lineHeight = 24.sp, letterSpacing = (-0.2).sp, lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None))` |
+
+### Icon size and stroke width
+
+Size findings on an `icon` primitive (`svg: width 20px → 24px (+4)`), `icon.strokeWidth`, and `icon.artwork`. A wrong glyph is an asset to replace, not a style to adjust.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | `svg { width: 20px; height: 20px; stroke-width: 1.5 }`; keep the `viewBox`, the stroke is in its units |
+| Tailwind | `size-5 stroke-[1.5]` (`w-5 h-5` before v3.4) |
+| React Native | `react-native-svg`: `<Svg width={20} height={20} viewBox="0 0 24 24"><Path strokeWidth={1.5} … /></Svg>`. An icon font has no stroke width; use the SVG |
+| Flutter | `Icon(icon, size: 20)`; `weight: 300` works only with a variable icon font such as Material Symbols. `SvgPicture.asset('home.svg', width: 20, height: 20)` from `flutter_svg` keeps the stroke of the asset |
+| SwiftUI | SF Symbol: `Image(systemName: "house").font(.system(size: 20, weight: .light))`. Asset: `Image("home").resizable().frame(width: 20, height: 20)`. No stroke parameter: choose the symbol weight or re-export the asset |
+| Compose | `Icon(painterResource(R.drawable.ic_home), contentDescription = null, modifier = Modifier.size(20.dp))`; the stroke is `android:strokeWidth` in the vector drawable |
+
+### Image fit
+
+`image.fit`, compared in CSS terms. The crop position (`image.position`, CSS `object-position`) is compared between two web captures; against a design file or a native screen a wrong focal point shows only in the pixel check.
+
+| Target | Cover | Contain | Fill (stretch) |
+|---|---|---|---|
+| Web CSS | `object-fit: cover` | `object-fit: contain` | `object-fit: fill` |
+| Tailwind | `object-cover` | `object-contain` | `object-fill` |
+| React Native | `resizeMode="cover"` | `resizeMode="contain"` | `resizeMode="stretch"` |
+| Flutter | `fit: BoxFit.cover` | `fit: BoxFit.contain` | `fit: BoxFit.fill` |
+| SwiftUI | `.resizable().scaledToFill()` then `.frame(…).clipped()` | `.resizable().scaledToFit()` | `.resizable()` alone |
+| Compose | `contentScale = ContentScale.Crop` | `ContentScale.Fit` | `ContentScale.FillBounds` |
+
+### Decorations drawn by pseudo-elements
+
+`pseudo.before` and `pseudo.after` on the host element: a status dot, an active-tab underline, a toggle thumb. Findings read `::after fill #6ea8fe → #a78bfa` or `::before size 8×8px → 6×6px`. Only the web has pseudo-elements; elsewhere the decoration is a real child or a draw call, kept out of layout and out of the accessibility tree.
+
+| Target | Idiom |
+|---|---|
+| Web CSS | `.tab.is-active::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; background: var(--color-primary) }`, with `position: relative` on the host |
+| Tailwind | `relative after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-indigo-600` |
+| React Native | No direct equivalent. A child `<View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, backgroundColor: colors.primary }} />` |
+| Flutter | No direct equivalent. A `Stack` with `Positioned(left: 0, right: 0, bottom: 0, child: Container(height: 2, color: primary))`, or a `foregroundDecoration` on the host |
+| SwiftUI | `.overlay(alignment: .bottom) { Rectangle().fill(primary).frame(height: 2) }`; `.background(alignment:)` to draw behind |
+| Compose | `Modifier.drawBehind { drawRect(primary, topLeft = Offset(0f, size.height - h), size = Size(size.width, h)) }`; `drawWithContent` to draw in front |
 
 ## Required adaptations — where the fix must diverge from the reference
 
@@ -151,4 +268,4 @@ Verify on the platform you changed, not on the one you read from:
 | SwiftUI | Xcode preview or simulator, then the view hierarchy debugger |
 | Compose | `@Preview` or the emulator, then Layout Inspector |
 
-Then re-extract the implementation spec and re-run the diff. A fix that is not confirmed by a second measurement is a claim, not a result.
+Then run the cycle again: `node scripts/parity.mjs …` with the same arguments and a new `--out`. For a target the cycle cannot capture itself, capture it again as `measure.md` describes and compare again. A fix that is not confirmed by a second measurement is a claim, not a result.

@@ -114,7 +114,7 @@ Also record every remap in `design-system/TOKEN_ARCHITECTURE.md` under `Accessib
 Why two layers matter downstream:
 
 - Storybook can offer a `fidelity: authored | accessible` review mode (see `design-system-to-storybook`) so designers can see the Figma-faithful rendering while the product ships the accessible values.
-- `ui-pixel-align-report` reads `a11y-remap` records and classifies the authored-vs-accessible difference as `required-adaptation`, not drift. Without the record, every parity report flags the color as a defect forever.
+- `ui-pixel-alignment` reads `a11y-remap` records and classifies the authored-vs-accessible difference as `required-adaptation`, not drift. Without the record, every parity report flags the color as a defect forever.
 
 An accessibility remap is not a near-token merge: the authored and accessible values may be visually close (`#13895f` vs `#12845b`) or far apart. The `a11y-remap` comment counts as the documented keep-distinct decision for that pair.
 

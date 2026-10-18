@@ -1,0 +1,56 @@
+{
+  "id": "figma-ready-to-storybook",
+  "title": "Build ready-for-dev Figma components into Storybook",
+  "summary": "When components in your Figma file are marked ready for dev, an AI tool builds them into your project's Storybook so the team can review and reuse them. You trigger it by asking; each run picks up the components that are ready.",
+  "interview": [
+    {
+      "question": "Which Figma file holds the components you want built?",
+      "options": [
+        "I will paste a Figma link",
+        "The main design file this project already uses"
+      ],
+      "mapsTo": "Task instruction: the Figma source the automation reads components from."
+    },
+    {
+      "question": "Which components should each run include?",
+      "options": [
+        "Everything currently marked ready for dev",
+        "Only a section or page I will name",
+        "A specific list of components I will name"
+      ],
+      "mapsTo": "Task instruction: the component scope filter."
+    },
+    {
+      "question": "When a run finishes, what do you want to see in Storybook?",
+      "options": [
+        "Each component with a documentation page",
+        "Each component plus its states and variants as examples",
+        "Just the component files, developers will handle the rest"
+      ],
+      "mapsTo": "Task instruction and required output files: the completion expectation."
+    }
+  ],
+  "recommendedSkills": ["design-system-to-storybook", "screenshot-to-storybook"],
+  "contractHints": {
+    "instructionTemplate": "Read the components marked ready for dev in <figma-source>, limited to <component-scope>. Build each component into this project's Storybook following the project's existing component, token, and story conventions. Deliver <completion-expectation>. Load the companion skill before deciding how to implement, and keep its approval gates authoritative.",
+    "verificationHints": [
+      "If package scripts contain build-storybook, use that script as the completion check.",
+      "If package scripts contain a test script that covers UI components, add it as a completion check.",
+      "Never write a completion check that repository evidence does not prove."
+    ],
+    "requiredArtifactHints": [
+      "If the interview names specific components, require the story files the project's Storybook conventions imply for those components.",
+      "If no specific output path can be derived from repository evidence, leave the required files empty and state in the plain-language report that completion is judged by the completion checks alone."
+    ]
+  },
+  "prerequisites": [
+    {
+      "description": "The project already has Storybook set up.",
+      "evidence": "A storybook or build-storybook entry in package scripts, or a .storybook directory in the app root."
+    },
+    {
+      "description": "The Figma design is reachable by the automation.",
+      "evidence": "A Figma link the user provides, plus a Figma integration available to the selected AI tool."
+    }
+  ]
+}

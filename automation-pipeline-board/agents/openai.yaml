@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pipeline Board"
+  short_description: "Render a read-only designer-readable automation pipeline board"
+  default_prompt: "Use $automation-pipeline-board to build and render a self-contained HTML board for this repository showing what its design-to-engineering automation does, which stages have produced or verified their outputs, which handoffs are satisfied, blocked, or stale, and how many decisions are waiting for a designer."

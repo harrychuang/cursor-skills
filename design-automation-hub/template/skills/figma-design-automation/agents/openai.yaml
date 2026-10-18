@@ -1,0 +1,4 @@
+interface:
+  display_name: "Figma Design Automation"
+  short_description: "Analyze one safe task-scoped Figma cleanup plan"
+  default_prompt: "Use $figma-design-automation to read the designated cleanup input, produce one bounded evidence-based result, and keep the Figma document and repository unchanged."

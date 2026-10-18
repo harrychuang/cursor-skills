@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "example-project",
+    "displayName": "Example Project",
+    "figmaFileKeys": [
+      "replace-with-figma-file-key"
+    ]
+  },
+  "host": {
+    "mode": "standalone",
+    "adapter": null
+  },
+  "features": {
+    "cleanup": true,
+    "review": false,
+    "workflowStatus": true
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "平台對齊交接（先端→次端）"
+  short_description: "從先端合併 diff 產出九章交接包，並在次端做一次對齊審計"
+  default_prompt: "使用 $cross-platform-parity：先讀專案 profile，對指定功能的先端合併提交執行 export 產出交接包；或對既有交接包在次端執行 audit（pre／post）並輸出對齊報告："

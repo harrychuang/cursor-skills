@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "app-alpha",
+      "name": "App Alpha",
+      "root": "../app-alpha"
+    },
+    {
+      "id": "design-site",
+      "name": "Design Site",
+      "root": "/absolute/path/to/design-site"
+    }
+  ]
+}

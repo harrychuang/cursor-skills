@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Automation Hub Installer"
+  short_description: "Install and validate a portable Figma automation hub"
+  default_prompt: "Use $design-automation-hub to inspect the target repository, preview a safe installation, install or update Design Automation Hub, and report the manual Figma manifest handoff honestly."

@@ -1,0 +1,51 @@
+{
+  "profileVersion": 1,
+  "project": {
+    "name": "toastenglish",
+    "note": "ToastEnglish workspace (cm-english-toast). Lead iOS (UIKit + SwiftUI), follower Android (Compose). Every value below was verified from source on 2026-09-17; copy this file and replace the values for another project."
+  },
+  "lead": {
+    "platform": "ios",
+    "repo": "apps/ios",
+    "integrationBranch": "develop"
+  },
+  "follower": {
+    "platform": "android",
+    "repo": "apps/android"
+  },
+  "handoff": {
+    "outputDir": "docs/features/{feature}/handoff/{date}-ios-to-android",
+    "mediaRoot": "apps/ios/artifacts/android-handoff",
+    "decisionSystem": "Spectra change under openspec/changes/<change>: product decisions go to design/spec through spectra-ingest; progress only in tasks.md"
+  },
+  "ios": {
+    "stringAccessorPattern": "\\bLocalizedString\\.([A-Za-z_][A-Za-z0-9_]*)",
+    "accessorIgnore": ["tr", "self"],
+    "generatedStringsFile": "LocalPackages/LocalizationKit/Sources/LocalizationKit/Generated/LocalizedString.swift",
+    "generatedKeyPattern": "tr\\(\"Localizable\",\\s*\"((?:[^\"\\\\]|\\\\.)*)\"",
+    "stringsDir": "LocalPackages/LocalizationKit/Sources/LocalizationKit/Resources",
+    "stringsFileName": "Localizable.strings",
+    "locales": ["Base", "zh-Hant", "ja", "ko", "vi"],
+    "mappingFile": "string_mapping.json",
+    "mappingIdField": "ios_id",
+    "remoteConfigFiles": ["EnglishWidget/Classes/Provider/RemoteConfigProvider.swift"],
+    "remoteConfigKeyPattern": "configValue\\(forKey:\\s*\"([^\"]+)\"\\)",
+    "eventNamePattern": "return\\s+\"([a-z0-9]+(?:_[a-z0-9]+)+)\"",
+    "logCallPattern": "logEvent\\(|\\.log\\(|track\\(",
+    "testPathPattern": "Tests?/|Tests?\\.swift$"
+  },
+  "android": {
+    "mappingFile": "string_mapping.json",
+    "mappingIdField": "android_id",
+    "resDir": "app/src/main/res",
+    "defaultModule": "app",
+    "moduleResCandidates": ["{module}/src/main/res", "feature/{module}/src/main/res", "core/{module}/src/main/res"],
+    "localeDirs": ["values", "values-ja", "values-ko", "values-vi"],
+    "overrideDirs": ["values-zh-rTW"],
+    "localePairs": [["Base", "values"], ["zh-Hant", "values"], ["ja", "values-ja"], ["ko", "values-ko"], ["vi", "values-vi"]],
+    "stringsFileName": "strings.xml"
+  },
+  "classify": {
+    "extraRules": []
+  }
+}

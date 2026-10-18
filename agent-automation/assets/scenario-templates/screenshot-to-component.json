@@ -1,0 +1,51 @@
+{
+  "id": "screenshot-to-component",
+  "title": "Turn a UI screenshot into reusable components",
+  "summary": "You provide a screenshot or mockup of a screen, and an AI tool builds it as reusable components in your project instead of one-off styles, extending the project's component catalog first and then composing the screen from it.",
+  "interview": [
+    {
+      "question": "What image will the automation work from?",
+      "options": [
+        "A screenshot or mockup I will provide each time",
+        "Exported images from our Figma file",
+        "A mix of both, depending on the run"
+      ],
+      "mapsTo": "Task instruction: the visual source the automation implements from."
+    },
+    {
+      "question": "Where should the finished components live?",
+      "options": [
+        "In our Storybook, so the team can browse them",
+        "In the project's component folder, following its existing structure"
+      ],
+      "mapsTo": "Task instruction and required output files: the destination convention."
+    },
+    {
+      "question": "How closely must the result match the image?",
+      "options": [
+        "Match the design system first, small differences are fine",
+        "Match the image as closely as possible"
+      ],
+      "mapsTo": "Task instruction: the fidelity priority between design-system consistency and pixel accuracy."
+    }
+  ],
+  "recommendedSkills": ["screenshot-to-storybook"],
+  "contractHints": {
+    "instructionTemplate": "Implement the provided <visual-source> as reusable components. Inventory the UI building blocks first, extend <destination-convention> with any missing components, then compose the screen from documented components. Prioritize <fidelity-priority>. Load the companion skill before deciding how to implement.",
+    "verificationHints": [
+      "If package scripts contain build-storybook, use that script as the completion check.",
+      "If package scripts contain a build script for the app, use it to prove the new components compile.",
+      "Never write a completion check that repository evidence does not prove."
+    ],
+    "requiredArtifactHints": [
+      "If the destination is Storybook, require the story files the project's conventions imply for the new components.",
+      "If no specific output path can be derived from repository evidence, leave the required files empty and state in the plain-language report that completion is judged by the completion checks alone."
+    ]
+  },
+  "prerequisites": [
+    {
+      "description": "The project has a component catalog or Storybook to extend.",
+      "evidence": "A components directory matching the project's framework conventions, or a .storybook directory / storybook package script."
+    }
+  ]
+}

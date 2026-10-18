@@ -14,7 +14,7 @@ Before opening any inspector, read the finding in `parity.json` (its fields are 
 4. **`tokens`.** Grep the token's definition (`--space-6`, `theme.space[6]`, `Spacing.lg`) to find the token file, then grep its *usages* filtered by the element to find the assigning declaration. If the token's value is right and the rendered value is wrong, the usage site ignores the token: an override or a hardcoded value wins there, and the bug is at the usage site, not the definition. `implementation.spec.json` lists every custom property with its resolved value under `tokens`. A name in Figma's form (`space/4`, `Title/Medium`) came from the reference; map it to the project's token first. An empty `tokens` proves nothing: a web capture records token names only on elements that paint, hold text, or are positioned, and only from stylesheets it can read.
 5. **The owner of an unexplained region.** A region has no finding; start from `regions[].owner.selector`.
 
-A findings file from the pixel alignment report skill (`ui-pixel-align-report`) is an accepted input and can carry two more fields: `implementationReference`, the element or component the finding sits on, and `files`, the source paths confirmed when that report was reviewed. Trust `files` when it is filled; a cycle's own findings leave it empty.
+A findings file from the pixel alignment report skill (`ui-pixel-alignment`) is an accepted input and can carry two more fields: `implementationReference`, the element or component the finding sits on, and `files`, the source paths confirmed when that report was reviewed. Trust `files` when it is filled; a cycle's own findings leave it empty.
 
 ### From a redline to the declaration
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Portfolio Dashboard"
+  short_description: "Aggregate many projects' pipeline boards into one designer-readable overview"
+  default_prompt: "Use $automation-portfolio to build and render a self-contained HTML overview of every tracked project's automation status: one card per project with its current stage, why it is stuck, pending designer decisions, and a link to that project's own pipeline board."

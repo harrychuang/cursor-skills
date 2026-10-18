@@ -1,0 +1,31 @@
+{
+  "name": "task-board-control-plane",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "prisma generate",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "deploy:start": "prisma migrate deploy && next start",
+    "dev-db": "node scripts/dev-db.mjs",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "test": "node --test --test-concurrency=1 test/*.test.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "next": "^15.3.0",
+    "next-auth": "^5.0.0-beta.32",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "embedded-postgres": "17.10.0-beta.17",
+    "prisma": "^6.5.0",
+    "typescript": "^5.7.0"
+  }
+}

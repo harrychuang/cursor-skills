@@ -1,0 +1,18 @@
+{
+  "fragmentId": "figma-cleanup-task-v1",
+  "taskId": "figma-cleanup",
+  "value": {
+    "instruction": "Read exactly one task-scoped input path and write exactly one validated cleanup result to the designated task-scoped result path. Load figma-design-automation, keep the Figma document and repository read-only, and do not modify generic automation configuration or run summaries.",
+    "skill": "figma-design-automation",
+    "verification": [
+      {
+        "command": "node",
+        "args": [
+          "scripts/design-automation-hub/check-cleanup-result.mjs"
+        ],
+        "timeoutMs": 120000
+      }
+    ],
+    "requiredArtifacts": []
+  }
+}

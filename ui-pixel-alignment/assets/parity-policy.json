@@ -1,0 +1,140 @@
+{
+  "policyVersion": "1.0",
+  "description": "Default cross-platform parity policy. Copy into a target repo and pass with --policy to override.",
+
+  "formFactor": {
+    "sameViewportToleranceRatio": 0.15,
+    "comment": "Viewport widths within this ratio of each other count as the same form factor. Otherwise spacing and sizing are downgraded to adaptive."
+  },
+
+  "tolerance": {
+    "layout.gap": 1,
+    "box.padding": 1,
+    "box.margin": 1,
+    "box.width": 1,
+    "box.height": 1,
+    "box.minWidth": 1,
+    "box.maxWidth": 1,
+    "type.size": 0.5,
+    "type.lineHeight": 1,
+    "type.letterSpacing": 0.25,
+    "type.weight": 0,
+    "radius": 1,
+    "border.width": 0.5,
+    "opacity": 0.02,
+    "elevation": 0,
+    "color": 2
+  },
+
+  "fields": {
+    "layout.mode": "strict",
+    "layout.justify": "strict",
+    "layout.align": "strict",
+    "layout.wrap": "strict",
+    "layout.columns": "strict",
+    "layout.gap": "spacing",
+
+    "box.padding": "spacing",
+    "box.margin": "spacing",
+    "box.width": "sizing",
+    "box.height": "sizing",
+    "box.minWidth": "sizing",
+    "box.maxWidth": "sizing",
+    "box.position": "ignored",
+
+    "type.family": "adaptive",
+    "type.size": "typography",
+    "type.weight": "strict",
+    "type.lineHeight": "adaptive",
+    "type.letterSpacing": "adaptive",
+    "type.align": "strict",
+    "type.transform": "strict",
+    "type.numberOfLines": "adaptive",
+
+    "fill": "strict",
+    "background": "strict",
+    "opacity": "strict",
+    "border.width": "strict",
+    "border.color": "strict",
+    "border.style": "strict",
+    "radius": "strict",
+    "elevation": "strict",
+    "shadow": "shadow",
+    "text": "strict",
+    "asset": "strict",
+    "component": "ignored"
+  },
+
+  "fieldClassResolution": {
+    "spacing": { "sameFormFactor": "strict", "crossFormFactor": "adaptive" },
+    "sizing": { "sameFormFactor": "strict", "crossFormFactor": "adaptive" },
+    "typography": { "sameFormFactor": "strict", "crossFormFactor": "adaptive" },
+    "shadow": { "sameEngine": "strict", "crossEngine": "ignored" }
+  },
+
+  "engines": {
+    "web": "css",
+    "figma": "css",
+    "react-native": "native",
+    "flutter": "native",
+    "ios": "native",
+    "android": "native"
+  },
+
+  "touchTargets": {
+    "ios": 44,
+    "android": 48,
+    "react-native": 44,
+    "flutter": 48,
+    "web": 24,
+    "figma": null,
+    "interactiveRoles": ["control", "input"]
+  },
+
+  "fontAliases": [
+    ["Inter", "SF Pro Text", "SF Pro Display", "Roboto", "-apple-system", "system-ui", "BlinkMacSystemFont", "Segoe UI"],
+    ["Helvetica", "Helvetica Neue", "Arial", "Liberation Sans"],
+    ["SF Mono", "Menlo", "Monaco", "Roboto Mono", "Consolas", "ui-monospace"],
+    ["Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Source Han Sans TC"],
+    ["Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC"],
+    ["Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Source Han Sans JP"]
+  ],
+
+  "collapseFields": ["type.family"],
+
+  "unitlessFields": ["type.weight", "opacity", "elevation", "layout.columns", "type.numberOfLines"],
+
+  "ignoredNodeNamePatterns": [
+    "status bar",
+    "statusbar",
+    "home indicator",
+    "notch",
+    "dynamic island",
+    "navigation bar background",
+    "scrollbar",
+    "safe area",
+    "browser chrome"
+  ],
+
+  "statePolicy": {
+    "touchOnlyPlatforms": ["ios", "android", "react-native", "flutter"],
+    "pointerOnlyStates": ["hover"],
+    "touchOnlyStates": ["pressed"],
+    "alwaysCompared": ["focus", "disabled", "selected", "error"]
+  },
+
+  "severity": {
+    "structural": "high",
+    "missingNode": "high",
+    "extraNode": "medium",
+    "numeric": [
+      { "maxDeltaRatio": 0.05, "maxDeltaPx": 2, "severity": "low" },
+      { "maxDeltaRatio": 0.25, "maxDeltaPx": 8, "severity": "medium" },
+      { "severity": "high" }
+    ],
+    "color": "medium",
+    "text": "high",
+    "adaptiveCap": "low",
+    "requiredAdaptation": "high"
+  }
+}

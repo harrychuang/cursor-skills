@@ -1,6 +1,9 @@
 # Spectra local state (indexes, worktrees, caches)
 .spectra/
 
+# Company skills checkout. Kept on disk, not part of this repo.
+cm/
+
 # OpenSpec vector search index (local)
 openspec/.vector-search.db*
 

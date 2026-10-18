@@ -1,0 +1,296 @@
+/*
+ * Component Timeline — standalone visual language (adaptable).
+ * Decoupled from the product design system: the ONLY design-system
+ * references allowed in this file are the install bindings marked below
+ * (accent color, preview surface, theme selector). Everything else stays
+ * self-contained so the page renders identically in any host project.
+ */
+
+.ctl-shell {
+  /* Brand accent — the single design-system reference. Install binding:
+     point the fallback at the project's primary color token, e.g.
+     var(--your-sys-color-primary, #e8590c). */
+  --ctl-accent: #e8590c;
+
+  /* dark theme (default) */
+  --ctl-bg: #101216;
+  --ctl-surface: #171a20;
+  --ctl-surface-2: #1e222a;
+  --ctl-divider: rgb(255 255 255 / 8%);
+  --ctl-border: rgb(255 255 255 / 10%);
+  --ctl-text: #e8eaef;
+  --ctl-text-2: #a4aab6;
+  --ctl-text-3: #707684;
+  --ctl-radius-xl: 16px;
+  --ctl-radius-lg: 12px;
+  --ctl-radius-md: 8px;
+
+  /* Install binding: point at the target product's normal page/surface
+     background token so live story previews sit on the product's real
+     ground. Keep var(--ctl-bg) when no suitable token exists. */
+  --ctl-preview-bg: var(--ctl-bg);
+
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24px clamp(16px, 3vw, 40px) 48px;
+  background: var(--ctl-bg);
+  color: var(--ctl-text);
+  font-family:
+    "Inter",
+    "Noto Sans TC",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Install binding: replace `:root[data-ctl-theme="light"]` with the
+   attribute/class the project's Storybook theme switcher actually sets.
+   Leave as-is when there is no switcher (the page stays dark). */
+:root[data-ctl-theme="light"] .ctl-shell {
+  --ctl-bg: #f5f6f8;
+  --ctl-surface: #ffffff;
+  --ctl-surface-2: #eef0f4;
+  --ctl-divider: rgb(16 18 22 / 8%);
+  --ctl-border: rgb(16 18 22 / 12%);
+  --ctl-text: #1c1f26;
+  --ctl-text-2: #4d5563;
+  --ctl-text-3: #7a8191;
+}
+
+.ctl-stack {
+  display: grid;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ctl-header__eyebrow {
+  color: var(--ctl-accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ctl-header__title {
+  margin: 4px 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ctl-header__lead {
+  max-width: 70ch;
+  margin: 0;
+  color: var(--ctl-text-2);
+}
+
+.ctl-panel {
+  padding: 20px;
+  background: var(--ctl-surface);
+  border-radius: var(--ctl-radius-xl);
+}
+
+.ctl-panel__heading {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ctl-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.ctl-meta-card {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--ctl-surface-2);
+  border-radius: var(--ctl-radius-lg);
+}
+
+.ctl-meta-card__label {
+  color: var(--ctl-text-3);
+  font-size: 12px;
+}
+
+.ctl-meta-card__value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctl-range {
+  margin: 0;
+  color: var(--ctl-text-3);
+  font-size: 12px;
+}
+
+.ctl-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctl-pager__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ctl-pager__page,
+.ctl-pager__step {
+  min-height: 30px;
+  padding: 4px 12px;
+  color: var(--ctl-text);
+  background: var(--ctl-surface-2);
+  border: none;
+  border-radius: var(--ctl-radius-md);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 120ms,
+    color 120ms;
+}
+
+.ctl-pager__page:hover:not([aria-current="page"]),
+.ctl-pager__step:hover:not(:disabled) {
+  color: var(--ctl-accent);
+}
+
+.ctl-pager__page:focus-visible,
+.ctl-pager__step:focus-visible {
+  outline: 2px solid var(--ctl-accent);
+  outline-offset: 2px;
+}
+
+.ctl-pager__page[aria-current="page"] {
+  color: #fff;
+  background: var(--ctl-accent);
+  font-weight: 600;
+}
+
+.ctl-pager__step:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ctl-group {
+  display: grid;
+  gap: 14px;
+}
+
+.ctl-group__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ctl-group__date {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ctl-group__count {
+  color: var(--ctl-text-3);
+  font-size: 12px;
+}
+
+.ctl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.ctl-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--ctl-surface-2);
+  border-radius: var(--ctl-radius-lg);
+}
+
+.ctl-card__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  overflow: hidden;
+  background: var(--ctl-preview-bg);
+  border-bottom: 1px solid var(--ctl-divider);
+}
+
+.ctl-card__frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+.ctl-card__fallback {
+  margin: 0;
+  padding: 16px;
+  color: var(--ctl-text-3);
+  font-size: 12px;
+  text-align: center;
+}
+
+.ctl-card__meta {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+}
+
+.ctl-card__name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ctl-card__category {
+  margin: 0;
+  color: var(--ctl-accent);
+  font-size: 12px;
+}
+
+.ctl-card__subject {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin: 0;
+  color: var(--ctl-text-2);
+  font-size: 13px;
+}
+
+.ctl-card__commit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 0;
+  color: var(--ctl-text-3);
+  font-size: 12px;
+}
+
+.ctl-card__link {
+  color: var(--ctl-accent);
+}
+
+.ctl-extras {
+  display: grid;
+  gap: 12px;
+}

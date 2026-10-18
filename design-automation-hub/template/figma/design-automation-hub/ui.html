@@ -1,0 +1,2733 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        /* Ref: project-aligned concrete values for the standalone plugin. */
+        --cm-ref-review-color-scheme: dark;
+        --cm-ref-review-color-canvas: #151515;
+        --cm-ref-review-color-surface: #252525;
+        --cm-ref-review-color-surface-raised: #2a2a2a;
+        --cm-ref-review-color-surface-hover: #333333;
+        --cm-ref-review-color-outline: #3d3d3d;
+        --cm-ref-review-color-outline-strong: #515151;
+        --cm-ref-review-color-text: #ffffff;
+        --cm-ref-review-color-text-secondary: #c0c0c0;
+        --cm-ref-review-color-text-muted: #909090;
+        --cm-ref-review-color-primary: #ff7800;
+        --cm-ref-review-color-primary-pressed: #cc6102;
+        --cm-ref-review-color-on-primary: #ffffff;
+        --cm-ref-review-color-primary-wash: rgba(255, 120, 0, 0.12);
+        --cm-ref-review-color-primary-outline: rgba(255, 120, 0, 0.5);
+        --cm-ref-review-color-danger: #ff4f4f;
+        --cm-ref-review-color-danger-wash: rgba(255, 79, 79, 0.1);
+        --cm-ref-review-color-disabled: #515151;
+        --cm-ref-review-color-on-disabled: #909090;
+        --cm-ref-review-color-transparent: transparent;
+        --cm-ref-review-font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --cm-ref-review-font-size-caption: 11px;
+        --cm-ref-review-font-size-label: 12px;
+        --cm-ref-review-font-size-body: 13px;
+        --cm-ref-review-font-size-title: 16px;
+        --cm-ref-review-font-size-heading: 18px;
+        --cm-ref-review-line-height-caption: 16px;
+        --cm-ref-review-line-height-label: 18px;
+        --cm-ref-review-line-height-body: 20px;
+        --cm-ref-review-line-height-title: 24px;
+        --cm-ref-review-font-weight-regular: 400;
+        --cm-ref-review-font-weight-medium: 500;
+        --cm-ref-review-font-weight-semibold: 600;
+        --cm-ref-review-space-none: 0;
+        --cm-ref-review-space-2: 2px;
+        --cm-ref-review-space-4: 4px;
+        --cm-ref-review-space-6: 6px;
+        --cm-ref-review-space-8: 8px;
+        --cm-ref-review-space-10: 10px;
+        --cm-ref-review-space-12: 12px;
+        --cm-ref-review-space-16: 16px;
+        --cm-ref-review-space-20: 20px;
+        --cm-ref-review-space-24: 24px;
+        --cm-ref-review-size-control: 36px;
+        --cm-ref-review-size-icon: 18px;
+        --cm-ref-review-border-width: 1px;
+        --cm-ref-review-focus-width: 2px;
+        --cm-ref-review-focus-offset: 2px;
+        --cm-ref-review-radius-control: 8px;
+        --cm-ref-review-radius-card: 12px;
+        --cm-ref-review-radius-pill: 999px;
+        --cm-ref-review-opacity-disabled: 0.56;
+        --cm-ref-review-motion-fast: 120ms;
+
+        /* Sys: semantic aliases reference Ref only. */
+        --cm-sys-review-color-background: var(--cm-ref-review-color-canvas);
+        --cm-sys-review-color-scheme: var(--cm-ref-review-color-scheme);
+        --cm-sys-review-color-surface: var(--cm-ref-review-color-surface);
+        --cm-sys-review-color-surface-raised: var(--cm-ref-review-color-surface-raised);
+        --cm-sys-review-color-surface-hover: var(--cm-ref-review-color-surface-hover);
+        --cm-sys-review-color-outline: var(--cm-ref-review-color-outline);
+        --cm-sys-review-color-outline-strong: var(--cm-ref-review-color-outline-strong);
+        --cm-sys-review-color-on-surface: var(--cm-ref-review-color-text);
+        --cm-sys-review-color-on-surface-secondary: var(--cm-ref-review-color-text-secondary);
+        --cm-sys-review-color-on-surface-muted: var(--cm-ref-review-color-text-muted);
+        --cm-sys-review-color-action: var(--cm-ref-review-color-primary);
+        --cm-sys-review-color-action-pressed: var(--cm-ref-review-color-primary-pressed);
+        --cm-sys-review-color-on-action: var(--cm-ref-review-color-on-primary);
+        --cm-sys-review-color-action-wash: var(--cm-ref-review-color-primary-wash);
+        --cm-sys-review-color-action-outline: var(--cm-ref-review-color-primary-outline);
+        --cm-sys-review-color-error: var(--cm-ref-review-color-danger);
+        --cm-sys-review-color-error-wash: var(--cm-ref-review-color-danger-wash);
+        --cm-sys-review-color-disabled: var(--cm-ref-review-color-disabled);
+        --cm-sys-review-color-on-disabled: var(--cm-ref-review-color-on-disabled);
+        --cm-sys-review-color-transparent: var(--cm-ref-review-color-transparent);
+        --cm-sys-review-font-family: var(--cm-ref-review-font-family);
+        --cm-sys-review-text-caption-size: var(--cm-ref-review-font-size-caption);
+        --cm-sys-review-text-label-size: var(--cm-ref-review-font-size-label);
+        --cm-sys-review-text-body-size: var(--cm-ref-review-font-size-body);
+        --cm-sys-review-text-title-size: var(--cm-ref-review-font-size-title);
+        --cm-sys-review-text-heading-size: var(--cm-ref-review-font-size-heading);
+        --cm-sys-review-text-caption-line: var(--cm-ref-review-line-height-caption);
+        --cm-sys-review-text-label-line: var(--cm-ref-review-line-height-label);
+        --cm-sys-review-text-body-line: var(--cm-ref-review-line-height-body);
+        --cm-sys-review-text-title-line: var(--cm-ref-review-line-height-title);
+        --cm-sys-review-weight-regular: var(--cm-ref-review-font-weight-regular);
+        --cm-sys-review-weight-medium: var(--cm-ref-review-font-weight-medium);
+        --cm-sys-review-weight-semibold: var(--cm-ref-review-font-weight-semibold);
+        --cm-sys-review-space-none: var(--cm-ref-review-space-none);
+        --cm-sys-review-space-xs: var(--cm-ref-review-space-4);
+        --cm-sys-review-space-sm: var(--cm-ref-review-space-8);
+        --cm-sys-review-space-md: var(--cm-ref-review-space-12);
+        --cm-sys-review-space-lg: var(--cm-ref-review-space-16);
+        --cm-sys-review-space-xl: var(--cm-ref-review-space-20);
+        --cm-sys-review-space-xxl: var(--cm-ref-review-space-24);
+        --cm-sys-review-control-height: var(--cm-ref-review-size-control);
+        --cm-sys-review-icon-size: var(--cm-ref-review-size-icon);
+        --cm-sys-review-border-width: var(--cm-ref-review-border-width);
+        --cm-sys-review-focus-width: var(--cm-ref-review-focus-width);
+        --cm-sys-review-focus-offset: var(--cm-ref-review-focus-offset);
+        --cm-sys-review-radius-control: var(--cm-ref-review-radius-control);
+        --cm-sys-review-radius-card: var(--cm-ref-review-radius-card);
+        --cm-sys-review-radius-pill: var(--cm-ref-review-radius-pill);
+        --cm-sys-review-opacity-disabled: var(--cm-ref-review-opacity-disabled);
+        --cm-sys-review-motion-fast: var(--cm-ref-review-motion-fast);
+
+        /* Comp: component slots reference Sys only. */
+        --cm-comp-review-app-container-color: var(--cm-sys-review-color-background);
+        --cm-comp-review-app-color-scheme: var(--cm-sys-review-color-scheme);
+        --cm-comp-review-app-label-color: var(--cm-sys-review-color-on-surface);
+        --cm-comp-review-app-muted-color: var(--cm-sys-review-color-on-surface-muted);
+        --cm-comp-review-card-container-color: var(--cm-sys-review-color-surface);
+        --cm-comp-review-card-raised-color: var(--cm-sys-review-color-surface-raised);
+        --cm-comp-review-card-border-color: var(--cm-sys-review-color-outline);
+        --cm-comp-review-card-radius: var(--cm-sys-review-radius-card);
+        --cm-comp-review-card-padding: var(--cm-sys-review-space-lg);
+        --cm-comp-review-card-gap: var(--cm-sys-review-space-md);
+        --cm-comp-review-button-height: var(--cm-sys-review-control-height);
+        --cm-comp-review-button-radius: var(--cm-sys-review-radius-control);
+        --cm-comp-review-button-padding-x: var(--cm-sys-review-space-md);
+        --cm-comp-review-button-primary-color: var(--cm-sys-review-color-action);
+        --cm-comp-review-button-primary-pressed-color: var(--cm-sys-review-color-action-pressed);
+        --cm-comp-review-button-primary-label-color: var(--cm-sys-review-color-on-action);
+        --cm-comp-review-button-secondary-color: var(--cm-sys-review-color-surface-raised);
+        --cm-comp-review-button-secondary-hover-color: var(--cm-sys-review-color-surface-hover);
+        --cm-comp-review-button-secondary-label-color: var(--cm-sys-review-color-on-surface);
+        --cm-comp-review-button-border-color: var(--cm-sys-review-color-outline-strong);
+        --cm-comp-review-button-disabled-color: var(--cm-sys-review-color-disabled);
+        --cm-comp-review-button-disabled-label-color: var(--cm-sys-review-color-on-disabled);
+        --cm-comp-review-button-transparent-color: var(--cm-sys-review-color-transparent);
+        --cm-comp-review-focus-color: var(--cm-sys-review-color-action);
+        --cm-comp-review-focus-width: var(--cm-sys-review-focus-width);
+        --cm-comp-review-focus-offset: var(--cm-sys-review-focus-offset);
+        --cm-comp-review-recommendation-container-color: var(--cm-sys-review-color-action-wash);
+        --cm-comp-review-recommendation-border-color: var(--cm-sys-review-color-action-outline);
+        --cm-comp-review-error-label-color: var(--cm-sys-review-color-error);
+        --cm-comp-review-error-container-color: var(--cm-sys-review-color-error-wash);
+        --cm-comp-review-divider-color: var(--cm-sys-review-color-outline);
+        --cm-comp-review-progress-container-color: var(--cm-sys-review-color-surface-raised);
+        --cm-comp-review-progress-label-color: var(--cm-sys-review-color-on-surface-secondary);
+        --cm-comp-review-font-family: var(--cm-sys-review-font-family);
+        --cm-comp-review-title-size: var(--cm-sys-review-text-title-size);
+        --cm-comp-review-heading-size: var(--cm-sys-review-text-heading-size);
+        --cm-comp-review-body-size: var(--cm-sys-review-text-body-size);
+        --cm-comp-review-label-size: var(--cm-sys-review-text-label-size);
+        --cm-comp-review-caption-size: var(--cm-sys-review-text-caption-size);
+        --cm-comp-review-title-line: var(--cm-sys-review-text-title-line);
+        --cm-comp-review-body-line: var(--cm-sys-review-text-body-line);
+        --cm-comp-review-label-line: var(--cm-sys-review-text-label-line);
+        --cm-comp-review-caption-line: var(--cm-sys-review-text-caption-line);
+        --cm-comp-review-regular-weight: var(--cm-sys-review-weight-regular);
+        --cm-comp-review-medium-weight: var(--cm-sys-review-weight-medium);
+        --cm-comp-review-semibold-weight: var(--cm-sys-review-weight-semibold);
+        --cm-comp-review-space-none: var(--cm-sys-review-space-none);
+        --cm-comp-review-space-xs: var(--cm-sys-review-space-xs);
+        --cm-comp-review-space-sm: var(--cm-sys-review-space-sm);
+        --cm-comp-review-space-md: var(--cm-sys-review-space-md);
+        --cm-comp-review-space-lg: var(--cm-sys-review-space-lg);
+        --cm-comp-review-space-xl: var(--cm-sys-review-space-xl);
+        --cm-comp-review-space-xxl: var(--cm-sys-review-space-xxl);
+        --cm-comp-review-border-width: var(--cm-sys-review-border-width);
+        --cm-comp-review-radius-control: var(--cm-sys-review-radius-control);
+        --cm-comp-review-radius-pill: var(--cm-sys-review-radius-pill);
+        --cm-comp-review-disabled-opacity: var(--cm-sys-review-opacity-disabled);
+        --cm-comp-review-motion-fast: var(--cm-sys-review-motion-fast);
+        --cm-comp-review-size-icon: var(--cm-sys-review-icon-size);
+        color-scheme: var(--cm-comp-review-app-color-scheme);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        min-block-size: 100vh;
+        margin: var(--cm-comp-review-space-none);
+        padding: var(--cm-comp-review-space-lg);
+        color: var(--cm-comp-review-app-label-color);
+        background: var(--cm-comp-review-app-container-color);
+        font-family: var(--cm-comp-review-font-family);
+      }
+      main { display: grid; gap: var(--cm-comp-review-space-lg); }
+      h1, h2, h3, p { margin: var(--cm-comp-review-space-none); }
+      h1 { font-size: var(--cm-comp-review-title-size); line-height: var(--cm-comp-review-title-line); }
+      h2 { font-size: var(--cm-comp-review-heading-size); line-height: var(--cm-comp-review-title-line); }
+      h3 { font-size: var(--cm-comp-review-label-size); line-height: var(--cm-comp-review-label-line); }
+      p { color: var(--cm-comp-review-progress-label-color); font-size: var(--cm-comp-review-body-size); line-height: var(--cm-comp-review-body-line); }
+      header { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .app-subtitle { color: var(--cm-comp-review-progress-label-color); }
+      .reviewer-context { color: var(--cm-comp-review-app-muted-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      label { display: grid; gap: var(--cm-comp-review-space-sm); color: var(--cm-comp-review-progress-label-color); font-size: var(--cm-comp-review-label-size); line-height: var(--cm-comp-review-label-line); }
+      input {
+        inline-size: 100%;
+        min-block-size: var(--cm-comp-review-button-height);
+        padding: var(--cm-comp-review-space-sm) var(--cm-comp-review-space-md);
+        color: var(--cm-comp-review-app-label-color);
+        background: var(--cm-comp-review-card-raised-color);
+        border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-button-border-color);
+        border-radius: var(--cm-comp-review-radius-control);
+        font: inherit;
+      }
+      button {
+        min-block-size: var(--cm-comp-review-button-height);
+        padding: var(--cm-comp-review-space-sm) var(--cm-comp-review-button-padding-x);
+        color: var(--cm-comp-review-button-primary-label-color);
+        background: var(--cm-comp-review-button-primary-color);
+        border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-button-transparent-color);
+        border-radius: var(--cm-comp-review-button-radius);
+        font: inherit;
+        font-size: var(--cm-comp-review-label-size);
+        font-weight: var(--cm-comp-review-semibold-weight);
+        cursor: pointer;
+        transition: background var(--cm-comp-review-motion-fast);
+      }
+      button:not(:disabled):hover { background: var(--cm-comp-review-button-primary-pressed-color); }
+      button:disabled {
+        color: var(--cm-comp-review-button-disabled-label-color);
+        background: var(--cm-comp-review-button-disabled-color);
+        opacity: var(--cm-comp-review-disabled-opacity);
+        cursor: default;
+      }
+      :focus-visible {
+        outline: var(--cm-comp-review-focus-width) solid var(--cm-comp-review-focus-color);
+        outline-offset: var(--cm-comp-review-focus-offset);
+      }
+      .state {
+        display: grid;
+        gap: var(--cm-comp-review-card-gap);
+        padding: var(--cm-comp-review-card-padding);
+        background: var(--cm-comp-review-card-container-color);
+        border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-card-border-color);
+        border-radius: var(--cm-comp-review-card-radius);
+      }
+      .login-form, .review-card, .decision-actions, .details, .confirmation, .failure, .empty-state, .workflow-overview, .attention-list, .attention-item {
+        display: grid;
+        gap: var(--cm-comp-review-space-md);
+      }
+      .login-heading { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .field-helper, .breadcrumb, .missing-target, .technical-details { color: var(--cm-comp-review-app-muted-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .progress-row { display: flex; align-items: center; justify-content: space-between; gap: var(--cm-comp-review-space-sm); }
+      .progress {
+        padding: var(--cm-comp-review-space-xs) var(--cm-comp-review-space-sm);
+        color: var(--cm-comp-review-progress-label-color);
+        background: var(--cm-comp-review-progress-container-color);
+        border-radius: var(--cm-comp-review-radius-pill);
+        font-size: var(--cm-comp-review-caption-size);
+        line-height: var(--cm-comp-review-caption-line);
+        font-weight: var(--cm-comp-review-semibold-weight);
+      }
+      .workflow-overview {
+        padding-block-end: var(--cm-comp-review-space-md);
+        border-block-end: var(--cm-comp-review-border-width) solid var(--cm-comp-review-divider-color);
+      }
+      .workflow-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--cm-comp-review-space-sm); }
+      .workflow-heading p { color: var(--cm-comp-review-app-muted-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .workflow-counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--cm-comp-review-space-xs); }
+      .workflow-count {
+        display: grid;
+        gap: var(--cm-comp-review-space-xs);
+        padding: var(--cm-comp-review-space-sm) var(--cm-comp-review-space-xs);
+        text-align: center;
+        background: var(--cm-comp-review-progress-container-color);
+        border-radius: var(--cm-comp-review-radius-control);
+      }
+      .workflow-count strong { color: var(--cm-comp-review-app-label-color); font-size: var(--cm-comp-review-body-size); line-height: var(--cm-comp-review-body-line); }
+      .workflow-count span { color: var(--cm-comp-review-app-muted-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .attention-list { gap: var(--cm-comp-review-space-sm); }
+      .attention-item { gap: var(--cm-comp-review-space-xs); padding: var(--cm-comp-review-space-sm); background: var(--cm-comp-review-card-raised-color); border-radius: var(--cm-comp-review-radius-control); }
+      .attention-item strong { font-size: var(--cm-comp-review-label-size); line-height: var(--cm-comp-review-label-line); }
+      .attention-item p { font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .component-heading { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .similar-hint { color: var(--cm-comp-review-progress-label-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .recommendation {
+        display: grid;
+        gap: var(--cm-comp-review-space-md);
+        padding: var(--cm-comp-review-space-md);
+        background: var(--cm-comp-review-recommendation-container-color);
+        border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-recommendation-border-color);
+        border-radius: var(--cm-comp-review-radius-control);
+      }
+      .recommendation-heading { display: flex; align-items: center; gap: var(--cm-comp-review-space-sm); }
+      .recommendation-chip {
+        padding: var(--cm-comp-review-space-xs) var(--cm-comp-review-space-sm);
+        color: var(--cm-comp-review-button-primary-label-color);
+        background: var(--cm-comp-review-button-primary-color);
+        border-radius: var(--cm-comp-review-radius-pill);
+        font-size: var(--cm-comp-review-caption-size);
+        line-height: var(--cm-comp-review-caption-line);
+        font-weight: var(--cm-comp-review-semibold-weight);
+      }
+      .recommendation-label { color: var(--cm-comp-review-app-label-color); font-size: var(--cm-comp-review-body-size); line-height: var(--cm-comp-review-body-line); font-weight: var(--cm-comp-review-semibold-weight); }
+      .recommendation-reason { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+      .secondary, .quiet-button, .disclosure-button, .refresh-button, .navigation button, .cancel-button {
+        color: var(--cm-comp-review-button-secondary-label-color);
+        background: var(--cm-comp-review-button-secondary-color);
+        border-color: var(--cm-comp-review-button-border-color);
+      }
+      .secondary:not(:disabled):hover, .quiet-button:not(:disabled):hover, .disclosure-button:not(:disabled):hover, .refresh-button:not(:disabled):hover, .navigation button:not(:disabled):hover, .cancel-button:not(:disabled):hover { background: var(--cm-comp-review-button-secondary-hover-color); }
+      .quiet-button, .disclosure-button { min-block-size: auto; padding: var(--cm-comp-review-space-xs) var(--cm-comp-review-space-sm); justify-self: start; }
+      .details { padding-block-start: var(--cm-comp-review-space-xs); }
+      .details section { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .details ul { margin: var(--cm-comp-review-space-none); padding-inline-start: var(--cm-comp-review-space-xl); color: var(--cm-comp-review-progress-label-color); font-size: var(--cm-comp-review-label-size); line-height: var(--cm-comp-review-label-line); }
+      .alternative-section { display: grid; gap: var(--cm-comp-review-space-sm); }
+      .missing-target { color: var(--cm-comp-review-error-label-color); }
+      .confirmation {
+        padding: var(--cm-comp-review-space-md);
+        background: var(--cm-comp-review-card-raised-color);
+        border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-recommendation-border-color);
+        border-radius: var(--cm-comp-review-radius-control);
+      }
+      .confirmation-copy { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .confirmation-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cm-comp-review-space-sm); }
+      .navigation { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cm-comp-review-space-sm); padding-block-start: var(--cm-comp-review-space-xs); border-block-start: var(--cm-comp-review-border-width) solid var(--cm-comp-review-divider-color); }
+      .footer-actions { display: flex; justify-content: flex-end; }
+      .failure {
+        padding: var(--cm-comp-review-space-md);
+        color: var(--cm-comp-review-error-label-color);
+        background: var(--cm-comp-review-error-container-color);
+        border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-error-label-color);
+        border-radius: var(--cm-comp-review-radius-control);
+        font-size: var(--cm-comp-review-label-size);
+        line-height: var(--cm-comp-review-label-line);
+      }
+      .failure:empty { display: none; }
+      .failure p { color: var(--cm-comp-review-app-label-color); }
+      .technical-details { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .technical-details summary { cursor: pointer; color: var(--cm-comp-review-progress-label-color); }
+      .technical-details code { overflow-wrap: anywhere; color: var(--cm-comp-review-app-muted-color); }
+      .message { min-block-size: var(--cm-comp-review-size-icon); color: var(--cm-comp-review-app-muted-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .message[data-tone="error"] { color: var(--cm-comp-review-error-label-color); }
+      .home-view, .feature-view { display: grid; gap: var(--cm-comp-review-space-lg); }
+      .home-intro, .view-heading { display: grid; gap: var(--cm-comp-review-space-xs); }
+      .feature-grid { display: grid; gap: var(--cm-comp-review-space-md); }
+      .feature-card { display: grid; gap: var(--cm-comp-review-space-sm); padding: var(--cm-comp-review-space-md); border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-card-border-color); border-radius: var(--cm-comp-review-card-radius); background: var(--cm-comp-review-card-raised-color); }
+      .feature-card p, .view-heading p { color: var(--cm-comp-review-app-muted-color); }
+      .view-navigation { display: flex; justify-content: flex-start; }
+      .back-home-button { color: var(--cm-comp-review-button-secondary-label-color); background: var(--cm-comp-review-button-secondary-color); border-color: var(--cm-comp-review-button-border-color); }
+      .back-home-button:not(:disabled):hover { background: var(--cm-comp-review-button-secondary-hover-color); }
+      .cleanup-panel, .scope-card, .cleanup-status, .cleanup-plan, .cleanup-count, .operation-list, .operation-copy, .workflow-task-list, .workflow-task-card { display: grid; gap: var(--cm-comp-review-space-sm); }
+      .scope-card, .cleanup-status, .cleanup-plan, .workflow-task-card { padding: var(--cm-comp-review-space-md); background: var(--cm-comp-review-card-raised-color); border: var(--cm-comp-review-border-width) solid var(--cm-comp-review-card-border-color); border-radius: var(--cm-comp-review-card-radius); }
+      .scope-card strong, .cleanup-status strong, .workflow-task-card strong { color: var(--cm-comp-review-app-label-color); }
+      .cleanup-actions, .workflow-task-actions { display: flex; flex-wrap: wrap; gap: var(--cm-comp-review-space-sm); }
+      .cleanup-actions .secondary, .workflow-task-actions .secondary { flex: 0 1 auto; }
+      .cleanup-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--cm-comp-review-space-xs); }
+      .cleanup-count { padding: var(--cm-comp-review-space-sm); text-align: center; background: var(--cm-comp-review-progress-container-color); border-radius: var(--cm-comp-review-radius-control); }
+      .cleanup-count strong { color: var(--cm-comp-review-app-label-color); font-size: var(--cm-comp-review-heading-size); }
+      .cleanup-count span, .task-meta { color: var(--cm-comp-review-app-muted-color); font-size: var(--cm-comp-review-caption-size); line-height: var(--cm-comp-review-caption-line); }
+      .operation-item { display: grid; grid-template-columns: auto 1fr; gap: var(--cm-comp-review-space-sm); align-items: start; padding: var(--cm-comp-review-space-sm); background: var(--cm-comp-review-card-container-color); border-radius: var(--cm-comp-review-radius-control); }
+      .operation-item input { inline-size: auto; min-block-size: auto; margin: var(--cm-comp-review-space-xs) var(--cm-comp-review-space-none) var(--cm-comp-review-space-none); padding: var(--cm-comp-review-space-none); }
+      .operation-copy strong { font-size: var(--cm-comp-review-label-size); line-height: var(--cm-comp-review-label-line); }
+      .task-status { justify-self: start; padding: var(--cm-comp-review-space-xs) var(--cm-comp-review-space-sm); color: var(--cm-comp-review-progress-label-color); background: var(--cm-comp-review-progress-container-color); border-radius: var(--cm-comp-review-radius-pill); font-size: var(--cm-comp-review-caption-size); font-weight: var(--cm-comp-review-semibold-weight); }
+      .completion-mark { margin-inline-start: var(--cm-comp-review-space-xs); color: var(--cm-comp-review-button-primary-color); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 id="appTitle"></h1>
+        <p class="app-subtitle" id="appSubtitle"></p>
+        <p class="reviewer-context" id="reviewerContext"></p>
+      </header>
+      <section class="state" id="appState"></section>
+      <section class="failure" id="failurePanel" aria-live="assertive" aria-atomic="true"></section>
+      <p class="message" id="liveStatus" aria-live="polite" aria-atomic="true" role="status"></p>
+    </main>
+    <script>
+      var COPY = Object.freeze({
+        appTitle: "Design Automation Hub",
+        appSubtitle: "讓設計任務有清楚入口",
+        loadingContext: "正在讀取 Figma 檔案…",
+        projectContext: "目前專案：{{name}}",
+        projectPending: "驗證後顯示目前專案",
+        homeTitle: "今天想先整理哪一段設計？",
+        homeBody: "選一個任務開始，進度會保留在這次工作階段。",
+        cleanupTitle: "整理設計稿",
+        cleanupHelper: "先分析目前選取範圍，確認前不會修改畫布。",
+        cleanupAction: "整理設計稿",
+        reviewTitle: "元件覆核",
+        reviewHelper: "逐一確認待覆核元件與建議處理方式。",
+        reviewAction: "元件覆核",
+        workflowFeatureTitle: "流程狀態",
+        workflowHelper: "查看目前檔案的萃取與設計任務進度。",
+        workflowAction: "流程狀態",
+        returnHome: "返回首頁",
+        cleanupViewBody: "選取一個 Section、Frame、Component 或 Component Set 後開始。",
+        workflowViewBody: "這裡會顯示目前檔案可恢復的自動化進度。",
+        analyzingState: "分析中",
+        cleanupScanHelper: "讓 AI 先巡一遍圖層，完成前不會動到畫布。",
+        cleanupReadingSelection: "正在讀取目前選取範圍…",
+        cleanupScopeReady: "已選取 {{name}}，共 {{count}} 個圖層。",
+        cleanupScopeCompact: "{{name}} · {{count}} 個圖層",
+        cleanupScopeRequired: "請先在畫布選取一個 Section、Frame、Component 或 Component Set。",
+        cleanupBatchReady: "已選取 {{count}} 個範圍，開始分析後會各自建立一筆整理任務。",
+        cleanupBatchTooLarge: "一次最多整理 {{max}} 個範圍，請減少選取數量。",
+        cleanupScopeOverlapping: "選取的範圍互相包含，請改選彼此獨立的範圍。",
+        cleanupRejectedSummary: "有 {{count}} 個選取項目無法整理，其餘照常進行。",
+        cleanupScanReadyForDev: "掃描 Ready for dev",
+        cleanupScanningReadyForDev: "正在掃描目前頁面的 Ready for dev 範圍…",
+        cleanupReadyForDevTitle: "Ready for dev 範圍",
+        cleanupReadyForDevFound: "找到 {{count}} 個 Ready for dev 範圍。",
+        cleanupNoReadyForDev: "目前頁面沒有標記為 Ready for dev 的範圍，仍可在畫布手動選取。",
+        cleanupReadyForDevScanFailed: "目前無法掃描 Ready for dev 範圍，請改用手動選取。",
+        cleanupReadyForDevTruncated: "候選數量已達上限，僅顯示前 {{max}} 個。",
+        cleanupQueueSelected: "排入選取範圍",
+        cleanupBatchListTitle: "這批整理任務",
+        cleanupBatchProgress: "已建立 {{done}} / {{total}} 筆任務。",
+        cleanupBatchOpen: "查看",
+        cleanupBatchRetry: "重試",
+        cleanupBatchCreateFailed: "尚未建立",
+        cleanupBackToBatch: "返回任務清單",
+        cleanupScopeUnsupported: "目前選取的圖層不支援整理，請改選 Section、Frame、Component 或 Component Set。",
+        cleanupScopeTooLarge: "這個範圍超過 500 個圖層或資料量過大，請縮小選取範圍。",
+        cleanupScopeInvalid: "目前無法讀取這個範圍，請重新選取後再試一次。",
+        cleanupRefreshScope: "重新讀取選取範圍",
+        cleanupStartAnalysis: "開始分析",
+        cleanupSubmitting: "正在建立整理任務…",
+        cleanupQueued: "任務已排入分析，關閉 Plugin 也會繼續。",
+        cleanupAnalyzing: "AI 正在巡查圖層，完成前不會修改畫布。",
+        cleanupPlanReady: "整理提案已送達",
+        cleanupApplying: "正在安全套用整理提案。",
+        cleanupCompleted: "整理完成，畫布變清爽了",
+        decorativeMark: "✦",
+        cleanupBlocked: "這個整理任務需要處理，畫布不會自動繼續修改。",
+        cleanupStale: "設計稿已變更，這份整理提案沒有套用。",
+        cleanupRefreshTask: "更新進度",
+        cleanupViewPlan: "查看整理提案",
+        cleanupPlanSummary: "先確認整理類型與數量，再決定要套用哪些項目。",
+        cleanupRenameCount: "重新命名",
+        cleanupReorderCount: "調整順序",
+        cleanupMoveCount: "移動圖層",
+        cleanupShowDetails: "查看操作明細",
+        cleanupHideDetails: "收合操作明細",
+        cleanupPrepareApply: "準備套用",
+        cleanupSelectedCount: "已選 {{count}} 項",
+        cleanupOperationRename: "重新命名：{{before}} → {{after}}",
+        cleanupOperationReorder: "調整圖層順序",
+        cleanupOperationMove: "移動圖層",
+        cleanupConfirmationTitle: "確認套用整理提案？",
+        cleanupConfirmationScope: "範圍：{{name}}",
+        cleanupConfirmationCount: "將套用 {{count}} 項整理操作。",
+        cleanupConfirmationRisk: "套用前會再次檢查設計稿；若 Figma 無法完整復原，會提供受影響圖層與復原指引。",
+        cleanupConfirmApply: "確認套用",
+        cleanupApplyChecking: "正在重新確認設計稿，尚未修改畫布。",
+        cleanupPreflightComplete: "安全檢查完成，準備套用選取項目。",
+        cleanupValidationFailed: "設計稿已變更，這份整理提案沒有套用。畫布沒有修改，請重新分析。",
+        cleanupInvalidPlan: "整理提案未通過安全檢查。畫布沒有修改。請重新分析。",
+        cleanupRolledBack: "套用途中發生錯誤，所有變更已復原。畫布已回到套用前狀態。請重新分析後再試。",
+        cleanupPartialApply: "套用途中發生錯誤，部分變更未能復原。受影響圖層：{{names}}。請先使用 Figma 的「復原」（⌘Z / Ctrl+Z）或手動修正，再重新分析。",
+        cleanupCompletionFailure: "畫布已完成修改，但任務結果尚未同步。整理提案與完成證明都已保留，可以再試一次。",
+        cleanupFailureSyncFailure: "畫布處理結果已保留，但任務狀態尚未同步，可以再試一次。",
+        cleanupInvalidApplyResult: "無法確認畫布處理結果。請先檢查 Figma 畫布，再查看技術資訊。",
+        cleanupCompletedCounts: "已套用 {{applied}} 項，略過 {{skipped}} 項。",
+        cleanupApplyIntentFailure: "尚未開始套用；整理提案與勾選內容都已保留，可以再試一次。",
+        cleanupReanalyze: "重新分析",
+        cleanupRequestFailure: "整理任務尚未建立，選取範圍已保留，可以再試一次。",
+        cleanupTaskFailure: "目前無法更新整理任務，既有進度已保留。",
+        workflowExtractionTitle: "元件萃取摘要",
+        workflowAutomationTitle: "設計任務",
+        workflowLoadingTasks: "正在載入設計任務…",
+        workflowNoTasks: "目前沒有設計任務。",
+        workflowTaskName: "整理設計稿",
+        workflowUpdatedAt: "更新時間：{{time}}",
+        unavailableValue: "—",
+        breadcrumbSeparator: " / ",
+        affectedNodeSeparator: "、",
+        unnamedLayer: "未命名圖層",
+        workflowTaskFailure: "目前無法載入設計任務，已保留畫面中的進度。",
+        dispatchAwaitingApproval: "已送到團隊看板，等待成員按「放行執行」。",
+        dispatchWaitingClaim: "已放行，等待有空的機器領取。",
+        dispatchRunning: "已被機器領取，AI 正在分析。",
+        dispatchNeedsAttention: "看板上的卡片需要有人處理，請到看板查看。",
+        dispatchClosed: "看板上的卡片已結案。",
+        dispatchStalled: "尚無機器領取。只有讀得到本專案 runtime 目錄的機器可以領這張卡——通常就是送出這次整理的這台電腦，請確認它的 worker 正在執行。",
+        dispatchCardRef: "看板卡片：{{cardId}}",
+        taskStatusQueued: "等待中",
+        taskStatusAnalyzing: "分析中",
+        taskStatusPlanReady: "等待確認",
+        taskStatusApplying: "套用中",
+        taskStatusCompleted: "已完成",
+        taskStatusBlocked: "需要處理",
+        taskStatusStale: "計畫已過期",
+        loginTitle: "開啟工作台",
+        loginBody: "輸入團隊提供的存取碼，即可載入這個檔案可使用的設計任務。",
+        accessCodeLabel: "存取碼",
+        accessCodeHelper: "只在本次開啟期間使用，不會儲存",
+        startReview: "開啟工作台",
+        missingAccessCode: "請輸入存取碼。",
+        invalidAccessCode: "存取碼無效或已撤銷，請重新輸入。",
+        noReviewPermission: "這組存取碼沒有覆核權限。請向流程管理者確認。",
+        loadingReviews: "正在載入待覆核元件…",
+        loadedReviews: "已載入 {{count}} 個待覆核元件。",
+        progress: "待覆核 {{current}} / {{total}}",
+        unnamedComponent: "未命名元件",
+        similarAvailable: "已有相似元件可供比較",
+        similarUnavailable: "尚未找到可比較的既有元件",
+        recommendationChip: "AI 建議",
+        viewDetails: "查看差異",
+        hideDetails: "收合差異",
+        samePoints: "相同點",
+        differences: "差異",
+        similarComponents: "相似元件",
+        adoptRecommendation: "採用 AI 建議",
+        chooseOther: "選其他處理方式",
+        hideOther: "收合其他處理方式",
+        chooseMethod: "請選擇處理方式",
+        alternativeAria: "其他覆核方式",
+        decisionMerge: "使用既有元件",
+        decisionVariant: "新增為 Variant",
+        decisionDistinct: "建立獨立元件",
+        missingTarget: "需要先找到相似元件，才能使用前兩個選項。",
+        selectedDecision: "已選擇「{{action}}」，確認後才會送出。",
+        confirmationAria: "確認覆核選擇",
+        confirmationTitle: "確認這個選擇？",
+        confirmationAction: "處理方式：{{action}}",
+        confirmationComponent: "元件：{{component}}",
+        returnEdit: "返回修改",
+        confirmAdopt: "確認採用",
+        confirmChoice: "確認選擇",
+        cancelled: "已返回修改，尚未送出。",
+        submittingDecision: "正在送出覆核選擇…",
+        submittedDecision: "已完成「{{action}}」，並前往下一個待覆核元件。",
+        workflowTitle: "流程狀態",
+        workflowUpdated: "自動化即時摘要",
+        workflowUnavailable: "暫時無法取得流程狀態",
+        workflowCompleted: "已完成",
+        workflowActive: "處理中",
+        workflowNeedsReview: "待覆核",
+        workflowAttention: "需注意",
+        workflowWaiting: "等待中",
+        noReviewTitle: "目前不需要你的覆核",
+        attentionBody: "自動化有 {{count}} 項需要流程管理者處理",
+        activeBody: "自動化仍在處理元件，稍後重新整理即可。",
+        waitingBody: "自動化仍有元件在等待處理，稍後重新整理即可。",
+        completeTitle: "所有元件流程已完成",
+        completeBody: "目前沒有新的覆核工作。",
+        attentionBlocked: "流程已停止，需要管理者處理",
+        attentionExhausted: "自動處理已達重試上限",
+        refresh: "重新整理",
+        previous: "上一個",
+        next: "下一個",
+        navigationAria: "待覆核元件切換",
+        retry: "再試一次",
+        technicalInfo: "查看技術資訊",
+        focusFailed: "目前無法在畫布定位這個元件，但仍可繼續覆核。",
+        focusNodeMissing: "畫布上找不到這個元件，但覆核項目仍會保留。",
+        focusPageFailed: "目前無法切換到元件所在頁面，但仍可繼續覆核。",
+        pendingNetworkFailure: "目前無法連線到覆核服務。請確認本機流程已啟動後再試一次。",
+        pendingServerFailure: "覆核服務暫時沒有回應，請稍後再試一次。",
+        pendingRequestFailure: "目前無法載入待覆核元件，請再試一次。",
+        decisionNetworkFailure: "選擇尚未送出；內容已保留，可以直接再試一次。",
+        decisionServerFailure: "覆核服務暫時沒有回應；選擇已保留，可以直接再試一次。",
+        decisionRequestFailure: "選擇尚未送出；內容已保留，可以直接再試一次。",
+        firstWrite: "這個元件已由 {{reviewer}} 完成「{{action}}」{{time}}。清單已更新。",
+        unknownReviewer: "其他覆核者",
+        unknownDecision: "其他處理方式",
+        decidedTime: "，時間 {{time}}",
+        unsupportedTitle: "目前無法使用元件覆核",
+        unsupportedBody: "請在 private Figma Design 檔案中開啟這個 Plugin。",
+        unsupportedProjectTitle: "這個檔案尚未設定",
+        unsupportedProjectBody: "請流程管理者先為目前 Figma file 設定 project profile。",
+        projectContextFailure: "目前無法確認這個檔案的專案設定。Figma 文件沒有被修改，請再試一次。",
+        projectContextOutdated: "背景服務需要重新啟動。Figma 文件沒有被修改；請流程管理者重新啟動 Coordinator 後再試一次。",
+        projectAccessDenied: "這組存取碼沒有目前專案的使用權限，請換一組存取碼或向流程管理者確認。",
+        noRequestSent: "未發送任務、覆核或套用請求。",
+        diagnosticNetwork: "network-error",
+        diagnosticHttp: "HTTP {{status}}",
+        diagnosticUnsupported: "file-key-unavailable",
+      });
+      var DEFAULT_COORDINATOR_URL = "http://localhost:8787";
+      var pluginContext = null;
+      var projectContext = null;
+      var activeView = "login";
+      var coordinatorUrl = DEFAULT_COORDINATOR_URL;
+      var reviewerKey = "";
+      var pendingItems = [];
+      var workflowOverview = null;
+      var activeIndex = 0;
+      var detailsExpanded = false;
+      var alternativesExpanded = false;
+      var selectedDecision = null;
+      var submissionInFlight = false;
+      var reviewLoaded = false;
+      var CLEANUP_BATCH_MAX = 10;
+      var READY_FOR_DEV_SCAN_MAX = 50;
+      var cleanupSession = {
+        task: null,
+        activeTaskId: null,
+        tasks: [],
+        captures: [],
+        rejected: [],
+        scopeSummary: null,
+        captureState: "idle",
+        captureError: null,
+        scanState: "idle",
+        scanCandidates: [],
+        scanSelectedIds: [],
+        scanTruncated: false,
+        submissionInFlight: false,
+        detailInFlight: false,
+        applyInFlight: false,
+        applyAttempt: null,
+        failureContext: null,
+        completionSummary: null,
+        analysisGeneration: 0,
+        selectedOperationIds: [],
+        selectionRevision: null,
+        detailsExpanded: false,
+        confirmationOpen: false,
+      };
+      var workflowSession = { tasks: [], loaded: false, loading: false };
+      var failureRetry = null;
+      var failureKind = null;
+      var sessionId = "session-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+      var DECISION_LABELS = {
+        merge: COPY.decisionMerge,
+        "make-variant": COPY.decisionVariant,
+        "keep-distinct": COPY.decisionDistinct,
+      };
+      var appTitle = document.getElementById("appTitle");
+      var appSubtitle = document.getElementById("appSubtitle");
+      var reviewerContext = document.getElementById("reviewerContext");
+      var appState = document.getElementById("appState");
+      var failurePanel = document.getElementById("failurePanel");
+      var liveStatus = document.getElementById("liveStatus");
+
+      function copy(key, values) {
+        var result = COPY[key] || "";
+        var replacements = values || {};
+        Object.keys(replacements).forEach(function (name) {
+          result = result.replace(new RegExp("{{" + name + "}}", "g"), String(replacements[name]));
+        });
+        return result;
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? "" : value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function stableErrorCode(payload) {
+        var code = payload && payload.error && payload.error.code;
+        return typeof code === "string" && /^[a-z][a-z0-9-]{0,63}$/.test(code) ? code : "";
+      }
+
+      function validProjectContext(payload) {
+        var project = payload && payload.project;
+        var features = payload && payload.features;
+        var permissions = payload && payload.permissions;
+        return Boolean(
+          project
+          && typeof project.id === "string"
+          && project.id.trim()
+          && typeof project.displayName === "string"
+          && project.displayName.trim()
+          && features
+          && typeof features.cleanup === "boolean"
+          && typeof features.review === "boolean"
+          && typeof features.workflowStatus === "boolean"
+          && permissions
+          && typeof permissions.createTask === "boolean"
+          && typeof permissions.applyTask === "boolean"
+          && typeof permissions.review === "boolean"
+        );
+      }
+
+      function postToMain(message) {
+        parent.postMessage({ pluginMessage: message }, "*");
+      }
+
+      function featureEnabled(view) {
+        if (!projectContext || !projectContext.features || !projectContext.permissions) return false;
+        if (view === "cleanup") return projectContext.features.cleanup === true && projectContext.permissions.createTask === true;
+        if (view === "review") return projectContext.features.review === true && projectContext.permissions.review === true;
+        if (view === "workflow") return projectContext.features.workflowStatus === true;
+        return false;
+      }
+
+      function renderFeatureHeader(title, body) {
+        return [
+          '<div class="view-navigation"><button class="back-home-button" id="backHomeButton" type="button">' + escapeHtml(COPY.returnHome) + '</button></div>',
+          '<div class="view-heading"><h2>' + escapeHtml(title) + '</h2><p>' + escapeHtml(body || "") + '</p></div>',
+        ].join("");
+      }
+
+      function bindBackHome() {
+        var button = document.getElementById("backHomeButton");
+        if (!button) return;
+        if (activeView === "cleanup" && cleanupSession.applyInFlight) button.disabled = true;
+        button.addEventListener("click", function () {
+          if (!cleanupSession.applyInFlight) renderHome();
+        });
+      }
+
+      function renderHome() {
+        if (!projectContext) return;
+        activeView = "home";
+        var cards = [];
+        if (featureEnabled("cleanup")) cards.push({ view: "cleanup", title: COPY.cleanupTitle, helper: COPY.cleanupHelper, action: COPY.cleanupAction });
+        if (featureEnabled("review")) cards.push({ view: "review", title: COPY.reviewTitle, helper: COPY.reviewHelper, action: COPY.reviewAction });
+        if (featureEnabled("workflow")) cards.push({ view: "workflow", title: COPY.workflowFeatureTitle, helper: COPY.workflowHelper, action: COPY.workflowAction });
+        appState.innerHTML = [
+          '<section class="home-view"><div class="home-intro"><h2>' + escapeHtml(COPY.homeTitle) + '</h2><p>' + escapeHtml(COPY.homeBody) + '</p></div>',
+          '<div class="feature-grid">',
+          cards.slice(0, 3).map(function (card) {
+            return '<article class="feature-card" data-feature="' + card.view + '"><h3>' + escapeHtml(card.title) + '</h3><p>'
+              + escapeHtml(card.helper) + '</p><button id="open-' + card.view + '-view" type="button" data-open-view="' + card.view + '">' + escapeHtml(card.action) + '</button></article>';
+          }).join(""),
+          '</div></section>',
+        ].join("");
+        cards.slice(0, 3).forEach(function (card) {
+          var button = document.getElementById("open-" + card.view + "-view");
+          if (button) button.addEventListener("click", function () { openFeature(card.view); });
+        });
+      }
+
+      function cleanupStatusLabel(status) {
+        var labels = {
+          queued: COPY.taskStatusQueued,
+          analyzing: COPY.taskStatusAnalyzing,
+          "plan-ready": COPY.taskStatusPlanReady,
+          applying: COPY.taskStatusApplying,
+          completed: COPY.taskStatusCompleted,
+          blocked: COPY.taskStatusBlocked,
+          stale: COPY.taskStatusStale,
+        };
+        return labels[status] || COPY.taskStatusBlocked;
+      }
+
+      function cleanupStatusMessage(status) {
+        var messages = {
+          queued: COPY.cleanupQueued,
+          analyzing: COPY.cleanupAnalyzing,
+          "plan-ready": COPY.cleanupPlanReady,
+          applying: COPY.cleanupApplying,
+          completed: COPY.cleanupCompleted,
+          blocked: COPY.cleanupBlocked,
+          stale: COPY.cleanupStale,
+        };
+        return messages[status] || COPY.cleanupBlocked;
+      }
+
+      function dispatchMessage(dispatch) {
+        if (!dispatch.approved) return COPY.dispatchAwaitingApproval;
+        if (dispatch.boardColumn === "RUNNING") return COPY.dispatchRunning;
+        if (dispatch.boardColumn === "NEEDS_ATTENTION") return COPY.dispatchNeedsAttention;
+        if (dispatch.boardColumn === "DONE") return COPY.dispatchClosed;
+        return dispatch.stalled ? COPY.dispatchStalled : COPY.dispatchWaitingClaim;
+      }
+
+      /** 派工任務的看板狀態行；未派工的任務回空字串（standalone 畫面完全不變）。 */
+      function renderDispatchStatus(task) {
+        if (!task || !task.dispatch || !task.dispatch.cardId) return "";
+        return '<p class="task-meta">' + escapeHtml(dispatchMessage(task.dispatch)) + '</p>'
+          + '<p class="task-meta">' + escapeHtml(copy("dispatchCardRef", { cardId: task.dispatch.cardId })) + '</p>';
+      }
+
+      function cleanupSelectionError(errorCode) {
+        if (errorCode === "cleanup-scope-required") return COPY.cleanupScopeRequired;
+        if (errorCode === "overlapping-cleanup-scope") return COPY.cleanupScopeOverlapping;
+        if (errorCode === "cleanup-batch-too-large") return copy("cleanupBatchTooLarge", { max: CLEANUP_BATCH_MAX });
+        if (errorCode === "unsupported-cleanup-scope") return COPY.cleanupScopeUnsupported;
+        if (errorCode === "cleanup-scope-too-large") return COPY.cleanupScopeTooLarge;
+        return COPY.cleanupScopeInvalid;
+      }
+
+      function cleanupTaskOperations() {
+        return cleanupSession.task && cleanupSession.task.plan && Array.isArray(cleanupSession.task.plan.operations)
+          ? cleanupSession.task.plan.operations
+          : [];
+      }
+
+      function cleanupOperationCounts(operations) {
+        var counts = { rename: 0, reorder: 0, move: 0 };
+        operations.forEach(function (operation) {
+          if (operation.type === "rename-node") counts.rename += 1;
+          else if (operation.type === "reorder-node") counts.reorder += 1;
+          else if (operation.type === "move-node") counts.move += 1;
+        });
+        return counts;
+      }
+
+      function initializeCleanupPlanSelection() {
+        var task = cleanupSession.task;
+        var operations = cleanupTaskOperations();
+        if (!task || operations.length === 0 || cleanupSession.selectionRevision === task.revision) return;
+        cleanupSession.selectedOperationIds = operations.map(function (operation) { return operation.operationId; });
+        cleanupSession.selectionRevision = task.revision;
+        cleanupSession.detailsExpanded = false;
+        cleanupSession.confirmationOpen = false;
+      }
+
+      function cleanupOperationTitle(operation) {
+        if (operation.type === "rename-node") {
+          return copy("cleanupOperationRename", { before: operation.beforeName, after: operation.afterName });
+        }
+        if (operation.type === "reorder-node") return COPY.cleanupOperationReorder;
+        return COPY.cleanupOperationMove;
+      }
+
+      function renderCleanupOperations(operations) {
+        if (!cleanupSession.detailsExpanded) return "";
+        return '<div class="operation-list" id="cleanupOperationList" role="group" aria-label="' + escapeHtml(COPY.cleanupShowDetails) + '">'
+          + operations.map(function (operation, index) {
+            var selected = cleanupSession.selectedOperationIds.indexOf(operation.operationId) !== -1;
+            return '<label class="operation-item" for="cleanupOperation' + index + '">'
+              + '<input id="cleanupOperation' + index + '" type="checkbox"' + (selected ? ' checked' : '')
+              + (cleanupSession.applyInFlight ? ' disabled' : '') + ' />'
+              + '<span class="operation-copy"><strong>' + escapeHtml(cleanupOperationTitle(operation)) + '</strong><span>'
+              + escapeHtml(operation.reason || "") + '</span></span></label>';
+          }).join("") + '</div>';
+      }
+
+      function renderCleanupPlan() {
+        var operations = cleanupTaskOperations();
+        initializeCleanupPlanSelection();
+        var counts = cleanupOperationCounts(operations);
+        var selectedCount = cleanupSession.selectedOperationIds.length;
+        var confirmation = cleanupSession.confirmationOpen
+          ? '<section class="confirmation" id="cleanupConfirmationDialog" role="dialog" aria-labelledby="cleanupConfirmationHeading" tabindex="-1">'
+            + '<div class="confirmation-copy"><h3 id="cleanupConfirmationHeading">' + escapeHtml(COPY.cleanupConfirmationTitle) + '</h3>'
+            + '<p>' + escapeHtml(copy("cleanupConfirmationScope", { name: cleanupSession.task.scopeName })) + '</p>'
+            + '<p>' + escapeHtml(copy("cleanupConfirmationCount", { count: selectedCount })) + '</p>'
+            + '<p>' + escapeHtml(COPY.cleanupConfirmationRisk) + '</p></div>'
+            + '<div class="confirmation-actions"><button class="cancel-button" id="cancelCleanupApplyButton" type="button"'
+            + (cleanupSession.applyInFlight ? ' disabled' : '') + '>' + escapeHtml(COPY.returnEdit)
+            + '</button><button id="confirmCleanupApplyButton" type="button" data-primary-action="true"'
+            + (cleanupSession.applyInFlight ? ' disabled' : '') + '>'
+            + escapeHtml(COPY.cleanupConfirmApply) + '</button></div></section>'
+          : '';
+        return '<section class="cleanup-plan"><div><h3>' + escapeHtml(COPY.cleanupPlanReady) + '</h3><p>'
+          + escapeHtml(COPY.cleanupPlanSummary) + '</p></div><div class="cleanup-counts">'
+          + '<div class="cleanup-count"><strong>' + counts.rename + '</strong><span>' + escapeHtml(COPY.cleanupRenameCount) + '</span></div>'
+          + '<div class="cleanup-count"><strong>' + counts.reorder + '</strong><span>' + escapeHtml(COPY.cleanupReorderCount) + '</span></div>'
+          + '<div class="cleanup-count"><strong>' + counts.move + '</strong><span>' + escapeHtml(COPY.cleanupMoveCount) + '</span></div>'
+          + '</div><p>' + escapeHtml(copy("cleanupSelectedCount", { count: selectedCount })) + '</p>'
+          + '<div class="cleanup-actions"><button class="secondary" id="cleanupDetailsButton" type="button" aria-controls="cleanupOperationList" aria-expanded="'
+          + cleanupSession.detailsExpanded + '"' + (cleanupSession.applyInFlight ? ' disabled' : '') + '>'
+          + escapeHtml(cleanupSession.detailsExpanded ? COPY.cleanupHideDetails : COPY.cleanupShowDetails) + '</button>'
+          + (cleanupSession.confirmationOpen ? '' : '<button id="prepareCleanupApplyButton" type="button" data-primary-action="true"'
+            + (selectedCount === 0 ? ' disabled' : '') + '>' + escapeHtml(COPY.cleanupPrepareApply) + '</button>')
+          + '</div>' + renderCleanupOperations(operations) + confirmation + '</section>';
+      }
+
+      function renderReadyForDevCandidates() {
+        if (cleanupSession.scanState === "idle") return "";
+        if (cleanupSession.scanState === "scanning") {
+          return '<div class="scope-card"><strong>' + escapeHtml(COPY.cleanupScanningReadyForDev) + '</strong></div>';
+        }
+        if (cleanupSession.scanState === "error") {
+          return '<div class="scope-card"><strong>' + escapeHtml(COPY.cleanupReadyForDevScanFailed) + '</strong></div>';
+        }
+        if (cleanupSession.scanCandidates.length === 0) {
+          return '<div class="scope-card"><strong>' + escapeHtml(COPY.cleanupNoReadyForDev) + '</strong></div>';
+        }
+        var truncated = cleanupSession.scanTruncated
+          ? '<p>' + escapeHtml(copy("cleanupReadyForDevTruncated", { max: READY_FOR_DEV_SCAN_MAX })) + '</p>'
+          : "";
+        var items = cleanupSession.scanCandidates.map(function (candidate, index) {
+          var checked = cleanupSession.scanSelectedIds.indexOf(candidate.nodeId) !== -1;
+          return '<li><label><input type="checkbox" id="readyForDevCandidate' + index + '" data-node-id="'
+            + escapeHtml(candidate.nodeId) + '"' + (checked ? ' checked' : '') + ' /> '
+            + escapeHtml(candidate.name || COPY.unnamedLayer) + '</label></li>';
+        }).join("");
+        return '<div class="scope-card"><strong>' + escapeHtml(COPY.cleanupReadyForDevTitle) + '</strong>' + truncated
+          + '<ul id="readyForDevCandidateList">' + items + '</ul></div>'
+          + '<div class="cleanup-actions"><button id="queueReadyForDevButton" type="button"'
+          + (cleanupSession.scanSelectedIds.length === 0 || cleanupSession.captureState === "capturing" ? ' disabled' : '')
+          + '>' + escapeHtml(COPY.cleanupQueueSelected) + '</button></div>';
+      }
+
+      function renderCleanupIdle() {
+        var captureReady = cleanupSession.captureState === "ready" && cleanupSession.captures.length > 0;
+        var body = COPY.cleanupViewBody;
+        if (cleanupSession.captureState === "capturing") body = COPY.cleanupReadingSelection;
+        else if (captureReady) {
+          body = cleanupSession.captures.length === 1
+            ? copy("cleanupScopeReady", {
+              name: cleanupSession.captures[0].scope.name,
+              count: cleanupSession.captures[0].nodeCount,
+            })
+            : copy("cleanupBatchReady", { count: cleanupSession.captures.length });
+        } else if (cleanupSession.captureError) body = cleanupSelectionError(cleanupSession.captureError);
+        var scopeList = captureReady && cleanupSession.captures.length > 1
+          ? '<ul>' + cleanupSession.captures.map(function (entry) {
+            return '<li>' + escapeHtml(copy("cleanupScopeCompact", {
+              name: entry.scope.name || COPY.unnamedLayer,
+              count: entry.nodeCount,
+            })) + '</li>';
+          }).join("") + '</ul>'
+          : "";
+        var rejectedNote = cleanupSession.rejected.length > 0
+          ? '<p>' + escapeHtml(copy("cleanupRejectedSummary", { count: cleanupSession.rejected.length })) + '</p>'
+          : "";
+        return '<section class="cleanup-panel"><div class="scope-card"><strong>' + escapeHtml(body) + '</strong>'
+          + scopeList + rejectedNote + '<p>'
+          + escapeHtml(COPY.cleanupScanHelper) + '</p></div>' + renderReadyForDevCandidates() + '<div class="cleanup-actions">'
+          + '<button class="secondary" id="refreshCleanupScopeButton" type="button"'
+          + (cleanupSession.captureState === "capturing" ? ' disabled' : '') + '>' + escapeHtml(COPY.cleanupRefreshScope) + '</button>'
+          + '<button class="secondary" id="scanReadyForDevButton" type="button"'
+          + (cleanupSession.scanState === "scanning" ? ' disabled' : '') + '>' + escapeHtml(COPY.cleanupScanReadyForDev) + '</button>'
+          + '<button id="startCleanupAnalysisButton" type="button" data-primary-action="true"'
+          + (!captureReady || cleanupSession.submissionInFlight ? ' disabled' : '') + '>'
+          + escapeHtml(cleanupSession.submissionInFlight ? COPY.cleanupSubmitting : COPY.cleanupStartAnalysis) + '</button></div></section>';
+      }
+
+      function renderCleanupBatchList() {
+        var created = cleanupSession.tasks.filter(function (entry) { return entry.created; });
+        var rows = cleanupSession.tasks.map(function (entry, index) {
+          var label = escapeHtml(entry.scopeName || COPY.unnamedLayer);
+          if (!entry.created) {
+            return '<li><span class="task-status">' + escapeHtml(COPY.cleanupBatchCreateFailed) + '</span><strong>' + label
+              + '</strong><button class="secondary" id="retryBatchTask' + index + '" type="button"'
+              + (cleanupSession.submissionInFlight ? ' disabled' : '') + '>' + escapeHtml(COPY.cleanupBatchRetry) + '</button></li>';
+          }
+          return '<li><span class="task-status">' + escapeHtml(cleanupStatusLabel(entry.task.status)) + '</span><strong>' + label
+            + '</strong><button id="openBatchTask' + index + '" type="button">' + escapeHtml(COPY.cleanupBatchOpen) + '</button></li>';
+        }).join("");
+        return '<section class="cleanup-panel"><div class="scope-card"><strong>' + escapeHtml(COPY.cleanupBatchListTitle) + '</strong><p>'
+          + escapeHtml(copy("cleanupBatchProgress", { done: created.length, total: cleanupSession.tasks.length }))
+          + '</p></div><ul id="cleanupBatchList">' + rows + '</ul></section>';
+      }
+
+      function renderCleanupTask() {
+        var task = cleanupSession.task;
+        if (!task) return cleanupSession.tasks.length > 0 ? renderCleanupBatchList() : renderCleanupIdle();
+        if (task.status === "plan-ready" && task.plan) return renderCleanupPlan();
+        var action = task.status === "plan-ready"
+          ? '<button id="loadCleanupPlanButton" type="button" data-primary-action="true">' + escapeHtml(COPY.cleanupViewPlan) + '</button>'
+          : (["queued", "analyzing"].indexOf(task.status) !== -1
+            ? '<button class="secondary" id="refreshCleanupTaskButton" type="button">' + escapeHtml(COPY.cleanupRefreshTask) + '</button>'
+            : (["blocked", "stale"].indexOf(task.status) !== -1
+              ? '<button id="reanalyzeCleanupButton" type="button" data-primary-action="true">' + escapeHtml(COPY.cleanupReanalyze) + '</button>'
+              : ''));
+        var completion = task.status === "completed" && cleanupSession.completionSummary
+          ? '<p>' + escapeHtml(copy("cleanupCompletedCounts", {
+            applied: cleanupSession.completionSummary.appliedCount,
+            skipped: cleanupSession.completionSummary.skippedCount,
+          })) + '</p>'
+          : '';
+        var completionMark = task.status === "completed"
+          ? '<span class="completion-mark" aria-hidden="true">' + escapeHtml(COPY.decorativeMark) + '</span>'
+          : '';
+        return '<section class="cleanup-status"><span class="task-status">' + escapeHtml(cleanupStatusLabel(task.status)) + '</span><strong>'
+          + escapeHtml(cleanupStatusMessage(task.status)) + completionMark + '</strong>'
+          + renderDispatchStatus(task)
+          + completion + (action ? '<div class="cleanup-actions">' + action + '</div>' : '') + '</section>';
+      }
+
+      function bindReadyForDevCandidates() {
+        if (cleanupSession.scanState !== "ready" || cleanupSession.scanCandidates.length === 0) return;
+        cleanupSession.scanCandidates.forEach(function (candidate, index) {
+          var checkbox = document.getElementById("readyForDevCandidate" + index);
+          if (!checkbox) return;
+          checkbox.addEventListener("change", function (event) {
+            var currentIndex = cleanupSession.scanSelectedIds.indexOf(candidate.nodeId);
+            if (event.target.checked && currentIndex === -1) cleanupSession.scanSelectedIds.push(candidate.nodeId);
+            if (!event.target.checked && currentIndex !== -1) cleanupSession.scanSelectedIds.splice(currentIndex, 1);
+            renderCleanupView();
+          });
+        });
+        var queueButton = document.getElementById("queueReadyForDevButton");
+        if (queueButton) {
+          queueButton.addEventListener("click", function () {
+            if (cleanupSession.scanSelectedIds.length === 0) return;
+            requestCleanupScope(cleanupSession.scanSelectedIds.slice());
+          });
+        }
+      }
+
+      function bindCleanupBatchList() {
+        cleanupSession.tasks.forEach(function (entry, index) {
+          if (entry.created) {
+            var openButton = document.getElementById("openBatchTask" + index);
+            if (openButton) {
+              openButton.addEventListener("click", function () { return openBatchTask(entry.taskId); });
+            }
+            return;
+          }
+          var retryButton = document.getElementById("retryBatchTask" + index);
+          if (retryButton) retryButton.addEventListener("click", function () { return retryBatchTask(index); });
+        });
+      }
+
+      function bindCleanupControls() {
+        var task = cleanupSession.task;
+        if (!task && cleanupSession.tasks.length > 0) {
+          bindCleanupBatchList();
+          return;
+        }
+        if (!task) {
+          document.getElementById("refreshCleanupScopeButton").addEventListener("click", function () {
+            return requestCleanupScope();
+          });
+          document.getElementById("scanReadyForDevButton").addEventListener("click", requestReadyForDevScan);
+          bindReadyForDevCandidates();
+          if (cleanupSession.captureState === "ready" && cleanupSession.captures.length > 0) {
+            document.getElementById("startCleanupAnalysisButton").addEventListener("click", startCleanupAnalysis);
+          }
+          return;
+        }
+        if (task.status === "plan-ready" && !task.plan) {
+          document.getElementById("loadCleanupPlanButton").addEventListener("click", function () { return loadCleanupTaskDetail(task.id); });
+          return;
+        }
+        if (["queued", "analyzing"].indexOf(task.status) !== -1) {
+          document.getElementById("refreshCleanupTaskButton").addEventListener("click", function () { return loadCleanupTaskDetail(task.id); });
+          return;
+        }
+        if (["blocked", "stale"].indexOf(task.status) !== -1) {
+          document.getElementById("reanalyzeCleanupButton").addEventListener("click", restartCleanupAnalysis);
+          return;
+        }
+        if (task.status !== "plan-ready" || !task.plan) return;
+        document.getElementById("cleanupDetailsButton").addEventListener("click", function () {
+          if (cleanupSession.applyInFlight) return;
+          cleanupSession.detailsExpanded = !cleanupSession.detailsExpanded;
+          renderCleanupView();
+          var detailsButton = document.getElementById("cleanupDetailsButton");
+          if (detailsButton) detailsButton.focus();
+        });
+        if (cleanupSession.detailsExpanded) {
+          cleanupTaskOperations().forEach(function (operation, index) {
+            var checkbox = document.getElementById("cleanupOperation" + index);
+            checkbox.checked = cleanupSession.selectedOperationIds.indexOf(operation.operationId) !== -1;
+            checkbox.addEventListener("change", function (event) {
+              if (cleanupSession.applyInFlight) return;
+              var selected = event && event.target ? event.target.checked : checkbox.checked;
+              var currentIndex = cleanupSession.selectedOperationIds.indexOf(operation.operationId);
+              if (selected && currentIndex === -1) cleanupSession.selectedOperationIds.push(operation.operationId);
+              if (!selected && currentIndex !== -1) cleanupSession.selectedOperationIds.splice(currentIndex, 1);
+              renderCleanupView();
+              var nextCheckbox = document.getElementById("cleanupOperation" + index);
+              if (nextCheckbox) nextCheckbox.focus();
+            });
+          });
+        }
+        if (cleanupSession.confirmationOpen) {
+          document.getElementById("cancelCleanupApplyButton").addEventListener("click", function () {
+            if (cleanupSession.applyInFlight) return;
+            cleanupSession.confirmationOpen = false;
+            renderCleanupView();
+            var prepareButton = document.getElementById("prepareCleanupApplyButton");
+            if (prepareButton) prepareButton.focus();
+            setStatus(COPY.cancelled);
+          });
+          document.getElementById("confirmCleanupApplyButton").addEventListener("click", beginCleanupApply);
+        } else {
+          document.getElementById("prepareCleanupApplyButton").addEventListener("click", function () {
+            if (cleanupSession.selectedOperationIds.length === 0) return;
+            cleanupSession.confirmationOpen = true;
+            renderCleanupView();
+            var confirmation = document.getElementById("cleanupConfirmationDialog");
+            if (confirmation) confirmation.focus();
+          });
+        }
+      }
+
+      function syncActiveBatchEntry() {
+        if (!cleanupSession.activeTaskId || !cleanupSession.task) return;
+        var entry = findBatchEntry(cleanupSession.activeTaskId);
+        if (entry && entry.created) entry.task = cleanupSession.task;
+      }
+
+      function renderCleanupView() {
+        activeView = "cleanup";
+        syncActiveBatchEntry();
+        var scopeText = cleanupSession.scopeSummary && cleanupSession.scopeSummary.name
+          ? (Number.isInteger(cleanupSession.scopeSummary.nodeCount)
+            ? copy("cleanupScopeCompact", {
+              name: cleanupSession.scopeSummary.name,
+              count: cleanupSession.scopeSummary.nodeCount,
+            })
+            : cleanupSession.scopeSummary.name)
+          : COPY.cleanupViewBody;
+        var backToBatch = cleanupSession.task && cleanupSession.tasks.length > 1
+          ? '<div class="cleanup-actions"><button class="secondary" id="backToBatchButton" type="button"'
+            + (cleanupSession.applyInFlight ? ' disabled' : '') + '>' + escapeHtml(COPY.cleanupBackToBatch) + '</button></div>'
+          : '';
+        appState.innerHTML = '<section class="feature-view" data-view="cleanup">'
+          + renderFeatureHeader(COPY.cleanupTitle, scopeText)
+          + backToBatch + renderCleanupTask() + '</section>';
+        bindBackHome();
+        var backButton = document.getElementById("backToBatchButton");
+        if (backButton) backButton.addEventListener("click", closeBatchTask);
+        bindCleanupControls();
+      }
+
+      function formatWorkflowTime(value) {
+        var parsed = new Date(value);
+        return Number.isFinite(parsed.getTime()) ? parsed.toLocaleString("zh-TW", { hour12: false }) : COPY.unavailableValue;
+      }
+
+      function renderWorkflowTasks() {
+        if (workflowSession.loading && !workflowSession.loaded) return '<p>' + escapeHtml(COPY.workflowLoadingTasks) + '</p>';
+        if (!workflowSession.loaded || workflowSession.tasks.length === 0) return '<p>' + escapeHtml(COPY.workflowNoTasks) + '</p>';
+        var primaryAssigned = false;
+        return '<div class="workflow-task-list">' + workflowSession.tasks.map(function (task, index) {
+          var canOpen = task.status === "plan-ready";
+          var isPrimary = canOpen && !primaryAssigned;
+          if (isPrimary) primaryAssigned = true;
+          return '<article class="workflow-task-card"><strong>' + escapeHtml(COPY.workflowTaskName) + '</strong>'
+            + '<span class="task-status">' + escapeHtml(cleanupStatusLabel(task.status)) + '</span>'
+            + '<p>' + escapeHtml(task.scopeName || COPY.cleanupTitle) + '</p>'
+            + '<p class="task-meta">' + escapeHtml(copy("workflowUpdatedAt", { time: formatWorkflowTime(task.updatedAt) })) + '</p>'
+            + renderDispatchStatus(task)
+            + (canOpen ? '<div class="workflow-task-actions"><button' + (isPrimary ? ' data-primary-action="true"' : ' class="secondary"')
+              + ' id="openWorkflowTask' + index + '" type="button">' + escapeHtml(COPY.cleanupViewPlan) + '</button></div>' : '')
+            + '</article>';
+        }).join("") + '</div>';
+      }
+
+      function renderWorkflowView() {
+        activeView = "workflow";
+        appState.innerHTML = '<section class="feature-view" data-view="workflow">'
+          + renderFeatureHeader(COPY.workflowFeatureTitle, COPY.workflowViewBody)
+          + '<section class="cleanup-panel"><div><h3>' + escapeHtml(COPY.workflowExtractionTitle) + '</h3></div>'
+          + renderWorkflowOverview() + '</section><section class="cleanup-panel"><div><h3>' + escapeHtml(COPY.workflowAutomationTitle) + '</h3></div>'
+          + renderWorkflowTasks() + '<div class="workflow-task-actions"><button class="secondary" id="refreshWorkflowTasksButton" type="button">'
+          + escapeHtml(COPY.refresh) + '</button></div></section></section>';
+        bindBackHome();
+        document.getElementById("refreshWorkflowTasksButton").addEventListener("click", function () { return loadWorkflowTasks(true); });
+        workflowSession.tasks.forEach(function (task, index) {
+          if (task.status !== "plan-ready") return;
+          document.getElementById("openWorkflowTask" + index).addEventListener("click", function () { return loadCleanupTaskDetail(task.id); });
+        });
+      }
+
+      function openFeature(view) {
+        if (!featureEnabled(view)) return;
+        if (view === "cleanup") {
+          renderCleanupView();
+          if (
+            !cleanupSession.task
+            && cleanupSession.tasks.length === 0
+            && cleanupSession.captureState === "idle"
+          ) requestCleanupScope();
+          return;
+        }
+        if (view === "workflow") {
+          renderWorkflowView();
+          if (!workflowSession.loaded && !workflowSession.loading) loadWorkflowTasks();
+          return;
+        }
+        activeView = "review";
+        if (reviewLoaded) renderPendingItem();
+        else {
+          appState.innerHTML = '<section class="feature-view" data-view="review">'
+            + renderFeatureHeader(COPY.reviewTitle, COPY.loadingReviews) + '</section>';
+          bindBackHome();
+          loadPendingReviews();
+        }
+      }
+
+      function requestCleanupScope(nodeIds) {
+        if (cleanupSession.submissionInFlight || cleanupSession.captureState === "capturing") return;
+        cleanupSession.captureState = "capturing";
+        cleanupSession.captureError = null;
+        cleanupSession.captures = [];
+        cleanupSession.rejected = [];
+        cleanupSession.scopeSummary = null;
+        cleanupSession.confirmationOpen = false;
+        if (activeView === "cleanup") renderCleanupView();
+        setStatus(COPY.cleanupReadingSelection);
+        postToMain({
+          type: "capture-cleanup-scopes",
+          nodeIds: Array.isArray(nodeIds) ? nodeIds : [],
+        });
+      }
+
+      function requestReadyForDevScan() {
+        if (cleanupSession.scanState === "scanning" || cleanupSession.submissionInFlight) return;
+        cleanupSession.scanState = "scanning";
+        cleanupSession.scanCandidates = [];
+        cleanupSession.scanSelectedIds = [];
+        cleanupSession.scanTruncated = false;
+        if (activeView === "cleanup") renderCleanupView();
+        setStatus(COPY.cleanupScanningReadyForDev);
+        postToMain({ type: "scan-ready-for-dev" });
+      }
+
+      function handleReadyForDevScanResult(message) {
+        var candidates = message.ok === true && Array.isArray(message.candidates)
+          ? message.candidates.filter(function (candidate) {
+            return candidate
+              && typeof candidate.nodeId === "string"
+              && candidate.nodeId
+              && typeof candidate.name === "string";
+          })
+          : [];
+        if (message.ok !== true) {
+          cleanupSession.scanState = "error";
+          cleanupSession.scanCandidates = [];
+          cleanupSession.scanSelectedIds = [];
+          cleanupSession.scanTruncated = false;
+          setStatus(COPY.cleanupReadyForDevScanFailed, "error");
+        } else {
+          cleanupSession.scanState = "ready";
+          cleanupSession.scanCandidates = candidates;
+          cleanupSession.scanSelectedIds = candidates.map(function (candidate) { return candidate.nodeId; });
+          cleanupSession.scanTruncated = message.truncated === true;
+          setStatus(candidates.length === 0
+            ? COPY.cleanupNoReadyForDev
+            : copy("cleanupReadyForDevFound", { count: candidates.length }));
+        }
+        if (activeView === "cleanup") renderCleanupView();
+      }
+
+      function validCapturedScope(entry) {
+        return Boolean(
+          entry
+          && entry.scope
+          && typeof entry.scope.nodeId === "string"
+          && typeof entry.scope.type === "string"
+          && typeof entry.scope.name === "string"
+          && Number.isInteger(entry.scope.nodeCount)
+          && entry.scope.nodeCount > 0
+          && entry.snapshot
+          && typeof entry.inputSnapshotHash === "string"
+          && /^sha256:[a-f0-9]{64}$/.test(entry.inputSnapshotHash)
+        );
+      }
+
+      function handleCleanupScopesResult(message) {
+        var captured = message.ok === true && Array.isArray(message.scopes)
+          ? message.scopes.filter(validCapturedScope).map(function (entry) {
+            return {
+              scope: { nodeId: entry.scope.nodeId, type: entry.scope.type, name: entry.scope.name },
+              nodeCount: entry.scope.nodeCount,
+              snapshot: entry.snapshot,
+              inputSnapshotHash: entry.inputSnapshotHash,
+            };
+          })
+          : [];
+        cleanupSession.rejected = Array.isArray(message.rejected)
+          ? message.rejected.filter(function (entry) {
+            return entry && typeof entry.errorCode === "string";
+          })
+          : [];
+        if (captured.length > 0) {
+          cleanupSession.captureState = "ready";
+          cleanupSession.captureError = null;
+          cleanupSession.captures = captured;
+          cleanupSession.scopeSummary = { name: captured[0].scope.name, nodeCount: captured[0].nodeCount };
+          setStatus(captured.length === 1
+            ? copy("cleanupScopeReady", { name: captured[0].scope.name, count: captured[0].nodeCount })
+            : copy("cleanupBatchReady", { count: captured.length }));
+        } else {
+          cleanupSession.captureState = "error";
+          cleanupSession.captureError = typeof message.errorCode === "string" ? message.errorCode : "invalid-cleanup-snapshot";
+          cleanupSession.captures = [];
+          cleanupSession.scopeSummary = null;
+          setStatus(cleanupSelectionError(cleanupSession.captureError), "error");
+        }
+        if (activeView === "cleanup") renderCleanupView();
+      }
+
+      function cleanupIdempotencyKey(capture) {
+        return "figma-cleanup:" + sessionId + ":" + cleanupSession.analysisGeneration + ":" + capture.inputSnapshotHash;
+      }
+
+      function findBatchEntry(taskId) {
+        for (var index = 0; index < cleanupSession.tasks.length; index += 1) {
+          if (cleanupSession.tasks[index].taskId === taskId) return cleanupSession.tasks[index];
+        }
+        return null;
+      }
+
+      function openBatchTask(taskId) {
+        var entry = findBatchEntry(taskId);
+        if (!entry || !entry.created) return;
+        cleanupSession.activeTaskId = taskId;
+        cleanupSession.task = entry.task;
+        cleanupSession.scopeSummary = { name: entry.scopeName, nodeCount: entry.nodeCount };
+        cleanupSession.failureContext = null;
+        cleanupSession.completionSummary = null;
+        cleanupSession.detailsExpanded = false;
+        cleanupSession.confirmationOpen = false;
+        cleanupSession.selectedOperationIds = [];
+        cleanupSession.selectionRevision = null;
+        clearFailure();
+        renderCleanupView();
+        setStatus(cleanupStatusMessage(entry.task.status));
+      }
+
+      function closeBatchTask() {
+        if (cleanupSession.applyInFlight) return;
+        cleanupSession.activeTaskId = null;
+        cleanupSession.task = null;
+        cleanupSession.confirmationOpen = false;
+        renderCleanupView();
+        setStatus("");
+      }
+
+      async function createCleanupTask(capture) {
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/automation/tasks", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fileKey: pluginContext.fileKey,
+              taskType: "figma-cleanup",
+              scope: capture.scope,
+              snapshot: capture.snapshot,
+              inputSnapshotHash: capture.inputSnapshotHash,
+              idempotencyKey: cleanupIdempotencyKey(capture),
+            }),
+          });
+        } catch (error) {
+          return { ok: false, diagnostic: COPY.diagnosticNetwork };
+        }
+        if (response.status === 401) return { ok: false, unauthorized: true };
+        if (!response.ok) {
+          return { ok: false, diagnostic: copy("diagnosticHttp", { status: response.status }) };
+        }
+        var result = await response.json();
+        if (!result || !result.task || typeof result.task.id !== "string" || typeof result.task.status !== "string") {
+          return { ok: false, diagnostic: "invalid-automation-task-response" };
+        }
+        return { ok: true, task: result.task };
+      }
+
+      async function retryBatchTask(index) {
+        var entry = cleanupSession.tasks[index];
+        if (!entry || entry.created || cleanupSession.submissionInFlight || !reviewerKey || !pluginContext) return;
+        cleanupSession.submissionInFlight = true;
+        renderCleanupView();
+        setStatus(COPY.cleanupSubmitting);
+        var outcome = await createCleanupTask(entry.capture);
+        cleanupSession.submissionInFlight = false;
+        if (outcome.unauthorized) {
+          reviewerKey = "";
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!outcome.ok) {
+          entry.diagnostic = outcome.diagnostic;
+          renderCleanupView();
+          setFailure("cleanup-create", COPY.cleanupRequestFailure, "cleanup-create", outcome.diagnostic);
+          setStatus(COPY.cleanupRequestFailure, "error");
+          return;
+        }
+        entry.taskId = outcome.task.id;
+        entry.task = outcome.task;
+        entry.created = true;
+        entry.diagnostic = null;
+        clearFailure();
+        renderCleanupView();
+        setStatus(copy("cleanupBatchProgress", {
+          done: cleanupSession.tasks.filter(function (item) { return item.created; }).length,
+          total: cleanupSession.tasks.length,
+        }));
+      }
+
+      async function startCleanupAnalysis() {
+        if (
+          cleanupSession.submissionInFlight
+          || cleanupSession.task
+          || cleanupSession.tasks.length > 0
+          || cleanupSession.captureState !== "ready"
+          || cleanupSession.captures.length === 0
+          || !reviewerKey
+          || !pluginContext
+        ) return;
+        cleanupSession.submissionInFlight = true;
+        cleanupSession.tasks = cleanupSession.captures.map(function (capture) {
+          return {
+            scopeNodeId: capture.scope.nodeId,
+            scopeName: capture.scope.name,
+            nodeCount: capture.nodeCount,
+            capture: capture,
+            taskId: null,
+            task: null,
+            created: false,
+            diagnostic: null,
+          };
+        });
+        renderCleanupView();
+        setStatus(COPY.cleanupSubmitting);
+        var lastDiagnostic = null;
+        for (var index = 0; index < cleanupSession.tasks.length; index += 1) {
+          var entry = cleanupSession.tasks[index];
+          var outcome = await createCleanupTask(entry.capture);
+          if (outcome.unauthorized) {
+            reviewerKey = "";
+            cleanupSession.submissionInFlight = false;
+            renderLogin(COPY.invalidAccessCode);
+            return;
+          }
+          if (outcome.ok) {
+            entry.taskId = outcome.task.id;
+            entry.task = outcome.task;
+            entry.created = true;
+            entry.diagnostic = null;
+          } else {
+            entry.created = false;
+            entry.diagnostic = outcome.diagnostic;
+            lastDiagnostic = outcome.diagnostic;
+          }
+          renderCleanupView();
+          setStatus(copy("cleanupBatchProgress", { done: index + 1, total: cleanupSession.tasks.length }));
+        }
+        cleanupSession.submissionInFlight = false;
+        var created = cleanupSession.tasks.filter(function (item) { return item.created; });
+        if (created.length === 0) {
+          renderCleanupView();
+          setFailure("cleanup-create", COPY.cleanupRequestFailure, "cleanup-create", lastDiagnostic || "cleanup-create-failed");
+          setStatus(COPY.cleanupRequestFailure, "error");
+          return;
+        }
+        cleanupSession.failureContext = null;
+        cleanupSession.completionSummary = null;
+        cleanupSession.detailsExpanded = false;
+        cleanupSession.confirmationOpen = false;
+        cleanupSession.selectedOperationIds = [];
+        cleanupSession.selectionRevision = null;
+        if (lastDiagnostic) {
+          setFailure("cleanup-create", COPY.cleanupRequestFailure, "cleanup-create", lastDiagnostic);
+        } else clearFailure();
+        if (cleanupSession.tasks.length === 1) {
+          openBatchTask(created[0].taskId);
+          return;
+        }
+        renderCleanupView();
+        setStatus(copy("cleanupBatchProgress", { done: created.length, total: cleanupSession.tasks.length }));
+      }
+
+      function restartCleanupAnalysis() {
+        if (cleanupSession.applyInFlight) return;
+        cleanupSession.analysisGeneration += 1;
+        cleanupSession.task = null;
+        cleanupSession.activeTaskId = null;
+        cleanupSession.tasks = [];
+        cleanupSession.captures = [];
+        cleanupSession.rejected = [];
+        cleanupSession.scopeSummary = null;
+        cleanupSession.captureState = "idle";
+        cleanupSession.captureError = null;
+        cleanupSession.submissionInFlight = false;
+        cleanupSession.detailInFlight = false;
+        cleanupSession.applyAttempt = null;
+        cleanupSession.selectedOperationIds = [];
+        cleanupSession.selectionRevision = null;
+        cleanupSession.detailsExpanded = false;
+        cleanupSession.confirmationOpen = false;
+        cleanupSession.failureContext = null;
+        cleanupSession.completionSummary = null;
+        clearFailure();
+        requestCleanupScope();
+      }
+
+      async function loadCleanupTaskDetail(taskId) {
+        if (!taskId || cleanupSession.detailInFlight || !reviewerKey) return;
+        cleanupSession.detailInFlight = true;
+        setStatus(COPY.workflowLoadingTasks);
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/automation/tasks/" + encodeURIComponent(taskId), {
+            method: "GET",
+            headers: { Accept: "application/json", Authorization: "Bearer " + reviewerKey },
+          });
+        } catch (error) {
+          cleanupSession.detailInFlight = false;
+          setFailure("cleanup-detail", COPY.cleanupTaskFailure, "cleanup-detail", COPY.diagnosticNetwork);
+          setStatus(COPY.cleanupTaskFailure, "error");
+          return;
+        }
+        if (response.status === 401) {
+          reviewerKey = "";
+          cleanupSession.detailInFlight = false;
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!response.ok) {
+          cleanupSession.detailInFlight = false;
+          setFailure("cleanup-detail", COPY.cleanupTaskFailure, "cleanup-detail", copy("diagnosticHttp", { status: response.status }));
+          setStatus(COPY.cleanupTaskFailure, "error");
+          return;
+        }
+        var task = await response.json();
+        if (!task || typeof task.id !== "string" || typeof task.status !== "string" || task.taskType !== "figma-cleanup") {
+          cleanupSession.detailInFlight = false;
+          setFailure("cleanup-detail", COPY.cleanupTaskFailure, "cleanup-detail", "invalid-automation-task-detail");
+          setStatus(COPY.cleanupTaskFailure, "error");
+          return;
+        }
+        var previousTaskId = cleanupSession.task && cleanupSession.task.id;
+        cleanupSession.detailInFlight = false;
+        cleanupSession.task = task;
+        cleanupSession.scopeSummary = {
+          name: task.scopeName || COPY.cleanupTitle,
+          nodeCount: previousTaskId === task.id && cleanupSession.scopeSummary
+            ? cleanupSession.scopeSummary.nodeCount
+            : undefined,
+        };
+        var recoveredFailure = null;
+        if (
+          task.failure
+          && ["stale-plan", "invalid-plan-operation", "apply-rolled-back", "partial-apply"].indexOf(task.failure.code) !== -1
+        ) {
+          var recoveredAffected = normalizeCleanupAffectedNodes(task.failure.affectedNodes || []);
+          if (recoveredAffected !== null) {
+            recoveredFailure = {
+              errorCode: task.failure.code,
+              documentChanged: task.failure.code === "partial-apply",
+              rolledBack: task.failure.rollback === "complete",
+              affectedNodes: recoveredAffected,
+            };
+          }
+        }
+        cleanupSession.failureContext = recoveredFailure;
+        if (previousTaskId !== task.id) {
+          cleanupSession.selectedOperationIds = [];
+          cleanupSession.selectionRevision = null;
+          cleanupSession.detailsExpanded = false;
+          cleanupSession.confirmationOpen = false;
+        }
+        initializeCleanupPlanSelection();
+        clearFailure();
+        renderCleanupView();
+        if (recoveredFailure) {
+          var recoveredSummary = cleanupFailureMessage(recoveredFailure);
+          setFailure("cleanup-result", recoveredSummary, null, recoveredFailure.errorCode);
+          setStatus(recoveredSummary, "error");
+        } else setStatus(cleanupStatusMessage(task.status));
+      }
+
+      function beginCleanupApply() {
+        if (
+          !cleanupSession.task
+          || !cleanupSession.confirmationOpen
+          || cleanupSession.applyInFlight
+          || cleanupSession.selectedOperationIds.length === 0
+        ) return;
+        cleanupSession.applyInFlight = true;
+        cleanupSession.applyAttempt = {
+          phase: "revalidate",
+          requestId: "cleanup-apply:" + sessionId + ":" + Date.now().toString(36) + ":" + Math.random().toString(36).slice(2, 8),
+          taskId: cleanupSession.task.id,
+          taskType: cleanupSession.task.taskType,
+          revision: cleanupSession.task.revision,
+          scopeNodeId: cleanupSession.task.scopeNodeId,
+          operationIds: cleanupSession.selectedOperationIds.slice(),
+          inputSnapshotHash: null,
+        };
+        renderCleanupView();
+        setStatus(COPY.cleanupApplyChecking);
+        postToMain({
+          type: "revalidate-cleanup-scope",
+          requestId: cleanupSession.applyAttempt.requestId,
+          scopeNodeId: cleanupSession.applyAttempt.scopeNodeId,
+        });
+      }
+
+      async function submitCleanupApplyIntent(inputSnapshotHash) {
+        var task = cleanupSession.task;
+        var attempt = cleanupSession.applyAttempt;
+        if (
+          !task
+          || !attempt
+          || !cleanupSession.applyInFlight
+          || task.id !== attempt.taskId
+          || task.revision !== attempt.revision
+          || !/^sha256:[a-f0-9]{64}$/.test(inputSnapshotHash)
+        ) return;
+        attempt.phase = "apply-intent";
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/automation/tasks/" + encodeURIComponent(task.id) + "/apply", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              revision: task.revision,
+              inputSnapshotHash: inputSnapshotHash,
+              operationIds: attempt.operationIds.slice(),
+            }),
+          });
+        } catch (error) {
+          if (cleanupSession.applyAttempt !== attempt) return;
+          cleanupSession.applyInFlight = false;
+          cleanupSession.applyAttempt = null;
+          renderCleanupView();
+          setFailure("cleanup-apply-intent", COPY.cleanupApplyIntentFailure, "cleanup-apply-intent", COPY.diagnosticNetwork);
+          setStatus(COPY.cleanupApplyIntentFailure, "error");
+          return;
+        }
+        if (cleanupSession.applyAttempt !== attempt) return;
+        if (response.status === 401) {
+          reviewerKey = "";
+          cleanupSession.applyInFlight = false;
+          cleanupSession.applyAttempt = null;
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!response.ok) {
+          var errorPayload = null;
+          try {
+            errorPayload = await response.json();
+          } catch (error) {
+            errorPayload = null;
+          }
+          if (cleanupSession.applyAttempt !== attempt) return;
+          var errorCode = errorPayload && errorPayload.error && errorPayload.error.code;
+          cleanupSession.applyInFlight = false;
+          cleanupSession.applyAttempt = null;
+          if (errorCode === "stale-cleanup-plan" || errorCode === "stale-task-revision") {
+            cleanupSession.task = Object.assign({}, task, { status: "stale" });
+            cleanupSession.confirmationOpen = false;
+            renderCleanupView();
+            setFailure("cleanup-stale", COPY.cleanupValidationFailed, null, errorCode);
+            setStatus(COPY.cleanupValidationFailed, "error");
+            return;
+          }
+          renderCleanupView();
+          setFailure("cleanup-apply-intent", COPY.cleanupApplyIntentFailure, "cleanup-apply-intent", copy("diagnosticHttp", { status: response.status }));
+          setStatus(COPY.cleanupApplyIntentFailure, "error");
+          return;
+        }
+        var result = null;
+        try {
+          result = await response.json();
+        } catch (error) {
+          result = null;
+        }
+        if (cleanupSession.applyAttempt !== attempt) return;
+        if (
+          !result
+          || !result.task
+          || result.task.id !== task.id
+          || result.task.taskType !== attempt.taskType
+          || result.task.scopeNodeId !== attempt.scopeNodeId
+          || result.task.status !== "applying"
+          || result.task.revision !== attempt.revision + 1
+          || !Array.isArray(result.operations)
+          || result.operations.length !== attempt.operationIds.length
+          || result.operations.some(function (operation, index) {
+            return !operation || operation.operationId !== attempt.operationIds[index];
+          })
+        ) {
+          cleanupSession.applyInFlight = false;
+          cleanupSession.applyAttempt = null;
+          renderCleanupView();
+          setFailure("cleanup-apply-intent", COPY.cleanupApplyIntentFailure, "cleanup-apply-intent", "invalid-cleanup-apply-response");
+          setStatus(COPY.cleanupApplyIntentFailure, "error");
+          return;
+        }
+        attempt.inputSnapshotHash = inputSnapshotHash;
+        attempt.applyingRevision = result.task.revision;
+        attempt.phase = "main-apply";
+        cleanupSession.task = Object.assign({}, task, result.task, {
+          plan: task.plan,
+          failure: task.failure,
+        });
+        clearFailure();
+        renderCleanupView();
+        postToMain({
+          type: "apply-cleanup-plan",
+          requestId: attempt.requestId,
+          taskId: result.task.id,
+          scopeNodeId: result.task.scopeNodeId,
+          inputSnapshotHash: attempt.inputSnapshotHash,
+          operations: result.operations,
+        });
+      }
+
+      function handleCleanupValidationResult(message) {
+        var task = cleanupSession.task;
+        var attempt = cleanupSession.applyAttempt;
+        if (
+          !task
+          || !attempt
+          || !cleanupSession.applyInFlight
+          || message.requestId !== attempt.requestId
+          || task.id !== attempt.taskId
+          || task.revision !== attempt.revision
+        ) return;
+        if (
+          message.ok !== true
+          || message.scopeNodeId !== attempt.scopeNodeId
+          || typeof message.inputSnapshotHash !== "string"
+          || !/^sha256:[a-f0-9]{64}$/.test(message.inputSnapshotHash)
+        ) {
+          attempt.failureReport = {
+            errorCode: message.errorCode === "invalid-plan-operation" ? "invalid-plan-operation" : "stale-plan",
+            documentChanged: false,
+            rolledBack: false,
+            affectedNodes: [],
+          };
+          submitCleanupFailure();
+          return;
+        }
+        submitCleanupApplyIntent(message.inputSnapshotHash);
+      }
+
+      function cleanupFailureMessage(report) {
+        if (report.errorCode === "stale-plan") return COPY.cleanupValidationFailed;
+        if (report.errorCode === "invalid-plan-operation") return COPY.cleanupInvalidPlan;
+        if (report.errorCode === "apply-rolled-back") return COPY.cleanupRolledBack;
+        var names = report.affectedNodes.map(function (node) { return node.name; }).filter(Boolean).join(COPY.affectedNodeSeparator);
+        return copy("cleanupPartialApply", { names: names || COPY.unnamedLayer });
+      }
+
+      function normalizeCleanupAffectedNodes(value) {
+        if (!Array.isArray(value) || value.length > 100) return null;
+        var seen = Object.create(null);
+        var nodes = [];
+        for (var index = 0; index < value.length; index += 1) {
+          var node = value[index];
+          if (
+            !node
+            || typeof node !== "object"
+            || Array.isArray(node)
+            || Object.keys(node).sort().join("|") !== "name|nodeId"
+            || typeof node.nodeId !== "string"
+            || !node.nodeId
+            || typeof node.name !== "string"
+            || seen[node.nodeId]
+          ) return null;
+          seen[node.nodeId] = true;
+          nodes.push({ nodeId: node.nodeId, name: node.name.trim().slice(0, 200) });
+        }
+        return nodes;
+      }
+
+      function cleanupCompletionProof(message, task, attempt) {
+        if (
+          message.preflightComplete !== true
+          || message.documentChanged !== true
+          || typeof message.postApplySnapshotHash !== "string"
+          || !/^sha256:[a-f0-9]{64}$/.test(message.postApplySnapshotHash)
+          || message.postApplySnapshotHash === attempt.inputSnapshotHash
+          || !Array.isArray(message.outcomes)
+          || message.outcomes.length !== attempt.operationIds.length
+          || !Number.isInteger(message.appliedCount)
+          || !Number.isInteger(message.skippedCount)
+          || message.appliedCount < 0
+          || message.skippedCount < 0
+          || message.appliedCount + message.skippedCount !== attempt.operationIds.length
+          || !projectContext
+          || !projectContext.project
+          || typeof projectContext.project.id !== "string"
+          || !pluginContext
+          || typeof pluginContext.fileKey !== "string"
+        ) return null;
+        var expected = Object.create(null);
+        attempt.operationIds.forEach(function (operationId) { expected[operationId] = true; });
+        var seen = Object.create(null);
+        var applied = 0;
+        var skipped = 0;
+        var outcomes = [];
+        for (var index = 0; index < message.outcomes.length; index += 1) {
+          var outcome = message.outcomes[index];
+          if (
+            !outcome
+            || typeof outcome !== "object"
+            || Array.isArray(outcome)
+            || Object.keys(outcome).sort().join("|") !== "operationId|status"
+            || !expected[outcome.operationId]
+            || seen[outcome.operationId]
+            || ["applied", "skipped"].indexOf(outcome.status) === -1
+          ) return null;
+          seen[outcome.operationId] = true;
+          if (outcome.status === "applied") applied += 1;
+          else skipped += 1;
+          outcomes.push({ operationId: outcome.operationId, status: outcome.status });
+        }
+        if (applied !== message.appliedCount || skipped !== message.skippedCount) return null;
+        return {
+          taskId: task.id,
+          projectId: projectContext.project.id,
+          fileKey: pluginContext.fileKey,
+          scopeNodeId: task.scopeNodeId,
+          taskType: task.taskType,
+          inputSnapshotHash: attempt.inputSnapshotHash,
+          postApplySnapshotHash: message.postApplySnapshotHash,
+          selectedOperationIds: attempt.operationIds.slice(),
+          outcomes: outcomes,
+          appliedCount: applied,
+          skippedCount: skipped,
+          pluginSessionId: sessionId,
+          completedAt: new Date().toISOString(),
+        };
+      }
+
+      async function submitCleanupCompletion() {
+        var task = cleanupSession.task;
+        var attempt = cleanupSession.applyAttempt;
+        if (!task || !attempt || !attempt.proof || !reviewerKey) return;
+        attempt.phase = "complete";
+        cleanupSession.applyInFlight = true;
+        if (activeView === "cleanup") renderCleanupView();
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/automation/tasks/" + encodeURIComponent(task.id) + "/complete", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ revision: task.revision, proof: attempt.proof }),
+          });
+        } catch (error) {
+          if (cleanupSession.applyAttempt !== attempt) return;
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          setFailure("cleanup-complete", COPY.cleanupCompletionFailure, "cleanup-complete", COPY.diagnosticNetwork);
+          setStatus(COPY.cleanupCompletionFailure, "error");
+          return;
+        }
+        if (cleanupSession.applyAttempt !== attempt) return;
+        if (response.status === 401) {
+          reviewerKey = "";
+          cleanupSession.applyInFlight = false;
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!response.ok) {
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          var completeRetry = response.status >= 500 ? "cleanup-complete" : null;
+          setFailure("cleanup-complete", COPY.cleanupCompletionFailure, completeRetry, copy("diagnosticHttp", { status: response.status }));
+          setStatus(COPY.cleanupCompletionFailure, "error");
+          return;
+        }
+        var completed;
+        try {
+          completed = await response.json();
+        } catch (error) {
+          completed = null;
+        }
+        if (
+          cleanupSession.applyAttempt !== attempt
+          || !completed
+          || completed.id !== task.id
+          || completed.taskType !== task.taskType
+          || completed.scopeNodeId !== task.scopeNodeId
+          || completed.status !== "completed"
+          || completed.revision !== task.revision + 1
+        ) {
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          setFailure("cleanup-complete", COPY.cleanupCompletionFailure, null, "invalid-cleanup-completion-response");
+          setStatus(COPY.cleanupCompletionFailure, "error");
+          return;
+        }
+        cleanupSession.task = Object.assign({}, task, completed, { plan: task.plan, failure: null });
+        cleanupSession.completionSummary = {
+          appliedCount: attempt.proof.appliedCount,
+          skippedCount: attempt.proof.skippedCount,
+        };
+        cleanupSession.failureContext = null;
+        cleanupSession.applyInFlight = false;
+        cleanupSession.applyAttempt = null;
+        cleanupSession.confirmationOpen = false;
+        clearFailure();
+        if (activeView === "cleanup") renderCleanupView();
+        setStatus(COPY.cleanupCompleted);
+      }
+
+      async function submitCleanupFailure() {
+        var task = cleanupSession.task;
+        var attempt = cleanupSession.applyAttempt;
+        var report = attempt && attempt.failureReport;
+        if (!task || !attempt || !report || !reviewerKey) return;
+        if (!attempt.failurePayload) {
+          attempt.failurePayload = {
+            revision: task.revision,
+            errorCode: report.errorCode,
+            rolledBack: report.rolledBack,
+            affectedNodeIds: report.affectedNodes.map(function (node) { return node.nodeId; }),
+          };
+        }
+        attempt.phase = "fail";
+        cleanupSession.applyInFlight = true;
+        if (activeView === "cleanup") renderCleanupView();
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/automation/tasks/" + encodeURIComponent(task.id) + "/fail", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(attempt.failurePayload),
+          });
+        } catch (error) {
+          if (cleanupSession.applyAttempt !== attempt) return;
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          var pendingSummary = cleanupFailureMessage(report) + " " + COPY.cleanupFailureSyncFailure;
+          setFailure("cleanup-fail", pendingSummary, "cleanup-fail", COPY.diagnosticNetwork);
+          setStatus(pendingSummary, "error");
+          return;
+        }
+        if (cleanupSession.applyAttempt !== attempt) return;
+        if (response.status === 401) {
+          reviewerKey = "";
+          cleanupSession.applyInFlight = false;
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!response.ok) {
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          var failureSummary = cleanupFailureMessage(report) + " " + COPY.cleanupFailureSyncFailure;
+          var failureRetryAction = response.status >= 500 ? "cleanup-fail" : null;
+          setFailure("cleanup-fail", failureSummary, failureRetryAction, copy("diagnosticHttp", { status: response.status }));
+          setStatus(failureSummary, "error");
+          return;
+        }
+        var failed;
+        try {
+          failed = await response.json();
+        } catch (error) {
+          failed = null;
+        }
+        var expectedStatus = report.errorCode === "stale-plan" ? "stale" : "blocked";
+        if (
+          cleanupSession.applyAttempt !== attempt
+          || !failed
+          || failed.id !== task.id
+          || failed.taskType !== task.taskType
+          || failed.scopeNodeId !== task.scopeNodeId
+          || failed.status !== expectedStatus
+          || failed.revision !== task.revision + 1
+        ) {
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          setFailure("cleanup-fail", COPY.cleanupFailureSyncFailure, null, "invalid-cleanup-failure-response");
+          setStatus(COPY.cleanupFailureSyncFailure, "error");
+          return;
+        }
+        cleanupSession.task = Object.assign({}, task, failed, { plan: failed.plan || task.plan });
+        cleanupSession.failureContext = report;
+        cleanupSession.applyInFlight = false;
+        cleanupSession.applyAttempt = null;
+        cleanupSession.confirmationOpen = false;
+        var summary = cleanupFailureMessage(report);
+        if (activeView === "cleanup") renderCleanupView();
+        setFailure("cleanup-result", summary, null, report.errorCode);
+        setStatus(summary, "error");
+      }
+
+      function handleCleanupApplyResult(message) {
+        var task = cleanupSession.task;
+        var attempt = cleanupSession.applyAttempt;
+        if (
+          !task
+          || !attempt
+          || attempt.phase !== "main-apply"
+          || message.requestId !== attempt.requestId
+          || message.taskId !== attempt.taskId
+          || message.scopeNodeId !== attempt.scopeNodeId
+          || message.inputSnapshotHash !== attempt.inputSnapshotHash
+          || !cleanupSession.applyInFlight
+        ) return;
+        if (message.ok === true) {
+          var proof = cleanupCompletionProof(message, task, attempt);
+          if (!proof) {
+            cleanupSession.applyInFlight = false;
+            if (activeView === "cleanup") renderCleanupView();
+            setFailure("cleanup-apply-result", COPY.cleanupInvalidApplyResult, null, "invalid-cleanup-apply-result");
+            setStatus(COPY.cleanupInvalidApplyResult, "error");
+            return;
+          }
+          attempt.proof = proof;
+          submitCleanupCompletion();
+          return;
+        }
+        var affectedNodes = normalizeCleanupAffectedNodes(message.affectedNodes);
+        var allowedCodes = ["stale-plan", "invalid-plan-operation", "apply-rolled-back", "partial-apply"];
+        var validFailure = message.ok === false
+          && allowedCodes.indexOf(message.errorCode) !== -1
+          && typeof message.preflightComplete === "boolean"
+          && typeof message.documentChanged === "boolean"
+          && typeof message.rolledBack === "boolean"
+          && affectedNodes !== null
+          && (message.errorCode !== "partial-apply" || affectedNodes.length > 0)
+          && (message.errorCode !== "apply-rolled-back" || (message.rolledBack && !message.documentChanged && affectedNodes.length === 0))
+          && (message.errorCode !== "partial-apply"
+            || (message.preflightComplete && !message.rolledBack && message.documentChanged))
+          && (["stale-plan", "invalid-plan-operation"].indexOf(message.errorCode) === -1
+            || (!message.preflightComplete && !message.rolledBack && !message.documentChanged && affectedNodes.length === 0));
+        if (!validFailure) {
+          cleanupSession.applyInFlight = false;
+          if (activeView === "cleanup") renderCleanupView();
+          setFailure("cleanup-apply-result", COPY.cleanupInvalidApplyResult, null, "invalid-cleanup-apply-result");
+          setStatus(COPY.cleanupInvalidApplyResult, "error");
+          return;
+        }
+        attempt.failureReport = {
+          errorCode: message.errorCode,
+          documentChanged: message.documentChanged,
+          rolledBack: message.rolledBack,
+          affectedNodes: affectedNodes,
+        };
+        submitCleanupFailure();
+      }
+
+      async function loadWorkflowTasks(force) {
+        if (!pluginContext || !pluginContext.fileKey || !reviewerKey || !featureEnabled("workflow") || workflowSession.loading) return;
+        if (workflowSession.loaded && !force) return;
+        workflowSession.loading = true;
+        if (activeView === "workflow") renderWorkflowView();
+        setStatus(COPY.workflowLoadingTasks);
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/automation/tasks?fileKey=" + encodeURIComponent(pluginContext.fileKey), {
+            method: "GET",
+            headers: { Accept: "application/json", Authorization: "Bearer " + reviewerKey },
+          });
+        } catch (error) {
+          workflowSession.loading = false;
+          if (activeView === "workflow") renderWorkflowView();
+          setFailure("workflow-tasks", COPY.workflowTaskFailure, "workflow-tasks", COPY.diagnosticNetwork);
+          setStatus(COPY.workflowTaskFailure, "error");
+          return;
+        }
+        if (response.status === 401) {
+          reviewerKey = "";
+          workflowSession.loading = false;
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!response.ok) {
+          workflowSession.loading = false;
+          if (activeView === "workflow") renderWorkflowView();
+          setFailure("workflow-tasks", COPY.workflowTaskFailure, "workflow-tasks", copy("diagnosticHttp", { status: response.status }));
+          setStatus(COPY.workflowTaskFailure, "error");
+          return;
+        }
+        var payload = await response.json();
+        workflowSession.tasks = payload && Array.isArray(payload.items) ? payload.items.filter(function (task) {
+          return task && typeof task.id === "string" && typeof task.status === "string" && task.taskType === "figma-cleanup";
+        }) : [];
+        workflowSession.loaded = true;
+        workflowSession.loading = false;
+        workflowOverview = normalizeWorkflowOverview(payload && payload.workflowOverview);
+        if (cleanupSession.task) {
+          workflowSession.tasks.forEach(function (task) {
+            if (task.id === cleanupSession.task.id && !cleanupSession.task.plan) cleanupSession.task = task;
+          });
+        }
+        clearFailure();
+        if (activeView === "workflow") renderWorkflowView();
+        setStatus("");
+      }
+
+      function setStatus(message, tone) {
+        liveStatus.textContent = message || "";
+        if (tone) liveStatus.dataset.tone = tone;
+        else delete liveStatus.dataset.tone;
+      }
+
+      function clearFailure(kind) {
+        if (kind && failureKind !== kind) return;
+        failureKind = null;
+        failureRetry = null;
+        failurePanel.innerHTML = "";
+      }
+
+      function setFailure(kind, summary, retryAction, diagnostic) {
+        failureKind = kind;
+        failureRetry = retryAction || null;
+        failurePanel.innerHTML = [
+          '<p data-kind="' + escapeHtml(kind) + '">' + escapeHtml(summary) + '</p>',
+          retryAction ? '<button id="retryFailureButton" type="button">' + escapeHtml(COPY.retry) + '</button>' : '',
+          diagnostic
+            ? '<details class="technical-details"><summary>' + escapeHtml(COPY.technicalInfo) + '</summary><code>' + escapeHtml(diagnostic) + '</code></details>'
+            : '',
+        ].join("");
+        if (retryAction) document.getElementById("retryFailureButton").addEventListener("click", retryLastFailure);
+      }
+
+      function retryLastFailure() {
+        var action = failureRetry;
+        clearFailure();
+        if (action === "context") loadAuthenticatedContext();
+        else if (action === "pending") loadPendingReviews();
+        else if (action === "decision") submitDecision();
+        else if (action === "focus") focusActiveItem();
+        else if (action === "cleanup-create") startCleanupAnalysis();
+        else if (action === "cleanup-detail" && cleanupSession.task) loadCleanupTaskDetail(cleanupSession.task.id);
+        else if (action === "cleanup-apply-intent") beginCleanupApply();
+        else if (action === "cleanup-complete") submitCleanupCompletion();
+        else if (action === "cleanup-fail") submitCleanupFailure();
+        else if (action === "workflow-tasks") loadWorkflowTasks(true);
+      }
+
+      function resetReviewState() {
+        pendingItems = [];
+        workflowOverview = null;
+        activeIndex = 0;
+        detailsExpanded = false;
+        alternativesExpanded = false;
+        selectedDecision = null;
+        submissionInFlight = false;
+        reviewLoaded = false;
+      }
+
+      function resetAutomationState() {
+        cleanupSession = {
+          task: null,
+          activeTaskId: null,
+          tasks: [],
+          captures: [],
+          rejected: [],
+          scopeSummary: null,
+          captureState: "idle",
+          captureError: null,
+          scanState: "idle",
+          scanCandidates: [],
+          scanSelectedIds: [],
+          scanTruncated: false,
+          submissionInFlight: false,
+          detailInFlight: false,
+          applyInFlight: false,
+          applyAttempt: null,
+          failureContext: null,
+          completionSummary: null,
+          analysisGeneration: 0,
+          selectedOperationIds: [],
+          selectionRevision: null,
+          detailsExpanded: false,
+          confirmationOpen: false,
+        };
+        workflowSession = { tasks: [], loaded: false, loading: false };
+      }
+
+      function renderLogin(message) {
+        activeView = "login";
+        resetReviewState();
+        clearFailure();
+        appState.innerHTML = [
+          '<form class="login-form" id="loginForm">',
+          '<div class="login-heading"><h2>' + escapeHtml(COPY.loginTitle) + '</h2><p>' + escapeHtml(COPY.loginBody) + '</p></div>',
+          '<label for="reviewerKeyInput">' + escapeHtml(COPY.accessCodeLabel),
+          '<input id="reviewerKeyInput" name="reviewerKey" type="password" autocomplete="off" required aria-describedby="accessCodeHelper" />',
+          '<span class="field-helper" id="accessCodeHelper">' + escapeHtml(COPY.accessCodeHelper) + '</span></label>',
+          '<button type="submit">' + escapeHtml(COPY.startReview) + '</button>',
+          '</form>',
+        ].join("");
+        if (message) setStatus(message, "error");
+        else setStatus("");
+        var form = document.getElementById("loginForm");
+        var input = document.getElementById("reviewerKeyInput");
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          var nextKey = input.value.trim();
+          if (!nextKey) {
+            setStatus(COPY.missingAccessCode, "error");
+            return;
+          }
+          reviewerKey = nextKey;
+          input.value = "";
+          loadAuthenticatedContext();
+        });
+        input.focus();
+      }
+
+      function activeItem() {
+        return pendingItems.length > 0 ? pendingItems[activeIndex] : null;
+      }
+
+      function renderUnsupportedProject(diagnostic) {
+        projectContext = null;
+        reviewerContext.textContent = "";
+        appState.innerHTML = '<section class="empty-state"><h2>' + escapeHtml(COPY.unsupportedProjectTitle) + '</h2><p>'
+          + escapeHtml(COPY.unsupportedProjectBody) + '</p><details class="technical-details"><summary>'
+          + escapeHtml(COPY.technicalInfo) + '</summary><code>' + escapeHtml(diagnostic || "unsupported-project")
+          + '</code></details></section>';
+        clearFailure();
+        setStatus(COPY.noRequestSent, "error");
+      }
+
+      async function loadAuthenticatedContext() {
+        if (!pluginContext || !pluginContext.fileKey || !reviewerKey) return;
+        setStatus(COPY.loadingContext);
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/plugin/context?fileKey=" + encodeURIComponent(pluginContext.fileKey), {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+            },
+          });
+        } catch (error) {
+          setFailure("network", COPY.projectContextFailure, "context", COPY.diagnosticNetwork);
+          setStatus(COPY.projectContextFailure, "error");
+          return;
+        }
+        var payload = null;
+        try {
+          payload = await response.json();
+        } catch (error) {
+          payload = null;
+        }
+        var errorCode = stableErrorCode(payload);
+        if (response.status === 401) {
+          reviewerKey = "";
+          projectContext = null;
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (response.status === 404 && errorCode === "unsupported-project") {
+          renderUnsupportedProject(errorCode);
+          return;
+        }
+        if (response.status === 403 && errorCode === "unauthorized-project") {
+          reviewerKey = "";
+          projectContext = null;
+          renderLogin(COPY.projectAccessDenied);
+          return;
+        }
+        if (response.status === 404 && errorCode === "not-found") {
+          setFailure("context-outdated", COPY.projectContextOutdated, "context", errorCode);
+          setStatus(COPY.projectContextOutdated, "error");
+          return;
+        }
+        if (!response.ok) {
+          var diagnostic = errorCode || copy("diagnosticHttp", { status: response.status });
+          setFailure(response.status >= 500 ? "server" : "request", COPY.projectContextFailure, "context", diagnostic);
+          setStatus(COPY.projectContextFailure, "error");
+          return;
+        }
+        if (!validProjectContext(payload)) {
+          setFailure("invalid-context", COPY.projectContextFailure, "context", "invalid-project-context");
+          setStatus(COPY.projectContextFailure, "error");
+          return;
+        }
+        projectContext = payload;
+        reviewerContext.textContent = copy("projectContext", { name: projectContext.project.displayName });
+        clearFailure();
+        setStatus("");
+        renderHome();
+      }
+
+      function displayNameParts(item) {
+        var fullName = item && typeof item.displayName === "string" ? item.displayName.trim() : "";
+        var segments = fullName.split("/").map(function (segment) { return segment.trim(); }).filter(Boolean);
+        return {
+          title: segments.length > 0 ? segments[segments.length - 1] : COPY.unnamedComponent,
+          breadcrumb: segments.length > 1 ? segments.slice(0, -1).join(COPY.breadcrumbSeparator) : "",
+        };
+      }
+
+      function normalizeWorkflowOverview(value) {
+        var states = ["needsReview", "attention", "active", "waiting", "complete"];
+        var countKeys = ["completed", "active", "needsReview", "attention", "waiting"];
+        if (!value || states.indexOf(value.state) === -1 || !value.counts) return null;
+        var counts = {};
+        for (var index = 0; index < countKeys.length; index += 1) {
+          var key = countKeys[index];
+          if (!Number.isInteger(value.counts[key]) || value.counts[key] < 0) return null;
+          counts[key] = value.counts[key];
+        }
+        if (!Array.isArray(value.attentionItems)) return null;
+        var attentionItems = [];
+        for (var itemIndex = 0; itemIndex < value.attentionItems.length && attentionItems.length < 3; itemIndex += 1) {
+          var item = value.attentionItems[itemIndex];
+          if (!item || typeof item.displayName !== "string" || !item.displayName.trim()) continue;
+          if (item.reason !== "blocked" && item.reason !== "runner-exhausted") continue;
+          attentionItems.push({ displayName: item.displayName.trim(), reason: item.reason });
+        }
+        return { state: value.state, counts: counts, attentionItems: attentionItems };
+      }
+
+      function renderWorkflowOverview() {
+        if (!workflowOverview) {
+          return '<section class="workflow-overview" aria-label="' + escapeHtml(COPY.workflowTitle) + '">'
+            + '<div class="workflow-heading"><h3>' + escapeHtml(COPY.workflowTitle) + '</h3></div>'
+            + '<p>' + escapeHtml(COPY.workflowUnavailable) + '</p></section>';
+        }
+        var countEntries = [
+          ["completed", COPY.workflowCompleted],
+          ["active", COPY.workflowActive],
+          ["needsReview", COPY.workflowNeedsReview],
+          ["attention", COPY.workflowAttention],
+          ["waiting", COPY.workflowWaiting],
+        ];
+        return [
+          '<section class="workflow-overview" aria-label="' + escapeHtml(COPY.workflowTitle) + '">',
+          '<div class="workflow-heading"><h3>' + escapeHtml(COPY.workflowTitle) + '</h3><p>' + escapeHtml(COPY.workflowUpdated) + '</p></div>',
+          '<div class="workflow-counts">',
+          countEntries.map(function (entry) {
+            return '<div class="workflow-count"><strong>' + escapeHtml(workflowOverview.counts[entry[0]]) + '</strong><span>' + escapeHtml(entry[1]) + '</span></div>';
+          }).join(""),
+          '</div></section>',
+        ].join("");
+      }
+
+      function renderAttentionItems() {
+        if (!workflowOverview || workflowOverview.state !== "attention") return "";
+        return '<div class="attention-list">' + workflowOverview.attentionItems.map(function (item) {
+          var name = displayNameParts(item);
+          var reason = item.reason === "blocked" ? COPY.attentionBlocked : COPY.attentionExhausted;
+          return '<div class="attention-item">'
+            + (name.breadcrumb ? '<p class="breadcrumb">' + escapeHtml(name.breadcrumb) + '</p>' : '')
+            + '<strong>' + escapeHtml(name.title) + '</strong><p>' + escapeHtml(reason) + '</p></div>';
+        }).join("") + '</div>';
+      }
+
+      function focusActiveItem() {
+        var item = activeItem();
+        if (!item) return;
+        postToMain({ type: "focus-node", nodeId: item.nodeId });
+      }
+
+      function handleFocusResult(message) {
+        if (message.ok) {
+          clearFailure("focus");
+          return;
+        }
+        var summaryKey = message.errorCode === "node-not-found"
+          ? "focusNodeMissing"
+          : message.errorCode === "page-load-failed"
+            ? "focusPageFailed"
+            : "focusFailed";
+        setFailure("focus", COPY[summaryKey], "focus", message.errorCode || "focus-failed");
+        setStatus(COPY[summaryKey], "error");
+      }
+
+      function moveActiveItem(delta) {
+        if (pendingItems.length === 0) return;
+        var nextIndex = Math.max(0, Math.min(pendingItems.length - 1, activeIndex + delta));
+        if (nextIndex === activeIndex) return;
+        activeIndex = nextIndex;
+        detailsExpanded = false;
+        alternativesExpanded = false;
+        selectedDecision = null;
+        submissionInFlight = false;
+        renderPendingItem();
+        focusActiveItem();
+      }
+
+      function renderDetailList(titleKey, values) {
+        var items = Array.isArray(values) ? values.slice(0, 3) : [];
+        if (items.length === 0) return "";
+        return '<section><h3>' + escapeHtml(COPY[titleKey]) + '</h3><ul>'
+          + items.map(function (value) { return '<li>' + escapeHtml(value) + '</li>'; }).join("")
+          + '</ul></section>';
+      }
+
+      function renderRecommendation(item) {
+        var recommendation = item.recommendation;
+        if (!recommendation || !DECISION_LABELS[recommendation.decision]) return "";
+        var details = detailsExpanded
+          ? '<div class="details" id="recommendationDetails">'
+            + renderDetailList("samePoints", recommendation.sameAs)
+            + renderDetailList("differences", recommendation.differences)
+            + renderDetailList("similarComponents", recommendation.similarComponents)
+            + '</div>'
+          : "";
+        return [
+          '<section class="recommendation">',
+          '<div class="recommendation-heading"><span class="recommendation-chip">' + escapeHtml(COPY.recommendationChip) + '</span>',
+          '<span class="recommendation-label">' + escapeHtml(DECISION_LABELS[recommendation.decision]) + '</span></div>',
+          '<p class="recommendation-reason">' + escapeHtml(recommendation.reason || "") + '</p>',
+          '<button class="disclosure-button" id="detailsButton" type="button" aria-controls="recommendationDetails" aria-expanded="' + detailsExpanded + '">'
+            + escapeHtml(detailsExpanded ? COPY.hideDetails : COPY.viewDetails) + '</button>',
+          details,
+          '<button id="adoptRecommendationButton" type="button">' + escapeHtml(COPY.adoptRecommendation) + '</button>',
+          '</section>',
+        ].join("");
+      }
+
+      function renderDecisionActions(item) {
+        var hasRecommendation = Boolean(item.recommendation && DECISION_LABELS[item.recommendation.decision]);
+        if (hasRecommendation && !alternativesExpanded) {
+          return '<button class="quiet-button" id="alternativesButton" type="button" aria-controls="reviewDecisionActions" aria-expanded="false">'
+            + escapeHtml(COPY.chooseOther) + '</button>';
+        }
+        var heading = hasRecommendation
+          ? '<button class="quiet-button" id="alternativesButton" type="button" aria-controls="reviewDecisionActions" aria-expanded="true">' + escapeHtml(COPY.hideOther) + '</button>'
+          : '<h3>' + escapeHtml(COPY.chooseMethod) + '</h3>';
+        return [
+          '<section class="alternative-section">',
+          heading,
+          '<div class="decision-actions" id="reviewDecisionActions" role="group" aria-label="' + escapeHtml(COPY.alternativeAria) + '">',
+          '<button class="secondary" id="mergeDecisionButton" type="button"' + (item.existingComponentId ? '' : ' disabled') + '>' + escapeHtml(COPY.decisionMerge) + '</button>',
+          '<button class="secondary" id="variantDecisionButton" type="button"' + (item.existingComponentId ? '' : ' disabled') + '>' + escapeHtml(COPY.decisionVariant) + '</button>',
+          '<button class="secondary" id="distinctDecisionButton" type="button">' + escapeHtml(COPY.decisionDistinct) + '</button>',
+          item.existingComponentId ? '' : '<p class="missing-target">' + escapeHtml(COPY.missingTarget) + '</p>',
+          '</div></section>',
+        ].join("");
+      }
+
+      function selectDecision(decision, source) {
+        var item = activeItem();
+        if (!item || !DECISION_LABELS[decision]) return;
+        if ((decision === "merge" || decision === "make-variant") && !item.existingComponentId) {
+          setStatus(COPY.missingTarget, "error");
+          return;
+        }
+        selectedDecision = {
+          decision: decision,
+          label: DECISION_LABELS[decision],
+          source: source === "recommendation" ? "recommendation" : "explicit",
+          existingComponentId: decision === "keep-distinct" ? null : item.existingComponentId,
+        };
+        setStatus(copy("selectedDecision", { action: DECISION_LABELS[decision] }));
+        renderPendingItem();
+        var confirmButton = document.getElementById("confirmDecisionButton");
+        if (confirmButton) confirmButton.focus();
+      }
+
+      function adoptRecommendation() {
+        var item = activeItem();
+        if (!item || !item.recommendation) return;
+        selectDecision(item.recommendation.decision, "recommendation");
+      }
+
+      function renderConfirmation(item) {
+        if (!selectedDecision) return "";
+        var name = displayNameParts(item).title;
+        var confirmLabel = selectedDecision.source === "recommendation" ? COPY.confirmAdopt : COPY.confirmChoice;
+        return [
+          '<section class="confirmation" role="dialog" aria-labelledby="reviewConfirmationHeading">',
+          '<div class="confirmation-copy"><h3 id="reviewConfirmationHeading">' + escapeHtml(COPY.confirmationTitle) + '</h3>',
+          '<p>' + escapeHtml(copy("confirmationAction", { action: selectedDecision.label })) + '</p>',
+          '<p>' + escapeHtml(copy("confirmationComponent", { component: name })) + '</p></div>',
+          '<div class="confirmation-actions">',
+          '<button class="cancel-button" id="cancelDecisionButton" type="button"' + (submissionInFlight ? ' disabled' : '') + '>' + escapeHtml(COPY.returnEdit) + '</button>',
+          '<button id="confirmDecisionButton" type="button"' + (submissionInFlight ? ' disabled' : '') + '>' + escapeHtml(confirmLabel) + '</button>',
+          '</div></section>',
+        ].join("");
+      }
+
+      function cancelDecision() {
+        if (submissionInFlight) return;
+        var cancelledDecision = selectedDecision;
+        selectedDecision = null;
+        renderPendingItem();
+        var returnTargetId = cancelledDecision && cancelledDecision.source === "recommendation"
+          ? "adoptRecommendationButton"
+          : (cancelledDecision && cancelledDecision.decision === "merge"
+            ? "mergeDecisionButton"
+            : (cancelledDecision && cancelledDecision.decision === "make-variant"
+              ? "variantDecisionButton"
+              : "distinctDecisionButton"));
+        var returnTarget = document.getElementById(returnTargetId);
+        if (returnTarget) returnTarget.focus();
+        setStatus(COPY.cancelled);
+      }
+
+      async function submitDecision() {
+        var item = activeItem();
+        if (!item || !selectedDecision || submissionInFlight || !reviewerKey || !pluginContext) return;
+        submissionInFlight = true;
+        renderPendingItem();
+        setStatus(COPY.submittingDecision);
+        var payload = {
+          fileKey: pluginContext.fileKey,
+          nodeId: item.nodeId,
+          decision: selectedDecision.decision,
+          evidenceReference: "figma-plugin:" + pluginContext.pluginId + ":" + sessionId + ":" + item.nodeId,
+        };
+        if (selectedDecision.existingComponentId) payload.existingComponentId = selectedDecision.existingComponentId;
+        var response;
+        try {
+          response = await fetch(coordinatorUrl + "/v1/reviews", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+        } catch (error) {
+          submissionInFlight = false;
+          renderPendingItem();
+          setFailure("network", COPY.decisionNetworkFailure, "decision", COPY.diagnosticNetwork);
+          setStatus(COPY.decisionNetworkFailure, "error");
+          return;
+        }
+        if (response.status === 401) {
+          reviewerKey = "";
+          submissionInFlight = false;
+          clearFailure();
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (!response.ok) {
+          submissionInFlight = false;
+          renderPendingItem();
+          var decisionFailure = response.status >= 500 ? COPY.decisionServerFailure : COPY.decisionRequestFailure;
+          setFailure(response.status >= 500 ? "server" : "request", decisionFailure, "decision", copy("diagnosticHttp", { status: response.status }));
+          setStatus(decisionFailure, "error");
+          return;
+        }
+        var result = await response.json();
+        var completedLabel = selectedDecision.label;
+        submissionInFlight = false;
+        selectedDecision = null;
+        detailsExpanded = false;
+        alternativesExpanded = false;
+        if (result.alreadyDecided) {
+          var existing = result.existing || {};
+          await loadPendingReviews();
+          var timeLabel = existing.createdAt ? copy("decidedTime", { time: existing.createdAt }) : "";
+          var alreadyDecidedMessage = copy("firstWrite", {
+            action: DECISION_LABELS[existing.decision] || COPY.unknownDecision,
+            reviewer: existing.reviewerId || COPY.unknownReviewer,
+            time: timeLabel,
+          });
+          setFailure("first-write", alreadyDecidedMessage, "pending", "already-decided");
+          setStatus(alreadyDecidedMessage);
+          return;
+        }
+        await loadPendingReviews();
+        setStatus(copy("submittedDecision", { action: completedLabel }));
+      }
+
+      function renderEmptyState() {
+        activeView = "review";
+        var title = COPY.noReviewTitle;
+        var body = COPY.workflowUnavailable;
+        var items = "";
+        if (workflowOverview) {
+          if (workflowOverview.state === "complete") {
+            title = COPY.completeTitle;
+            body = COPY.completeBody;
+          } else if (workflowOverview.state === "attention") {
+            body = copy("attentionBody", { count: workflowOverview.counts.attention });
+            items = renderAttentionItems();
+          } else if (workflowOverview.state === "active") {
+            body = COPY.activeBody;
+          } else if (workflowOverview.state === "waiting") {
+            body = COPY.waitingBody;
+          }
+        }
+        appState.innerHTML = [
+          '<section class="feature-view" data-view="review">',
+          renderFeatureHeader(COPY.reviewTitle, COPY.reviewHelper),
+          renderWorkflowOverview(),
+          '<section class="empty-state"><h2>' + escapeHtml(title) + '</h2>',
+          '<p>' + escapeHtml(body) + '</p>',
+          items,
+          '<button class="refresh-button" id="refreshButton" type="button">' + escapeHtml(COPY.refresh) + '</button></section></section>',
+        ].join("");
+        bindBackHome();
+        document.getElementById("refreshButton").addEventListener("click", loadPendingReviews);
+      }
+
+      function renderPendingItem() {
+        var item = activeItem();
+        if (!item) {
+          renderEmptyState();
+          return;
+        }
+        activeView = "review";
+        var name = displayNameParts(item);
+        appState.innerHTML = [
+          '<section class="feature-view" data-view="review">',
+          renderFeatureHeader(COPY.reviewTitle, COPY.reviewHelper),
+          renderWorkflowOverview(),
+          '<article class="review-card">',
+          '<div class="progress-row"><span class="progress">' + escapeHtml(copy("progress", { current: activeIndex + 1, total: pendingItems.length })) + '</span></div>',
+          '<div class="component-heading">',
+          name.breadcrumb ? '<p class="breadcrumb">' + escapeHtml(name.breadcrumb) + '</p>' : '',
+          '<h2>' + escapeHtml(name.title) + '</h2>',
+          '<p class="similar-hint">' + escapeHtml(item.existingComponentId ? COPY.similarAvailable : COPY.similarUnavailable) + '</p>',
+          '</div>',
+          renderRecommendation(item),
+          renderDecisionActions(item),
+          renderConfirmation(item),
+          '<nav class="navigation" aria-label="' + escapeHtml(COPY.navigationAria) + '">',
+          '<button id="previousButton" type="button"' + (activeIndex === 0 ? ' disabled' : '') + '>' + escapeHtml(COPY.previous) + '</button>',
+          '<button id="nextButton" type="button"' + (activeIndex === pendingItems.length - 1 ? ' disabled' : '') + '>' + escapeHtml(COPY.next) + '</button>',
+          '</nav>',
+          '<div class="footer-actions"><button class="refresh-button" id="refreshButton" type="button">' + escapeHtml(COPY.refresh) + '</button></div>',
+          '</article></section>',
+        ].join("");
+        bindBackHome();
+        var detailsButton = document.getElementById("detailsButton");
+        if (item.recommendation && detailsButton) {
+          detailsButton.addEventListener("click", function () {
+            detailsExpanded = !detailsExpanded;
+            renderPendingItem();
+            var nextDetailsButton = document.getElementById("detailsButton");
+            if (nextDetailsButton) nextDetailsButton.focus();
+          });
+          document.getElementById("adoptRecommendationButton").addEventListener("click", adoptRecommendation);
+        }
+        var alternativesButton = document.getElementById("alternativesButton");
+        if (alternativesButton) {
+          alternativesButton.addEventListener("click", function () {
+            alternativesExpanded = !alternativesExpanded;
+            renderPendingItem();
+            var nextAlternativesButton = document.getElementById("alternativesButton");
+            if (nextAlternativesButton) nextAlternativesButton.focus();
+          });
+        }
+        var mergeButton = document.getElementById("mergeDecisionButton");
+        var variantButton = document.getElementById("variantDecisionButton");
+        var distinctButton = document.getElementById("distinctDecisionButton");
+        if (mergeButton) mergeButton.addEventListener("click", function () { selectDecision("merge", "explicit"); });
+        if (variantButton) variantButton.addEventListener("click", function () { selectDecision("make-variant", "explicit"); });
+        if (distinctButton) distinctButton.addEventListener("click", function () { selectDecision("keep-distinct", "explicit"); });
+        if (selectedDecision) {
+          document.getElementById("cancelDecisionButton").addEventListener("click", cancelDecision);
+          document.getElementById("confirmDecisionButton").addEventListener("click", submitDecision);
+        }
+        document.getElementById("previousButton").addEventListener("click", function () { moveActiveItem(-1); });
+        document.getElementById("nextButton").addEventListener("click", function () { moveActiveItem(1); });
+        document.getElementById("refreshButton").addEventListener("click", loadPendingReviews);
+      }
+
+      async function loadPendingReviews() {
+        if (!pluginContext || !pluginContext.fileKey || !reviewerKey || !projectContext || !featureEnabled("review")) return;
+        setStatus(COPY.loadingReviews);
+        var requestUrl = coordinatorUrl + "/v1/reviews/pending?fileKey=" + encodeURIComponent(pluginContext.fileKey);
+        var response;
+        try {
+          response = await fetch(requestUrl, {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + reviewerKey,
+            },
+          });
+        } catch (error) {
+          setFailure("network", COPY.pendingNetworkFailure, "pending", COPY.diagnosticNetwork);
+          setStatus(COPY.pendingNetworkFailure, "error");
+          return;
+        }
+        if (response.status === 401) {
+          reviewerKey = "";
+          clearFailure();
+          renderLogin(COPY.invalidAccessCode);
+          return;
+        }
+        if (response.status === 403) {
+          reviewerKey = "";
+          clearFailure();
+          renderLogin(COPY.noReviewPermission);
+          return;
+        }
+        if (!response.ok) {
+          var pendingFailure = response.status >= 500 ? COPY.pendingServerFailure : COPY.pendingRequestFailure;
+          setFailure(response.status >= 500 ? "server" : "request", pendingFailure, "pending", copy("diagnosticHttp", { status: response.status }));
+          setStatus(pendingFailure, "error");
+          return;
+        }
+        var payload = await response.json();
+        pendingItems = Array.isArray(payload.items) ? payload.items : [];
+        workflowOverview = normalizeWorkflowOverview(payload.workflowOverview);
+        activeIndex = 0;
+        detailsExpanded = false;
+        alternativesExpanded = false;
+        selectedDecision = null;
+        submissionInFlight = false;
+        reviewLoaded = true;
+        clearFailure();
+        postToMain({ type: "save-coordinator-url", coordinatorUrl: coordinatorUrl });
+        if (activeView === "review") {
+          renderPendingItem();
+          focusActiveItem();
+        }
+        setStatus(copy("loadedReviews", { count: pendingItems.length }));
+      }
+
+      window.onmessage = function (event) {
+        var message = event.data && event.data.pluginMessage;
+        if (!message || typeof message.type !== "string") return;
+        if (message.type === "focus-result") {
+          handleFocusResult(message);
+          return;
+        }
+        if (message.type === "cleanup-scopes-result") {
+          handleCleanupScopesResult(message);
+          return;
+        }
+        if (message.type === "ready-for-dev-scan-result") {
+          handleReadyForDevScanResult(message);
+          return;
+        }
+        if (message.type === "cleanup-validation-result") {
+          handleCleanupValidationResult(message);
+          return;
+        }
+        if (message.type === "cleanup-apply-result") {
+          handleCleanupApplyResult(message);
+          return;
+        }
+        if (message.type !== "plugin-context") return;
+        pluginContext = message;
+        projectContext = null;
+        resetAutomationState();
+        coordinatorUrl = message.coordinatorUrl === DEFAULT_COORDINATOR_URL
+          ? message.coordinatorUrl
+          : DEFAULT_COORDINATOR_URL;
+        if (!message.fileKey) {
+          reviewerContext.textContent = "";
+          appState.innerHTML = '<section class="empty-state"><h2>' + escapeHtml(COPY.unsupportedTitle) + '</h2><p>'
+            + escapeHtml(COPY.unsupportedBody) + '</p><details class="technical-details"><summary>' + escapeHtml(COPY.technicalInfo)
+            + '</summary><code>' + escapeHtml(COPY.diagnosticUnsupported) + '</code></details></section>';
+          clearFailure();
+          setStatus(COPY.noRequestSent, "error");
+          return;
+        }
+        reviewerContext.textContent = COPY.projectPending;
+        renderLogin();
+      };
+
+      appTitle.textContent = COPY.appTitle;
+      appSubtitle.textContent = COPY.appSubtitle;
+      reviewerContext.textContent = COPY.loadingContext;
+      appState.textContent = COPY.loadingContext;
+    </script>
+  </body>
+</html>

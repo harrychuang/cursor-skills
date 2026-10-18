@@ -1,0 +1,4 @@
+interface:
+  display_name: "Native Product Implementation"
+  short_description: "Implement SwiftUI and Compose features from prototype handoffs"
+  default_prompt: "Use $native-app-implementation to resolve the native app architecture and implement this iOS SwiftUI or Android Compose feature from the prototype handoff docs with platform-native conventions."

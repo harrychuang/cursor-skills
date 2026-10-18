@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "templateVersion": "1.1.0",
+  "minimumAgentAutomationVersion": "1.0.0",
+  "modules": {
+    "task-board-dispatch": {
+      "optional": true
+    }
+  },
+  "files": [
+    {
+      "source": "agent-automation-task.fragment.json",
+      "target": ".agent-automation/config.json",
+      "ownership": "merge",
+      "sha256": "ebd962ac320088f852c1e6e851db235b0ae661895dc2793f3e33764c2f75c201"
+    },
+    {
+      "source": "figma/design-automation-hub/main.js",
+      "target": "figma/design-automation-hub/main.js",
+      "ownership": "managed",
+      "sha256": "311106d725fffe50fb8eb48733af46f78533e3cffd88e0a336f9860b44b62a5c"
+    },
+    {
+      "source": "figma/design-automation-hub/manifest.json",
+      "target": "figma/design-automation-hub/manifest.json",
+      "ownership": "managed",
+      "sha256": "ccd03adaf8ce358b09949a3923d78f03ec515f7d80e00c5178fc317634620dd2"
+    },
+    {
+      "source": "figma/design-automation-hub/ui.html",
+      "target": "figma/design-automation-hub/ui.html",
+      "ownership": "managed",
+      "sha256": "61cac3b8392a2efe3986a4fdff56100d55b79c9557eb77a2a6692809ae19758a"
+    },
+    {
+      "source": "gitignore.fragment",
+      "target": ".gitignore",
+      "ownership": "merge",
+      "sha256": "5ab47f19100170d8d64fc12397188c931a1b67e02d6e17f746a279bc3e4f5057"
+    },
+    {
+      "source": "project-profile.example.json",
+      "target": ".design-automation/project.json",
+      "ownership": "generated",
+      "sha256": "33bcf293706e2f8d2f7c55afa88dc01b7502f82deaf839998b136cb29f8f536c"
+    },
+    {
+      "source": "scripts/design-automation-hub/agent-runner.mjs",
+      "target": "scripts/design-automation-hub/agent-runner.mjs",
+      "ownership": "managed",
+      "sha256": "c538d9099d739670ba380580bdf461132bd20fa2172dbddecf1073dbd08e0f20"
+    },
+    {
+      "source": "scripts/design-automation-hub/check-cleanup-result.mjs",
+      "target": "scripts/design-automation-hub/check-cleanup-result.mjs",
+      "ownership": "managed",
+      "sha256": "d01aeca9e3c120afada01c0de395ff98db5ed80de02cf0841c8994698f207114"
+    },
+    {
+      "source": "scripts/design-automation-hub/compatible-host.mjs",
+      "target": "scripts/design-automation-hub/compatible-host.mjs",
+      "ownership": "managed",
+      "sha256": "cf6e7576b9efd272d65d4dd3033ff3da3e489d9372b27dd2fa1c59b53ed59779"
+    },
+    {
+      "source": "scripts/design-automation-hub/contract.mjs",
+      "target": "scripts/design-automation-hub/contract.mjs",
+      "ownership": "managed",
+      "sha256": "b9a0ace44b17f3ab9d722b355e0f00980354455a7938dfaf3791c969f2f8a7dc"
+    },
+    {
+      "source": "scripts/design-automation-hub/core.mjs",
+      "target": "scripts/design-automation-hub/core.mjs",
+      "ownership": "managed",
+      "sha256": "c892ef2c1c7ea095f733892f3dd0102234a14544360fc97f67c39eded1140d76"
+    },
+    {
+      "source": "scripts/design-automation-hub/dispatch.mjs",
+      "target": "scripts/design-automation-hub/dispatch.mjs",
+      "ownership": "managed",
+      "module": "task-board-dispatch",
+      "sha256": "d07c1eb393b56d80b396cf200b91d5110631021043ce225c9f0daffbb474309a"
+    },
+    {
+      "source": "scripts/design-automation-hub/host.mjs",
+      "target": "scripts/design-automation-hub/host.mjs",
+      "ownership": "managed",
+      "sha256": "ab1b043fa33ef71837ce2bb1e5b89f842f3109044e6edddee32acb659cfe1443"
+    },
+    {
+      "source": "scripts/design-automation-hub/server.mjs",
+      "target": "scripts/design-automation-hub/server.mjs",
+      "ownership": "managed",
+      "sha256": "6baf38cb9ce3116aea271cf6cd0cb4abd90db0f82cfaf3c4818471bd88798163"
+    },
+    {
+      "source": "scripts/design-automation-hub/standalone.mjs",
+      "target": "scripts/design-automation-hub/standalone.mjs",
+      "ownership": "managed",
+      "sha256": "93b0cddf4f4e5be26f12509e35bc2fee58b1aa984d2d02f1c2126792c5a90dbe"
+    },
+    {
+      "source": "scripts/design-automation-hub/store.mjs",
+      "target": "scripts/design-automation-hub/store.mjs",
+      "ownership": "managed",
+      "sha256": "82918300bd8d59b452bca6f5970d4dd9f627fedbc4889f0b41c8396ee9f1da03"
+    },
+    {
+      "source": "scripts/design-automation-hub/task-board-binding.mjs",
+      "target": "scripts/design-automation-hub/task-board-binding.mjs",
+      "ownership": "managed",
+      "module": "task-board-dispatch",
+      "sha256": "13cd03580bb8036bcf34cc790bcff6969cc82e1507c18000a314d52849fd49cd"
+    },
+    {
+      "source": "scripts/design-automation-hub/task-board-client.mjs",
+      "target": "scripts/design-automation-hub/task-board-client.mjs",
+      "ownership": "managed",
+      "module": "task-board-dispatch",
+      "sha256": "0a4631397c40b0a5f261346b81674b78de8b1abc1141a6948b639fab37fbd04f"
+    },
+    {
+      "source": "skills/figma-design-automation/agents/openai.yaml",
+      "target": ".agents/skills/figma-design-automation/agents/openai.yaml",
+      "ownership": "managed",
+      "sha256": "67636b2b5a61dc841cacd2f37af4c5e2aaa07d166fae01d6394b122d93205d7e"
+    },
+    {
+      "source": "skills/figma-design-automation/references/cleanup-contract.md",
+      "target": ".agents/skills/figma-design-automation/references/cleanup-contract.md",
+      "ownership": "managed",
+      "sha256": "d6cb615e92e140d8b9e0f6b84e95a38e27e48858caf3a031b05d5103073f4abf"
+    },
+    {
+      "source": "skills/figma-design-automation/scripts/check-figma-design-automation.mjs",
+      "target": ".agents/skills/figma-design-automation/scripts/check-figma-design-automation.mjs",
+      "ownership": "managed",
+      "sha256": "6ed240e8b57fea21737a80ee5b4089afde763b7bafd2f6945307f55237a94e41"
+    },
+    {
+      "source": "skills/figma-design-automation/scripts/write-cleanup-result.mjs",
+      "target": ".agents/skills/figma-design-automation/scripts/write-cleanup-result.mjs",
+      "ownership": "managed",
+      "sha256": "d94ad3557e6a421e7cb51b721f2a6635e3ca7fffdd4f86d583b2f4fc812c21b2"
+    },
+    {
+      "source": "skills/figma-design-automation/SKILL.md",
+      "target": ".agents/skills/figma-design-automation/SKILL.md",
+      "ownership": "managed",
+      "sha256": "fc7fb5428abb6b7f22cf25d2159f98ac749265689d1273ab7336b7664178024f"
+    }
+  ],
+  "manualActions": [
+    {
+      "code": "import-figma-manifest",
+      "ownership": "manual",
+      "target": "figma/design-automation-hub/manifest.json",
+      "completed": false
+    }
+  ],
+  "sourceSync": {
+    "contractVersion": 1,
+    "files": [
+      {
+        "templatePath": "figma/design-automation-hub/manifest.json",
+        "productPath": "figma/design-automation-hub/manifest.json",
+        "sha256": "ccd03adaf8ce358b09949a3923d78f03ec515f7d80e00c5178fc317634620dd2"
+      },
+      {
+        "templatePath": "figma/design-automation-hub/main.js",
+        "productPath": "figma/design-automation-hub/main.js",
+        "sha256": "311106d725fffe50fb8eb48733af46f78533e3cffd88e0a336f9860b44b62a5c"
+      },
+      {
+        "templatePath": "figma/design-automation-hub/ui.html",
+        "productPath": "figma/design-automation-hub/ui.html",
+        "sha256": "61cac3b8392a2efe3986a4fdff56100d55b79c9557eb77a2a6692809ae19758a"
+      }
+    ]
+  }
+}

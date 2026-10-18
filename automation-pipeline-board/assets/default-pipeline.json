@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "design-tool-export",
+      "title": "設計工具匯出檔",
+      "evidence": ["design-system/assets/figma", "figma"]
+    },
+    {
+      "id": "ui-screenshots",
+      "title": "UI 截圖",
+      "evidence": ["design-system/assets/rendered-captures", "screenshots"]
+    },
+    {
+      "id": "existing-app-project",
+      "title": "現有的 app 專案",
+      "evidence": ["src", "app"]
+    },
+    {
+      "id": "prototype-code",
+      "title": "原型程式碼",
+      "evidence": ["prototype", "prototypes", "src/pages/prototypes"]
+    }
+  ],
+  "stages": [
+    {
+      "id": "extract-design-system",
+      "title": "萃取設計系統",
+      "taskId": "extract-design-system",
+      "produces": [
+        "design-system/DESIGN_EVIDENCE_MAP.md",
+        "design-system/TOKEN_ARCHITECTURE.md",
+        "design-system/COMPONENT_INVENTORY.md",
+        "tokens/tokens-ref.css"
+      ],
+      "audit": {
+        "command": "node",
+        "args": ["design-system-extractor/scripts/audit_sources.mjs", "--strict"]
+      },
+      "pendingDecisions": {
+        "command": "node",
+        "args": ["design-system-extractor/scripts/generate_review_html.mjs", "--json"],
+        "countField": "needsReview"
+      },
+      "handoffs": [
+        {
+          "to": "build-storybook-foundation",
+          "artifact": "design-system/DESIGN_EVIDENCE_MAP.md",
+          "enforcedBy": "ds-to-storybook/scripts/trace_sources.mjs"
+        },
+        {
+          "to": "build-components",
+          "artifact": "design-system/COMPONENT_INVENTORY.md",
+          "enforcedBy": "ds-to-storybook/scripts/plan_component_batches.mjs"
+        }
+      ]
+    },
+    {
+      "id": "build-storybook-foundation",
+      "title": "建立 Storybook 基礎",
+      "taskId": "build-storybook-foundation",
+      "produces": [
+        "design-system/STORYBOOK_SOURCE_TRACE.md",
+        "design-system/STORYBOOK_COMPONENT_PLAN.md"
+      ],
+      "handoffs": [
+        {
+          "to": "build-components",
+          "artifact": "design-system/STORYBOOK_COMPONENT_PLAN.md",
+          "enforcedBy": "ds-to-storybook/scripts/plan_component_batches.mjs"
+        }
+      ]
+    },
+    {
+      "id": "build-components",
+      "title": "產出元件",
+      "taskId": "build-components",
+      "produces": [
+        "design-system/STORYBOOK_COMPONENT_QUEUE.md",
+        "design-system/STORYBOOK_IMPLEMENTATION_MAP.md"
+      ],
+      "audit": {
+        "command": "node",
+        "args": ["ds-to-storybook/scripts/check_component_docs.mjs", "--strict"]
+      },
+      "handoffs": []
+    }
+  ]
+}

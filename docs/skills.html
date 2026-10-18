@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skills — 從畫面到可交付的產品</title>
+  <meta name="description" content="這個 repo 根目錄 24 個 Cursor Agent Skills 的說明。依工作選擇：設計系統、Storybook、原型、產品實作、Figma、視覺對齊、自動化與簡報。">
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --ink: #1d1d1f;
+      --muted: #6e6e73;
+      --tertiary: #86868b;
+      --blue: #0066cc;
+      --blue-fill: #0071e3;
+      --card: #ffffff;
+      --line: rgba(0, 0, 0, 0.08);
+      --chip: rgba(0, 0, 0, 0.04);
+      --dark: #000000;
+      --dark-soft: #1d1d1f;
+      --radius: 20px;
+      --nav: 48px;
+      --max: 1120px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "PingFang TC", "Noto Sans TC", sans-serif;
+      font-size: 17px;
+      line-height: 1.47059;
+      letter-spacing: -0.022em;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible {
+      outline: 2px solid var(--blue-fill);
+      outline-offset: 3px;
+    }
+    code, .mono, .prompt {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      letter-spacing: -0.01em;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: var(--nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      background: rgba(245, 245, 247, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    .nav-brand {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+    }
+    .nav-brand:hover { text-decoration: none; }
+    .nav-links { display: flex; gap: 22px; }
+    .nav-links a {
+      color: var(--ink);
+      font-size: 12px;
+      opacity: 0.8;
+      text-decoration: none;
+    }
+    .nav-links a:hover { opacity: 1; text-decoration: none; }
+
+    .hero {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 88px 24px 28px;
+      text-align: center;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    h1 {
+      margin: 0 auto;
+      max-width: 12em;
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+    }
+    .lede {
+      max-width: 40em;
+      margin: 18px auto 0;
+      color: var(--muted);
+      font-size: 21px;
+      line-height: 1.381;
+      letter-spacing: -0.016em;
+    }
+
+    .band {
+      max-width: var(--max);
+      margin: 36px auto 0;
+      padding: 0 24px;
+    }
+    .dark {
+      background: var(--dark);
+      color: #f5f5f7;
+      border-radius: 28px;
+      padding: 56px 40px 48px;
+    }
+    .dark h2 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .dark .sub {
+      margin: 0 0 32px;
+      max-width: 42em;
+      color: #a1a1a6;
+      font-size: 17px;
+    }
+    .dark .sub a { color: #f5f5f7; text-decoration: underline; text-underline-offset: 3px; }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .steps li {
+      min-width: 0;
+    }
+    .steps a {
+      display: block;
+      height: 100%;
+      padding: 16px 14px 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f5f5f7;
+      text-decoration: none;
+    }
+    .steps a:hover { background: rgba(255, 255, 255, 0.12); text-decoration: none; }
+    .step-no {
+      display: block;
+      margin-bottom: 18px;
+      color: #86868b;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .steps strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .steps span {
+      display: block;
+      margin-top: 6px;
+      color: #a1a1a6;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .chooser {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: var(--max);
+      margin: 28px auto 0;
+      padding: 0 24px 12px;
+    }
+    .chooser a {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 148px;
+      padding: 22px 22px 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+      color: var(--ink);
+      text-decoration: none;
+      box-shadow: var(--shadow);
+    }
+    .chooser a:hover { text-decoration: none; }
+    .chooser a:hover strong { color: var(--blue); }
+    .chooser small {
+      color: var(--tertiary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .chooser strong {
+      display: block;
+      margin-top: 28px;
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.022em;
+      line-height: 1.2;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 232px minmax(0, 1fr);
+      gap: 48px;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 56px 24px 96px;
+    }
+    .index {
+      position: sticky;
+      top: 72px;
+      align-self: start;
+      max-height: calc(100vh - 96px);
+      overflow: auto;
+      padding-right: 8px;
+    }
+    .index::-webkit-scrollbar { width: 0; }
+    .search {
+      width: 100%;
+      margin: 0 0 18px;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+    }
+    .search::placeholder { color: var(--tertiary); }
+    .index h2 {
+      margin: 18px 0 8px;
+      color: var(--tertiary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .index a {
+      display: block;
+      padding: 4px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.3;
+      text-decoration: none;
+    }
+    .index a:hover { color: var(--ink); }
+    .index a[aria-current="true"] { color: var(--ink); font-weight: 600; }
+
+    .group { margin: 0 0 64px; }
+    .group-head { margin: 0 0 8px; }
+    .group-head h2 {
+      margin: 0;
+      font-size: 40px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .group-head p {
+      margin: 10px 0 0;
+      max-width: 40em;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .skill {
+      margin-top: 16px;
+      padding: 28px 28px 24px;
+      background: var(--card);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+    .skill[hidden] { display: none; }
+    .kicker {
+      margin: 0;
+      color: var(--tertiary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .skill h3 {
+      margin: 6px 0 10px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.028em;
+      line-height: 1.14;
+    }
+    .skill > p { margin: 0 0 14px; }
+    .skill h4 {
+      margin: 18px 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+    }
+    .prompt-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-top: 8px;
+      padding: 14px 14px 14px 16px;
+      border-radius: 14px;
+      background: var(--bg);
+    }
+    .prompt {
+      flex: 1;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+    .copy {
+      flex: none;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+    }
+    .copy:hover { text-decoration: underline; }
+    .next {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .next a { font-size: 14px; }
+    .next a::after { content: " ›"; }
+
+    .note {
+      margin-top: 16px;
+      padding: 22px 24px;
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.03);
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .note strong { color: var(--ink); font-weight: 600; }
+
+    .names {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .names th, .names td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .names th { color: var(--tertiary); font-size: 12px; font-weight: 600; }
+
+    footer {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 8px 24px 64px;
+      color: var(--tertiary);
+      font-size: 12px;
+    }
+
+    .empty {
+      display: none;
+      margin: 0;
+      padding: 28px;
+      background: var(--card);
+      border-radius: 22px;
+      color: var(--muted);
+    }
+    body.is-filtering .empty[data-show="true"] { display: block; }
+    body.is-filtering .group:not(:has(.skill:not([hidden]))) { display: none; }
+
+    @media (max-width: 980px) {
+      .steps { grid-template-columns: repeat(3, 1fr); }
+      .chooser { grid-template-columns: 1fr 1fr; }
+      .shell { grid-template-columns: 1fr; gap: 28px; padding-top: 40px; }
+      .index { position: static; max-height: none; }
+      .dark { padding: 36px 22px 28px; border-radius: 22px; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 56px; }
+      .steps, .chooser { grid-template-columns: 1fr; }
+      .skill { padding: 22px 18px; }
+      h1 { max-width: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    @media print {
+      .nav, .index, .copy { display: none; }
+      .shell { display: block; }
+      .dark, .skill, .chooser a { break-inside: avoid; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="nav-brand" href="#top">Skills</a>
+    <nav class="nav-links" aria-label="頁面">
+      <a href="#path">主線</a>
+      <a href="#choose">怎麼選</a>
+      <a href="#catalog">全部 skills</a>
+      <a href="#names">名稱對照</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">Cursor Agent Skills</p>
+      <h1>從畫面<br>到可交付的產品。</h1>
+      <p class="lede">這份說明收錄 repo 根目錄的 24 個 skills。每個 skill 負責一段工作：萃取設計系統、建成 Storybook、做出可點的原型、寫進產品，或把畫面落差修回去。</p>
+    </section>
+
+    <section class="band" id="path">
+      <div class="dark">
+        <h2>一條主線</h2>
+        <p class="sub">多數產品可以照這個順序走。前面的產出是後面的輸入。做 UI 的時候，<a href="#design-system-governance">設計治理</a>會一直在旁邊，先找既有 token 與元件。</p>
+        <ol class="steps">
+          <li>
+            <a href="#design-system-extractor">
+              <span class="step-no">01</span>
+              <strong>萃取設計系統</strong>
+              <span>截圖、Figma、現有 App</span>
+            </a>
+          </li>
+          <li>
+            <a href="#design-system-to-storybook">
+              <span class="step-no">02</span>
+              <strong>建成 Storybook</strong>
+              <span>token、元件、stories</span>
+            </a>
+          </li>
+          <li>
+            <a href="#storybook-product-prototype">
+              <span class="step-no">03</span>
+              <strong>原型與交接</strong>
+              <span>PRD、流程、資料契約</span>
+            </a>
+          </li>
+          <li>
+            <a href="#frontend-product-implementation">
+              <span class="step-no">04</span>
+              <strong>實作畫面</strong>
+              <span>Web，或 iOS / Android</span>
+            </a>
+          </li>
+          <li>
+            <a href="#api-data-integration">
+              <span class="step-no">05</span>
+              <strong>接上真資料</strong>
+              <span>API、登入、儲存</span>
+            </a>
+          </li>
+          <li>
+            <a href="#ui-pixel-alignment">
+              <span class="step-no">06</span>
+              <strong>對齊畫面</strong>
+              <span>先出報告，再修</span>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="chooser" id="choose" aria-label="依現在的工作選擇">
+      <a href="#create-design-workspace">
+        <small>空資料夾</small>
+        <strong>從截圖或 Figma 開一個新專案</strong>
+      </a>
+      <a href="#screenshot-to-storybook">
+        <small>已經有專案</small>
+        <strong>把一張畫面拆成可重用元件</strong>
+      </a>
+      <a href="#figma-m3-variables">
+        <small>還在 Figma</small>
+        <strong>把寫死的數值做成變數</strong>
+      </a>
+      <a href="#figma-componentize">
+        <small>還在 Figma</small>
+        <strong>把還沒元件化的畫面做成元件</strong>
+      </a>
+      <a href="#prototype-storybook-flow">
+        <small>要給人看流程</small>
+        <strong>做一張可拖曳的 UI Flow</strong>
+      </a>
+      <a href="#storybook-product-prototype">
+        <small>要交給工程</small>
+        <strong>做出原型和交接文件</strong>
+      </a>
+      <a href="#frontend-product-implementation">
+        <small>要寫進產品</small>
+        <strong>用交接文件實作 Web</strong>
+      </a>
+      <a href="#native-app-implementation">
+        <small>要寫進 App</small>
+        <strong>用同一份交接實作 iOS 或 Android</strong>
+      </a>
+      <a href="#ui-visual-parity">
+        <small>畫面不一樣</small>
+        <strong>對著設計把落差修掉</strong>
+      </a>
+      <a href="#executive-proposal">
+        <small>要開會</small>
+        <strong>把想法收成四頁提案</strong>
+      </a>
+      <a href="#presentation-content-review">
+        <small>簡報已經有了</small>
+        <strong>逐頁檢查結論和證據</strong>
+      </a>
+      <a href="#agent-automation">
+        <small>同一件事會再做</small>
+        <strong>收成可重跑的自動化</strong>
+      </a>
+    </section>
+
+    <div class="shell" id="catalog">
+      <aside class="index" aria-label="目錄">
+        <input class="search" id="q" type="search" placeholder="搜尋 skill" autocomplete="off" aria-label="搜尋 skill">
+        <h2>設計系統</h2>
+        <a href="#create-design-workspace">開新專案</a>
+        <a href="#design-system-extractor">萃取設計系統</a>
+        <a href="#design-system-governance">設計治理</a>
+        <a href="#design-system-to-storybook">建成 Storybook</a>
+        <a href="#screenshot-to-storybook">截圖做成畫面</a>
+        <h2>原型與實作</h2>
+        <a href="#prototype-storybook-flow">UI Flow</a>
+        <a href="#storybook-product-prototype">原型交接</a>
+        <a href="#frontend-product-implementation">Web 實作</a>
+        <a href="#native-app-implementation">原生實作</a>
+        <a href="#api-data-integration">接上真資料</a>
+        <h2>Figma</h2>
+        <a href="#figma-m3-variables">變數與 token</a>
+        <a href="#figma-componentize">元件化</a>
+        <a href="#figma-storybook-sync">同步回程式</a>
+        <a href="#design-automation-hub">清理自動化</a>
+        <h2>視覺與平台</h2>
+        <a href="#ui-pixel-alignment">像素報告</a>
+        <a href="#ui-visual-parity">修視覺落差</a>
+        <a href="#cross-platform-parity">跨平台交接</a>
+        <a href="#ios-foldable-adaptation">摺疊 iPhone</a>
+        <h2>自動化</h2>
+        <a href="#agent-automation">多代理自動化</a>
+        <a href="#automation-pipeline-board">管線看板</a>
+        <a href="#automation-portfolio">多專案總覽</a>
+        <a href="#storybook-tools">Storybook 工具</a>
+        <h2>簡報</h2>
+        <a href="#executive-proposal">產品提案</a>
+        <a href="#presentation-content-review">內容審查</a>
+      </aside>
+
+      <div>
+        <p class="empty" id="empty" data-show="false">沒有符合的 skill。</p>
+
+        <section class="group" id="design" aria-labelledby="design-title">
+          <div class="group-head">
+            <h2 id="design-title">設計系統</h2>
+            <p>先看來源長什麼樣子，抽出可重用的規格，再做成 Storybook。寫畫面之前先過治理。</p>
+          </div>
+
+          <article class="skill" id="create-design-workspace" data-text="create design workspace 開新專案 截圖 figma 空資料夾 bootstrap">
+            <p class="kicker">create-design-workspace</p>
+            <h3>開一個新的交付專案</h3>
+            <p>從 UI 截圖或 Figma URL 建出一整個前端工作區，再沿著 Storybook、token 與視覺對齊把實作做完。產生的工作區可以給 Cursor、Claude Code 和 Codex 用。</p>
+            <h4>什麼時候用</h4>
+            <p>資料夾是空的，你要從參考圖或 Figma 開始做一個新產品。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $create-design-workspace to bootstrap a new UI-to-code workspace in this empty folder from screenshots or a Figma URL and carry it through implementation.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#design-system-extractor">接著萃取設計系統</a></li>
+              <li><a href="#screenshot-to-storybook">只有一張圖時改用這個</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="design-system-extractor" data-text="design system extractor 萃取 設計系統 截圖 figma variables token 原則 元件清單">
+            <p class="kicker">design-system-extractor</p>
+            <h3>萃取設計系統</h3>
+            <p>從截圖、品牌參考、Figma、Figma Variables、現有 Web 或 iOS / Android 專案、模擬器截圖、原型程式，抽出可重用的設計系統規格。產出包含有證據的設計原則、設計元素、token 架構、元件清單、元件 token，以及給工程看的靜態 HTML 說明。實作產品之前會先停在檢查點。</p>
+            <h4>什麼時候用</h4>
+            <p>你手上有畫面來源，下一步是先把它變成一份設計系統。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $design-system-extractor to extract a reusable design-system package and static HTML docs from screenshots, a Figma URL, rendered captures, or an existing app project.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#design-system-to-storybook">接著建成 Storybook</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="design-system-governance" data-text="design system governance 治理 token 元件 動畫 i18n 硬編碼">
+            <p class="kicker">design-system-governance</p>
+            <h3>設計治理</h3>
+            <p>做任何 UI 之前，先找出這個專案既有的 token 命名、格線、動畫與共用元件，再依那些規則寫。缺 token 或缺共用元件時會停下來問，而不是直接硬寫數值或複製一份新元件。也管動畫、介面文案與 Storybook 狀態。</p>
+            <h4>什麼時候用</h4>
+            <p>正在做元件、版面、頁面、token 或 Storybook。提到設計 token、寫死的樣式、元件重用、動畫或介面文案時也用它。Web 與原生實作都會跟著它走。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $design-system-governance before building UI. Discover tokens, grid, motion, i18n, and shared components first, and stop for approval before creating missing ones.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+
+          <article class="skill" id="design-system-to-storybook" data-text="ds-to-storybook design-system-to-storybook storybook 元件 token react vue svelte">
+            <p class="kicker">資料夾 ds-to-storybook　·　呼叫 $design-system-to-storybook</p>
+            <h3>建成 Storybook</h3>
+            <p>把已經萃取的設計系統做成這個專案框架原生的 Storybook：基礎、共用元件與 stories。它會先判斷 app 根目錄、renderer、建置工具與檔案慣例，依相依順序做元件，並同步元件文件。附帶 Figma export addon，以及把 Storybook 畫面送回 Figma 的 Code To Design importer。</p>
+            <h4>什麼時候用</h4>
+            <p>設計系統規格已經有了，下一步是在現有或新的前端專案裡做出 token 支撐的元件庫。它沿用專案既有的框架，React、Vue、Angular、Svelte 或 Web Components 都可以。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $design-system-to-storybook to inherit this repo's framework and conventions, then build token-backed Storybook components and docs.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#storybook-product-prototype">接著做產品原型</a></li>
+              <li><a href="#ui-pixel-alignment">有 Figma 證據時要出對齊報告</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="screenshot-to-storybook" data-text="screenshot storybook 截圖 mockup 元件 畫面">
+            <p class="kicker">screenshot-to-storybook</p>
+            <h3>從一張畫面做成元件</h3>
+            <p>把一張 UI 截圖、mockup 或 Figma 匯出，先盤點可重用的積木，擴充 Storybook 或專案的元件目錄，再用這些有文件的元件組出產品畫面。</p>
+            <h4>什麼時候用</h4>
+            <p>專案已經在了，你要依一張圖實作，而且希望畫面來自既有元件。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $screenshot-to-storybook on this screenshot. Inventory the UI blocks, extend the component catalog first, then compose the screen.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="group" id="product" aria-labelledby="product-title">
+          <div class="group-head">
+            <h2 id="product-title">原型與實作</h2>
+            <p>原型負責把產品說清楚並留下交接。實作負責把交接寫進 Web 或 App。接真的 API 是再下一棒，而且不動 UI。</p>
+          </div>
+
+          <article class="skill" id="prototype-storybook-flow" data-text="prototype storybook flow ui flow 流程 可拖曳 figma 匯出">
+            <p class="kicker">prototype-storybook-flow</p>
+            <h3>可拖曳的 UI Flow</h3>
+            <p>在 <code>src/pages/prototypes</code> 做出以 PRD 為起點的 Storybook 原型：文件、有型別的路由與轉場、固定的 fixtures，以及一張看得到真實畫面的流程圖。節點可拖、有虛線箭頭、可縮放。另外有一則給 Figma 匯出用的 flow story，輸出的 JSON 可以再進 Figma。</p>
+            <h4>什麼時候用</h4>
+            <p>你要把一個產品想法變成 PRD 加 UI Flow，或更新既有原型的流程，讓人一眼看出每個畫面怎麼連到下一個畫面。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $prototype-storybook-flow to create a PRD-led Storybook prototype with typed UI Flow metadata, real route previews, animated dashed arrows, and draggable nodes.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#storybook-product-prototype">需要完整交接文件時用這個</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="storybook-product-prototype" data-text="storybook product prototype prd handoff 交接 data spec acceptance inspector">
+            <p class="kicker">storybook-product-prototype</p>
+            <h3>原型與工程交接</h3>
+            <p>把產品想法做成可點的 Storybook 原型，並交出工程能接著做的文件：PRD、UI Flow、Data Spec、Production Handoff、Acceptance。流程有型別，fixtures 是固定的，資料契約先寫清楚，先不接真的後端。可選的 Prototype Inspector 用來看 Story、Docs、UI Flow 與 Data。</p>
+            <h4>什麼時候用</h4>
+            <p>設計要交給工程或下一個 AI 實作。Web 與 App 都可以從這裡開始。它接在 Storybook 元件庫之後，也可以單獨從一個產品想法開始。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $storybook-product-prototype to create the PRD, data spec, UI Flow, production handoff, and a clickable Storybook prototype.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#frontend-product-implementation">Web 實作</a></li>
+              <li><a href="#native-app-implementation">iOS / Android 實作</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="frontend-product-implementation" data-text="frontend product implementation web 實作 prd 交接 mock datasource">
+            <p class="kicker">frontend-product-implementation</p>
+            <h3>實作 Web 產品</h3>
+            <p>依 PRD、UI Flow、UI Spec、Data Spec、Acceptance、Implementation Guide 與 Production Handoff 實作前端。它先看目標專案的框架與架構，沿用已經清楚的技術棧。畫面用 mock DataSource 與固定 fixtures，真的 API、登入與儲存留給下一棒。</p>
+            <h4>什麼時候用</h4>
+            <p>從 0 做一個 Web 產品、在既有產品加一個路由或功能，或把 Storybook 原型交接寫成正式程式。做 UI 前先走設計治理。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $frontend-product-implementation to resolve this repo's runtime and implement the feature from the handoff docs, with design-system governance.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#api-data-integration">接著接真資料</a></li>
+              <li><a href="#native-app-implementation">目標是 App 時改用這個</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="native-app-implementation" data-text="native app ios swiftui android compose 原生 實作">
+            <p class="kicker">native-app-implementation</p>
+            <h3>實作 iOS 與 Android</h3>
+            <p>用同一套交接文件實作原生 UI：iOS 是 SwiftUI、Xcode、SPM；Android 是 Jetpack Compose、Gradle、Kotlin。它沿用 App 既有架構，套用設計治理，把假資料和已確認的傳輸 DTO 分開，並留下 mock DataSource 給下一棒替換。</p>
+            <h4>什麼時候用</h4>
+            <p>Storybook 交接的目標是原生 App，或要把已確認的導航、動效、TOKENS.json 寫成 SwiftUI 或 Compose。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $native-app-implementation to implement this iOS SwiftUI or Android Compose feature from the prototype handoff, following design-system governance.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#api-data-integration">接著接真資料</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="api-data-integration" data-text="api data integration 真資料 auth cache contract test mock">
+            <p class="kicker">api-data-integration</p>
+            <h3>接上真的資料</h3>
+            <p>在已經組好的 DataSource 接縫後面，把 mock adapter 換成真的 API client、登入與 session、快取、儲存與環境設定，並用契約測試證明對映。它只處理資料接線。UI、路由、元件與 token 留在原地。</p>
+            <h4>什麼時候用</h4>
+            <p>功能已經能以 mock 跑起來，交接文件指定了資料整合的負責人，而且傳輸契約與 DTO 對到 UI 的方式已經確認。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $api-data-integration to replace the mock adapters with real API clients and contract tests, without changing UI behavior.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="group" id="figma" aria-labelledby="figma-title">
+          <div class="group-head">
+            <h2 id="figma-title">Figma</h2>
+            <p>這些 skill 改的是 Figma 檔，或把 Figma 上的修改分回流回程式。只做變數、做成元件、裝清理自動化，是三件不同的事。</p>
+          </div>
+
+          <article class="skill" id="figma-m3-variables" data-text="figma m3 variables token 變數 ref sys comp 字級 立面">
+            <p class="kicker">figma-m3-variables</p>
+            <h3>建立與套用變數</h3>
+            <p>用 Material Design 3 的三層繼承（Ref → Sys → Comp）建立、套用、稽核 Figma Variables。涵蓋顏色、字級與 Text Styles、形狀、間距、尺寸、描邊、透明度，以及海拔與 Effect Styles。</p>
+            <h4>什麼時候用</h4>
+            <p>要把畫面上寫死的數值變成 token、建立一套變數、把變數綁到選取或整頁，或稽核命名與 alias。這一步不建立元件。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $figma-m3-variables to turn the hardcoded values in this Figma node into Ref, Sys, and Comp variables and bind them.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#figma-componentize">畫面還不是元件時用這個</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="figma-componentize" data-text="figma componentize 元件化 variant instance 元件">
+            <p class="kicker">figma-componentize</p>
+            <h3>把畫面做成元件</h3>
+            <p>找出 section、frame 或單一元素裡還沒用元件組起來的 UI，由下往上做成元件、variants（Style、Size、State）與 component properties，放在 Components 頁。顏色、字級、圓角、間距與海拔會透過 figma-m3-variables 的 Workflow F 做成變數，再把原本的圖層換成 instance，並確認外觀沒有變。</p>
+            <h4>什麼時候用</h4>
+            <p>設計師貼上一塊還沒元件化的 Figma，希望建成元件並換上 instance。只要把數值改成變數、不建元件時，改用 figma-m3-variables。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $figma-componentize to turn this Figma section into components and variants, tokenize them, and replace the originals with instances.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+
+          <article class="skill" id="figma-storybook-sync" data-text="figma storybook sync 同步 回流 token 視覺">
+            <p class="kicker">figma-storybook-sync</p>
+            <h3>把 Figma 的修改分回流</h3>
+            <p>元件或頁面曾經用 Storybook 的 Figma export addon 送進 Figma，之後又在 Figma 裡改過。這個 skill 用三方比較——上次同步的基準、現在的 Storybook 匯出、現在的 Figma——列出哪些 stories 要更新，以及每一筆差異該往哪裡走。token 差異回到設計系統萃取，視覺差異交給畫面修復，結構差異留給人處理。它自己不改產品元件、token CSS 或元件規格。</p>
+            <h4>什麼時候用</h4>
+            <p>Figma 已經被改過，你想知道改了什麼、改動方向，以及每一筆該怎麼流回程式。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $figma-storybook-sync to compare the synced baseline, the current Storybook export, and the current Figma state, then route each change.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#ui-visual-parity">視覺差異交給修復</a></li>
+              <li><a href="#design-system-extractor">token 差異回到萃取</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="design-automation-hub" data-text="design automation hub figma plugin 清理 coordinator figma-design-automation">
+            <p class="kicker">design-automation-hub</p>
+            <h3>安裝 Figma 清理自動化</h3>
+            <p>把 Design Automation Hub 裝進一個明確的目標 repo：Figma plugin、本機 Coordinator、專案綁定，以及配套 skill <code>figma-design-automation</code>。執行仍交給同一個 checkout 裡的 agent-automation，不另外做一套 runner，也不覆蓋無關的專案設定。</p>
+            <h4>什麼時候用</h4>
+            <p>要在某個專案安裝、檢查、更新或驗證這套 Figma 清理流程。目標 repo 需要已有有效的 <code>.agent-automation/config.json</code>；還沒有時，先用 agent-automation 建立契約。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $design-automation-hub to preview, install, or update Design Automation Hub in this repository and report the Figma manifest handoff.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#agent-automation">先有自動化契約</a></li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="group" id="visual" aria-labelledby="visual-title">
+          <div class="group-head">
+            <h2 id="visual-title">視覺與平台</h2>
+            <p>報告負責留下證據。修復負責改畫面，而且從 token 與共用元件開始改。跨平台交接與摺疊螢幕是另外兩件事。</p>
+          </div>
+
+          <article class="skill" id="ui-pixel-alignment" data-text="ui pixel alignment report 像素 報告 findings 對齊">
+            <p class="kicker">ui-pixel-alignment</p>
+            <h3>像素對齊報告</h3>
+            <p>把做好的 UI 和設計或程式參考比對，產出帶截圖的像素對齊報告。參考可以是 Figma frame、設計匯出、截圖，或另一個平台的原始碼。報告會指出落差、嚴重度與歸屬。預設只記錄，不改實作。</p>
+            <h4>什麼時候用</h4>
+            <p>設計對實作的視覺 QA、跨平台對齊稽核、Figma 比較，或在修之前要一份可以交給別人的證據。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $ui-pixel-alignment to compare this design reference with the implemented UI and generate a pixel alignment report.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#ui-visual-parity">要修的時候接這個</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="ui-visual-parity" data-text="ui visual parity ui-compare-to-reference 修復 落差 token 對齊">
+            <p class="kicker">資料夾 ui-visual-parity　·　呼叫 $ui-compare-to-reference</p>
+            <h3>修掉視覺落差</h3>
+            <p>把做好的 UI 和參考比較，然後動手修。參考同樣可以是 Figma、截圖，或另一個平台的程式。修復順序是 token 與主題、共用元件、元件 variant，最後才是畫面自己的樣式。平台之間本來就該不一樣的地方會留下來。</p>
+            <h4>什麼時候用</h4>
+            <p>App 或 Web 和設計不一致，或要把一個畫面從 Web 對到 React Native、Flutter、iOS、Android，而且你要的是修好，不只是一份報告。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $ui-compare-to-reference to compare this screen with the reference and fix the visual drift, starting from tokens and shared components.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+
+          <article class="skill" id="cross-platform-parity" data-text="cross platform parity ios android 交接 審計 先端 次端">
+            <p class="kicker">cross-platform-parity</p>
+            <h3>先端到次端的交接</h3>
+            <p>一個平台的功能合併進整合分支之後，從合併 diff 與原始碼產出給另一個平台的交接包：凍結點、變更清單、畫面狀態矩陣、視覺數值、字串 id、行為契約、API / remote config / 事件 key、共用元件影響，以及已宣告的平台差異。次端可以在實作前與實作後依這包做審計。專案路徑來自一份 JSON profile。</p>
+            <h4>什麼時候用</h4>
+            <p>iOS 要交給 Android，或反過來，次端必須對齊已經做好的實作。它不做功能規劃，也不做單一平台裡的一般開發。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">使用 $cross-platform-parity：先讀專案 profile，對指定功能的先端合併提交產出交接包，或對既有交接包在次端做審計。</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#ui-pixel-alignment">視覺細節可另出像素報告</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="ios-foldable-adaptation" data-text="ios foldable iphone duo 摺疊 直欄 內螢幕 外螢幕">
+            <p class="kicker">ios-foldable-adaptation</p>
+            <h3>摺疊 iPhone 適配</h3>
+            <p>把 iOS App 適配到可摺疊的 iPhone Duo：外螢幕 466×678 pt，內螢幕 951×669 pt，中間有系統直欄。流程包含盤點依賴螢幕尺寸的版面、一份設計師回答的顯示風格問卷、版面規則、在 Lego 產線框架或一般 UIKit / SwiftUI 上實作、用模擬器自動開合截圖，以及一份前後對照的 HTML 報告。</p>
+            <h4>什麼時候用</h4>
+            <p>提到 iPhone Duo、摺疊、直欄、開合、內螢幕或外螢幕，或只要這個產品在 Duo 上的截圖、QC 報告或計畫。一般 iPad 多工不在這裡。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $ios-foldable-adaptation to inventory this iOS app for iPhone Duo, apply the fold layout rules, and produce a before/after QC report.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="group" id="automation" aria-labelledby="automation-title">
+          <div class="group-head">
+            <h2 id="automation-title">自動化</h2>
+            <p>自動化負責排程、執行與留下完成證明。看板只讀磁碟上已經有的結果，不會自己啟動 runner。</p>
+          </div>
+
+          <article class="skill" id="agent-automation" data-text="agent automation orchestrate 自動化 契約 runner claude codex cursor">
+            <p class="kicker">agent-automation</p>
+            <h3>多代理自動化</h3>
+            <p>為一個 repo 建立可重跑的自動化契約，再用 Claude Code、Codex、Cursor 或其他 headless CLI 依序執行、續跑與檢查。設計師可以用白話描述想自動化的事，例如把準備好的 Figma 元件做成 Storybook。專案特有的行為寫在專案契約與配套 skill，不寫進共用 runner。</p>
+            <h4>什麼時候用</h4>
+            <p>同一條設計到工程的流程會重複做，需要可稽核的 fallback 與完成證明，或已經有 <code>.agent-automation/config.json</code> 要跑或續跑。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $agent-automation to set up automation for this repo. I want ready-for-dev Figma components built into Storybook.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#design-automation-hub">在契約上加 Figma 清理</a></li>
+              <li><a href="#automation-pipeline-board">看這條管線走到哪</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="automation-pipeline-board" data-text="automation pipeline board 看板 階段 handoff 設計師">
+            <p class="kicker">automation-pipeline-board</p>
+            <h3>一條管線的看板</h3>
+            <p>產出一份給設計師看的靜態 HTML。它說明這條設計到工程的管線在做什麼、哪些階段已經有產出或通過驗證、哪些交接完成、堵住或過期，以及有幾件決定在等設計師。所有說法來自磁碟上的檔案，以及 agent-automation 留下的 run summary。沒有伺服器，也不會啟動任何 runner。</p>
+            <h4>什麼時候用</h4>
+            <p>不想讀 Markdown 或 JSON，只想一眼知道這個專案的萃取、設計系統與 Storybook 走到哪，以及下游是不是在上游變更之前就做好了。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $automation-pipeline-board to render a self-contained HTML board of this repo's automation stages, handoffs, and waiting designer decisions.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+
+          <article class="skill" id="automation-portfolio" data-text="automation portfolio dashboard 多專案 總覽 卡住">
+            <p class="kicker">automation-portfolio</p>
+            <h3>很多專案的總覽</h3>
+            <p>把多個專案的管線看板收成一頁靜態 HTML。每個專案一張卡：現在在哪個階段、為什麼停住、有哪些決定在等人，以及連到該專案自己的看板。某一個專案失敗會變成一張錯誤卡，整批仍會做完。它不修改那些專案。</p>
+            <h4>什麼時候用</h4>
+            <p>你同時看好幾個跑設計到工程自動化的專案，想用一頁回答「誰在哪、誰被堵住」。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $automation-portfolio to render one HTML overview of every tracked project's pipeline status.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+
+          <article class="skill" id="storybook-tools" data-text="storybook tools component coverage timeline 覆蓋率 時間軸">
+            <p class="kicker">storybook-tools</p>
+            <h3>Storybook 工具頁</h3>
+            <p>把一套通用的 Tools 頁裝進任何 React + Vite 的 Storybook。目前有兩個：Component Coverage Analyzer 用 UI 圖或 PRD 對元件目錄做覆蓋率報告；Component Timeline 依 git 裡元件第一次出現的時間排成時間軸，並顯示 live story。安裝時會一併放入配套 skill <code>component-coverage-analyze</code> 與 <code>component-coverage-implement</code>。</p>
+            <h4>什麼時候用</h4>
+            <p>要在 Storybook 側欄看到工具頁、元件覆蓋率或元件時間軸，或把以前只裝了覆蓋率的版本更新到整套工具。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">Use $storybook-tools to install the Storybook tools suite into this React + Vite Storybook.</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+
+          <p class="note"><strong>automation-task-board</strong> 在根目錄，但它是任務看板應用，沒有 SKILL.md。控制平面與 worker 的安裝方式寫在該資料夾的 README。看板執行時會呼叫 <code>agent-automation</code> 的 runner，以及管線看板的狀態腳本。</p>
+        </section>
+
+        <section class="group" id="decks" aria-labelledby="decks-title">
+          <div class="group-head">
+            <h2 id="decks-title">簡報</h2>
+            <p>一份負責把材料收成提案，一份負責審查已經寫好的簡報。審查用的規則在獨立檔案裡，可以單獨改。</p>
+          </div>
+
+          <article class="skill" id="executive-proposal" data-text="executive proposal 提案 簡報 主管 產品價值 案例">
+            <p class="kicker">executive-proposal</p>
+            <h3>產品價值提案</h3>
+            <p>把主題、會議記錄或一堆資料，整理成白話、結論先行的產品提案。以 UI/UX 產品總監的角度說明使用者問題、設計選擇與產品價值，並補找案例與來源，再詢問可以引用的截圖或連結。</p>
+            <h4>什麼時候用</h4>
+            <p>新功能發想、設計提案、主管報告，而你還沒有一份可以上台的簡報。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">使用 $executive-proposal，將以下內容整理成白話的四頁產品提案，說明產品價值、補找相關案例與來源，並詢問需要的截圖或連結：</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+            <ul class="next">
+              <li><a href="#presentation-content-review">寫完後可以拿去審查</a></li>
+            </ul>
+          </article>
+
+          <article class="skill" id="presentation-content-review" data-text="presentation content review 審查 簡報 結論 證據 規則">
+            <p class="kicker">presentation-content-review</p>
+            <h3>逐頁審查簡報</h3>
+            <p>依一套可改版的規則檢查每一頁：標題是一個結論（觀點加行動），副標補上理由，每一頁有 1 到 3 個能支撐該結論的證據，並寫明來源。輸出總評、逐頁判定、必改清單、改寫建議與待補證據。沒有的證據不會被編成有。</p>
+            <h4>什麼時候用</h4>
+            <p>設計提案、主管報告或產品簡報已經有稿，要先審再改。你明確要求時，它也可以依同一套規則改寫或起草。</p>
+            <h4>怎麼呼叫</h4>
+            <div class="prompt-row">
+              <p class="prompt">使用 $presentation-content-review，依規則集逐頁審查以下簡報，列出必改項目、改寫建議與待補證據：</p>
+              <button class="copy" type="button">拷貝</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="group" id="names">
+          <div class="group-head">
+            <h2>名稱對照</h2>
+            <p>大多數資料夾名就是呼叫時的 skill 名。下面兩個資料夾名和 <code>name</code> 不同，呼叫時用右邊。</p>
+          </div>
+          <article class="skill">
+            <table class="names">
+              <thead>
+                <tr><th>資料夾</th><th>呼叫</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>ds-to-storybook</code></td><td><code>$design-system-to-storybook</code></td></tr>
+                <tr><td><code>ui-visual-parity</code></td><td><code>$ui-compare-to-reference</code></td></tr>
+              </tbody>
+            </table>
+            <p class="note">把要用的資料夾複製到 <code>~/.cursor/skills/</code>，或專案裡的 <code>.cursor/skills/</code>，重開 Cursor 後就會依描述被選到。這份頁面不包含 <code>cm/skills-main</code>。</p>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>根目錄 24 個 skills。開啟這個檔案即可閱讀，不需要伺服器。</p>
+  </footer>
+
+  <script>
+    const input = document.querySelector("#q");
+    const skills = [...document.querySelectorAll(".skill[data-text]")];
+    const empty = document.querySelector("#empty");
+    const indexLinks = [...document.querySelectorAll(".index a")];
+
+    input.addEventListener("input", () => {
+      const query = input.value.trim().toLowerCase();
+      document.body.classList.toggle("is-filtering", query.length > 0);
+      let shown = 0;
+      for (const skill of skills) {
+        const haystack = (skill.dataset.text + " " + skill.textContent).toLowerCase();
+        const match = query.length === 0 || haystack.includes(query);
+        skill.hidden = !match;
+        if (match) shown += 1;
+      }
+      empty.dataset.show = shown === 0 ? "true" : "false";
+    });
+
+    document.querySelectorAll(".copy").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const text = button.previousElementSibling.textContent.trim();
+        try {
+          await navigator.clipboard.writeText(text);
+          const previous = button.textContent;
+          button.textContent = "已拷貝";
+          setTimeout(() => { button.textContent = previous; }, 1200);
+        } catch {
+          button.textContent = "無法拷貝";
+        }
+      });
+    });
+
+    const sections = indexLinks
+      .map((link) => document.querySelector(link.getAttribute("href")))
+      .filter(Boolean);
+
+    const markCurrent = () => {
+      const line = 120;
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= line) current = section;
+      }
+      for (const link of indexLinks) {
+        const on = current && link.getAttribute("href") === "#" + current.id;
+        if (on) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      }
+    };
+    document.addEventListener("scroll", markCurrent, { passive: true });
+    markCurrent();
+  </script>
+</body>
+</html>

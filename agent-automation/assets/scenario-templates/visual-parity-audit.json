@@ -1,0 +1,55 @@
+{
+  "id": "visual-parity-audit",
+  "title": "Audit implemented UI against the design",
+  "summary": "An AI tool compares your implemented screens against reference designs, documents every visual difference with screenshot evidence, and either reports the findings or fixes the drift — your choice.",
+  "interview": [
+    {
+      "question": "What should the implementation be compared against?",
+      "options": [
+        "Reference screenshots I will provide",
+        "Exports from our Figma file"
+      ],
+      "mapsTo": "Task instruction: the reference source for the comparison."
+    },
+    {
+      "question": "Which part of the product should be audited?",
+      "options": [
+        "A specific page or screen I will name",
+        "A user flow across several screens",
+        "The whole app, screen by screen"
+      ],
+      "mapsTo": "Task instruction: the audit scope."
+    },
+    {
+      "question": "What should happen with the differences that are found?",
+      "options": [
+        "Produce a report with screenshot evidence, the team decides what to fix",
+        "Fix the differences directly, then show me what changed"
+      ],
+      "mapsTo": "Task instruction, companion skill choice, and required output files: report-only versus fix mode."
+    }
+  ],
+  "recommendedSkills": ["ui-compare-to-reference", "ui-pixel-alignment"],
+  "contractHints": {
+    "instructionTemplate": "Compare <audit-scope> of the implemented UI against <reference-source>. In report mode, produce an audit with per-issue screenshot evidence; in fix mode, align the implementation component-first and token-first before any page-level overrides, then summarize what changed. Load the companion skill that matches the chosen mode.",
+    "verificationHints": [
+      "In fix mode, if package scripts contain a build script, use it to prove the changed UI still compiles.",
+      "In report mode, an empty completion-check list is expected; completion is judged by the report files existing.",
+      "Never write a completion check that repository evidence does not prove."
+    ],
+    "requiredArtifactHints": [
+      "In report mode, require the audit report output at the location the companion skill's conventions define.",
+      "In fix mode, leave required files empty unless the interview names specific screens whose files repository evidence can identify."
+    ]
+  },
+  "prerequisites": [
+    {
+      "description": "Reference designs exist for the screens being audited.",
+      "evidence": "User-provided screenshots or a Figma link with an available Figma integration."
+    },
+    {
+      "description": "The implemented UI can be viewed for comparison.",
+      "evidence": "A dev or preview script in package scripts, or static build output the project's tooling can render."
+    }
+  ]
+}

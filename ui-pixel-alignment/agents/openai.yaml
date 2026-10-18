@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Pixel Align Report"
+  short_description: "Document UI pixel alignment drift"
+  default_prompt: "Use $ui-pixel-alignment to compare a design reference with an implemented UI and generate a pixel alignment HTML report."

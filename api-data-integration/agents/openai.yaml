@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Data Integration"
+  short_description: "Replace mock adapters with real API, auth, and persistence"
+  default_prompt: "Use $api-data-integration to wire the real data sources behind the typed DataSource seams the frontend assembly pass delivered, and prove the contracts with tests."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "產品價值提案簡報"
+  short_description: "以 UIUX 產品總監視角，用白話整理產品價值、參考案例與驗證行動"
+  default_prompt: "使用 $executive-proposal，將以下內容整理成白話的四頁產品提案，說明產品價值、補找相關案例與來源，並詢問需要的截圖或連結："

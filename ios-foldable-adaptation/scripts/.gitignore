@@ -1,0 +1,4 @@
+# 本機編譯產物與快取，不進版控（run_qc.py 會自動編 duo_hinge；imgtool 用 swiftc -O -o imgtool imgtool.swift）
+duo_hinge
+imgtool
+__pycache__/

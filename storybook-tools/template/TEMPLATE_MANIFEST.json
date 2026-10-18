@@ -1,0 +1,103 @@
+{
+  "name": "storybook-tools",
+  "version": "0.10.2",
+  "description": "Storybook Tools suite — template manifest. The installer copies this file to outputs/storybook-tools/TEMPLATE_MANIFEST.json in the target project (adding an installedTools array recording which tools were installed) so update runs can compare versions. Legacy 0.9.x single-tool installations keep their copy at outputs/component-coverage/TEMPLATE_MANIFEST.json until upgraded.",
+  "manifestCopyPath": "outputs/storybook-tools/TEMPLATE_MANIFEST.json",
+  "legacyManifestCopyPaths": [
+    "outputs/component-coverage/TEMPLATE_MANIFEST.json"
+  ],
+  "sharedCore": {
+    "files": {
+      "verbatim": [
+        "scripts/check-component-catalog.mjs"
+      ],
+      "adaptable": [],
+      "generated": [
+        "src/storybook/componentCatalog.template.ts"
+      ]
+    },
+    "checks": [
+      "scripts/check-component-catalog.mjs"
+    ],
+    "pathContracts": {
+      "catalog": "src/storybook/componentCatalog.ts"
+    }
+  },
+  "tools": {
+    "component-coverage": {
+      "files": {
+        "verbatim": [
+          "src/storybook/component-coverage/ComponentCoverageAnalyzer.tsx",
+          "src/storybook/component-coverage/CompositionPreview.tsx",
+          "src/storybook/component-coverage/IntakeForm.tsx",
+          "src/storybook/component-coverage/ReportView.tsx",
+          "src/storybook/component-coverage/compositionPreviewModel.ts",
+          "src/storybook/component-coverage/coverageApi.ts",
+          "src/storybook/component-coverage/coverageTypes.ts",
+          "src/storybook/component-coverage/index.ts",
+          "scripts/component-coverage/vite-plugin.mjs",
+          "scripts/component-coverage/vite-plugin.d.mts",
+          "scripts/check-component-coverage-reports.mjs",
+          "scripts/check-component-coverage-agent-skills.mjs",
+          "scripts/check-component-coverage-preview-contract.mjs",
+          "skills/component-coverage-analyze/SKILL.md",
+          "skills/component-coverage-implement/SKILL.md"
+        ],
+        "adaptable": [
+          "src/storybook/component-coverage/compositionPreviewRegistry.tsx",
+          "src/storybook/component-coverage/component-coverage.css",
+          "src/stories/tools/ComponentCoverageAnalyzer.stories.tsx"
+        ],
+        "generated": []
+      },
+      "installTargets": {
+        "skills/component-coverage-analyze/SKILL.md": [
+          ".agents/skills/component-coverage-analyze/SKILL.md",
+          ".claude/skills/component-coverage-analyze/SKILL.md"
+        ],
+        "skills/component-coverage-implement/SKILL.md": [
+          ".agents/skills/component-coverage-implement/SKILL.md",
+          ".claude/skills/component-coverage-implement/SKILL.md"
+        ]
+      },
+      "skillContentSha256": {
+        "skills/component-coverage-analyze/SKILL.md": "7ab007e10e354d8544fd266e575de46734acc7ee577cb34b7b2616d23d74a210",
+        "skills/component-coverage-implement/SKILL.md": "97ff826ddc2131f0d601dad87b9ef105323a30049ef95f079626c231d2556a46"
+      },
+      "checks": [
+        "scripts/check-component-coverage-reports.mjs",
+        "scripts/check-component-coverage-agent-skills.mjs",
+        "scripts/check-component-coverage-preview-contract.mjs"
+      ],
+      "pathContracts": {
+        "apiPath": "/__component-coverage",
+        "staticBase": "/component-coverage",
+        "dataDir": "outputs/component-coverage",
+        "contractTypes": "src/storybook/component-coverage/coverageTypes.ts"
+      }
+    },
+    "component-timeline": {
+      "files": {
+        "verbatim": [
+          "src/storybook/component-timeline/ComponentTimeline.tsx",
+          "src/storybook/component-timeline/index.ts",
+          "scripts/component-timeline/build-component-timeline.mjs",
+          "scripts/check-component-timeline.mjs"
+        ],
+        "adaptable": [
+          "src/storybook/component-timeline/timelineExtrasRegistry.tsx",
+          "src/storybook/component-timeline/component-timeline.css",
+          "src/stories/tools/ComponentTimeline.stories.tsx"
+        ],
+        "generated": []
+      },
+      "installTargets": {},
+      "checks": [
+        "scripts/check-component-timeline.mjs"
+      ],
+      "pathContracts": {
+        "timelineData": "src/storybook/componentTimeline.ts"
+      }
+    }
+  }
+}

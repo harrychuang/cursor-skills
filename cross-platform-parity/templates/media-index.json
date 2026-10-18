@@ -1,0 +1,25 @@
+{
+  "featureId": "〈feature-id〉",
+  "exportedAt": "〈YYYY-MM-DD〉",
+  "timezone": "Asia/Taipei",
+  "iosMergeSha": "〈merge sha〉",
+  "build": {
+    "scheme": "〈scheme／build variant〉",
+    "version": "〈version〉",
+    "buildNumber": "〈build number〉",
+    "source": "〈專案檔 at merge sha／錄影 manifest〉"
+  },
+  "mediaRoot": "〈相對工作區根目錄的本機路徑，例如 <profile handoff.mediaRoot>/〈日期〉-〈功能〉〉",
+  "scope": "Media integrity inventory only. Media files stay outside the root repository; this index and its SHA-256 values are the tracked evidence.",
+  "files": [
+    {
+      "path": "screenshots/〈01-name〉.png",
+      "bytes": 0,
+      "sha256": "〈64 hex〉",
+      "screen": "〈畫面〉",
+      "state": "〈loading／空／錯誤／成功／邊界名稱〉",
+      "capturedAt": "〈YYYY-MM-DD HH:mm Asia/Taipei〉",
+      "build": "〈version／buildNumber〉"
+    }
+  ]
+}

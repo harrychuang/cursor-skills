@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "templateVersion": "1.1.0",
+  "status": "completed",
+  "completedBy": "cmui333333@gmail.com",
+  "completedAt": "2026-07-30T09:46:05Z",
+  "manifest": {
+    "identity": "Design Automation Hub",
+    "absolutePathVerified": true,
+    "importedOnce": true
+  },
+  "projects": [
+    {
+      "acceptanceId": "project-a",
+      "projectProfileConfigured": true,
+      "realFigmaFileKeyVerified": true,
+      "coordinatorHealthVerified": true,
+      "contextVerified": true
+    },
+    {
+      "acceptanceId": "project-b",
+      "projectProfileConfigured": true,
+      "realFigmaFileKeyVerified": true,
+      "coordinatorHealthVerified": true,
+      "contextVerified": true
+    }
+  ],
+  "checks": {
+    "samePluginIdentity": true,
+    "fixedCopyContainsNoProjectName": true,
+    "standaloneCleanupVisible": true,
+    "workflowStatusVisible": true,
+    "reviewHidden": true
+  },
+  "notes": "Figma Desktop acceptance completed against two distinct real Figma files with two explicit project profiles, run sequentially on local port 8787. The manifest was imported once from its absolute path; the second profile reused that same imported Plugin with no re-import, which is the evidence for samePluginIdentity. Each Coordinator rejected the other profile's file key with 404, confirming the figmaFileKeys allowlist binds project identity. The Plugin home screen listed exactly two entry cards, cleanup and workflow status, with no review card; the review card was enumerated explicitly on project-a. Fixed Plugin copy was additionally verified by hashing installed bytes for both projects and grepping for either project name. Real Figma file keys were used but are deliberately not recorded here."
+}

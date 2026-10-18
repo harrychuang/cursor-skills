@@ -1,0 +1,4 @@
+interface:
+  display_name: "簡報內容審查"
+  short_description: "依觀點加行動的結論式標題、理由副標、每頁 1–3 個證據的規則逐頁審查簡報"
+  default_prompt: "使用 $presentation-content-review，依規則集逐頁審查以下簡報內容，判定標題、副標與證據，列出必改項目、改寫建議與待補證據："

@@ -1,0 +1,32 @@
+{
+  "$comment": "analyze.py 的裝置設定（iPhone Duo，iOS 27.1 模擬器實測）。這份就是內建預設值；要調門檻或換裝置時複製一份改，再以 --device-profile 傳入，只需列出要覆蓋的欄位。",
+  "name": "iPhone Duo",
+  "scale": 3,
+  "cover_pt": [466, 678],
+  "inner_wide_pt": [951, 669],
+  "inner_tall_pt": [669, 951],
+  "chrome_zones": {
+    "$comment": "狀態列／動態島大致區域 [x, y, w, h]（pt）：外螢幕是右上角的直立藥丸；內螢幕寬版在右上角；內螢幕直向用水平狀態列，不另外檢查",
+    "cover": [[380, 18, 86, 140]],
+    "inner-wide": [[878, 18, 73, 95]],
+    "inner-tall": []
+  },
+  "thresholds": {
+    "window_size_tolerance": 6,
+    "oob_tolerance": 3,
+    "cached_size_tolerance": 4,
+    "panel_diff_min": 20,
+    "chrome_overlap_ratio": 0.3,
+    "tabbar_cover_ratio": 0.3,
+    "overlap_iou": 0.2,
+    "contain_ratio": 0.95,
+    "black_ratio": 0.985,
+    "blank_margin_ratio": 0.30,
+    "content_missing_min": 150,
+    "content_missing_ratio": 0.3,
+    "restore_moved_ratio": 0.25,
+    "restore_min_matched": 5,
+    "restore_tolerance": 3,
+    "header_pt": 90
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "design-system-extraction",
+  "title": "Extract a design system from design references",
+  "summary": "You provide design references — screenshots, brand material, Figma files, or an existing app — and an AI tool distills them into a documented, evidence-backed design-system specification your team can build on.",
+  "interview": [
+    {
+      "question": "What references should the design system be extracted from?",
+      "options": [
+        "UI screenshots or mockups I will provide",
+        "A Figma file or Figma variables",
+        "An existing app or project folder",
+        "A mix of the above"
+      ],
+      "mapsTo": "Task instruction: the extraction evidence sources."
+    },
+    {
+      "question": "What should the result be used for first?",
+      "options": [
+        "A reference document the team reads",
+        "The starting point for building components in code",
+        "A checkpoint to review before any product implementation"
+      ],
+      "mapsTo": "Task instruction and required output files: the deliverable emphasis."
+    }
+  ],
+  "recommendedSkills": ["design-system-extractor"],
+  "contractHints": {
+    "instructionTemplate": "Extract a reusable design-system specification from <evidence-sources>. Produce evidence-backed design principles, token architecture, and a component inventory, oriented toward <deliverable-emphasis>. Load the companion skill and follow its documentation and checkpoint conventions.",
+    "verificationHints": [
+      "If the companion skill defines output validation steps, use those as the completion check.",
+      "Never write a completion check that repository evidence does not prove."
+    ],
+    "requiredArtifactHints": [
+      "Require the design-system documentation output at the location the companion skill's conventions define for this project.",
+      "If the companion skill leaves the output location to the project, ask the user where the finished document should live, phrased as a plain-language choice."
+    ]
+  },
+  "prerequisites": [
+    {
+      "description": "Design references exist and are reachable by the automation.",
+      "evidence": "User-provided screenshots, a Figma link with an available Figma integration, or an existing app folder inside the repository."
+    }
+  ]
+}

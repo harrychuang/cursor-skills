@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iPhone Duo 適配指南</title>
+<style>
+/* 版面概念：Apple 產品頁的節奏。白／淺灰交替的滿版區塊、大標題、簡單示意圖，一種強調色；文字只講重點。 */
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f5f5f7;
+  --tile: #ffffff;
+  --fg: #1d1d1f;
+  --fg-2: #6e6e73;
+  --fg-3: #86868b;
+  --accent: #0066cc;
+  --accent-soft: rgba(0, 102, 204, .12);
+  --hairline: #d2d2d7;
+  --code-bg: #f5f5f7;
+  --nav-bg: rgba(255, 255, 255, .78);
+  --sev-critical: #d70015;
+  --sev-high: #c93400;
+  --font-display: "SF Pro Display", "SF Pro TC", -apple-system, BlinkMacSystemFont, "PingFang TC", "Helvetica Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-text: "SF Pro Text", "SF Pro TC", -apple-system, BlinkMacSystemFont, "PingFang TC", "Helvetica Neue", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --band: clamp(72px, 10vw, 128px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --bg-alt: #101012; --tile: #1d1d1f; --fg: #f5f5f7; --fg-2: #a1a1a6; --fg-3: #86868b;
+    --accent: #2997ff; --accent-soft: rgba(41, 151, 255, .18); --hairline: #424245; --code-bg: #1d1d1f;
+    --nav-bg: rgba(22, 22, 23, .78); --sev-critical: #ff453a; --sev-high: #ff9f0a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --bg-alt: #101012; --tile: #1d1d1f; --fg: #f5f5f7; --fg-2: #a1a1a6; --fg-3: #86868b;
+  --accent: #2997ff; --accent-soft: rgba(41, 151, 255, .18); --hairline: #424245; --code-bg: #1d1d1f;
+  --nav-bg: rgba(22, 22, 23, .78); --sev-critical: #ff453a; --sev-high: #ff9f0a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 60px; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+code { font-family: var(--font-mono); font-size: .88em; }
+
+.wrap { max-width: 1040px; margin-inline: auto; padding-inline: max(20px, env(safe-area-inset-left, 0px)); }
+.band { padding-block: var(--band); }
+.band.alt { background: var(--bg-alt); }
+
+/* 子導覽列 */
+.subnav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--hairline); }
+.subnav .wrap { display: flex; align-items: center; gap: 24px; height: 52px; }
+.subnav .name { font-family: var(--font-display); font-size: 19px; font-weight: 600; white-space: nowrap; }
+.subnav nav { margin-left: auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.subnav nav::-webkit-scrollbar { display: none; }
+.subnav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
+.subnav a { color: var(--fg); font-size: 13px; white-space: nowrap; opacity: .85; }
+.subnav a:hover { color: var(--accent); text-decoration: none; opacity: 1; }
+
+/* 標題 */
+h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+.eyebrow { font-size: clamp(17px, 1.6vw, 21px); font-weight: 600; color: var(--accent); margin: 0; }
+h1 { font-size: clamp(42px, 7.4vw, 80px); font-weight: 700; line-height: 1.08; }
+h2 { font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.12; }
+h3 { font-size: 21px; font-weight: 700; line-height: 1.25; }
+.lede { margin: 0; max-width: 38em; font-size: clamp(17px, 1.7vw, 21px); line-height: 1.55; font-weight: 600; color: var(--fg-3); text-wrap: pretty; }
+.lede strong { color: var(--fg); font-weight: 600; }
+.head { display: grid; gap: 16px; margin-bottom: clamp(40px, 6vw, 64px); }
+
+/* 開頭 */
+.hero { padding-block: clamp(56px, 8vw, 104px) clamp(64px, 9vw, 112px); text-align: center; }
+.hero .head { justify-items: center; }
+.hero .lede { max-width: 30em; }
+.devices { display: flex; align-items: flex-end; justify-content: center; gap: clamp(16px, 3.4vw, 44px); text-align: left; }
+.devices figure { margin: 0; display: grid; gap: 14px; min-width: 0; }
+.devices .d-outer { flex: 466 1 0; max-width: 233px; }
+.devices .d-port { flex: 669 1 0; max-width: 334px; }
+.devices .d-land { flex: 951 1 0; max-width: 476px; }
+.devices figcaption { display: grid; gap: 2px; padding-left: 2px; }
+.devices figcaption b { font-size: 15px; font-weight: 600; }
+.devices figcaption span { font-size: 13px; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+
+/* 裝置示意：比例照 pt 尺寸，圓角 59 pt，直欄 84 pt */
+.dev { position: relative; width: 100%; border: 3px solid var(--fg); background: var(--bg); overflow: hidden; }
+.d-outer .dev { aspect-ratio: 466 / 678; border-radius: 12.7% / 8.7%; }
+.d-port .dev { aspect-ratio: 669 / 951; border-radius: 8.8% / 6.2%; }
+.d-land .dev { aspect-ratio: 951 / 669; border-radius: 6.2% / 8.8%; }
+.dev .col { position: absolute; top: 0; bottom: 0; right: 0; background: var(--bg-alt); border-left: 1px solid var(--hairline); }
+.d-outer .dev .col { width: 18%; }
+.d-land .dev .col { width: 8.8%; }
+.dev .dot { position: absolute; left: 50%; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: var(--accent); }
+.dev .t1 { top: 16%; } .dev .b1 { bottom: 16%; } .dev .b2 { bottom: 9%; }
+.dev .hdr { position: absolute; left: 8%; top: 7%; height: 5px; border-radius: 3px; background: var(--fg-3); opacity: .5; }
+.d-outer .dev .hdr { width: 34%; left: 24%; }
+.d-land .dev .hdr { width: 22%; left: 40%; }
+.dev .side { position: absolute; left: 0; top: 0; bottom: 0; width: 12.6%; border-right: 1px solid var(--hairline); }
+.dev .side i { position: absolute; left: 22%; width: 56%; height: 4px; border-radius: 2px; background: var(--fg-3); opacity: .45; }
+.dev .side i:first-child { background: var(--accent); opacity: 1; }
+.dev .topbar { position: absolute; left: 0; right: 0; top: 0; height: 10%; border-bottom: 1px solid var(--hairline); background: var(--bg-alt); }
+.dev .topbar .dot { top: 50%; margin-top: -4.5px; }
+.dev .content { position: absolute; border-radius: 6px; background: var(--accent-soft); }
+
+/* 五個階段 */
+.stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; list-style: none; margin: 0; padding: 0; counter-reset: st -1; }
+.stages li { position: relative; display: grid; align-content: start; gap: 8px; padding: 22px 20px 20px; border-radius: 20px; background: var(--tile); }
+.stages li::before { counter-increment: st; content: counter(st); font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1; color: var(--accent); }
+.stages b { font-family: var(--font-display); font-size: 21px; }
+.stages p { margin: 0; font-size: 15px; color: var(--fg-2); line-height: 1.45; }
+.stages .who { font-size: 13px; color: var(--fg-3); }
+.stages code { font-size: 12.5px; color: var(--fg-2); word-break: break-all; }
+
+/* 問卷 */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: start; }
+.qlist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.qlist li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding: 12px 2px; border-bottom: 1px solid var(--hairline); }
+.qlist .q { font-family: var(--font-mono); font-size: 13px; color: var(--fg-3); }
+.qlist .t { font-weight: 600; }
+.qlist .d { font-size: 14px; color: var(--fg-3); text-align: right; }
+.callout { padding: 26px 26px 24px; border-radius: 22px; background: var(--bg-alt); display: grid; gap: 12px; }
+.callout p { margin: 0; color: var(--fg-2); font-size: 15px; }
+.tbl { overflow-x: auto; margin-top: 4px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+th { font-size: 12px; font-weight: 600; color: var(--fg-3); letter-spacing: .02em; }
+td { color: var(--fg-2); }
+td:first-child { font-weight: 600; white-space: nowrap; color: var(--fg); }
+
+/* 設計決策 */
+.legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; font-size: 14px; color: var(--fg-3); }
+.legend .no { color: var(--sev-critical); font-weight: 600; }
+.legend .ok { color: var(--accent); font-weight: 600; }
+.dgroup + .dgroup { margin-top: clamp(48px, 6vw, 72px); }
+.dg-head { display: grid; gap: 6px; margin-bottom: 20px; }
+.dg-head h3 { font-size: clamp(24px, 2.6vw, 28px); }
+.dg-head p { margin: 0; max-width: 40em; font-size: 16px; color: var(--fg-2); }
+.dgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.dc { display: flex; flex-direction: column; gap: 14px; padding: 20px 20px 18px; border-radius: 22px; background: var(--tile); min-width: 0; }
+.dc .fig { border-radius: 14px; background: var(--bg-alt); }
+.dc .fig svg { display: block; width: 100%; max-width: 380px; height: auto; margin-inline: auto; }
+.dc h4 { margin-top: 2px; font-size: 19px; font-weight: 700; line-height: 1.3; }
+.dc dl { margin: 0; display: grid; gap: 12px; }
+.dc dl div { display: grid; gap: 2px; }
+.dc dt { font-size: 12px; font-weight: 600; color: var(--fg-3); }
+.dc dd { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+.dc .ref { margin: auto 0 0; padding-top: 12px; border-top: 1px solid var(--hairline); font-family: var(--font-mono); font-size: 12.5px; color: var(--fg-3); }
+.after { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: clamp(48px, 6vw, 72px); }
+.plain { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+.plain li { display: grid; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+.plain b { font-size: 15px; font-weight: 600; }
+.plain p { margin: 0; font-size: 14px; color: var(--fg-2); }
+.plain .to { color: var(--accent); }
+.plain .src { font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.more { margin: 28px 0 0; font-size: 14px; color: var(--fg-3); }
+
+/* 決策示意圖（SVG） */
+.g-screen { fill: var(--tile); }
+.g-edge { fill: none; stroke: var(--fg-3); stroke-width: 1.4; }
+.g-col { fill: var(--fg-3); opacity: .16; }
+.g-rail { fill: var(--fg-3); opacity: .1; }
+.g-band { fill: var(--fg-3); opacity: .3; }
+.g-tab { fill: var(--fg-3); opacity: .24; }
+.g-cap { fill: var(--tile); stroke: var(--hairline); stroke-width: 1.2; }
+.g-wide { fill: var(--tile); stroke: var(--accent); stroke-width: 1.4; }
+.g-blank { fill: #ffffff; stroke: var(--sev-critical); stroke-width: 1.2; stroke-dasharray: 2.5 2; }
+.g-dot { fill: var(--fg-3); }
+.g-a { fill: var(--accent); }
+.g-line { fill: var(--fg-3); opacity: .55; }
+.g-soft { fill: var(--accent-soft); }
+.g-sep { stroke: var(--hairline); stroke-width: 1; fill: none; }
+.g-chev { fill: none; stroke: var(--fg-3); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; opacity: .7; }
+.g-chart { fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.g-t, .g-no, .g-ok, .g-note { font-family: var(--font-text); font-size: 11.5px; font-weight: 600; }
+.g-t { fill: var(--fg-2); }
+.g-no { fill: var(--sev-critical); }
+.g-ok { fill: var(--accent); }
+.g-note { fill: var(--fg-3); }
+
+/* 兩條軌道 */
+.tracks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.track { display: grid; align-content: start; gap: 12px; padding: 30px 28px 28px; border-radius: 24px; background: var(--bg-alt); min-width: 0; }
+.track .tag { font-size: 13px; font-weight: 600; color: var(--accent); }
+.track p { margin: 0; font-size: 15px; color: var(--fg-2); }
+pre { margin: 0; padding: 16px 18px; border-radius: 14px; background: var(--code-bg); overflow-x: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: var(--fg); }
+.band.alt pre { background: var(--bg); }
+.track pre { background: var(--bg); }
+pre .c { color: var(--fg-3); }
+.track .file { font-family: var(--font-mono); font-size: 12.5px; color: var(--fg-3); }
+
+/* QC 管線 */
+.pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; list-style: none; margin: 0 0 clamp(36px, 5vw, 56px); padding: 0; }
+.pipe li { position: relative; display: grid; gap: 4px; justify-items: center; text-align: center; padding: 0 8px; }
+.pipe li:not(:last-child)::after { content: ""; position: absolute; top: 27px; right: -6px; width: 12px; height: 12px; border-top: 2px solid var(--fg-3); border-right: 2px solid var(--fg-3); transform: rotate(45deg); opacity: .6; }
+.pipe .ic { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: var(--tile); margin-bottom: 8px; }
+.pipe .ic svg { width: 28px; height: 28px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pipe b { font-size: 16px; }
+.pipe span { font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.qc-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.catch { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--hairline); }
+.catch li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+.catch code { font-size: 13px; }
+.catch p { grid-column: 2; margin: 0; font-size: 14px; color: var(--fg-2); }
+.sev { font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 999px; color: #fff; }
+.sev.c { background: var(--sev-critical); } .sev.h { background: var(--sev-high); }
+.panel { display: grid; align-content: start; gap: 12px; padding: 24px; border-radius: 22px; background: var(--tile); min-width: 0; }
+.panel h3 { font-size: 17px; }
+.panel p { margin: 0; font-size: 14px; color: var(--fg-2); }
+
+/* 開始 */
+.prompts { display: grid; gap: 12px; }
+.prompt { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 16px 16px 16px 22px; border-radius: 16px; background: var(--tile); }
+.prompt code { font-family: var(--font-text); font-size: 16px; line-height: 1.5; color: var(--fg); }
+.prompt code em { font-style: normal; color: var(--accent); }
+.copy { font: inherit; font-size: 14px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; white-space: nowrap; }
+.copy:hover { filter: brightness(1.05); }
+.needs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: clamp(36px, 5vw, 56px); }
+.needs div { display: grid; gap: 6px; }
+.needs b { font-size: 15px; }
+.needs p { margin: 0; font-size: 14px; color: var(--fg-2); }
+
+footer { padding-block: 36px 52px; border-top: 1px solid var(--hairline); background: var(--bg-alt); }
+footer p { margin: 0 0 6px; font-size: 13px; color: var(--fg-3); }
+
+@media (max-width: 960px) {
+  .stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pipe { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 28px; }
+  .pipe li:nth-child(3)::after { display: none; }
+}
+@media (max-width: 760px) {
+  .split, .tracks, .qc-grid, .after, .needs { grid-template-columns: minmax(0, 1fr); }
+  .devices { display: grid; grid-template-columns: 466fr 669fr; grid-template-areas: "land land" "outer port"; gap: 28px 18px; }
+  .devices .d-land { grid-area: land; max-width: none; }
+  .devices .d-outer { grid-area: outer; max-width: none; }
+  .devices .d-port { grid-area: port; max-width: none; }
+  .prompt { grid-template-columns: minmax(0, 1fr); }
+  .copy { justify-self: start; }
+  .subnav .name { font-size: 17px; }
+}
+@media (max-width: 620px) {
+  .dgrid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .stages { grid-template-columns: minmax(0, 1fr); }
+  .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pipe li::after { display: none; }
+  .qlist li { grid-template-columns: 40px minmax(0, 1fr); }
+  .qlist .d { grid-column: 2; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="subnav">
+  <div class="wrap">
+    <span class="name">iPhone Duo 適配</span>
+    <nav aria-label="章節">
+      <ul>
+        <li><a href="#stages">流程</a></li>
+        <li><a href="#questions">問卷</a></li>
+        <li><a href="#decisions">決策</a></li>
+        <li><a href="#tracks">實作</a></li>
+        <li><a href="#qc">QC</a></li>
+        <li><a href="#start">開始</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">cm-skills · ios-foldable-adaptation</p>
+      <h1>一套流程，<br>讓每個 App 都摺得好。</h1>
+      <p class="lede">從盤點、設計決策、實作到<strong>自動化截圖驗證</strong>。<strong>Lego 與非 Lego 的 iOS App</strong> 都能用。</p>
+    </div>
+    <div class="devices" aria-label="iPhone Duo 的三種姿態示意">
+      <figure class="d-outer">
+        <div class="dev" aria-hidden="true">
+          <span class="hdr"></span>
+          <span class="content" style="left:7%;right:24%;top:16%;bottom:6%"></span>
+          <span class="col"><span class="dot t1"></span><span class="dot b1"></span><span class="dot b2"></span></span>
+        </div>
+        <figcaption><b>外螢幕</b><span>466 × 678 pt・有直欄</span></figcaption>
+      </figure>
+      <figure class="d-port">
+        <div class="dev" aria-hidden="true">
+          <span class="topbar"><span class="dot" style="left:10%"></span><span class="dot" style="left:84%"></span><span class="dot" style="left:91%"></span></span>
+          <span class="content" style="left:6%;right:6%;top:14%;bottom:5%"></span>
+        </div>
+        <figcaption><b>內螢幕直向</b><span>669 × 951 pt・水平列</span></figcaption>
+      </figure>
+      <figure class="d-land">
+        <div class="dev" aria-hidden="true">
+          <span class="side"><i style="top:18%"></i><i style="top:30%"></i><i style="top:42%"></i><i style="top:54%"></i></span>
+          <span class="hdr"></span>
+          <span class="content" style="left:16%;right:12%;top:18%;bottom:8%"></span>
+          <span class="col"><span class="dot t1"></span><span class="dot b1"></span><span class="dot b2"></span></span>
+        </div>
+        <figcaption><b>內螢幕橫向</b><span>951 × 669 pt・有直欄</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="stages">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">流程</p>
+      <h2>五個階段，每一步都有產出。</h2>
+      <p class="lede">先讓畫面<strong>開合後會重新排版</strong>，再談版面。每個決定都<strong>記下來、拍成截圖</strong>給設計師看。</p>
+    </div>
+    <ol class="stages">
+      <li><b>盤點</b><p>掃出寫死螢幕尺寸的程式碼，修掉或列例外。</p><span class="who">工程</span><code>docs/duo/inventory.md</code></li>
+      <li><b>問卷</b><p>設計師回答 10 題，決定這個 App 的版面。</p><span class="who">設計師</span><code>docs/duo/decisions.md</code></li>
+      <li><b>實作</b><p>依答案開開關或照 UIKit 做；只在大螢幕生效。</p><span class="who">工程</span><code>程式碼＋測試</code></li>
+      <li><b>QC</b><p>模擬器自動摺疊、展開，逐頁截圖並套規則判定。</p><span class="who">工程跑、設計師看</span><code>shots/、report.html</code></li>
+      <li><b>審閱</b><p>每項修改的前後對照與待決清單，進下一輪。</p><span class="who">設計師</span><code>Before／After</code></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" id="questions">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">問卷</p>
+      <h2>設計師只要回答 10 題。</h2>
+      <p class="lede">每題的預設都是<strong>照系統</strong>。只有截圖看得出問題，才往下改。</p>
+    </div>
+    <div class="split">
+      <ol class="qlist">
+        <li><span class="q">Q1</span><span class="t">系統直欄</span><span class="d">用</span></li>
+        <li><span class="q">Q2</span><span class="t">按鈕怎麼進直欄</span><span class="d">有直欄就進</span></li>
+        <li><span class="q">Q3</span><span class="t">直欄上下怎麼分</span><span class="d">系統預設</span></li>
+        <li><span class="q">Q4</span><span class="t">按鈕要不要各自一顆</span><span class="d">系統預設</span></li>
+        <li><span class="q">Q5</span><span class="t">標題列留什麼</span><span class="d">系統預設</span></li>
+        <li><span class="q">Q6</span><span class="t">直欄與視窗底色</span><span class="d">系統預設</span></li>
+        <li><span class="q">Q7</span><span class="t">哪些頁改清單＋內容兩欄</span><span class="d">全部單欄</span></li>
+        <li><span class="q">Q8</span><span class="t">底線頁籤在橫向</span><span class="d">維持橫排</span></li>
+        <li><span class="q">Q9</span><span class="t">開放哪些方向</span><span class="d">直向＋landscapeLeft</span></li>
+        <li><span class="q">Q10</span><span class="t">Tab 列</span><span class="d">系統 Tab</span></li>
+      </ol>
+      <div class="callout">
+        <h3>為什麼用問卷，不給標準答案</h3>
+        <p>幾個 App 各自做了 Duo 適配，選擇都不一樣，歸納起來是三種做法：</p>
+        <div class="tbl">
+          <table>
+            <tr><th>做法</th><th>按鈕</th><th>適合</th></tr>
+            <tr><td>照系統</td><td>標準按鈕，分組和位置交給系統</td><td>改動最少、不會踩到系統限制；先從這裡開始</td></tr>
+            <tr><td>合起才進直欄</td><td>內螢幕留在標題列，外螢幕才進直欄</td><td>希望內螢幕維持原本的標題列</td></tr>
+            <tr><td>上導覽下動作</td><td>全部進直欄：返回在上、動作在下</td><td>按鈕多、標題長，想讓內容區最乾淨</td></tr>
+          </table>
+        </div>
+        <p>答案寫進 <code>templates/duo-decisions.md</code>，沒決定的題目一律用預設，不猜。每個做法的理由和代價見<a href="#decisions">設計決策</a>。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="decisions">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">設計決策</p>
+      <h2>每個做法，都說得出為什麼。</h2>
+      <p class="lede">預設照系統。以下是<strong>截圖看出問題時</strong>可以選的做法，每項都附<strong>理由、代價和依據</strong>。</p>
+      <p class="legend"><span><span class="no">✕</span> 不建議的樣子</span><span><span class="ok">✓</span> 建議做法</span><span>依據：HIG 指南・問卷題號・規則編號</span></p>
+    </div>
+
+    <div class="dgroup">
+      <div class="dg-head">
+        <h3>按鈕怎麼分組</h3>
+        <p>同一顆膠囊等於告訴使用者「這幾個是一組」。分組看功能，不看位置。</p>
+      </div>
+      <div class="dgrid">
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：返回和分享併成一顆膠囊。右：返回自成一顆，分享另一顆。">
+              <line class="g-sep" x1="120" y1="14" x2="120" y2="106"/>
+              <rect class="g-col" x="56" y="6" width="32" height="108" rx="12"/>
+              <rect class="g-cap" x="60" y="14" width="24" height="40" rx="12"/>
+              <circle class="g-a" cx="72" cy="25" r="4"/><circle class="g-dot" cx="72" cy="43" r="4"/>
+              <text class="g-t" x="50" y="29" text-anchor="end">返回</text>
+              <text class="g-t" x="50" y="47" text-anchor="end">分享</text>
+              <rect class="g-col" x="176" y="6" width="32" height="108" rx="12"/>
+              <rect class="g-cap" x="180" y="14" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="180" y="42" width="24" height="22" rx="11"/>
+              <circle class="g-a" cx="192" cy="25" r="4"/><circle class="g-dot" cx="192" cy="53" r="4"/>
+              <text class="g-t" x="170" y="29" text-anchor="end">返回</text>
+              <text class="g-t" x="170" y="57" text-anchor="end">分享</text>
+              <text class="g-no" x="72" y="132" text-anchor="middle">✕ 併成一顆</text>
+              <text class="g-ok" x="192" y="132" text-anchor="middle">✓ 返回獨立</text>
+            </svg>
+          </div>
+          <h4>返回鍵自成一顆</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>返回是導覽，意思是離開這頁；旁邊的分享是動作，意思是對這頁做事。包在同一顆裡，使用者會以為它們是同一類，也比較容易按錯。</dd></div>
+            <div><dt>代價</dt><dd>只在有直欄時這樣做。水平標題列的分組一改，一般 iPhone 也會跟著變，為此冒回歸風險不划算。</dd></div>
+          </dl>
+          <p class="ref">HIG V3・Q4・L7</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：返回、分享、收藏各自一顆。右：返回一顆，分享和收藏同一組。">
+              <line class="g-sep" x1="120" y1="14" x2="120" y2="106"/>
+              <rect class="g-col" x="56" y="6" width="32" height="108" rx="12"/>
+              <rect class="g-cap" x="60" y="14" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="60" y="42" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="60" y="70" width="24" height="22" rx="11"/>
+              <circle class="g-dot" cx="72" cy="25" r="4"/><circle class="g-a" cx="72" cy="53" r="4"/><circle class="g-a" cx="72" cy="81" r="4"/>
+              <text class="g-t" x="50" y="29" text-anchor="end">返回</text>
+              <text class="g-t" x="50" y="57" text-anchor="end">分享</text>
+              <text class="g-t" x="50" y="85" text-anchor="end">收藏</text>
+              <rect class="g-col" x="176" y="6" width="32" height="108" rx="12"/>
+              <rect class="g-cap" x="180" y="14" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="180" y="42" width="24" height="40" rx="12"/>
+              <circle class="g-dot" cx="192" cy="25" r="4"/><circle class="g-a" cx="192" cy="53" r="4"/><circle class="g-a" cx="192" cy="71" r="4"/>
+              <text class="g-t" x="170" y="29" text-anchor="end">返回</text>
+              <text class="g-t" x="170" y="57" text-anchor="end">分享</text>
+              <text class="g-t" x="170" y="75" text-anchor="end">收藏</text>
+              <text class="g-no" x="72" y="132" text-anchor="middle">✕ 全部拆開</text>
+              <text class="g-ok" x="192" y="132" text-anchor="middle">✓ 同類一組</text>
+            </svg>
+          </div>
+          <h4>同類動作放同一組</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>分享和收藏都是對這則內容做的事，性質相近、常一起用，放同一組就看得出它們是一夥的。分組交給系統，間距會自動一致；不要自己加空白去隔開。</dd></div>
+            <div><dt>代價</dt><dd>幾乎沒有，這就是系統預設。要注意「同類」看的是功能，不是原本是不是排在隔壁。</dd></div>
+          </dl>
+          <p class="ref">HIG V6・Q4・L9</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：提醒、分享、收藏併成一顆。右：提醒自成一顆，分享和收藏同一組。">
+              <line class="g-sep" x1="120" y1="14" x2="120" y2="106"/>
+              <rect class="g-col" x="56" y="6" width="32" height="108" rx="12"/>
+              <rect class="g-cap" x="60" y="14" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="60" y="42" width="24" height="58" rx="12"/>
+              <circle class="g-dot" cx="72" cy="25" r="4"/><circle class="g-a" cx="72" cy="53" r="4"/><circle class="g-dot" cx="72" cy="71" r="4"/><circle class="g-dot" cx="72" cy="89" r="4"/>
+              <text class="g-t" x="50" y="29" text-anchor="end">返回</text>
+              <text class="g-t" x="50" y="57" text-anchor="end">提醒</text>
+              <text class="g-t" x="50" y="75" text-anchor="end">分享</text>
+              <text class="g-t" x="50" y="93" text-anchor="end">收藏</text>
+              <rect class="g-col" x="176" y="6" width="32" height="108" rx="12"/>
+              <rect class="g-cap" x="180" y="14" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="180" y="42" width="24" height="22" rx="11"/>
+              <rect class="g-cap" x="180" y="70" width="24" height="40" rx="12"/>
+              <circle class="g-dot" cx="192" cy="25" r="4"/><circle class="g-a" cx="192" cy="53" r="4"/><circle class="g-dot" cx="192" cy="81" r="4"/><circle class="g-dot" cx="192" cy="99" r="4"/>
+              <text class="g-t" x="170" y="29" text-anchor="end">返回</text>
+              <text class="g-t" x="170" y="57" text-anchor="end">提醒</text>
+              <text class="g-t" x="170" y="85" text-anchor="end">分享</text>
+              <text class="g-t" x="170" y="103" text-anchor="end">收藏</text>
+              <text class="g-no" x="72" y="132" text-anchor="middle">✕ 提醒混在一組</text>
+              <text class="g-ok" x="192" y="132" text-anchor="middle">✓ 提醒獨立</text>
+            </svg>
+          </div>
+          <h4>性質差很多的動作分開</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>「設定提醒」會建立一個之後持續通知的設定，「分享」按完就結束。後果不同的按鈕放在同一組，使用者會用同樣輕的心情去按；分開之後，一眼看得出哪一顆比較重。</dd></div>
+            <div><dt>代價</dt><dd>只在大螢幕套用，一般 iPhone 不動。拆太多顆會讓直欄變長、提早溢位，所以只拆真的不同的那一顆。</dd></div>
+          </dl>
+          <p class="ref">HIG V4、V6・Q4・L8</p>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="dgroup">
+      <div class="dg-head">
+        <h3>按鈕放在哪裡</h3>
+        <p>使用者靠位置找按鈕。每個姿態都放在同一個相對位置，就不用重新學。</p>
+      </div>
+      <div class="dgrid">
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="內螢幕橫向：返回在直欄頂端，動作鈕在直欄底部，標題列只留標題。">
+              <g transform="translate(33 6) scale(.94)">
+                <rect class="g-screen" width="160" height="112" rx="13"/>
+                <path class="g-col" d="M130 0h17a13 13 0 0 1 13 13v86a13 13 0 0 1-13 13h-17z"/>
+                <rect class="g-line" x="50" y="10" width="30" height="3.5" rx="1.75"/>
+                <rect class="g-soft" x="12" y="26" width="106" height="74" rx="6"/>
+                <rect class="g-line" x="139" y="8" width="12" height="3" rx="1.5"/>
+                <rect class="g-cap" x="136" y="18" width="18" height="18" rx="9"/>
+                <circle class="g-a" cx="145" cy="27" r="3.5"/>
+                <rect class="g-cap" x="136" y="64" width="18" height="36" rx="9"/>
+                <circle class="g-a" cx="145" cy="73" r="3.5"/><circle class="g-a" cx="145" cy="91" r="3.5"/>
+                <rect class="g-edge" width="160" height="112" rx="13"/>
+              </g>
+              <text class="g-t" x="190" y="35">導覽</text>
+              <text class="g-t" x="190" y="87">動作</text>
+              <text class="g-note" x="108" y="132" text-anchor="middle">內螢幕橫向・沒有 Tab 列</text>
+            </svg>
+          </div>
+          <h4>上導覽，下動作</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>使用者到直欄上方只會找「回去」；動作集中在底部，就只要記一個地方。不論哪個姿態，返回都在上、動作都在下，換姿態不用重新學。</dd></div>
+            <div><dt>代價</dt><dd>沒有直欄時（內螢幕直向、一般 iPhone）要把按鈕搬回標題列，而且只搬按鈕、不重建頁面。原本放在左上的動作鈕也要一起移到底部。</dd></div>
+          </dl>
+          <p class="ref">HIG V2、V3・Q3・L3–L6、L11</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="有 Tab 列的頁面：直欄底部是 Tab 圖示，動作鈕接在返回下方。">
+              <g transform="translate(33 6) scale(.94)">
+                <rect class="g-screen" width="160" height="112" rx="13"/>
+                <path class="g-col" d="M130 0h17a13 13 0 0 1 13 13v86a13 13 0 0 1-13 13h-17z"/>
+                <rect class="g-line" x="50" y="10" width="30" height="3.5" rx="1.75"/>
+                <rect class="g-soft" x="12" y="26" width="106" height="74" rx="6"/>
+                <rect class="g-line" x="139" y="8" width="12" height="3" rx="1.5"/>
+                <rect class="g-cap" x="136" y="16" width="18" height="18" rx="9"/>
+                <circle class="g-dot" cx="145" cy="25" r="3.5"/>
+                <rect class="g-cap" x="136" y="40" width="18" height="34" rx="9"/>
+                <circle class="g-a" cx="145" cy="48.5" r="3.5"/><circle class="g-a" cx="145" cy="65.5" r="3.5"/>
+                <rect class="g-tab" x="134" y="80" width="22" height="26" rx="8"/>
+                <circle class="g-dot" cx="145" cy="86" r="2.2"/><circle class="g-dot" cx="145" cy="93" r="2.2"/><circle class="g-dot" cx="145" cy="100" r="2.2"/>
+                <rect class="g-edge" width="160" height="112" rx="13"/>
+              </g>
+              <text class="g-t" x="190" y="34">導覽</text>
+              <text class="g-t" x="190" y="64">動作</text>
+              <text class="g-t" x="190" y="98">Tab</text>
+              <text class="g-note" x="108" y="132" text-anchor="middle">內螢幕橫向・有 Tab 列</text>
+            </svg>
+          </div>
+          <h4>有 Tab 列時，動作接在返回下方</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>系統把直欄底部留給 Tab 圖示，工具列項目排不進去。這是系統限制，不是設計偏好。</dd></div>
+            <div><dt>代價</dt><dd>同一個 App 會有兩種排法：有 Tab 的頁面動作在上方，沒有 Tab 的頁面動作在底部。審閱前先跟設計師說清楚，免得被當成錯誤。</dd></div>
+          </dl>
+          <p class="ref">系統實測・Q3・L5</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：寬按鈕塞進直欄，變成一塊白色。右：寬按鈕留在標題列左上。">
+              <line class="g-sep" x1="120" y1="32" x2="120" y2="102"/>
+              <g transform="translate(4 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="32" y="6" width="20" height="3" rx="1.5"/>
+                <rect class="g-soft" x="6" y="16" width="72" height="50" rx="4"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="20" r="2.4"/>
+                <rect class="g-blank" x="76" y="32" width="26" height="12" rx="6"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <g transform="translate(126 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-wide" x="6" y="3.5" width="26" height="9" rx="4.5"/>
+                <rect class="g-line" x="42" y="6" width="22" height="3" rx="1.5"/>
+                <rect class="g-soft" x="6" y="16" width="72" height="50" rx="4"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="20" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <text class="g-no" x="59" y="132" text-anchor="middle">✕ 塞進直欄變白塊</text>
+              <text class="g-ok" x="181" y="132" text-anchor="middle">✓ 留在標題列</text>
+            </svg>
+          </div>
+          <h4>寬按鈕留在標題列</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>直欄只有 84 pt 寬。比它寬的自訂按鈕、或不是標準按鈕的自訂元件，放進直欄會變成一塊白色。</dd></div>
+            <div><dt>代價</dt><dd>標題列就不是「只留標題」了。想進直欄，要另外設計一個窄版（符號＋標題）。</dd></div>
+          </dl>
+          <p class="ref">HIG V8・Q5・L10</p>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="dgroup">
+      <div class="dg-head">
+        <h3>直欄的樣子</h3>
+        <p>直欄要看起來像獨立的一欄，顏色固定，而且永遠在同一邊。</p>
+      </div>
+      <div class="dgrid">
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：標題列背景滿版，壓住直欄上方的時間。右：標題列背景停在直欄左邊，時間清楚。">
+              <line class="g-sep" x1="120" y1="32" x2="120" y2="102"/>
+              <g transform="translate(4 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <path class="g-band" d="M9 0h86a9 9 0 0 1 9 9v7H0V9a9 9 0 0 1 9-9z"/>
+                <rect class="g-line" x="32" y="6.5" width="20" height="3" rx="1.5"/>
+                <rect class="g-soft" x="6" y="22" width="72" height="44" rx="4"/>
+                <rect class="g-cap" x="88" y="20" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="26" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <g transform="translate(126 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <path class="g-band" d="M9 0h75v16H0V9a9 9 0 0 1 9-9z"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-line" x="32" y="6.5" width="20" height="3" rx="1.5"/>
+                <rect class="g-soft" x="6" y="22" width="72" height="44" rx="4"/>
+                <rect class="g-cap" x="88" y="20" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="26" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <text class="g-no" x="59" y="132" text-anchor="middle">✕ 背景壓住時間</text>
+              <text class="g-ok" x="181" y="132" text-anchor="middle">✓ 停在直欄左邊</text>
+            </svg>
+          </div>
+          <h4>標題列背景停在直欄左邊</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>導覽列寬度由系統決定，縮不短。背景如果滿版，會壓住直欄上方的時間和訊號，直欄就不像獨立的一欄。按鈕都進直欄後只留標題，標題也不會被擠。</dd></div>
+            <div><dt>代價</dt><dd>要用透明背景圖把右段切掉；沒有直欄時要恢復滿版和底線。</dd></div>
+          </dl>
+          <p class="ref">HIG V1・Q5・L1、L2</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="深色 App 打開白底網頁。左：直欄跟著變白，時間變黑字。右：直欄固定深色。">
+              <line class="g-sep" x1="120" y1="32" x2="120" y2="102"/>
+              <g transform="translate(4 28) scale(1.06)">
+                <rect width="104" height="74" rx="9" fill="#1c1c1e"/>
+                <path d="M0 16h84v58H9a9 9 0 0 1-9-9z" fill="#ffffff"/>
+                <rect x="8" y="24" width="50" height="3" rx="1.5" fill="#d1d1d6"/>
+                <rect x="8" y="32" width="62" height="3" rx="1.5" fill="#d1d1d6"/>
+                <rect x="8" y="40" width="40" height="3" rx="1.5" fill="#d1d1d6"/>
+                <rect x="32" y="6.5" width="20" height="3" rx="1.5" fill="#8e8e93"/>
+                <path d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z" fill="#ffffff"/>
+                <rect x="89" y="5" width="10" height="2.4" rx="1.2" fill="#1d1d1f"/>
+                <rect x="88" y="14" width="12" height="12" rx="6" fill="#f2f2f7" stroke="#d1d1d6" stroke-width="1"/>
+                <circle cx="94" cy="20" r="2.4" fill="#1d1d1f"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <g transform="translate(126 28) scale(1.06)">
+                <rect width="104" height="74" rx="9" fill="#1c1c1e"/>
+                <path d="M0 16h84v58H9a9 9 0 0 1-9-9z" fill="#ffffff"/>
+                <rect x="8" y="24" width="50" height="3" rx="1.5" fill="#d1d1d6"/>
+                <rect x="8" y="32" width="62" height="3" rx="1.5" fill="#d1d1d6"/>
+                <rect x="8" y="40" width="40" height="3" rx="1.5" fill="#d1d1d6"/>
+                <rect x="32" y="6.5" width="20" height="3" rx="1.5" fill="#8e8e93"/>
+                <rect x="89" y="5" width="10" height="2.4" rx="1.2" fill="#ffffff"/>
+                <rect x="88" y="14" width="12" height="12" rx="6" fill="#3a3a3c"/>
+                <circle cx="94" cy="20" r="2.4" fill="#ffffff"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <text class="g-no" x="59" y="132" text-anchor="middle">✕ 跟著網頁變白</text>
+              <text class="g-ok" x="181" y="132" text-anchor="middle">✓ 固定深色</text>
+            </svg>
+          </div>
+          <h4>直欄固定一種底色</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>直欄會透出底下頁面的顏色。深色 App 一打開白底網頁，整條直欄就變白、時間變黑字，看起來像換了一個 App。</dd></div>
+            <div><dt>代價</dt><dd>要在直欄的位置鋪一塊底色，層級夾在頁面內容和導覽列之間。合起時頂端露出白底也是同一個問題，要補視窗底色。</dd></div>
+          </dl>
+          <p class="ref">Q6・L12、L29</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：轉到另一個橫向，直欄跑到左邊。右：只開一個橫向，直欄固定在右邊。">
+              <line class="g-sep" x1="120" y1="32" x2="120" y2="102"/>
+              <g transform="translate(4 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M20 0H9a9 9 0 0 0-9 9v56a9 9 0 0 0 9 9h11z"/>
+                <rect class="g-line" x="52" y="6" width="20" height="3" rx="1.5"/>
+                <rect class="g-soft" x="26" y="16" width="72" height="50" rx="4"/>
+                <rect class="g-line" x="5" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="4" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-a" cx="10" cy="20" r="2.4"/>
+                <rect class="g-cap" x="4" y="54" width="12" height="12" rx="6"/>
+                <circle class="g-a" cx="10" cy="60" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <g transform="translate(126 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="32" y="6" width="20" height="3" rx="1.5"/>
+                <rect class="g-soft" x="6" y="16" width="72" height="50" rx="4"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-a" cx="94" cy="20" r="2.4"/>
+                <rect class="g-cap" x="88" y="54" width="12" height="12" rx="6"/>
+                <circle class="g-a" cx="94" cy="60" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <text class="g-no" x="59" y="132" text-anchor="middle">✕ 直欄跑到左邊</text>
+              <text class="g-ok" x="181" y="132" text-anchor="middle">✓ 固定在右邊</text>
+            </svg>
+          </div>
+          <h4>直欄固定在右邊</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>直欄在哪一側由硬體決定。兩個橫向都開放，轉到另一側時直欄會跑到左邊，所有按鈕跟著換邊。只開 landscapeLeft，直欄就永遠在右側。</dd></div>
+            <div><dt>代價</dt><dd>往另一側轉時，畫面不會跟著轉。這是取捨，要請設計師確認。</dd></div>
+          </dl>
+          <p class="ref">HIG V2・Q9・L15</p>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="dgroup">
+      <div class="dg-head">
+        <h3>橫向多出來的寬度</h3>
+        <p>多出來的寬度拿來放內容，不是把同樣的東西拉長。</p>
+      </div>
+      <div class="dgrid">
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：橫排頁籤占掉一整排高度。右：頁籤改到左側直排，內容區變高。">
+              <line class="g-sep" x1="120" y1="32" x2="120" y2="102"/>
+              <g transform="translate(4 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="32" y="5" width="20" height="3" rx="1.5"/>
+                <rect class="g-a" x="8" y="15" width="12" height="3" rx="1.5"/>
+                <rect class="g-line" x="26" y="15" width="12" height="3" rx="1.5"/>
+                <rect class="g-line" x="44" y="15" width="12" height="3" rx="1.5"/>
+                <rect class="g-line" x="62" y="15" width="12" height="3" rx="1.5"/>
+                <rect class="g-a" x="8" y="22" width="12" height="1.6" rx=".8"/>
+                <line class="g-sep" x1="0" y1="25.5" x2="84" y2="25.5"/>
+                <rect class="g-soft" x="6" y="31" width="72" height="37" rx="4"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="20" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <g transform="translate(126 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-rail" d="M22 0H9a9 9 0 0 0-9 9v56a9 9 0 0 0 9 9h13z"/>
+                <line class="g-sep" x1="22.5" y1="0" x2="22.5" y2="74"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="43" y="5" width="20" height="3" rx="1.5"/>
+                <rect class="g-a" x="1.2" y="16.5" width="2" height="8" rx="1"/>
+                <rect class="g-a" x="6" y="19" width="12" height="3" rx="1.5"/>
+                <rect class="g-line" x="6" y="28" width="12" height="3" rx="1.5"/>
+                <rect class="g-line" x="6" y="37" width="12" height="3" rx="1.5"/>
+                <rect class="g-line" x="6" y="46" width="12" height="3" rx="1.5"/>
+                <rect class="g-soft" x="28" y="14" width="52" height="54" rx="4"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="20" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <text class="g-no" x="59" y="132" text-anchor="middle">✕ 頁籤占掉高度</text>
+              <text class="g-ok" x="181" y="132" text-anchor="middle">✓ 改到左側</text>
+            </svg>
+          </div>
+          <h4>底線頁籤改到左側</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>橫向又寬又矮，一整排頁籤占掉的高度，就是少掉的內容。改成左側直排後，左側欄和右側直欄對稱，內容區最高。</dd></div>
+            <div><dt>代價</dt><dd>左側欄要從導覽列下緣開始排，避開螢幕圓角；標題和內容要往右讓出 120 pt。轉回直向時收回橫排，選中的頁籤不變。</dd></div>
+          </dl>
+          <p class="ref">HIG V1、H2・Q8・L16–L19</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="頁籤進左側欄，圖表上方的分段切換鈕留在原地。">
+              <g transform="translate(45 6) scale(.94)">
+                <rect class="g-screen" width="160" height="112" rx="13"/>
+                <path class="g-rail" d="M32 0H13a13 13 0 0 0-13 13v86a13 13 0 0 0 13 13h19z"/>
+                <line class="g-sep" x1="32.5" y1="0" x2="32.5" y2="112"/>
+                <path class="g-col" d="M130 0h17a13 13 0 0 1 13 13v86a13 13 0 0 1-13 13h-17z"/>
+                <rect class="g-line" x="66" y="9" width="30" height="3.5" rx="1.75"/>
+                <rect class="g-a" x="1.5" y="26" width="2.5" height="11" rx="1.25"/>
+                <rect class="g-a" x="8" y="30" width="18" height="3.5" rx="1.75"/>
+                <rect class="g-line" x="8" y="42" width="18" height="3.5" rx="1.75"/>
+                <rect class="g-line" x="8" y="54" width="18" height="3.5" rx="1.75"/>
+                <rect class="g-line" x="8" y="66" width="18" height="3.5" rx="1.75"/>
+                <rect class="g-cap" x="42" y="26" width="60" height="14" rx="7"/>
+                <rect class="g-soft" x="44" y="28" width="19" height="10" rx="5"/>
+                <rect class="g-a" x="49" y="31.75" width="6" height="2.5" rx="1.25"/>
+                <rect class="g-line" x="69" y="31.75" width="6" height="2.5" rx="1.25"/>
+                <rect class="g-line" x="89" y="31.75" width="6" height="2.5" rx="1.25"/>
+                <polyline class="g-chart" points="44,94 58,82 70,86 84,68 98,74 112,56 122,60"/>
+                <line class="g-sep" x1="42" y1="100" x2="124" y2="100"/>
+                <rect class="g-line" x="139" y="8" width="12" height="3" rx="1.5"/>
+                <rect class="g-cap" x="136" y="18" width="18" height="18" rx="9"/>
+                <circle class="g-dot" cx="145" cy="27" r="3.5"/>
+                <rect class="g-edge" width="160" height="112" rx="13"/>
+              </g>
+              <text class="g-note" x="120" y="132" text-anchor="middle">頁籤進側欄，分段鈕留在圖表上方</text>
+            </svg>
+          </div>
+          <h4>分段切換鈕留在原地</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>「月／季／年」這種膠囊切換，控制的是眼前這張圖表，屬於內容的一部分，不是頁面之間的導覽。搬到側邊，就離開了它控制的東西。</dd></div>
+            <div><dt>代價</dt><dd>要先分清楚每一排頁籤是哪一種。分錯了，會把內容的控制項搬走。</dd></div>
+          </dl>
+          <p class="ref">HIG V7・Q8・L17</p>
+        </article>
+
+        <article class="dc">
+          <div class="fig">
+            <svg viewBox="0 0 240 140" role="img" aria-label="左：清單單欄，每一列拉得很長。右：左邊清單、右邊內容。">
+              <line class="g-sep" x1="120" y1="32" x2="120" y2="102"/>
+              <g transform="translate(4 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="32" y="5" width="20" height="3" rx="1.5"/>
+                <rect class="g-line" x="8" y="18" width="58" height="3" rx="1.5"/>
+                <rect class="g-line" x="8" y="29" width="58" height="3" rx="1.5"/>
+                <rect class="g-line" x="8" y="40" width="58" height="3" rx="1.5"/>
+                <rect class="g-line" x="8" y="51" width="58" height="3" rx="1.5"/>
+                <rect class="g-line" x="8" y="62" width="58" height="3" rx="1.5"/>
+                <path class="g-chev" d="M73 17l2.5 2.5L73 22M73 28l2.5 2.5L73 33M73 39l2.5 2.5L73 44M73 50l2.5 2.5L73 55M73 61l2.5 2.5L73 66"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="20" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <g transform="translate(126 28) scale(1.06)">
+                <rect class="g-screen" width="104" height="74" rx="9"/>
+                <path class="g-col" d="M84 0h11a9 9 0 0 1 9 9v56a9 9 0 0 1-9 9h-11z"/>
+                <rect class="g-line" x="12" y="5" width="16" height="3" rx="1.5"/>
+                <rect class="g-soft" x="3" y="14.5" width="32" height="10" rx="3"/>
+                <rect class="g-a" x="7" y="18" width="22" height="3" rx="1.5"/>
+                <rect class="g-line" x="7" y="29" width="22" height="3" rx="1.5"/>
+                <rect class="g-line" x="7" y="40" width="22" height="3" rx="1.5"/>
+                <rect class="g-line" x="7" y="51" width="22" height="3" rx="1.5"/>
+                <rect class="g-line" x="7" y="62" width="22" height="3" rx="1.5"/>
+                <line class="g-sep" x1="38.5" y1="12" x2="38.5" y2="74"/>
+                <rect class="g-line" x="46" y="17" width="20" height="3" rx="1.5"/>
+                <rect class="g-soft" x="44" y="25" width="36" height="41" rx="4"/>
+                <rect class="g-line" x="89" y="5" width="10" height="2.4" rx="1.2"/>
+                <rect class="g-cap" x="88" y="14" width="12" height="12" rx="6"/>
+                <circle class="g-dot" cx="94" cy="20" r="2.4"/>
+                <rect class="g-edge" width="104" height="74" rx="9"/>
+              </g>
+              <text class="g-no" x="59" y="132" text-anchor="middle">✕ 每列拉得太長</text>
+              <text class="g-ok" x="181" y="132" text-anchor="middle">✓ 清單＋內容</text>
+            </svg>
+          </div>
+          <h4>清單頁分成兩欄</h4>
+          <dl>
+            <div><dt>為什麼</dt><dd>單欄時每一列被拉到 860 pt 寬，每點一項都要返回一次。左清單、右內容就像 iOS 設定 App，大螢幕多看一層。</dd></div>
+            <div><dt>代價</dt><dd>只在內螢幕橫向；外螢幕和直向維持單欄。右側要先放一個預設內容（空白像壞掉），但它不算使用者點的：不送點選紀錄，收回單欄時直接丟掉。右側不能再包一層導覽控制器。</dd></div>
+          </dl>
+          <p class="ref">HIG H2、R2・Q7・L20–L25</p>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="after">
+      <div class="panel">
+        <h3>不管選哪個做法，這四件事都要做</h3>
+        <ul class="plain">
+          <li><b>移除寫死的螢幕尺寸</b><p>啟動時記下的寬高，開合後就錯了，畫面不會重排。</p><span class="src">盤點 r1–r5</span></li>
+          <li><b>開合不改變選取狀態</b><p>分頁、篩選、清單選取都不變；摺起再打開，要回到同一個地方。</p><span class="src">HIG H2・L30</span></li>
+          <li><b>內容只建一份</b><p>換版面只換位置和父容器、不重新載入，畫面才不會閃、捲動位置才不會跑掉。</p><span class="src">HIG H5・L31</span></li>
+          <li><b>每個直欄項目都有標題＋符號</b><p>溢位選單和 VoiceOver 都靠標題；沒有標題，溢位選單是空白、VoiceOver 唸圖檔名。</p><span class="src">HIG V8・L14</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>試過、後來撤掉的做法</h3>
+        <ul class="plain">
+          <li><b>停用直欄</b><p>外螢幕的標題被擠掉，設計審閱沒通過；另一個 App 也是先停用、後來改回來。<span class="to">→ 照系統用直欄。</span></p><span class="src">Q1</span></li>
+          <li><b>動作鈕留在直欄上方</b><p>使用者到直欄上方只找返回，動作鈕放在那裡反而不好找。<span class="to">→ 移到底部，和其他動作一組。</span></p><span class="src">L6</span></li>
+          <li><b>兩欄右側再包一層導覽控制器</b><p>系統直欄一次只顯示一條導覽列的按鈕，外層的按鈕整顆消失，還多讓出一次 84 pt。<span class="to">→ 右側直接嵌入內頁。</span></p><span class="src">L25</span></li>
+        </ul>
+        <p>做法會隨審閱改變；每次改都要補 Before／After。</p>
+      </div>
+    </div>
+
+    <p class="more">這裡挑了最常被問的 12 個決定；完整 33 條規則與實測數值見 <code>references/layout-rules.md</code>，HIG 指南編號見 <code>references/hig-summary.md</code>。</p>
+  </div>
+</section>
+
+<section class="band" id="tracks">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">實作</p>
+      <h2>兩條軌道，同一套規則。</h2>
+      <p class="lede">所有改動都放在<strong>預設關閉、只在大螢幕（短邊 &gt; 440 pt）生效</strong>的開關後面。</p>
+    </div>
+    <div class="tracks">
+      <div class="track">
+        <span class="tag">Lego 生產線 App</span>
+        <h3>打開共用層的開關。</h3>
+        <p>直欄按鈕、左側欄、兩欄、影音內頁都已做進共用框架；App 依問卷答案設定，主 Tab 建立前完成。</p>
+<pre><span class="c">// didFinishLaunching，主 Tab 建立前</span>
+let isLarge = { isCurrentSceneLargeScreen() }
+LegoVerticalBar.isEnabled = true
+LegoVerticalBar.placesAllItemsInColumn = true
+LegoSegmentSideMenu.isEnabledProvider = isLarge
+LegoMoreSplitLayout.isEnabledProvider = isLarge</pre>
+        <span class="file">references/track-lego.md</span>
+      </div>
+      <div class="track">
+        <span class="tag">非 Lego App（UIKit／SwiftUI）</span>
+        <h3>用系統 API 照做。</h3>
+        <p>每條規則都對到 UIKit 的做法，並附實際適配時踩過的坑。</p>
+<pre><span class="c">#if compiler(&gt;=6.4)  // iOS 27.1+</span>
+item.axisBehavior = .verticalPreferred
+item.sharesBackground = false
+<span class="c">// 已顯示的按鈕要先清空再指定才會移動</span>
+navigationItem.rightBarButtonItems = nil
+navigationItem.rightBarButtonItems = items</pre>
+        <span class="file">references/track-uikit.md</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="qc">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">自動化 QC</p>
+      <h2>模擬器自己摺，自己拍。</h2>
+      <p class="lede">工具與 App 無關；分頁名稱、彈窗、要走哪些頁，<strong>全部寫在一份 JSON</strong>。</p>
+    </div>
+    <ol class="pipe">
+      <li><span class="ic"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="6" width="9" height="16" rx="2"/><rect x="16" y="6" width="9" height="16" rx="2"/><path d="M12 14h4"/></svg></span><b>摺疊／展開</b><span>duo_hinge</span></li>
+      <li><span class="ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M6 6h16M6 12h16M6 18h10"/><circle cx="21" cy="20" r="3"/></svg></span><b>依計畫走訪</b><span>walk-plan.json</span></li>
+      <li><span class="ic"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="4" y="7" width="20" height="15" rx="3"/><circle cx="14" cy="14.5" r="4"/><path d="M10 7l1.5-2.5h5L18 7"/></svg></span><b>截圖＋階層</b><span>shots/、xchg/</span></li>
+      <li><span class="ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M5 15l5 5L23 7"/></svg></span><b>規則判定</b><span>analyze.py</span></li>
+      <li><span class="ic"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="6" y="3" width="16" height="22" rx="2"/><path d="M10 9h8M10 13h8M10 17h5"/></svg></span><b>報告</b><span>report.py</span></li>
+    </ol>
+    <div class="qc-grid">
+      <div class="panel">
+        <h3>走訪計畫長這樣</h3>
+<pre>{
+  "app": { "readyElement": {"button": "首頁"},
+           "launchDismiss": [{"label": "我明白了"}] },
+  "scenarios": [{
+    "id": "A", "mode": "matrix",
+    "postures": ["folded", "unfolded",
+                 "unfolded-portrait", "refolded"],
+    "screens": [
+      {"id": "01-首頁", "steps": [{"tab": "首頁"}]},
+      {"id": "02-內頁", "steps": [{"tab": "首頁"},
+                                 {"firstCell": true}],
+       "leaveAfter": true }]
+  }]
+}</pre>
+        <p>導航都在摺疊時做（展開時的點擊會落到外螢幕），之後只切姿態、不碰畫面。</p>
+      </div>
+      <div class="panel">
+        <h3>會自動抓到</h3>
+        <ul class="catch">
+          <li><span class="sev c">嚴重</span><code>content-missing</code><p>開合後內容整個不在畫面上。</p></li>
+          <li><span class="sev c">嚴重</span><code>window-size</code><p>視窗沒跟著螢幕變，畫面不會重排。</p></li>
+          <li><span class="sev h">高</span><code>cached-screen-size</code><p>元件寬高等於另一塊螢幕：啟動時快取的尺寸。</p></li>
+          <li><span class="sev h">高</span><code>restore-mismatch</code><p>摺回後位置與原本不同。</p></li>
+        </ul>
+        <p>規則判定只是候選；每張截圖都要人看過。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="start">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">開始</p>
+      <h2>說一句話就能開始。</h2>
+      <p class="lede">把 App 路徑和設計師的名字告訴 agent，說清楚這次做到哪個階段。</p>
+    </div>
+    <div class="prompts">
+      <div class="prompt"><code id="p1">用 $ios-foldable-adaptation 幫 <em>&lt;App 路徑&gt;</em> 做 iPhone Duo 適配，設計師是 <em>&lt;名字&gt;</em>，這次先做盤點和問卷。</code><button class="copy" type="button" data-target="p1">複製</button></div>
+      <div class="prompt"><code id="p2">用 $ios-foldable-adaptation 對 <em>&lt;App 路徑&gt;</em> 跑 Duo QC 情境 A 和 L，報告放 <em>&lt;目錄&gt;</em>。</code><button class="copy" type="button" data-target="p2">複製</button></div>
+      <div class="prompt"><code id="p3">用 $ios-foldable-adaptation：依 docs/duo/decisions.md 的答案改 <em>&lt;頁面&gt;</em>，做完補 Before／After。</code><button class="copy" type="button" data-target="p3">複製</button></div>
+    </div>
+    <div class="needs">
+      <div><b>環境</b><p>Xcode 27.1、iOS 27.1 iPhone Duo 模擬器、Python 3＋numpy。</p></div>
+      <div><b>設計師</b><p>回答問卷、審閱每輪的前後對照、決定待決事項。</p></div>
+      <div><b>找不到 skill 時</b><p>請 agent 先讀 <code>ios-foldable-adaptation/SKILL.md</code> 再照流程做。</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>依據 2026 年 10 月多個 iOS App 的 Duo 適配與設計審閱整理；完整規則與實測數值見 <code>references/layout-rules.md</code>。</p>
+    <p>依據 Apple Human Interface Guidelines〈<a href="https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo">Designing for iPhone Duo</a>〉與 iOS 27.1 模擬器實測。檔案：<code>SKILL.md</code>、<code>references/</code>、<code>scripts/</code>、<code>assets/</code>、<code>templates/</code>。</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy');
+    if (!btn) return;
+    const el = document.getElementById(btn.dataset.target);
+    const text = el.textContent.trim();
+    const done = () => { btn.textContent = '已複製'; setTimeout(() => { btn.textContent = '複製'; }, 1600); };
+    const fallback = () => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = '已選取';
+      setTimeout(() => { btn.textContent = '複製'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+})();
+</script>
+</body>
+</html>

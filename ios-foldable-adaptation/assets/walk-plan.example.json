@@ -1,0 +1,98 @@
+{
+  "$comment": "iPhone Duo QC 走訪計畫範例（以莎拉王的型態學教室為例）。所有 App 專屬的文字都在這裡；DuoQCWalkTests 讀 DUOQC_PLAN 執行。步驟 DSL 見 assets/DuoQCHarness.swift 的 DuoQCStep 註解。",
+  "app": {
+    "bundleId": null,
+    "readyElement": { "button": "選股頁" },
+    "readyTimeout": 30,
+    "launchRetries": 3,
+    "launchDismiss": [{ "label": "我明白了", "timeout": 3 }],
+    "alertAllow": ["允許", "Allow", "OK"],
+    "overlayWindows": { "maxSize": 70, "longPress": 1.2, "fallbackTaps": ["關閉", "確認"] },
+    "back": { "buttons": ["返回"], "contains": ["返回", "Back", "關閉"], "homeElement": { "tabBar": true } }
+  },
+  "timing": { "afterFold": 2.5, "afterUnfold": 2.5, "afterNavigate": 3, "afterLaunch": 4, "findTimeout": 5, "hostTimeout": 75 },
+  "scenarios": [
+    {
+      "id": "A",
+      "title": "摺疊狀態冷啟動，逐頁四種姿態",
+      "mode": "matrix",
+      "launchPosture": "folded",
+      "postures": ["folded", "unfolded", "unfolded-portrait", "refolded"],
+      "screens": [
+        { "id": "01-選股頁-多方-金包銀", "steps": [{ "tab": "選股頁" }, { "tap": { "buttonPrefix": "多方" }, "optional": true }, { "tap": { "buttonPrefix": "金包銀" }, "optional": true }] },
+        { "id": "02-選股頁-空方-穿心箭", "steps": [{ "tab": "選股頁" }, { "tap": { "buttonPrefix": "空方" } }, { "tap": { "buttonPrefix": "穿心箭" } }] },
+        { "id": "05-個股頁", "steps": [{ "tab": "選股頁" }, { "firstCell": true }, { "wait": 3 }], "leaveAfter": true },
+        { "id": "06-自選股", "steps": [{ "tab": "自選股" }] },
+        { "id": "07-社團", "steps": [{ "tab": "社團" }] },
+        { "id": "09-學習專區-影音", "steps": [{ "tab": "學習專區" }, { "tap": { "buttonPrefix": "影音" }, "optional": true }] },
+        { "id": "10-學習專區-文章", "steps": [{ "tab": "學習專區" }, { "tap": { "buttonPrefix": "文章" } }] },
+        { "id": "11-文章內頁", "steps": [{ "firstCell": true }, { "wait": 3 }], "leaveAfter": true },
+        { "id": "12-更多", "steps": [{ "tab": "更多" }] }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "展開狀態冷啟動再摺回（抓啟動時快取螢幕尺寸的排版）",
+      "mode": "matrix",
+      "launchPosture": "unfolded",
+      "postures": ["folded", "unfolded"],
+      "screens": [
+        { "id": "01-選股頁", "steps": [{ "tab": "選股頁" }] },
+        { "id": "06-自選股", "steps": [{ "tab": "自選股" }] },
+        { "id": "12-更多", "steps": [{ "tab": "更多" }] }
+      ]
+    },
+    {
+      "id": "L",
+      "title": "內螢幕橫向全頁走訪（側欄、直欄按鈕）",
+      "mode": "matrix",
+      "launchPosture": "folded",
+      "postures": ["folded", "unfolded"],
+      "screens": [
+        { "id": "01-選股頁", "steps": [{ "tab": "選股頁" }] },
+        { "id": "02-個股頁-即時", "steps": [{ "tab": "選股頁" }, { "firstCell": true }, { "wait": 3 }], "postures": ["folded", "unfolded", "unfolded-portrait", "refolded"] },
+        { "id": "03-個股頁-K線", "steps": [{ "tap": { "buttonPrefix": "K線" } }] },
+        { "id": "04c-個股頁-資券", "steps": [{ "tap": { "buttonPrefix": "資券" }, "scrollSwipe": [[0.7, 0.305], [0.15, 0.305]] }], "leaveAfter": true },
+        { "id": "05-通知頁", "steps": [{ "tab": "選股頁" }, { "tap": { "button": "通知提醒" } }, { "wait": 2 }], "leaveAfter": true },
+        { "id": "06-大盤頁", "steps": [{ "tab": "選股頁" }, { "tap": { "textPrefix": "大盤" } }, { "wait": 2 }], "leaveAfter": true },
+        { "id": "07-自選股", "steps": [{ "tab": "自選股" }] },
+        { "id": "12-更多", "steps": [{ "tab": "更多" }] }
+      ]
+    },
+    {
+      "id": "P",
+      "title": "個股頁姿態切換：直欄按鈕與側欄要跟著正確顯示與還原",
+      "mode": "sequence",
+      "launchPosture": "folded",
+      "navigate": [{ "tab": "選股頁" }, { "wait": 3 }, { "firstCell": true }, { "wait": 5 }],
+      "sequence": [
+        { "id": "1-外螢幕", "posture": "folded" },
+        { "id": "2-內螢幕橫向", "posture": "unfolded", "settle": 3.5 },
+        { "id": "3-內螢幕直向", "posture": "unfolded-portrait", "settle": 3.5 },
+        { "id": "4-再轉橫向", "posture": "unfolded", "settle": 3.5 },
+        { "id": "5-摺回外螢幕", "posture": "folded", "settle": 3.5 }
+      ],
+      "after": [
+        { "tap": { "button": "返回" } }, { "wait": 3 }, { "shot": "6-返回選股頁", "posture": "folded" },
+        { "posture": "unfolded" }, { "wait": 1 }, { "shot": "7-選股頁展開", "posture": "unfolded" }
+      ]
+    },
+    {
+      "id": "V",
+      "title": "影音內頁姿態切換（清單上方的分類也是 cell，所以用標題文字點影片）",
+      "mode": "sequence",
+      "launchPosture": "folded",
+      "navigate": [
+        { "tab": "學習專區" }, { "wait": 3 },
+        { "tap": { "textPrefix": "SARA EP." }, "timeout": 10 }, { "wait": 6 }
+      ],
+      "sequence": [
+        { "id": "1-外螢幕", "posture": "folded" },
+        { "id": "2-內螢幕橫向", "posture": "unfolded", "settle": 3.5 },
+        { "id": "3-內螢幕直向", "posture": "unfolded-portrait", "settle": 3.5 },
+        { "id": "4-再轉橫向", "posture": "unfolded", "settle": 3.5 },
+        { "id": "5-摺回外螢幕", "posture": "folded", "settle": 3.5 }
+      ]
+    }
+  ]
+}

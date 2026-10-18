@@ -1,0 +1,54 @@
+{
+  "$comment": "scripts/report.py 的 context.json 範例。標 html 的欄位會原樣插入；全部欄位都可省略。",
+  "title": "<App 名稱> Duo QC",
+  "eyebrow": "iPhone Duo 摺疊 / 展開 UI QC",
+  "subtitle": "<App> 在 Xcode 27.1 iPhone Duo 模擬器上的摺疊／展開 UI 走訪。本版（第 N 輪，MM/DD）做了……",
+  "meta": {
+    "日期": "2026-MM-DD（第 N 輪）",
+    "裝置": "iPhone Duo 模擬器（iOS 27.1）外螢幕 466×678 pt／內螢幕 951×669 寬版、669×951 直向",
+    "分支": "feat/<ticket>-duo-adaptation @ <sha>",
+    "決策紀錄": "docs/duo/decisions.md"
+  },
+  "runs": {
+    "A": { "label": "情境 A：摺疊狀態啟動", "intro": "每一頁依序：摺疊 → 展開（寬版）→ 展開（直向）→ 摺回。導航都在摺疊狀態下完成，之後只改變姿態。" },
+    "B": { "label": "情境 B：展開狀態啟動", "intro": "app 在展開狀態冷啟動後摺回，再逐頁看摺疊與展開兩種姿態。用來抓「啟動時把螢幕尺寸記下來」的排版。" },
+    "L": { "label": "情境 L：內螢幕橫向全頁走訪", "intro": "看每一頁的左側欄與右側直欄按鈕。" },
+    "P": { "label": "個股頁姿態切換", "intro": "外螢幕 → 內螢幕橫向 → 直向 → 橫向 → 外螢幕，每一步截圖。" }
+  },
+  "method": [
+    "鉸鏈控制：<code>duo_hinge</code> 在模擬器內送出 Device Hub 同款的 HID 事件；切換後以 <code>devicectl</code> 確認亮著的面板。",
+    "走訪：UI 測試在摺疊狀態下導航，透過檔案交換目錄請主機切姿態並以 <code>simctl io screenshot</code> 截圖；每個姿態傾印 accessibility 階層。",
+    "判定：<code>analyze.py</code> 套規則（超出畫面、尺寸等於另一面板、狀態列重疊、全黑、摺回未還原…），另加人工目視評註（紫色標記）。"
+  ],
+  "delta_title": "與上一輪 QC 的差異",
+  "delta": ["上一輪的 #3（開合後清單錯亂）已修正並重新走訪驗證。"],
+  "changes": {
+    "title": "本次修改（第 N 輪）",
+    "intro": "設計審閱後調整版面；前後對照見 <a href='#ba'>版面調整 Before／After</a>。",
+    "items": ["有直欄時 header 只留標題：左上按鈕進直欄上方、右上按鈕靠直欄底部（Q3／Q5）。"],
+    "verification": [
+      ["單元測試", "243 個、0 失敗", "新增 12 個：按鈕依種類進直欄與還原、側欄開關…"],
+      ["個股頁姿態切換", "5／5 正確", "每一步的返回、分享、收藏位置都符合規則；轉直向時沒有多出底部工具列。"],
+      ["全頁走訪", "19 個畫面、32 張截圖", "逐張看過。"]
+    ],
+    "tradeoffs": ["大螢幕只開一個橫向（landscapeLeft），直欄固定在右側；往另一側轉畫面不轉。"]
+  },
+  "hig_source": "Apple HIG「Designing for iPhone Duo」（2026-09-09）",
+  "hig": [
+    { "guideline": "Follow the system's vertical layout（用標準元件自動得到直欄，不覆寫預設擺放）", "source": "Vertical controls", "status": "符合", "evidence": "右上按鈕以 .verticalPreferred 進直欄；header 只留標題。" },
+    { "guideline": "Standard placement order：直欄頂端留給 Back／Close", "source": "Vertical controls", "status": "符合", "evidence": "返回在直欄最上方、獨立一顆。" },
+    { "guideline": "Show an additional level of hierarchy on the inner display", "source": "Best practices", "status": "部分", "evidence": "更多頁改兩欄；社團、學習專區清單仍單欄（外部套件）。" },
+    { "guideline": "Adapt your layout when the device folds：偶數欄、避開摺痕", "source": "Dynamic layouts", "status": "待確認", "evidence": "半開姿態未走訪。" }
+  ],
+  "hide_rules": [],
+  "rule_ids": {},
+  "extra_removed": [],
+  "removed_note": "已與團隊確認不需處理，已移除；其餘編號維持不變。",
+  "repros": [],
+  "root_causes": [],
+  "limits": [
+    "有底部分頁圖示的頁面，右上按鈕無法靠直欄底部（系統把直欄底部留給分頁圖示）。",
+    "左欄 360 pt 是暫定值，請設計決定。"
+  ],
+  "next": ["實機點一輪左側欄與兩欄的點擊區域。", "外螢幕橫向（678×466）納入走訪。"]
+}

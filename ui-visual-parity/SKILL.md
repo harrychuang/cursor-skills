@@ -53,7 +53,7 @@ The web path is verified end to end by the bundled benchmark. The Figma capture 
 
 - **Node 22 or later and a Chromium-family browser** (Chrome, Chromium, Edge — found automatically; set `CHROME_PATH` otherwise). Nothing to install. If the environment has its own browser tool instead, it can evaluate `scripts/extract_dom.js`; see `references/measure.md`.
 - Commands below are written from this skill's folder. From a project, call the script by its path and keep outputs in the project, for example `reports/parity/<surface>/`.
-- **Inputs.** An explicit reference + target pair is authoritative. A `findings.json` from the `ui-pixel-align-report` skill is an accepted starting list; verify every fix with a cycle. A design-system package (token files, `a11y-remap` records) sharpens ownership and prevents "fixing" sanctioned accessibility values — pass the records with `--remaps`.
+- **Inputs.** An explicit reference + target pair is authoritative. A `findings.json` from the `ui-pixel-alignment` skill is an accepted starting list; verify every fix with a cycle. A design-system package (token files, `a11y-remap` records) sharpens ownership and prevents "fixing" sanctioned accessibility values — pass the records with `--remaps`.
 - **Discovery.** Identify both platforms, the implementation entry point (route, screen, story, file), the styling system, and the token layer. Check what can be rendered before starting a server. If the reference or the target is ambiguous, list the candidates and ask before editing.
 
 ## Workflow

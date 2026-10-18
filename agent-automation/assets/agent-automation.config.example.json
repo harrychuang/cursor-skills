@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "stateDir": ".agent-automation/runs",
+  "runners": [
+    {
+      "id": "codex",
+      "label": "Codex",
+      "command": "codex",
+      "args": ["exec", "-C", "{workspace}", "{prompt}"],
+      "timeoutMs": 1800000,
+      "preflight": {
+        "command": "codex",
+        "args": ["login", "status"],
+        "timeoutMs": 30000
+      },
+      "inheritEnv": []
+    }
+  ],
+  "tasks": {
+    "implement": {
+      "instruction": "Implement the requested engineering change in this repository. Follow repository instructions, keep changes scoped, and report verification honestly.",
+      "verification": [
+        {
+          "command": "git",
+          "args": ["diff", "--check"],
+          "timeoutMs": 120000
+        }
+      ],
+      "requiredArtifacts": []
+    }
+  }
+}

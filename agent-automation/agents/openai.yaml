@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Automation Orchestrator"
+  short_description: "Orchestrate reusable multi-agent project automation"
+  default_prompt: "Use $agent-automation to inspect this repository, configure its project-specific automation contract — including a guided plain-language setup for designers — and run or resume the requested engineering task."

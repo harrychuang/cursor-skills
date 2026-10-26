@@ -1,0 +1,6 @@
+/* Component tokens map component slots to system tokens only. */
+:root {
+  --acme-comp-primary-button-container-color: var(--acme-sys-color-primary);
+  --acme-comp-primary-button-label-color: var(--acme-sys-color-on-primary);
+  --acme-comp-primary-button-padding-x: var(--acme-sys-spacing-gap-md);
+}

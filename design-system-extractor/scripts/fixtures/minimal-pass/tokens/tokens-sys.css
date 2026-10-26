@@ -1,0 +1,6 @@
+/* System tokens map semantic roles to reference tokens only. */
+:root {
+  --acme-sys-color-primary: var(--acme-ref-color-green-70);
+  --acme-sys-color-on-primary: var(--acme-ref-color-neutral-10);
+  --acme-sys-spacing-gap-md: var(--acme-ref-size-16);
+}

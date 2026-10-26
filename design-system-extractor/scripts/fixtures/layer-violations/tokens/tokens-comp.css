@@ -1,0 +1,5 @@
+:root {
+  --md-comp-card-padding: var(--md-sys-spacing-gap-md);
+  --md-comp-card-outline-color: var(--md-ref-color-neutral-0);
+  --md-comp-card-radius: 12px;
+}

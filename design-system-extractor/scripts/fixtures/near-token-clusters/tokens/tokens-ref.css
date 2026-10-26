@@ -1,0 +1,25 @@
+:root {
+  /* Blue cluster: one authored anchor, two measured values inside the snap
+     threshold, one measured value between 2.0 and 3.0 (proposal: keep distinct). */
+  --md-ref-color-blue-50: #2f6fd6; /* provenance: authored; usage: 14; sources: S1 */
+  --md-ref-color-blue-51: #3170d8; /* provenance: measured; usage: 2; sources: S2 */
+  --md-ref-color-blue-52: #3374dc; /* provenance: measured; usage: 1; sources: S3 */
+  --md-ref-color-blue-53: #3576de; /* provenance: measured; sources: S3 */
+  /* Red cluster: measured value inside the snap threshold of the authored value. */
+  --md-ref-color-red-40: #d93b3b; /* provenance: authored; sources: S1 */
+  --md-ref-color-red-41: #d83c3c; /* provenance: measured; sources: S2 */
+  /* Green cluster: two authored values -> must-ask. */
+  --md-ref-color-green-60: #3aa66a; /* provenance: authored; sources: S1 */
+  --md-ref-color-green-61: #3ba76b; /* provenance: authored; sources: S4 */
+  /* Neutral cluster: no provenance markers -> proposal only. */
+  --md-ref-color-neutral-80: #c9ced6;
+  --md-ref-color-neutral-81: #cacfd7;
+  /* Lengths: 12 is the authored anchor; 13 snaps (diff 1), 14 is a proposal (diff 2);
+     18 is off the 4px grid; 1 is a hairline; 24 sits on the grid. */
+  --md-ref-size-1: 1px; /* provenance: authored */
+  --md-ref-size-12: 12px; /* provenance: authored; usage: 9; sources: S1 */
+  --md-ref-size-13: 13px; /* provenance: measured; usage: 1; sources: S2 */
+  --md-ref-size-14: 14px; /* provenance: measured; usage: 3; sources: S3 */
+  --md-ref-size-18: 18px; /* provenance: measured; sources: S3 */
+  --md-ref-size-24: 24px; /* provenance: authored; sources: S1 */
+}

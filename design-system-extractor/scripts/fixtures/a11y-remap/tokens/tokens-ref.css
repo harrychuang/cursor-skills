@@ -1,0 +1,6 @@
+:root {
+  --md-ref-color-neutral-40: #6b6b6b;
+  --md-ref-color-neutral-41: #6c6c6c; /* a11y-remap: lifted to 4.6:1 on surface */
+  --md-ref-size-12: 12px;
+  --md-ref-size-13: 13px;
+}

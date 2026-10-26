@@ -1,0 +1,6 @@
+/* Reference tokens hold raw values only. */
+:root {
+  --acme-ref-color-green-70: #9fe870;
+  --acme-ref-color-neutral-10: #141414;
+  --acme-ref-size-16: 16px;
+}

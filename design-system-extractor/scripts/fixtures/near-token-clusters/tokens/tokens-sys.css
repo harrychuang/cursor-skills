@@ -1,0 +1,13 @@
+:root {
+  --md-sys-color-primary: var(--md-ref-color-blue-50);
+  --md-sys-color-on-primary: var(--md-ref-color-neutral-80);
+  --md-sys-color-primary-container: var(--md-ref-color-blue-51);
+  --md-sys-color-error: var(--md-ref-color-red-40);
+  --md-sys-color-on-error: var(--md-ref-color-neutral-80);
+  --md-sys-color-success: var(--md-ref-color-green-60);
+  --md-sys-color-on-success: var(--md-ref-color-neutral-80);
+  --md-sys-spacing-gap-sm: var(--md-ref-size-12);
+  --md-sys-spacing-gap-md: var(--md-ref-size-13);
+  --md-sys-spacing-gap-lg: var(--md-ref-size-24);
+  --md-sys-shape-corner-sm: var(--md-ref-size-12);
+}

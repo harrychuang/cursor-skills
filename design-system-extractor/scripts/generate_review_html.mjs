@@ -2,8 +2,40 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+  NEAR_COLOR_DELTA_E,
+  TIERS,
+  applyCommand,
+  buildTokenClusters,
+  countVarReferences,
+  decisionRowMarkdown,
+  fitLengthScale,
+  formatDistance,
+  groupConnected,
+  scaleFitSummaryLine,
+} from "./lib/token_review.mjs";
+
+const USAGE = `Usage: node <skill-root>/scripts/generate_review_html.mjs <target-root> [output.html] [--json]
+
+Builds the visual review queue (duplicate sources, color scale issues, near color
+and near number reference token clusters, scale fit, similar components) from
+design-system/*.md and tokens/*.css. Default output: <target-root>/docs/design-system/review.html.
+Near tokens are shown as one card per cluster (canonical token, members tiered
+auto / proposal / must-ask) with a copy button per tier that yields the Near Token
+Decisions rows apply_token_decisions.mjs would write. Similar component rows are
+grouped into contact sheets. Decision detection follows audit_tokens.mjs: a
+token-review: or a11y-remap CSS comment, or a TOKEN_ARCHITECTURE.md line naming
+the member together with the canonical, marks a member documented.
+
+Options:
+  --json      Print {counts, needsReview, clusters} as one JSON object on stdout and write no files.
+  --help, -h  Print this message and exit 0.`;
 
 const args = process.argv.slice(2);
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
 // --json emits the review counts and the outstanding rows on stdout instead of
 // writing the HTML file, so tooling can read the queue without scraping markup.
 const jsonMode = args.includes("--json");
@@ -20,10 +52,10 @@ const evidenceMapFile = path.join(designSystemDir, "DESIGN_EVIDENCE_MAP.md");
 const tokenArchitectureFile = path.join(designSystemDir, "TOKEN_ARCHITECTURE.md");
 const inventoryFile = path.join(designSystemDir, "COMPONENT_INVENTORY.md");
 const refTokensFile = path.join(tokensDir, "tokens-ref.css");
+const sysTokensFile = path.join(tokensDir, "tokens-sys.css");
+const compTokensFile = path.join(tokensDir, "tokens-comp.css");
 
 const LIGHTNESS_TOLERANCE = 0.01;
-const NEAR_COLOR_DELTA_E = 3;
-const NEAR_COLOR_ALPHA_DELTA = 0.03;
 
 const decisionPattern =
   /\b(?:merge|merged|make variant|variant|keep distinct|distinct|blocked|out-of-scope|separate|split|reuse existing source|reuse existing|reuse source|ignore duplicate|dedupe|deduplicate|same source)\b|合併|變體|變型|保留|拆開|分開|阻塞|重用|沿用|忽略重複|同一來源|別元件|独立|別コンポーネント|統合|バリアント|同一ソース/i;
@@ -58,7 +90,10 @@ function stripInlineComments(value) {
 
 function parseDeclarations(css) {
   const declarations = new Map();
-  const pattern = /(?:\/\*([\s\S]*?)\*\/\s*)?(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);(?:\s*\/\*([\s\S]*?)\*\/)?/g;
+  // Same regex as audit_tokens.mjs: the trailing comment may only sit on the same
+  // line as the declaration; letting it cross newlines would steal the next
+  // declaration's leading comment and the two tools would disagree.
+  const pattern = /(?:\/\*([\s\S]*?)\*\/\s*)?(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([\s\S]*?)\*\/)?/g;
   let match;
   while ((match = pattern.exec(css))) {
     declarations.set(match[2], {
@@ -218,35 +253,6 @@ function relativeLuminance(color) {
   );
 }
 
-function labPivot(value) {
-  return value > 0.008856 ? Math.cbrt(value) : 7.787 * value + 16 / 116;
-}
-
-function rgbToLab(color) {
-  const r = srgbToLinear(color.r);
-  const g = srgbToLinear(color.g);
-  const b = srgbToLinear(color.b);
-  const x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
-  const y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1;
-  const z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
-  const fx = labPivot(x);
-  const fy = labPivot(y);
-  const fz = labPivot(z);
-  return {
-    l: 116 * fy - 16,
-    a: 500 * (fx - fy),
-    b: 200 * (fy - fz),
-  };
-}
-
-function deltaE76(colorA, colorB) {
-  const labA = rgbToLab(colorA);
-  const labB = rgbToLab(colorB);
-  return Math.sqrt(
-    (labA.l - labB.l) ** 2 + (labA.a - labB.a) ** 2 + (labA.b - labB.b) ** 2,
-  );
-}
-
 function parseNumericValue(value) {
   const cleanValue = stripInlineComments(value);
   if (/^(?:#|rgb|hsl)/i.test(cleanValue) || cleanValue.includes("var(") || cleanValue.includes("calc(")) {
@@ -266,49 +272,42 @@ function parseNumericValue(value) {
   return { amount, unit, normalized: amount, unitGroup: "number" };
 }
 
-function isNearNumericValue(a, b) {
-  const diff = Math.abs(a.normalized - b.normalized);
-  if (diff === 0) return true;
-  const largest = Math.max(Math.abs(a.normalized), Math.abs(b.normalized));
-  const ratio = largest === 0 ? 0 : diff / largest;
-  if (a.unitGroup === "length") return diff <= 2 || (diff <= 4 && ratio <= 0.06);
-  if (a.unitGroup === "time") return diff <= 50 || ratio <= 0.1;
-  if (a.unitGroup === "percent") return diff <= 2;
-  if (a.unitGroup === "angle") return diff <= 2;
-  return diff <= 0.02 || (diff <= 1 && ratio <= 0.05);
-}
-
 function reviewTextForDeclaration(declaration) {
   if (!declaration) return "";
   return `${declaration.leadingComment}\n${declaration.trailingComment}`;
 }
 
+// Decision rules mirror audit_tokens.mjs so review.html never shows "Needs review"
+// for a pair the strict audit already accepts.
 function hasCssReviewDecision(declarationA, declarationB) {
   const text = `${reviewTextForDeclaration(declarationA)}\n${reviewTextForDeclaration(declarationB)}`;
-  return /token-review\s*:\s*(?:keep|keep-distinct|merge|merge-with|approved|separate|split)/i.test(text);
+  return (
+    /token-review\s*:\s*(?:keep|keep-distinct|merge|merge-with|approved|separate|split)/i.test(
+      text,
+    ) || /a11y-remap/i.test(text)
+  );
 }
 
 function hasArchitectureReviewDecision(architectureDoc, tokenA, tokenB) {
   if (!architectureDoc) return false;
   const first = tokenA.toLowerCase();
   const second = tokenB.toLowerCase();
-  return architectureDoc
-    .toLowerCase()
-    .split(/\r?\n/)
-    .some(
-      (line) =>
-        line.includes(first) &&
-        line.includes(second) &&
-        /merge|merged|keep|distinct|separate|split|approved|合併|保留|拆開|分開|確認/.test(line),
+  const lines = architectureDoc.toLowerCase().split(/\r?\n/);
+  let inRemapSection = false;
+  return lines.some((line) => {
+    if (/^#{1,6}\s/.test(line)) {
+      inRemapSection = /accessibility remap/.test(line);
+    }
+    if (!line.includes(first) || !line.includes(second)) return false;
+    if (inRemapSection || line.includes("a11y-remap")) return true;
+    return /merge|merged|keep|distinct|separate|split|approved|合併|保留|拆開|分開|確認/.test(
+      line,
     );
+  });
 }
 
 function decisionStatus(hasDecision) {
   return hasDecision ? "documented" : "needs-review";
-}
-
-function formatNumber(value) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(2);
 }
 
 function swatchHtml(colorValue, label) {
@@ -435,6 +434,8 @@ function tableHtml(headers, rows, emptyMessage) {
 }
 
 const refCss = await readOptional(refTokensFile);
+const sysCss = await readOptional(sysTokensFile);
+const compCss = await readOptional(compTokensFile);
 const evidenceMapDoc = await readOptional(evidenceMapFile);
 const architectureDoc = await readOptional(tokenArchitectureFile);
 const inventoryDoc = await readOptional(inventoryFile);
@@ -502,22 +503,6 @@ for (const [family, familyTokens] of colorsByFamily) {
   }
 }
 
-const nearColorRows = [];
-for (let firstIndex = 0; firstIndex < referenceColors.length; firstIndex += 1) {
-  for (let secondIndex = firstIndex + 1; secondIndex < referenceColors.length; secondIndex += 1) {
-    const first = referenceColors[firstIndex];
-    const second = referenceColors[secondIndex];
-    const alphaDiff = Math.abs(first.color.a - second.color.a);
-    const deltaE = deltaE76(first.color, second.color);
-    if (alphaDiff <= NEAR_COLOR_ALPHA_DELTA && deltaE <= NEAR_COLOR_DELTA_E) {
-      const hasDecision =
-        hasCssReviewDecision(declarations.get(first.name), declarations.get(second.name)) ||
-        hasArchitectureReviewDecision(architectureDoc, first.name, second.name);
-      nearColorRows.push({ first, second, deltaE, status: decisionStatus(hasDecision) });
-    }
-  }
-}
-
 const referenceNumbers = [];
 for (const [name, declaration] of declarations) {
   if (parseColor(declaration.value)) continue;
@@ -526,25 +511,27 @@ for (const [name, declaration] of declarations) {
   referenceNumbers.push({ name, value: declaration.value, family: parseReferenceFamily(name), numeric });
 }
 
-const nearNumberRows = [];
-for (let firstIndex = 0; firstIndex < referenceNumbers.length; firstIndex += 1) {
-  for (let secondIndex = firstIndex + 1; secondIndex < referenceNumbers.length; secondIndex += 1) {
-    const first = referenceNumbers[firstIndex];
-    const second = referenceNumbers[secondIndex];
-    if (first.family !== second.family || first.numeric.unitGroup !== second.numeric.unitGroup) continue;
-    if (isNearNumericValue(first.numeric, second.numeric)) {
-      const hasDecision =
-        hasCssReviewDecision(declarations.get(first.name), declarations.get(second.name)) ||
-        hasArchitectureReviewDecision(architectureDoc, first.name, second.name);
-      nearNumberRows.push({
-        first,
-        second,
-        diff: Math.abs(first.numeric.normalized - second.numeric.normalized),
-        status: decisionStatus(hasDecision),
-      });
-    }
-  }
-}
+// Near tokens come from the shared cluster module, so the page shows exactly the
+// canonical, tiers and proposals the audit reports.
+const varCounts = countVarReferences([sysCss || "", compCss || ""]);
+const { clusters, counts: clusterCounts } = buildTokenClusters({
+  colors: referenceColors,
+  numbers: referenceNumbers,
+  declarations,
+  varCounts,
+  hasDecision: (member, canonical) =>
+    hasCssReviewDecision(declarations.get(member), declarations.get(canonical)) ||
+    hasArchitectureReviewDecision(architectureDoc, member, canonical),
+});
+const colorClusters = clusters.filter((cluster) => cluster.kind === "color");
+const numberClusters = clusters.filter((cluster) => cluster.kind === "number");
+const memberRows = (list) =>
+  list.flatMap((cluster) =>
+    cluster.members.map((member) => ({ cluster, member, status: decisionStatus(member.documented) })),
+  );
+const nearColorRows = memberRows(colorClusters);
+const nearNumberRows = memberRows(numberClusters);
+const scaleFit = fitLengthScale(referenceNumbers);
 
 const componentRows = [];
 if (inventoryDoc) {
@@ -572,6 +559,26 @@ if (inventoryDoc) {
     }
   }
 }
+
+// Similarity rows grouped by the components they connect: one contact sheet per
+// group, so a candidate compared against several existing components is one decision.
+const componentGroups = groupConnected(componentRows, (row) => [
+  cleanCell(row.candidate || "").toLowerCase(),
+  cleanCell(row.similar || "").toLowerCase(),
+]).map((group) => {
+  const components = [];
+  for (const row of group.items) {
+    for (const name of [row.candidate, row.similar]) {
+      const cleaned = cleanCell(name || "");
+      if (cleaned && !components.includes(cleaned)) components.push(cleaned);
+    }
+  }
+  return {
+    components,
+    rows: group.items,
+    status: group.items.some((row) => row.status === "needs-review") ? "needs-review" : "documented",
+  };
+});
 
 const counts = {
   sources: sourceRows.length,
@@ -616,25 +623,31 @@ function needsReviewEntries() {
       lowerStep: { name: darkerStepToken.name, value: darkerStepToken.value },
     });
   }
-  for (const row of nearColorRows) {
-    if (row.status !== "needs-review") continue;
+  for (const { cluster, member, status } of nearColorRows) {
+    if (status !== "needs-review") continue;
     entries.push({
       kind: "near-color",
-      status: row.status,
-      tokenA: { name: row.first.name, value: row.first.value },
-      tokenB: { name: row.second.name, value: row.second.value },
-      deltaE: Number(formatNumber(row.deltaE)),
+      status,
+      tokenA: { name: cluster.canonical.name, value: cluster.canonical.value },
+      tokenB: { name: member.name, value: member.value },
+      deltaE: Number(formatDistance(member.distance)),
+      cluster: cluster.id,
+      tier: member.tier,
+      proposed: member.proposed,
     });
   }
-  for (const row of nearNumberRows) {
-    if (row.status !== "needs-review") continue;
+  for (const { cluster, member, status } of nearNumberRows) {
+    if (status !== "needs-review") continue;
     entries.push({
       kind: "near-number",
-      status: row.status,
-      tokenA: { name: row.first.name, value: row.first.value },
-      tokenB: { name: row.second.name, value: row.second.value },
-      difference: Number(formatNumber(row.diff)),
-      unitGroup: row.first.numeric.unitGroup,
+      status,
+      tokenA: { name: cluster.canonical.name, value: cluster.canonical.value },
+      tokenB: { name: member.name, value: member.value },
+      difference: Number(formatDistance(member.distance)),
+      unitGroup: cluster.unitGroup,
+      cluster: cluster.id,
+      tier: member.tier,
+      proposed: member.proposed,
     });
   }
   for (const row of componentRows) {
@@ -842,6 +855,95 @@ function css() {
       margin: 12px 0 0;
       color: var(--muted);
     }
+    .tier {
+      display: inline-block;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .tier-auto { background: #e4f3ea; color: var(--accent); border-color: #b9dcc5; }
+    .tier-proposal { background: #fbf0d9; color: var(--warning); border-color: #e9cf9a; }
+    .tier-must-ask { background: #fae3e0; color: var(--issue); border-color: #e6b3ab; }
+    .cluster {
+      margin: 14px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .cluster-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+    }
+    .cluster-id { font-size: 13px; font-weight: 800; }
+    .cluster-meta { color: var(--muted); font-size: 13px; }
+    .cluster .table-wrap { margin: 0; border: 0; border-radius: 0; }
+    .cluster table { min-width: 720px; }
+    .copy-block {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0;
+      padding: 12px 14px;
+      border: 1px dashed var(--border-strong);
+      border-radius: 8px;
+    }
+    .copy-block button {
+      justify-self: start;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 6px 12px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .copy-block button:hover { background: var(--surface-subtle); }
+    .copy-block textarea {
+      width: 100%;
+      min-height: 120px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+    .copy-block code { user-select: all; }
+    .group {
+      margin: 14px 0;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .group h3 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+    .contact-sheet {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 10px 0;
+    }
+    .contact-sheet figure {
+      display: grid;
+      gap: 4px;
+      max-width: 240px;
+      margin: 0;
+    }
+    .contact-sheet figcaption { color: var(--muted); font-size: 12px; }
+    .scale-list { margin: 8px 0 0; padding-left: 18px; }
     @media (max-width: 900px) {
       .layout { display: block; }
       aside {
@@ -863,25 +965,99 @@ function css() {
   `;
 }
 
+function tierBadge(tier) {
+  return `<span class="tier tier-${escapeAttr(tier)}">${escapeHtml(tier)}</span>`;
+}
+
+function tokenCell(cluster, name, value) {
+  if (cluster.kind === "color") return swatchHtml(value, `${name}: ${value}`);
+  return `<code>${escapeHtml(name)}</code><br>${escapeHtml(value)}`;
+}
+
+function clusterCardHtml(cluster) {
+  const canonical = cluster.canonical;
+  const memberRowsHtml = cluster.members.map(
+    (member) => `<tr>
+  <td>${tokenCell(cluster, member.name, member.value)}</td>
+  <td>${escapeHtml(member.provenance)}</td>
+  <td><code>${escapeHtml(String(member.usage))}</code></td>
+  <td><code>${escapeHtml(member.distanceLabel)}</code></td>
+  <td>${tierBadge(member.tier)}</td>
+  <td>${member.proposed ? escapeHtml(member.proposed) : "<em>developer decides</em>"}</td>
+  <td>${statusBadge(member.documented ? "documented" : "needs-review")}</td>
+</tr>`,
+  );
+  return `<article class="cluster" id="cluster-${escapeAttr(cluster.id)}" data-tier="${escapeAttr(cluster.tier)}" data-kind="${escapeAttr(cluster.kind)}">
+  <header class="cluster-head">
+    <span class="cluster-id">${escapeHtml(cluster.id)}</span>
+    ${tierBadge(cluster.tier)}
+    ${tokenCell(cluster, canonical.name, canonical.value)}
+    <span class="cluster-meta">canonical · ${escapeHtml(canonical.provenance)} · usage ${escapeHtml(String(canonical.usage))} · family ${escapeHtml(cluster.family)}</span>
+  </header>
+  ${tableHtml(["Member", "Provenance", "Usage", "Distance to canonical", "Tier", "Proposed decision", "Status"], memberRowsHtml, "No members.")}
+</article>`;
+}
+
+// One copy block per tier that still has undocumented members: the textarea holds
+// the Near Token Decisions rows apply_token_decisions.mjs would write for that tier.
+function copyBlocksHtml(sectionClusters, sectionKey) {
+  const blocks = [];
+  for (const tier of TIERS) {
+    const rows = [];
+    for (const cluster of sectionClusters) {
+      for (const member of cluster.members) {
+        if (member.documented || member.tier !== tier) continue;
+        const decision = tier === "auto" ? "merge" : tier === "proposal" ? member.proposed : "<merge | keep distinct>";
+        const confirmedBy = tier === "auto" ? "auto-tier" : "<developer>";
+        rows.push(decisionRowMarkdown({ cluster, member, decision, confirmedBy }));
+      }
+    }
+    if (!rows.length) continue;
+    const id = `copy-${sectionKey}-${tier}`;
+    blocks.push(`<div class="copy-block" data-tier="${escapeAttr(tier)}">
+  <div>${tierBadge(tier)} <strong>${rows.length}</strong> undocumented member${rows.length === 1 ? "" : "s"}</div>
+  <button type="button" data-copy="${escapeAttr(id)}">Copy ${escapeHtml(tier)} decisions as markdown</button>
+  <textarea id="${escapeAttr(id)}" hidden readonly aria-label="${escapeAttr(tier)} decision rows">${escapeHtml(rows.join("\n"))}</textarea>
+  <div class="cluster-meta">Or let the script write them: <code>${escapeHtml(applyCommand(tier))}</code></div>
+</div>`);
+  }
+  return blocks.join("\n");
+}
+
+function clusterSectionHtml(sectionClusters, sectionKey, emptyMessage) {
+  if (!sectionClusters.length) return `<p class="empty">${escapeHtml(emptyMessage)}</p>`;
+  return `${copyBlocksHtml(sectionClusters, sectionKey)}\n${sectionClusters.map(clusterCardHtml).join("\n")}`;
+}
+
+function componentGroupHtml(group) {
+  const sheet = group.rows
+    .map(
+      (row) => `<figure>${formatInline(row.visual || "")}<figcaption>${formatInline(row.candidate || "candidate")} vs ${formatInline(row.similar || "similar component")}</figcaption></figure>`,
+    )
+    .join("");
+  const rows = group.rows.map(
+    (row) => `<tr>
+  <td>${formatInline(row.candidate || "candidate")}</td>
+  <td>${formatInline(row.similar || "similar component")}</td>
+  <td>${formatInline(row.visual || "")}</td>
+  <td>${formatInline(row.reason || "")}</td>
+  <td>${formatInline(row.suggested || "")}</td>
+  <td>${formatInline(row.decision || "")}<br>${statusBadge(row.status)}</td>
+  <td>${formatInline(row.rationale || "")}</td>
+</tr>`,
+  );
+  return `<div class="group" data-status="${escapeAttr(group.status)}">
+  <h3>${group.components.map((name) => escapeHtml(name)).join(" · ")} ${statusBadge(group.status)}</h3>
+  <div class="contact-sheet">${sheet}</div>
+  ${tableHtml(["Candidate", "Similar existing", "Visual reference", "Reason", "Suggested action", "Developer decision", "Rationale"], rows, "No rows.")}
+</div>`;
+}
+
 const colorScaleRows = colorScaleIssues.map(({ family, lighterStepToken, darkerStepToken }) => `<tr>
   <td><code>${escapeHtml(family)}</code></td>
   <td>${swatchHtml(lighterStepToken.value, `${lighterStepToken.name}: ${lighterStepToken.value}`)}</td>
   <td>${swatchHtml(darkerStepToken.value, `${darkerStepToken.name}: ${darkerStepToken.value}`)}</td>
   <td>${statusBadge("issue")}</td>
-</tr>`);
-
-const nearColorTableRows = nearColorRows.map(({ first, second, deltaE, status }) => `<tr>
-  <td>${swatchHtml(first.value, `${first.name}: ${first.value}`)}</td>
-  <td>${swatchHtml(second.value, `${second.name}: ${second.value}`)}</td>
-  <td><code>${escapeHtml(formatNumber(deltaE))}</code></td>
-  <td>${statusBadge(status)}</td>
-</tr>`);
-
-const nearNumberTableRows = nearNumberRows.map(({ first, second, diff, status }) => `<tr>
-  <td><code>${escapeHtml(first.name)}</code><br>${escapeHtml(first.value)}</td>
-  <td><code>${escapeHtml(second.name)}</code><br>${escapeHtml(second.value)}</td>
-  <td><code>${escapeHtml(formatNumber(diff))}</code> ${escapeHtml(first.numeric.unitGroup)}</td>
-  <td>${statusBadge(status)}</td>
 </tr>`);
 
 const sourceTableRows = sourceRows.map((row) => `<tr>
@@ -894,15 +1070,21 @@ const sourceTableRows = sourceRows.map((row) => `<tr>
   <td>${formatInline(row.rationale || "")}</td>
 </tr>`);
 
-const componentTableRows = componentRows.map((row) => `<tr>
-  <td>${formatInline(row.candidate || "candidate")}</td>
-  <td>${formatInline(row.similar || "similar component")}</td>
-  <td>${formatInline(row.visual || "")}</td>
-  <td>${formatInline(row.reason || "")}</td>
-  <td>${formatInline(row.suggested || "")}</td>
-  <td>${formatInline(row.decision || "")}<br>${statusBadge(row.status)}</td>
-  <td>${formatInline(row.rationale || "")}</td>
-</tr>`);
+const scaleFitHtml = scaleFit
+  ? `<p class="section-lead">${escapeHtml(scaleFitSummaryLine(scaleFit))}. Near-grid: ${scaleFit.nearGrid.length}. Excluded: ${scaleFit.excluded.length} (hairlines and values above 512px).</p>
+${
+  scaleFit.outliers.length
+    ? `<ul class="scale-list">${scaleFit.outliers
+        .map(
+          (entry) =>
+            `<li><code>${escapeHtml(entry.name)}</code> ${escapeHtml(entry.value)}, nearest step ${escapeHtml(String(entry.nearest))}px (${entry.residual > 0 ? "+" : ""}${escapeHtml(String(entry.residual))}). Snap it or record why the value is intentional.</li>`,
+        )
+        .join("")}</ul>`
+    : `<p class="empty">Every fitted length sits on the ${scaleFit.base}px grid.</p>`
+}`
+  : `<p class="empty">No length reference tokens to fit.</p>`;
+
+const clusterTierSummary = `auto ${clusterCounts.tiers.auto}, proposal ${clusterCounts.tiers.proposal}, must-ask ${clusterCounts.tiers["must-ask"]}`;
 
 const generatedAt = new Date().toISOString();
 const html = `<!doctype html>
@@ -925,21 +1107,23 @@ const html = `<!doctype html>
         <a href="#color-scale">Color Scale Issues</a>
         <a href="#near-colors">Near Color Tokens</a>
         <a href="#near-numbers">Near Number Tokens</a>
+        <a href="#scale-fit">Scale Fit</a>
         <a href="#components">Similar Components</a>
       </nav>
     </aside>
     <main>
       <section class="hero" id="overview">
         <h1>Design System Review Queue</h1>
-        <p>這份文件彙整萃取時需要設計或開發者審查的候選項目：重複來源、相近 token、色階問題，以及外觀或功能相近的 component。</p>
+        <p>這份文件彙整萃取時需要設計或開發者審查的候選項目：重複來源、色階問題、以群為單位的相近 token（canonical 加上 auto / proposal / must-ask 三層成員）、長度 scale 擬合，以及外觀或功能相近的 component。</p>
       </section>
 
       <div class="summary" aria-label="Review summary">
         <div class="metric"><strong>${counts.needsReview}</strong><span>Needs review</span></div>
+        <div class="metric"><strong>${clusterCounts.clusters}</strong><span>Near token clusters (${escapeHtml(clusterTierSummary)})</span></div>
         <div class="metric"><strong>${counts.sources}</strong><span>Duplicate sources</span></div>
         <div class="metric"><strong>${counts.colorScaleIssues}</strong><span>Color scale issues</span></div>
-        <div class="metric"><strong>${counts.nearColors}</strong><span>Near color pairs</span></div>
-        <div class="metric"><strong>${counts.nearNumbers}</strong><span>Near number pairs</span></div>
+        <div class="metric"><strong>${counts.nearColors}</strong><span>Near color members</span></div>
+        <div class="metric"><strong>${counts.nearNumbers}</strong><span>Near number members</span></div>
         <div class="metric"><strong>${counts.components}</strong><span>Component rows</span></div>
       </div>
 
@@ -957,23 +1141,45 @@ const html = `<!doctype html>
 
       <section id="near-colors">
         <h2>Near Color Tokens</h2>
-        <p class="section-lead">Pairs with deltaE at or below ${NEAR_COLOR_DELTA_E} are listed for merge or keep-distinct review.</p>
-        ${tableHtml(["Token A", "Token B", "deltaE", "Status"], nearColorTableRows, "No near color token pairs found.")}
+        <p class="section-lead">Colors within deltaE2000 ${NEAR_COLOR_DELTA_E} form a cluster around one canonical token. Auto members merge mechanically, proposal members carry a default to accept or override in one batch, must-ask members need a design decision.</p>
+        ${clusterSectionHtml(colorClusters, "colors", "No near color token clusters found; nothing to review.")}
       </section>
 
       <section id="near-numbers">
         <h2>Near Number Tokens</h2>
-        <p class="section-lead">Spacing, type, radius, opacity, and motion values in the same family are listed when numerically close.</p>
-        ${tableHtml(["Token A", "Token B", "Difference", "Status"], nearNumberTableRows, "No near numeric token pairs found.")}
+        <p class="section-lead">Spacing, type, radius, opacity, and motion values in the same family are clustered when numerically close.</p>
+        ${clusterSectionHtml(numberClusters, "numbers", "No near numeric token clusters found; nothing to review.")}
+      </section>
+
+      <section id="scale-fit">
+        <h2>Scale Fit</h2>
+        ${scaleFitHtml}
       </section>
 
       <section id="components">
         <h2>Similar Components</h2>
-        <p class="section-lead">Rows come from <code>COMPONENT_INVENTORY.md</code> and should link source-based previews or screenshot crops when available.</p>
-        ${tableHtml(["Candidate", "Similar existing", "Visual reference", "Reason", "Suggested action", "Developer decision", "Rationale"], componentTableRows, "No component similarity review rows found.")}
+        <p class="section-lead">Rows come from <code>COMPONENT_INVENTORY.md</code>, grouped by the components they connect so every group reads as one contact sheet. Source-based previews or screenshot crops should be linked when available.</p>
+        ${componentGroups.length ? componentGroups.map(componentGroupHtml).join("\n") : '<p class="empty">No component similarity review rows found.</p>'}
       </section>
     </main>
   </div>
+  <script>
+    for (const button of document.querySelectorAll("button[data-copy]")) {
+      button.addEventListener("click", async () => {
+        const source = document.getElementById(button.dataset.copy);
+        if (!source) return;
+        try {
+          await navigator.clipboard.writeText(source.value);
+          button.textContent = "Copied";
+        } catch (error) {
+          source.hidden = false;
+          source.focus();
+          source.select();
+          button.textContent = "Select the rows below and copy";
+        }
+      });
+    }
+  </script>
 </body>
 </html>
 `;
@@ -981,7 +1187,23 @@ const html = `<!doctype html>
 if (jsonMode) {
   // Machine-readable mode keeps stdout to a single JSON object and writes no
   // files, so a caller can parse it without cleaning up generated output.
-  console.log(JSON.stringify({ counts, needsReview: needsReviewEntries() }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        counts,
+        needsReview: needsReviewEntries(),
+        clusters: {
+          counts: clusterCounts,
+          colors: colorClusters,
+          numbers: numberClusters,
+          components: componentGroups,
+          scaleFit,
+        },
+      },
+      null,
+      2,
+    ),
+  );
 } else {
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, html, "utf8");
@@ -1003,8 +1225,12 @@ if (jsonMode) {
   console.log(`Needs review: ${counts.needsReview}`);
   console.log(`Duplicate source rows: ${counts.sources}`);
   console.log(`Color scale issues: ${counts.colorScaleIssues}`);
-  console.log(`Near color pairs: ${counts.nearColors}`);
-  console.log(`Near number pairs: ${counts.nearNumbers}`);
+  console.log(`Near token clusters: ${clusterCounts.clusters} (${clusterTierSummary})`);
+  console.log(`Near color members: ${counts.nearColors}`);
+  console.log(`Near number members: ${counts.nearNumbers}`);
+  const scaleLine = scaleFitSummaryLine(scaleFit);
+  if (scaleLine) console.log(scaleLine);
   console.log(`Component similarity rows: ${counts.components}`);
+  console.log(`Component similarity clusters: ${componentGroups.length}`);
   console.log(`Assets copied: ${copiedAssets ? "yes" : "no"}`);
 }

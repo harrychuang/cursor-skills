@@ -2,9 +2,48 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+  buildTokenClusters,
+  clusterSummaryLine,
+  countVarReferences,
+  fitLengthScale,
+  formatDistance,
+  scaleFitOutlierLine,
+  scaleFitSummaryLine,
+} from "./lib/token_review.mjs";
+
+const USAGE = `Usage: node <skill-root>/scripts/audit_tokens.mjs <target-root> [--strict] [--json]
+
+Audits tokens/tokens-ref.css, tokens-sys.css, tokens-comp.css and tokens.css:
+- layer rules: --<prefix>-ref-* holds raw values only (no semantic or component words in the
+  name); --<prefix>-sys-* references ref tokens only; --<prefix>-comp-* references sys tokens only
+- reference colors are --<prefix>-ref-color-<family>-<step> with step 0-100, 100 lightest -> 0 darkest
+- background-like system colors need an on-<role> foreground pair
+- near reference colors (deltaE2000 <= 3) and near numbers in one family are grouped into
+  clusters with one canonical token; every other member needs a documented decision against
+  the canonical: a CSS comment "token-review: keep | keep-distinct | merge | merge-with |
+  approved | separate | split" or "a11y-remap" on the token, or a design-system/
+  TOKEN_ARCHITECTURE.md line naming both tokens (Near Token Decisions / Accessibility Remap
+  Decisions). Members are tiered auto / proposal / must-ask from the provenance markers in
+  the token's comment ("provenance: authored | measured; usage: <n>; sources: <ids>");
+  apply_token_decisions.mjs writes the auto tier mechanically
+- length reference values are fitted to a 4px or 8px grid; off-grid values are warnings only
+
+Options:
+  --strict    Also require all four token files, at least one token per layer and the
+              ref -> sys -> comp import order in tokens.css; undocumented near tokens become issues.
+  --json      Print one JSON object (clusters, scaleFit, counts, issues, warnings) and nothing else.
+  --help, -h  Print this message and exit 0.
+
+Output ends with "Token audit passed." or an "Issues:" list (exit 1).`;
 
 const args = process.argv.slice(2);
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
 const strict = args.includes("--strict");
+const jsonMode = args.includes("--json");
 const targetArg = args.find((arg) => !arg.startsWith("--"));
 const targetRoot = path.resolve(targetArg || process.cwd());
 const tokenDir = path.join(targetRoot, "tokens");
@@ -67,8 +106,6 @@ const rawValuePattern =
 const COLOR_SCALE_MIN = 0;
 const COLOR_SCALE_MAX = 100;
 const LIGHTNESS_TOLERANCE = 0.01;
-const NEAR_COLOR_DELTA_E = 3;
-const NEAR_COLOR_ALPHA_DELTA = 0.03;
 
 function normalizeTokenName(name) {
   return name.replace(/^--/, "").toLowerCase();
@@ -272,35 +309,6 @@ function relativeLuminance(color) {
   );
 }
 
-function labPivot(value) {
-  return value > 0.008856 ? Math.cbrt(value) : 7.787 * value + 16 / 116;
-}
-
-function rgbToLab(color) {
-  const r = srgbToLinear(color.r);
-  const g = srgbToLinear(color.g);
-  const b = srgbToLinear(color.b);
-  const x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
-  const y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1;
-  const z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
-  const fx = labPivot(x);
-  const fy = labPivot(y);
-  const fz = labPivot(z);
-  return {
-    l: 116 * fy - 16,
-    a: 500 * (fx - fy),
-    b: 200 * (fy - fz),
-  };
-}
-
-function deltaE76(colorA, colorB) {
-  const labA = rgbToLab(colorA);
-  const labB = rgbToLab(colorB);
-  return Math.sqrt(
-    (labA.l - labB.l) ** 2 + (labA.a - labB.a) ** 2 + (labA.b - labB.b) ** 2,
-  );
-}
-
 function parseReferenceColorName(name) {
   const normalized = normalizeTokenName(name);
   const marker = "-ref-color-";
@@ -358,18 +366,6 @@ function parseNumericValue(value) {
   return { amount, unit, normalized: amount, unitGroup: "number" };
 }
 
-function isNearNumericValue(a, b) {
-  const diff = Math.abs(a.normalized - b.normalized);
-  if (diff === 0) return true;
-  const largest = Math.max(Math.abs(a.normalized), Math.abs(b.normalized));
-  const ratio = largest === 0 ? 0 : diff / largest;
-  if (a.unitGroup === "length") return diff <= 2 || (diff <= 4 && ratio <= 0.06);
-  if (a.unitGroup === "time") return diff <= 50 || ratio <= 0.1;
-  if (a.unitGroup === "percent") return diff <= 2;
-  if (a.unitGroup === "angle") return diff <= 2;
-  return diff <= 0.02 || (diff <= 1 && ratio <= 0.05);
-}
-
 function reviewTextForDeclaration(declaration) {
   if (!declaration) return "";
   return `${declaration.leadingComment}\n${declaration.trailingComment}`;
@@ -407,10 +403,6 @@ function hasReviewDecision(architectureDoc, declarations, tokenA, tokenB) {
     hasCssReviewDecision(declarations.get(tokenA), declarations.get(tokenB)) ||
     hasArchitectureReviewDecision(architectureDoc, tokenA, tokenB)
   );
-}
-
-function formatNumber(value) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(2);
 }
 
 const issues = [];
@@ -497,7 +489,9 @@ for (const [name, value] of props.sys) {
     issues.push(`System token references component token: ${name}: ${value}`);
   }
   if (!/var\(--[A-Za-z0-9_-]*-ref-/.test(value) && rawValuePattern.test(value)) {
-    issues.push(`System token appears to use a raw value instead of a reference token: ${name}: ${value}`);
+    issues.push(
+      `System token appears to use a raw value instead of a reference token: ${name}: ${value}. Move the literal into tokens-ref.css as a reference token and reference it with var() (TOKEN_ARCHITECTURE.md layer rules).`,
+    );
   }
 }
 
@@ -509,7 +503,9 @@ for (const [name, value] of props.comp) {
     issues.push(`Component token references another component token: ${name}: ${value}`);
   }
   if (!/var\(--[A-Za-z0-9_-]*-sys-/.test(value) && rawValuePattern.test(value)) {
-    issues.push(`Component token appears to use a raw value instead of a system token: ${name}: ${value}`);
+    issues.push(
+      `Component token appears to use a raw value instead of a system token: ${name}: ${value}. Reference a system token with var(); a new raw value belongs in tokens-ref.css first (TOKEN_ARCHITECTURE.md layer rules).`,
+    );
   }
 }
 
@@ -590,39 +586,6 @@ for (const [family, familyTokens] of colorsByFamily) {
   }
 }
 
-let unresolvedReviewCandidates = 0;
-let documentedReviewCandidates = 0;
-
-function recordReviewCandidate(message, tokenA, tokenB) {
-  if (hasReviewDecision(tokenArchitectureDoc, declarations.ref, tokenA, tokenB)) {
-    documentedReviewCandidates += 1;
-    return;
-  }
-  unresolvedReviewCandidates += 1;
-  const finalMessage = `${message}. Ask the developer whether to merge them or keep them distinct, then document the decision in design-system/TOKEN_ARCHITECTURE.md or with a token-review CSS comment.`;
-  if (strict) {
-    issues.push(finalMessage);
-  } else {
-    warnings.push(finalMessage);
-  }
-}
-
-for (let firstIndex = 0; firstIndex < referenceColors.length; firstIndex += 1) {
-  for (let secondIndex = firstIndex + 1; secondIndex < referenceColors.length; secondIndex += 1) {
-    const first = referenceColors[firstIndex];
-    const second = referenceColors[secondIndex];
-    const alphaDiff = Math.abs(first.color.a - second.color.a);
-    const deltaE = deltaE76(first.color, second.color);
-    if (alphaDiff <= NEAR_COLOR_ALPHA_DELTA && deltaE <= NEAR_COLOR_DELTA_E) {
-      recordReviewCandidate(
-        `Near reference colors need review: ${first.name} (${first.value}) and ${second.name} (${second.value}) have deltaE ${formatNumber(deltaE)}`,
-        first.name,
-        second.name,
-      );
-    }
-  }
-}
-
 const referenceNumbers = [];
 for (const [name, value] of props.ref) {
   if (parseColor(value)) continue;
@@ -636,42 +599,93 @@ for (const [name, value] of props.ref) {
   });
 }
 
-for (let firstIndex = 0; firstIndex < referenceNumbers.length; firstIndex += 1) {
-  for (let secondIndex = firstIndex + 1; secondIndex < referenceNumbers.length; secondIndex += 1) {
-    const first = referenceNumbers[firstIndex];
-    const second = referenceNumbers[secondIndex];
-    if (first.family !== second.family || first.numeric.unitGroup !== second.numeric.unitGroup) {
-      continue;
-    }
-    if (isNearNumericValue(first.numeric, second.numeric)) {
-      const diff = Math.abs(first.numeric.normalized - second.numeric.normalized);
-      recordReviewCandidate(
-        `Near reference numbers need review: ${first.name} (${first.value}) and ${second.name} (${second.value}) differ by ${formatNumber(diff)} ${first.numeric.unitGroup}`,
-        first.name,
-        second.name,
-      );
-    }
+// Near tokens are reviewed per cluster: one canonical token, every other member
+// tiered auto / proposal / must-ask against it (scripts/lib/token_review.mjs). A
+// member counts as documented when a decision names it together with the canonical.
+const varCounts = countVarReferences([css.sys || "", css.comp || ""]);
+const { clusters, counts: clusterCounts } = buildTokenClusters({
+  colors: referenceColors,
+  numbers: referenceNumbers,
+  declarations: declarations.ref,
+  varCounts,
+  hasDecision: (member, canonical) =>
+    hasReviewDecision(tokenArchitectureDoc, declarations.ref, member, canonical),
+});
+
+for (const cluster of clusters) {
+  const canonical = cluster.canonical;
+  for (const member of cluster.members) {
+    if (member.documented) continue;
+    const comparison =
+      cluster.kind === "color"
+        ? `Near reference colors need review: ${canonical.name} (${canonical.value}) and ${member.name} (${member.value}) have ${member.distanceLabel}`
+        : `Near reference numbers need review: ${canonical.name} (${canonical.value}) and ${member.name} (${member.value}) differ by ${formatDistance(member.distance)} ${cluster.unitGroup}`;
+    const proposal = member.proposed ? `proposed ${member.proposed}` : "no default, the developer decides";
+    const message = `${comparison} [${cluster.id}, tier ${member.tier}, ${proposal}]. Record the decision against the canonical in design-system/TOKEN_ARCHITECTURE.md (Near Token Decisions) or with a token-review CSS comment; apply_token_decisions.mjs --tier ${member.tier} writes it.`;
+    if (strict) issues.push(message);
+    else warnings.push(message);
   }
 }
+const unresolvedReviewCandidates = clusterCounts.candidates;
+const documentedReviewCandidates = clusterCounts.documented;
+
+// Scale fitting is advisory in every mode: an off-grid value is a question for the
+// developer, not a layer violation.
+const scaleFit = fitLengthScale(referenceNumbers);
+const scaleOutlierLine = scaleFitOutlierLine(scaleFit);
+if (scaleOutlierLine) warnings.push(scaleOutlierLine);
 
 const relRoot = path.relative(process.cwd(), targetRoot) || ".";
-console.log(`Token audit target: ${relRoot}`);
-console.log(`Reference tokens: ${props.ref.size}`);
-console.log(`System tokens: ${props.sys.size}`);
-console.log(`Component tokens: ${props.comp.size}`);
-console.log(`Strict mode: ${strict ? "on" : "off"}`);
-console.log(`Token review candidates: ${unresolvedReviewCandidates}`);
-console.log(`Documented review decisions: ${documentedReviewCandidates}`);
+const output = [];
+const log = (line) => output.push(line);
+log(`Token audit target: ${relRoot}`);
+log(`Reference tokens: ${props.ref.size}`);
+log(`System tokens: ${props.sys.size}`);
+log(`Component tokens: ${props.comp.size}`);
+log(`Strict mode: ${strict ? "on" : "off"}`);
+log(
+  `Near token clusters: ${clusterCounts.clusters} (auto ${clusterCounts.tiers.auto}, proposal ${clusterCounts.tiers.proposal}, must-ask ${clusterCounts.tiers["must-ask"]})`,
+);
+for (const cluster of clusters) log(`- ${clusterSummaryLine(cluster)}`);
+log(`Token review candidates: ${unresolvedReviewCandidates}`);
+log(`Documented review decisions: ${documentedReviewCandidates}`);
+const scaleSummary = scaleFitSummaryLine(scaleFit);
+if (scaleSummary) log(scaleSummary);
 
 if (warnings.length) {
-  console.log("\nWarnings:");
-  for (const warning of warnings) console.log(`- ${warning}`);
+  log("\nWarnings:");
+  for (const warning of warnings) log(`- ${warning}`);
 }
 
 if (issues.length) {
-  console.log("\nIssues:");
-  for (const issue of issues) console.log(`- ${issue}`);
-  process.exit(1);
+  log("\nIssues:");
+  for (const issue of issues) log(`- ${issue}`);
+} else {
+  log("\nToken audit passed.");
 }
 
-console.log("\nToken audit passed.");
+if (jsonMode) {
+  console.log(
+    JSON.stringify(
+      {
+        clusters,
+        scaleFit,
+        counts: {
+          ...clusterCounts,
+          referenceTokens: props.ref.size,
+          systemTokens: props.sys.size,
+          componentTokens: props.comp.size,
+          strict,
+        },
+        issues,
+        warnings,
+      },
+      null,
+      2,
+    ),
+  );
+} else {
+  console.log(output.join("\n"));
+}
+
+if (issues.length) process.exit(1);

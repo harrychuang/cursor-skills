@@ -1,0 +1,8 @@
+:root {
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-shape-corner-full: 9999px;
+  --md-sys-color-scrim: rgb(0 0 0 / 32%);
+  --md-sys-color-on-scrim: var(--md-ref-color-neutral-0);
+  --md-sys-spacing-none: 0;
+  --md-sys-spacing-gap-md: var(--md-ref-size-16);
+}

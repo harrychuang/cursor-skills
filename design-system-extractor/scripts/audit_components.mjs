@@ -2,13 +2,73 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { groupConnected } from "./lib/token_review.mjs";
+
+// The canonical English keywords for the Component Similarity Review decision cell.
+// decisionPattern below also accepts a few synonyms and CJK equivalents, but the
+// messages quote this list so authors learn the words the gate is built on.
+const COMPONENT_DECISION_KEYWORDS = "merge | make variant | keep distinct | blocked | out-of-scope";
+
+// Status vocabulary accepted without a lint warning: the extractor's own values
+// (extracted | planned | blocked | out-of-scope) plus everything
+// design-system-to-storybook reads or writes back into the inventory.
+const KNOWN_STATUS_WORDS = [
+  "extracted",
+  "planned",
+  "blocked",
+  "out-of-scope",
+  "ready",
+  "queued",
+  "in-progress",
+  "todo",
+  "candidate",
+  "deferred",
+  "needs-extraction",
+  "implementation-derived",
+  "brief-derived",
+  "needs-review",
+  "done",
+  "reused",
+  "needs-source",
+  "needs-token",
+  "needs-api-decision",
+  "needs-existing-component-review",
+];
+const knownStatusPattern = new RegExp(`\\b(?:${KNOWN_STATUS_WORDS.join("|")})\\b`, "i");
+const extractedStatusPattern = /\bextracted\b/i;
+// Specs that design-system-to-storybook drafted from code or a brief carry one of
+// these markers; they are not extractor output, so a missing fingerprint stays a warning.
+const derivedSpecPattern = /implementation-derived|brief-derived|needs-review/i;
+
+const USAGE = `Usage: node <skill-root>/scripts/audit_components.mjs <target-root> [--strict]
+
+Audits design-system/COMPONENT_INVENTORY.md and design-system/components/*.md:
+- inventory Status cells are linted (warning only) against: ${KNOWN_STATUS_WORDS.join(" | ")}
+- rows that mention similarity, duplicates or merging need a Component Similarity Review table
+- every Component Similarity Review row needs a source-based visual reference (or a labeled
+  schematic fallback) and a Developer decision containing one of: ${COMPONENT_DECISION_KEYWORDS}
+- every components/*.md should have a "## Component Fingerprint" section
+
+Options:
+  --strict    Report problems as issues (exit 1) instead of warnings; also requires at least one
+              inventory component row, and a fingerprint section in every spec whose inventory
+              Status is extracted (specs marked implementation-derived / brief-derived / needs-review
+              are exempt).
+  --help, -h  Print this message and exit 0.
+
+Output ends with "Component audit passed." or an "Issues:" list (exit 1).`;
 
 const args = process.argv.slice(2);
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
 const strict = args.includes("--strict");
 const targetArg = args.find((arg) => !arg.startsWith("--"));
 const targetRoot = path.resolve(targetArg || process.cwd());
 const designSystemDir = path.join(targetRoot, "design-system");
 const inventoryFile = path.join(designSystemDir, "COMPONENT_INVENTORY.md");
+const inventoryRel = path.relative(targetRoot, inventoryFile);
 const componentDocsDir = path.join(designSystemDir, "components");
 
 const decisionPattern =
@@ -167,9 +227,63 @@ function usesSvgReference(value) {
   return /\.svg(?:\b|[?#)])/i.test(cleanedCell(value));
 }
 
+// Keys that connect an inventory Component cell to a components/<name>.md spec:
+// the slug of the visible name plus the basename of any linked components/*.md.
+function slugify(value) {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function componentKeys(cell) {
+  const keys = new Set();
+  const raw = String(cell);
+  for (const match of raw.matchAll(/\(([^)]*components\/)?([^)/]+)\.md\)/gi)) {
+    keys.add(slugify(match[2]));
+  }
+  const visible = cleanedCell(raw)
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[（(][^）)]*[）)]/g, " ");
+  const slug = slugify(visible);
+  if (slug) keys.add(slug);
+  return [...keys];
+}
+
 function hasFallbackDisclosure(value) {
   return /schematic fallback|source preview unavailable|source unavailable|preview unavailable|no source preview|no source image|無法取得|无法取得|來源預覽|来源预览|沒有來源|没有来源|備援|备援|示意|非設計稿|非设计稿|プレビュー不可|取得できない|代替/i.test(
     cleanedCell(value),
+  );
+}
+
+// Similarity rows are grouped by the components they connect (union-find over the
+// candidate and similar names), so one candidate compared against several existing
+// components reads as one decision instead of several unrelated rows.
+function similarityKey(value) {
+  return cleanedCell(value || "")
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[*_]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function clusterSimilarityRows(rows) {
+  return groupConnected(rows, (row) => [similarityKey(row.candidate), similarityKey(row.similar)]).map(
+    (group) => {
+      const components = new Set();
+      for (const row of group.items) {
+        for (const name of [row.candidate, row.similar]) {
+          const cleaned = cleanedCell(name || "");
+          if (cleaned) components.add(cleaned);
+        }
+      }
+      return {
+        components: [...components],
+        rows: group.items,
+        unresolved: group.items.some((row) => row.unresolved),
+      };
+    },
   );
 }
 
@@ -177,6 +291,7 @@ const issues = [];
 const warnings = [];
 
 const inventory = await readOptional(inventoryFile);
+const similarityEdges = [];
 let similarityRows = 0;
 let unresolvedSimilarityRows = 0;
 let documentedSimilarityRows = 0;
@@ -184,6 +299,8 @@ let sourcePreviewRows = 0;
 let fallbackVisualRows = 0;
 let missingVisualRows = 0;
 let inventoryComponentRows = 0;
+let statusLintWarnings = 0;
+const extractedComponentKeys = new Set();
 
 if (inventory === null) {
   const message = `Missing ${path.relative(targetRoot, inventoryFile)}`;
@@ -201,12 +318,35 @@ if (inventory === null) {
       inventoryComponentRows += 1;
       const notes = firstValue(entry.row, ["notes"]);
       const status = firstValue(entry.row, ["status"]);
+      const cleanStatus = cleanedCell(status);
+      if (extractedStatusPattern.test(cleanStatus)) {
+        for (const key of componentKeys(component)) extractedComponentKeys.add(key);
+      }
+      // Status lint is advisory in every mode: downstream tools decide what to
+      // build from these words, so a typo here would silently drop a component later.
+      if (unresolvedPattern.test(cleanStatus)) {
+        statusLintWarnings += 1;
+        warnings.push(
+          `${inventoryRel}:${entry.line}: Status is empty for ${cleanedCell(component)}. Known status keywords: ${KNOWN_STATUS_WORDS.join(" | ")}.`,
+        );
+      } else if (!knownStatusPattern.test(cleanStatus)) {
+        statusLintWarnings += 1;
+        warnings.push(
+          `${inventoryRel}:${entry.line}: Status "${cleanStatus}" for ${cleanedCell(component)} is not a known status keyword. Known status keywords: ${KNOWN_STATUS_WORDS.join(" | ")} (English keyword first, an annotation in full-width parentheses may follow).`,
+        );
+      }
       if (containsSimilarityCue(`${status} ${notes}`) && !similarityTables.length) {
-        const message = `Component inventory row ${entry.line} mentions similarity or merge review but no Component Similarity Review table exists.`;
+        const message = `${inventoryRel}:${entry.line}: Component inventory row mentions similarity or merge review but no Component Similarity Review table exists.`;
         if (strict) issues.push(message);
         else warnings.push(message);
       }
     }
+  }
+
+  if (!inventoryComponentRows && strict) {
+    issues.push(
+      `${inventoryRel}: Strict mode requires at least one inventory component row before the checkpoint; run without --strict (or extract_check.mjs --starter) for an empty starter package.`,
+    );
   }
 
   for (const table of similarityTables) {
@@ -221,7 +361,7 @@ if (inventory === null) {
       const fallbackContext = `${visual} ${reason} ${firstValue(entry.row, ["rationale", "owner"])}`;
       if (!hasVisualReference(visual)) {
         missingVisualRows += 1;
-        const message = `Missing visual reference for component similarity review at row ${entry.line}: ${candidate || "candidate"} vs ${similar || "similar component"}. Link a Figma node preview, screenshot crop, or documented fallback.`;
+        const message = `${inventoryRel}:${entry.line}: Missing visual reference for component similarity review: ${candidate || "candidate"} vs ${similar || "similar component"}. Link a Figma node preview, screenshot crop, or documented fallback.`;
         if (strict) issues.push(message);
         else warnings.push(message);
       } else if (hasSourceBasedPreview(visual)) {
@@ -229,42 +369,56 @@ if (inventory === null) {
       } else if (usesSvgReference(visual)) {
         fallbackVisualRows += 1;
         if (!hasFallbackDisclosure(fallbackContext)) {
-          const message = `SVG visual reference at row ${entry.line} must be labeled as schematic fallback with source preview unavailable; do not use AI-drawn SVG as design evidence.`;
+          const message = `${inventoryRel}:${entry.line}: SVG visual reference must be labeled "schematic fallback - source preview unavailable"; do not use AI-drawn SVG as design evidence.`;
           if (strict) issues.push(message);
           else warnings.push(message);
         } else {
           warnings.push(
-            `Similarity review row ${entry.line} uses a schematic fallback SVG; prefer a Figma node preview or screenshot crop when available.`,
+            `${inventoryRel}:${entry.line}: Similarity review row uses a schematic fallback SVG; prefer a Figma node preview or screenshot crop when available.`,
           );
         }
       } else {
         missingVisualRows += 1;
-        const message = `Visual reference at row ${entry.line} does not identify a Figma preview, screenshot crop, or labeled fallback: ${visual}`;
+        const message = `${inventoryRel}:${entry.line}: Visual reference does not identify a Figma preview, screenshot crop, or labeled fallback: ${visual}`;
         if (strict) issues.push(message);
         else warnings.push(message);
       }
       if (isUnresolvedDecision(decision)) {
         unresolvedSimilarityRows += 1;
-        const message = `Unresolved component similarity review at row ${entry.line}: ${candidate || "candidate"} vs ${similar || "similar component"}. Record merge, make variant, keep distinct, or blocked.`;
+        const message = `${inventoryRel}:${entry.line}: Unresolved component similarity review: ${candidate || "candidate"} vs ${similar || "similar component"}. Developer decision "${cleanedCell(decision) || "(empty)"}" is not accepted; it must contain one of: ${COMPONENT_DECISION_KEYWORDS} (English keyword first, an annotation in full-width parentheses may follow).`;
         if (strict) issues.push(message);
         else warnings.push(message);
       } else {
         documentedSimilarityRows += 1;
       }
+      similarityEdges.push({ candidate, similar, unresolved: isUnresolvedDecision(decision) });
     }
   }
 }
+
+const similarityClusters = clusterSimilarityRows(similarityEdges);
+const unresolvedSimilarityClusters = similarityClusters.filter((cluster) => cluster.unresolved).length;
 
 const componentDocs = await listMarkdownDocs(componentDocsDir);
 let specsMissingFingerprint = 0;
 for (const file of componentDocs) {
   const content = await readOptional(file);
   if (!content) continue;
-  if (!/^##\s+Component Fingerprint\b/im.test(content)) {
-    specsMissingFingerprint += 1;
-    warnings.push(
-      `Component spec is missing a Component Fingerprint section: ${path.relative(targetRoot, file)}`,
+  if (/^##\s+Component Fingerprint\b/im.test(content)) continue;
+  specsMissingFingerprint += 1;
+  const specRel = path.relative(targetRoot, file);
+  const title = content.match(/^#\s+(.+)$/m)?.[1] || "";
+  const specKeys = [slugify(path.basename(file, ".md")), ...componentKeys(title)];
+  const isExtracted = specKeys.some((key) => extractedComponentKeys.has(key));
+  const message = `${specRel}: Component spec is missing a "## Component Fingerprint" section.`;
+  // Strict promotes this only for specs the inventory marks as extracted by this
+  // skill; drafts written by design-system-to-storybook keep the warning.
+  if (strict && isExtracted && !derivedSpecPattern.test(content)) {
+    issues.push(
+      `${message} The inventory marks this component extracted, so strict mode requires the fingerprint (Purpose / Anatomy / Variants / Token contract / Layout / Visual reference rows).`,
     );
+  } else {
+    warnings.push(message);
   }
 }
 
@@ -275,10 +429,13 @@ console.log(`Component specs: ${componentDocs.length}`);
 console.log(`Similarity review rows: ${similarityRows}`);
 console.log(`Unresolved similarity rows: ${unresolvedSimilarityRows}`);
 console.log(`Documented similarity decisions: ${documentedSimilarityRows}`);
+console.log(`Similarity clusters: ${similarityClusters.length}`);
+console.log(`Unresolved similarity clusters: ${unresolvedSimilarityClusters}`);
 console.log(`Source preview visual rows: ${sourcePreviewRows}`);
 console.log(`Fallback visual rows: ${fallbackVisualRows}`);
 console.log(`Missing visual rows: ${missingVisualRows}`);
 console.log(`Specs missing fingerprint: ${specsMissingFingerprint}`);
+console.log(`Status lint warnings: ${statusLintWarnings}`);
 console.log(`Strict mode: ${strict ? "on" : "off"}`);
 
 if (warnings.length) {

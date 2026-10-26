@@ -1,0 +1,4 @@
+:root {
+  --md-comp-card-padding: var(--md-sys-spacing-gap-md);
+  --md-comp-card-radius: var(--md-sys-shape-corner-sm);
+}

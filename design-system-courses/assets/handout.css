@@ -89,7 +89,7 @@
 /* 標題兩欄：左邊是很大的部數（00、01…），右邊是眉標、大標和說明；數字的頂端對齊眉標。插圖在最右邊 */
 .part-head { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 48px; align-items: end; margin-bottom: 48px; }
 .part-head__main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; align-items: start; }
-.part-head__no { margin: -2px 0 0; font-size: 152px; line-height: .8; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; background: var(--dsc-comp-hero-color-heading); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.part-head__no { margin: -2px 0 0; font-size: 152px; line-height: .8; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: var(--dsc-comp-hero-color-heading); }
 .part-head .lede { margin-top: 20px; }
 .part-head__img { width: 100%; max-width: 260px; justify-self: end; }
 .part-goals { margin: 56px 0 0; }

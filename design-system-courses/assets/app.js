@@ -104,7 +104,7 @@
 
   /* ---------- 每一部：大標、學完能做到、章節卡 ---------- */
   const cardHTML = (c, i) => `<button class="ch-card rv" type="button" data-open="${c.id}" aria-haspopup="dialog" style="--rv-d:${i * 0.08}s">
-      <span class="ch-card__meta tag">${c.id} · ${c.kind} · ${c.mins} 分鐘${c.anim ? ' · 含動畫' : ''}</span>
+      <span class="ch-card__meta tag">${c.id} · ${c.kind} · ${c.mins} 分鐘</span>
       <span class="ch-card__title">${md(c.title)}</span>
       <span class="ch-card__goal">${md(c.goal)}</span>
       <span class="ch-card__flag" data-role-flag></span>

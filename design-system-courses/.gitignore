@@ -1,0 +1,6 @@
+# 講義資料夾裡不進 git 的東西
+# ref/ 是公司資料，不能放進公開的 repo
+ref/
+# 原始插圖（77 MB），網頁只用 images/web/ 的裁切版
+images/illustration/
+.DS_Store

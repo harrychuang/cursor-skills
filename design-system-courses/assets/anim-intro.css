@@ -1,0 +1,97 @@
+/* =========================================================
+   0-2、0-3 說明動畫的場景元素
+   播放器、字級、進場方式沿用 anim.css；這裡只放新場景用到的小元件
+   ========================================================= */
+
+/* ---------- 共用 ---------- */
+.a-who { display: grid; justify-items: center; gap: 10px; }
+.a-who img { height: 150px; width: auto; }
+.a-say { position: relative; background: #fff; color: var(--a-ink); border-radius: 16px; padding: 10px 16px; font-size: 17px; font-weight: 800; white-space: nowrap; box-shadow: 0 10px 26px rgba(20, 19, 43, .12); }
+.a-say::after { content: ""; position: absolute; bottom: -6px; width: 14px; height: 14px; border-radius: 3px; background: #fff; transform: rotate(45deg); }
+.a-say--l::after { left: 24px; }
+.a-say--r::after { right: 24px; }
+.a-stamp { background: #D7263D; color: #fff; border-radius: 12px; padding: 8px 16px; font-size: 20px; font-weight: 900; white-space: nowrap; rotate: -6deg; box-shadow: 0 10px 24px rgba(215, 38, 61, .3); }
+.a-note--warn { color: #D7263D; }
+.anim__canvas .a-btn { transition: box-shadow .5s ease, background-color .6s ease; }
+
+/* ---------- 0-2 三天的商品頁 ---------- */
+.a-day { display: block; margin-bottom: 10px; text-align: center; font-size: 15px; font-weight: 800; color: var(--a-muted); }
+.a-phone--sm .a-screen { min-height: 0; padding: 16px 12px 14px; gap: 8px; }
+.a-phone--sm .a-pimg { height: 64px; }
+.a-phone--sm .a-screen b { font-size: 16px; }
+.a-screen--d1 b { font-family: Georgia, "Songti TC", serif; font-weight: 400; }
+.a-screen--d2 .a-pimg { border-radius: 28px; background: #EDE7FF; }
+.a-screen--d3 b { font-weight: 400; font-size: 17px; }
+.a-screen--d3 i { background: transparent; border-bottom: 2px solid #1C9BD8; border-radius: 0; }
+.a-btn--d1 { background: #E4572E; border-radius: 0; font-weight: 400; }
+.a-btn--d2 { background: #7B2FF7; border-radius: 999px; box-shadow: 0 6px 16px rgba(123, 47, 247, .45); }
+.a-btn--d3 { background: #1C9BD8; border-radius: 4px; letter-spacing: .14em; font-size: 12px; }
+.anim__canvas .a-btn.is-go { background: #D7263D; }
+
+/* ---------- 0-2 規則＋零件 ---------- */
+.a-box { background: #fff; border-radius: 22px; padding: 20px 22px 22px; box-shadow: 0 14px 36px rgba(20, 19, 43, .1); }
+.a-box__tag { display: inline-block; padding: 2px 12px; border-radius: 999px; background: var(--a-soft); color: var(--a-primary); font-size: 14px; font-weight: 900; }
+.a-box__t { display: block; margin: 10px 0 14px; font-size: 22px; font-weight: 900; }
+.a-box__rows { display: grid; gap: 10px; }
+.a-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: 12px; background: #F6F6FB; font-size: 15px; font-weight: 700; }
+.a-row .a-tok { font-size: 11.5px; }
+.a-row small { margin-left: auto; font-family: var(--dsc-sys-font-code); font-size: 12px; font-weight: 700; color: var(--a-muted); letter-spacing: 0; }
+.a-row .a-btn { font-size: 13px; padding: 6px 12px; }
+.a-plus { width: 56px; height: 56px; border-radius: 50%; background: var(--a-primary); color: #fff; font-size: 30px; font-weight: 900; display: grid; place-items: center; box-shadow: 0 10px 24px rgba(73, 69, 255, .3); }
+.a-chipset { display: inline-flex; gap: 6px; }
+.a-chipset i { min-width: 30px; padding: 3px 8px; border-radius: 7px; background: #E9E9EE; font-style: normal; font-size: 13px; font-weight: 800; text-align: center; }
+.a-chipset i.on { background: #111111; color: #fff; }
+.a-stepper { display: inline-flex; align-items: center; gap: 10px; }
+.a-stepper i { width: 26px; height: 26px; border-radius: 50%; background: #E9E9EE; display: grid; place-items: center; font-style: normal; font-weight: 900; }
+.a-stepper b { font-size: 15px; }
+
+/* ---------- 0-2 只改一個 token ---------- */
+.a-tokbar { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 17px; font-weight: 800; }
+.a-tokbar .a-tok { font-size: 14px; padding: 4px 10px; }
+.a-swap { position: relative; display: inline-grid; }
+.a-swap > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: opacity .5s ease, transform .5s ease; }
+.a-tokbar .a-swap > span { font-family: var(--dsc-sys-font-code); letter-spacing: 0; }
+.a-swap__new { opacity: 0; transform: translateY(8px); }
+.anim__canvas .a-swap.is-go .a-swap__old { opacity: 0; transform: translateY(-8px); }
+.anim__canvas .a-swap.is-go .a-swap__new { opacity: 1; transform: none; }
+.a-dot { display: inline-block; width: 16px; height: 16px; border-radius: 5px; }
+
+/* ---------- 0-2 五層：由抽象到具體 ---------- */
+.a-axis { display: grid; justify-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: var(--a-muted); }
+.a-axis i { position: relative; width: 4px; height: 206px; border-radius: 4px; background: linear-gradient(var(--a-line), var(--a-primary)); }
+.a-axis i::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 12px; height: 12px; border-right: 4px solid var(--a-primary); border-bottom: 4px solid var(--a-primary); transform: translateX(-50%) rotate(45deg); }
+.a-layer { display: flex; align-items: center; gap: 16px; height: 46px; padding: 0 18px; border-radius: 14px; background: #fff; box-shadow: 0 8px 22px rgba(20, 19, 43, .08); }
+.a-layer b { flex: none; width: 92px; font-size: 17px; font-weight: 900; }
+.a-layer span { font-size: 15px; font-weight: 700; color: var(--a-muted); white-space: nowrap; }
+.anim__canvas .a-layer.is-hot { background: var(--a-mint); }
+.anim__canvas .a-layer.is-hot span { color: var(--a-ink); }
+
+/* ---------- 0-3 遊戲存檔 ---------- */
+.a-boss { display: grid; justify-items: center; gap: 6px; padding: 16px 14px 18px; border-radius: 22px; background: #fff; box-shadow: 0 14px 36px rgba(20, 19, 43, .12); text-align: center; }
+.a-boss img { height: 96px; width: auto; }
+.a-boss b { font-size: 18px; font-weight: 900; }
+.a-boss small { font-size: 14px; font-weight: 700; line-height: 1.4; color: var(--a-muted); }
+
+/* ---------- 0-3 四個動作的小圖 ---------- */
+.a-focus__no--code { font-family: var(--dsc-sys-font-code); letter-spacing: 0; }
+.g-save { display: grid; justify-items: center; gap: 14px; }
+.g-save__dot { width: 66px; height: 66px; border-radius: 50%; background: var(--a-mint); color: var(--a-ink); font-size: 30px; font-weight: 900; display: grid; place-items: center; }
+.g-save__msg { padding: 4px 10px; border-radius: 8px; background: #F1F0FF; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.g-diff { display: grid; gap: 10px; width: 150px; font-family: var(--dsc-sys-font-code); font-size: 13px; font-weight: 700; letter-spacing: 0; }
+.g-diff span { padding: 8px 10px; border-radius: 8px; }
+.g-del { background: #FFE8EC; color: #B8174B; text-decoration: line-through; }
+.g-add { background: #DDFFF1; color: #04603B; }
+.g-restore { display: grid; justify-items: center; gap: 8px; }
+.g-file { padding: 8px 12px; border-radius: 10px; background: #F1F0FF; font-family: var(--dsc-sys-font-code); font-size: 13px; font-weight: 700; letter-spacing: 0; }
+.g-restore svg { width: 96px; height: 54px; }
+.g-branch { width: 156px; height: 116px; }
+
+/* ---------- 0-3 不要存進去 ---------- */
+.a-secret { position: relative; display: grid; justify-items: center; gap: 6px; padding: 20px 12px 18px; border-radius: 18px; background: #fff; box-shadow: 0 10px 26px rgba(20, 19, 43, .1); text-align: center; }
+.a-secret b { font-family: var(--dsc-sys-font-code); font-size: 19px; letter-spacing: 0; }
+.a-secret small { font-size: 13.5px; font-weight: 700; color: var(--a-muted); }
+.a-no { position: absolute; top: -12px; right: -8px; padding: 3px 10px; border-radius: 999px; background: #D7263D; color: #fff; font-size: 13px; font-weight: 900; white-space: nowrap; }
+.anim__canvas .a-node--bad { background: #D7263D; box-shadow: 0 0 0 3px #D7263D; }
+.anim__canvas .a-node--ok { background: var(--a-primary); box-shadow: 0 0 0 3px var(--a-primary); }
+.a-find { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 12px; background: var(--a-ink); color: #fff; font-size: 15px; font-weight: 800; white-space: nowrap; }
+.a-find::after { content: ""; position: absolute; left: 28px; bottom: -6px; width: 12px; height: 12px; border-radius: 2px; background: var(--a-ink); transform: rotate(45deg); }

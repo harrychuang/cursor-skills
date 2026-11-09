@@ -124,7 +124,6 @@
                 <p class="eyebrow">${esc(h.eyebrow)}</p>
                 <h2 class="headline" id="part-${pi}-title">${md(h.headline)}。</h2>
                 <p class="lede">${md(p.tagline)}</p>
-                <p class="part-head__meta">${pi ? `第 ${pi} 部 · ` : ''}${p.chapters.length} 堂 · ${partMins(p)} 分鐘<span data-part-count="${pi}"></span></p>
               </div>
             </div>
             ${img(p.img, 'part-head__img')}
@@ -134,7 +133,7 @@
             <div class="rail__nav" hidden><button class="paddle" type="button" data-rail-prev aria-label="上一堂卡片"></button><button class="paddle" type="button" data-rail-next aria-label="下一堂卡片"></button></div>
           </div>
           <!-- 「學完這部，你能」放在章節卡下面：先看這一部有哪幾堂，再看學完能做到什麼 -->
-          <div class="part-goals rv"><p class="part-goals__label">學完這部，你能</p><ul>${p.goals.map(g => `<li>${ICON.check}<span>${md(g)}</span></li>`).join('')}</ul></div>
+          <div class="part-goals rv"><p class="part-goals__label">學完這部（${p.chapters.length} 堂 · ${partMins(p)} 分鐘<span data-part-count="${pi}"></span>），你能</p><ul>${p.goals.map(g => `<li>${ICON.check}<span>${md(g)}</span></li>`).join('')}</ul></div>
           <div class="part__print" hidden></div>
         </div>
       </section>`;

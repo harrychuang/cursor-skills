@@ -99,8 +99,8 @@
   --dsc-comp-code-color-container: var(--dsc-sys-color-inverse-surface);
   --dsc-comp-code-color-label: var(--dsc-sys-color-inverse-on-surface);
   --dsc-comp-sheet-size-corner: var(--dsc-sys-size-corner-xl);
-  --dsc-comp-tag-color-container: var(--dsc-sys-color-secondary);
-  --dsc-comp-tag-color-label: var(--dsc-sys-color-on-secondary);
+  --dsc-comp-tag-color-container: var(--dsc-sys-color-primary);
+  --dsc-comp-tag-color-label: var(--dsc-sys-color-on-primary);
   --dsc-comp-tag-size-corner: var(--dsc-sys-size-corner-full);
   --dsc-comp-stats-color-container: var(--dsc-sys-color-surface-container-default);
   --dsc-comp-stats-size-corner: var(--dsc-sys-size-corner-xl);

@@ -51,13 +51,14 @@ Routing notes:
 1. **Inspect before write** — every write is preceded by a read-only call that confirms the current state.
 2. **One call at a time** — `use_figma` calls never run in parallel. Each write script re-fetches nodes and variables by ID, checks the variable type against the property, and returns every affected variable, style, and node ID.
 3. **Infer conventions first** — prefix, collection layout, composite mode, scales, state order and words, and Ref color category come from the file (P2). Ask only when the file has no evidence; keep confirmed decisions for the whole session.
-4. **Layers** — Ref stores raw values (scope `[]`); Sys aliases Ref; Comp aliases Sys; composed colors follow the same directions. Never bind Ref to a node.
-5. **Binding targets** — single-value properties bind to Comp tokens (Sys only for page-level use with no component). Typography and elevation bind through Styles bound to Sys tokens (Styles mode, the default) or through Comp typography tokens (Variables mode).
-6. **Scopes and code syntax** — explicit scopes on every Sys and Comp variable (never `ALL_SCOPES`); WEB code syntax on every variable.
-7. **Appearance neutrality** — before binding, compare the token's resolved value with the current value (P4). A difference is a Tier 3 change, even when the user said "apply everything".
-8. **Library tokens** — never duplicate library variables locally (P2 detects them).
-9. **Chunks** — at most 100 bindings or one component per write call.
-10. **Errors** — stop, read the message, fix the cause, and retry that step only. Never retry blindly.
+4. **Naming order** — take the order of name segments from the prompt, then the order recorded in the file or the project, then the file's names, then M3 ([token-spec.md](references/token-spec.md) §14-2); ask once only when those sources disagree. State it in every plan and audit report (`Naming order: … (source)`), where the user can switch it, and record the confirmed order in the file.
+5. **Layers** — Ref stores raw values (scope `[]`); Sys aliases Ref; Comp aliases Sys; composed colors follow the same directions. Never bind Ref to a node.
+6. **Binding targets** — single-value properties bind to Comp tokens (Sys only for page-level use with no component). Typography and elevation bind through Styles bound to Sys tokens (Styles mode, the default) or through Comp typography tokens (Variables mode).
+7. **Scopes and code syntax** — explicit scopes on every Sys and Comp variable (never `ALL_SCOPES`); WEB code syntax on every variable.
+8. **Appearance neutrality** — before binding, compare the token's resolved value with the current value (P4). A difference is a Tier 3 change, even when the user said "apply everything".
+9. **Library tokens** — never duplicate library variables locally (P2 detects them).
+10. **Chunks** — at most 100 bindings or one component per write call.
+11. **Errors** — stop, read the message, fix the cause, and retry that step only. Never retry blindly.
 
 ---
 
@@ -93,6 +94,7 @@ Every confirmation request shows:
 - Ref and Sys never contain component or region names; only Comp does.
 - Encoding: lowercase, `-` and `_` only; `0.5` → `0_5`; `−0.25` → `neg-0_25`; opacity as a percentage; color tone = rounded L*; alpha → `-a{pct}` ([token-spec.md](references/token-spec.md) §2).
 - States use M3's order and words: `hovered`, `focused`, `pressed`, `dragged`, `disabled`; files that already use `hover`/`focus` or the legacy suffix order keep them until migrated ([token-spec.md](references/token-spec.md) §5).
+- **Team naming order**: the patterns above are the default. A team can decide its own slot order, for example `prefix > category > component > role > variant > target > state` → `shop/comp/button/color/primary/container/hovered` (`var(--shop-comp-button-color-primary-container-hovered)`); every new name then follows it ([token-spec.md](references/token-spec.md) §14). When the order ends with `state` and a token has state variants, the default state is its own segment (`…/container/default`), because a Figma or DTCG name cannot be a token and a group at once.
 - Default scales: spacing `3xs 2 · 2xs 4 · xs 8 · sm 12 · md 16 · lg 20 · xl 24 · 2xl 32 · 3xl 40 · 4xl 48 · 5xl 64`; shape `corner-none` … `corner-full` (pill, `ref/radius/9999`); M3 typescale; elevation `level0`–`level5`; state opacities hover 8, focus 10, pressed 10, dragged 16 ([token-spec.md](references/token-spec.md) §4). The file's own scales always win.
 
 ---
@@ -126,11 +128,11 @@ Every confirmation request shows:
 **Trigger**: the file has no token system and the user wants one that is not derived from an existing design.
 
 1. P1.
-2. Prefix and collection layout: infer from the file, otherwise ask; propose `{Prefix} · Reference`, `{Prefix} · System`, `{Prefix} · Component` ([token-spec.md](references/token-spec.md) §8). Light and Dark modes need a paid plan.
+2. Prefix and collection layout: infer from the file, otherwise ask; propose `{Prefix} · Reference`, `{Prefix} · System`, `{Prefix} · Component` ([token-spec.md](references/token-spec.md) §8). Light and Dark modes need a paid plan. Resolve the naming order ([token-spec.md](references/token-spec.md) §14-2).
 3. Composite mode: Styles unless the user asks for Variables mode ([token-spec.md](references/token-spec.md) §6).
 4. Plan the set from the vocabularies in [token-spec.md](references/token-spec.md) §4 with values from P1: palettes and color roles, spacing ladder, shape scale, typescale in the chosen fonts, elevation levels in use, state opacities. Comp tokens only for components the user names.
-5. Confirm (Tier 2).
-6. Create Ref → Sys → Comp, then Text Styles and Effect Styles ([binding-recipes.md](references/binding-recipes.md) §6, §7-7, §7-9).
+5. Confirm (Tier 2); the plan states the naming order.
+6. Record the naming order ([binding-recipes.md](references/binding-recipes.md) §2), then create Ref → Sys → Comp, then Text Styles and Effect Styles ([binding-recipes.md](references/binding-recipes.md) §6, §7-7, §7-9).
 7. Bind only targets the user named; values that differ from the current design are Tier 3.
 8. P5; report the counts per layer and the styles created.
 
@@ -138,9 +140,9 @@ Every confirmation request shows:
 
 **Trigger**: a request to check, audit, or review token naming, structure, or coverage.
 
-1. P2.
-2. Run the variable and style rules once and the node rules one page per call ([audit-rules.md](references/audit-rules.md) §3, §4).
-3. Report all 18 rules by severity ([audit-rules.md](references/audit-rules.md) §7).
+1. P2, including the naming order in force ([token-spec.md](references/token-spec.md) §14-2).
+2. Run the variable and style rules once and the node rules one page per call ([audit-rules.md](references/audit-rules.md) §3, §4). Rule 17 checks names against the naming order in force; rule 19 finds a variable that is also a group.
+3. Report all 19 rules by severity, with the naming order in the header ([audit-rules.md](references/audit-rules.md) §7).
 4. Ask which fixes to apply; each fix carries its tier ([audit-rules.md](references/audit-rules.md) §2). Near-duplicate merges (rule 13) use the review board.
 5. Apply ([audit-rules.md](references/audit-rules.md) §6), re-run the affected rules, and report what remains.
 
@@ -151,7 +153,7 @@ Every confirmation request shows:
 1. P1 and P2.
 2. Map token semantics: container fills ← `…/container/background-color` or `sys/color/primary`; text ← `…/label-text/color` or `sys/color/on-primary`; shape ← `…/container/shape`; padding and gaps ← `…/padding-*`, `…/gap`. Flag values that conflict with the guidelines from P1.
 3. Ask which variants and states to include (multi-select), using the variants reference in [token-spec.md](references/token-spec.md) §5.
-4. Plan state tokens in M3 order: state layers use the `on-{container}` color with `sys/state/*/state-layer-opacity`; disabled colors are composed colors or layer opacity ([token-spec.md](references/token-spec.md) §7). Follow the file's existing state words and order.
+4. Plan state tokens in the naming order in force (M3 by default; a team order follows [token-spec.md](references/token-spec.md) §14, with `…/default` when `state` comes last): state layers use the `on-{container}` color with `sys/state/*/state-layer-opacity`; disabled colors are composed colors or layer opacity ([token-spec.md](references/token-spec.md) §7). Follow the file's existing state words and order; the plan states the naming order.
 5. Build a component, or a component set for variants and states (Phase 3 of `figma-generate-library`); name variants like `State=Hovered, Size=Medium`; text uses Text Styles, shadows use Effect Styles.
 6. P4 and P5; the screenshot must show every state as visually distinct.
 
@@ -171,13 +173,13 @@ Every confirmation request shows:
 **Trigger**: the user shares a node, section, page, or component and asks to turn its hardcoded styles into tokens; Workflow A or E found values without tokens; or `figma-componentize` hands over new components. Details: [value-harvest.md](references/value-harvest.md).
 
 1. **Scope and baseline** — confirm the scope when it has more than 50 top-level frames or spans pages; screenshot every scope root ([value-harvest.md](references/value-harvest.md) §1).
-2. **Conventions** — P2.
+2. **Conventions** — P2, including the naming order ([token-spec.md](references/token-spec.md) §14-2).
 3. **Harvest** — one page per call, read-only ([value-harvest.md](references/value-harvest.md) §2, §3, §4).
 4. **Identical values** merge without asking; existing Ref and Sys tokens with the same value are reused ([value-harvest.md](references/value-harvest.md) §5).
 5. **Near and off-scale values** — never merge automatically. Build the `Token Review — temporary` board beside the scope, screenshot it, give its link, and ask per group: merge into the recommended value, merge into another value, or keep all ([value-harvest.md](references/value-harvest.md) §6, §7). Merges are Tier 3.
-6. **Map** values to Sys roles and Comp anatomy with confidence; ask about every `needs-review` item ([value-harvest.md](references/value-harvest.md) §8, §9).
-7. **Token plan** — show it and wait for confirmation (Tier 2 or higher) ([value-harvest.md](references/value-harvest.md) §10).
-8. **Write** Ref → Sys → Comp → Styles → bindings; translucent paints use composed colors, then layer opacity, then alpha colors ([value-harvest.md](references/value-harvest.md) §11).
+6. **Map** values to Sys roles and Comp anatomy with confidence, and build every name in the naming order in force ([token-spec.md](references/token-spec.md) §14-3); ask about every `needs-review` item ([value-harvest.md](references/value-harvest.md) §8, §9).
+7. **Token plan** — show it, with the `Naming order` line, and wait for confirmation (Tier 2 or higher) ([value-harvest.md](references/value-harvest.md) §10).
+8. **Write** the naming order record, then Ref → Sys → Comp → Styles → bindings; translucent paints use composed colors, then layer opacity, then alpha colors ([value-harvest.md](references/value-harvest.md) §11).
 9. **Verify** — read back, re-harvest, compare screenshots with the baseline, and report differences instead of fixing them silently ([value-harvest.md](references/value-harvest.md) §12).
 10. **Finish** — remove the review board and report; when another skill called Workflow F, return the structured result ([value-harvest.md](references/value-harvest.md) §13).
 
@@ -197,7 +199,7 @@ Every confirmation request shows:
 
 ## 8. References
 
-- [token-spec.md](references/token-spec.md) — layers, name encoding, Ref categories, Sys vocabularies, component states, composite styles, composed colors, collections and modes, code syntax, scopes, property map, Filled Button example, component patterns.
+- [token-spec.md](references/token-spec.md) — layers, name encoding, Ref categories, Sys vocabularies, component states, composite styles, composed colors, collections and modes, code syntax, scopes, property map, Filled Button example, component patterns, team naming orders.
 - [value-harvest.md](references/value-harvest.md) — Workflow F: harvest script, skips, normalization, near-value thresholds, review board, semantic and anatomy mapping, token plan, write order, verification, report and interface.
 - [binding-recipes.md](references/binding-recipes.md) — Plugin API scripts: use_figma conventions, helpers, inventory, guideline discovery, inspection, value comparison, creation, binding, library tokens, validation.
-- [audit-rules.md](references/audit-rules.md) — the 18 audit rules with severity, detection scripts, fixes, and report format.
+- [audit-rules.md](references/audit-rules.md) — the 19 audit rules with severity, detection scripts, fixes, and report format.

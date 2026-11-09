@@ -438,6 +438,8 @@ A shadow combination maps to the M3 level whose largest blur is nearest: level1 
 
 Comp names follow token-spec.md §5: `comp/{component}[/{variant}][/{size}][/{condition}][/{state}]/{anatomy}/{property}`.
 
+When a team order is in force (token-spec.md §14-2), find the same component, variant, state, anatomy, and property with the steps below, then write them into the team's slots with the mapping of token-spec.md §14-3; when the order ends with `state`, a token with state variants writes its default state as `default` (§14-4). Ref and Sys names follow the team's order in the same way.
+
 1. **Component** — the component set's name, or the component's name when it is standalone; take the last `/` segment and convert it to kebab-case (`Buttons/Filled Button` → `filled-button`). If two components produce the same name, use the whole path joined with `-`.
 2. **Variant, size, condition, state** — read `variantProperties` from `components` (§2). Add a segment only when the property's value differs along that axis; state values use the mapping in token-spec.md §5.
 3. **Anatomy** — from the layer name when it is meaningful, normalized to the M3 vocabulary:
@@ -476,6 +478,7 @@ The plan is shown before any variable or style is created. It is at least Tier 2
 ```
 ## Token plan — {scope}
 Prefix: md · Collections: md · Reference / md · System / md · Component (new)
+Naming order: M3 (default: no order in the prompt, the file, or the project) — reply with your team's order to use it instead
 Composite mode: Styles (reply "variables mode" to bind typography variables on text nodes instead)
 Tier 2: creates 12 Ref · 9 Sys · 14 Comp variables, 2 Text Styles, 1 Effect Style; binds 31 properties
 Tier 3: none (or the list of appearance changes with before/after values)
@@ -491,7 +494,9 @@ Tier 3: none (or the list of appearance changes with before/after values)
 | Skipped | node ID, property, reason |
 | Questions | every `needs-review` mapping |
 
-When the user edits names or roles in the plan, show the revised entries and wait for confirmation again.
+The `Naming order` line always shows the order in force and its source (token-spec.md §14-5), for example `Naming order: prefix > category > component > role > variant > target > state (recorded) — reply with another order to rename the plan`. Every name in the plan follows that order.
+
+When the user edits names, roles, or the naming order in the plan, show the revised entries and wait for confirmation again; a new order is not a separate question.
 
 ---
 
@@ -499,7 +504,7 @@ When the user edits names or roles in the plan, show the revised entries and wai
 
 Each step is a separate `use_figma` call (or several, at most 100 bindings or one component per call). Every script re-fetches by ID and returns the affected IDs.
 
-1. **Collections** — create missing collections (binding-recipes.md §6).
+1. **Collections** — record the confirmed naming order (binding-recipes.md §2, token-spec.md §14-6), then create missing collections (binding-recipes.md §6).
 2. **Ref** — raw values, scope `[]`, WEB code syntax.
 3. **Sys** — aliases to Ref; elevation colors as composed values of Ref color and Ref opacity when possible.
 4. **Comp** — aliases to Sys; translucent colors as composed values of Sys color and Sys opacity. If a composed value fails, remove that variable and plan method 2 or 3 for its paints (token-spec.md §7); record the fallback and the error.

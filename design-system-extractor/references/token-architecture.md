@@ -4,7 +4,7 @@ Use these rules when creating or auditing token files.
 
 ## Default Layers
 
-When no project-specific token convention exists, use:
+When no project-specific token convention exists (see Naming Order below), use:
 
 - `--md-ref-*`: raw values only
 - `--md-sys-*`: shared semantic roles only
@@ -25,6 +25,79 @@ CSS example:
   --md-comp-primary-button-container-color: var(--md-sys-color-primary);
 }
 ```
+
+## Naming Order
+
+Teams decide the order of the segments in a token name, and once it is decided every token follows it. The extractor records the order in `design-system/TOKEN_ARCHITECTURE.md` > `## Naming Order` and names every new token with it. Without a recorded order, the default naming of this document applies (`--<prefix>-comp-<component>-<part>-<property>` for comp tokens).
+
+### Where the order comes from
+
+Use the first source that applies:
+
+1. The developer's prompt: a slot list (`prefix > category > component > role > variant > target > state`) or example names that show one.
+2. The order already recorded in `TOKEN_ARCHITECTURE.md` > `## Naming Order`.
+3. Authored names in the sources (Figma Variable names, a design-system export, source-code tokens): keep their order, because file conventions win, and record it with `Source: inferred`. Ask once only when those names follow more than one order, showing each order with its token count and one example.
+4. The default naming of this document.
+
+When the prompt's order differs from the recorded one, use the prompt's order, say so, and update the record. Existing tokens keep their names until the developer asks to migrate them; list the names that do not follow the new order under Open Questions in `SESSION_STATE.md`.
+
+State the order in one non-blocking sentence of the reply that precedes the first token write, the same way as the Report Language: `Naming order: prefix > category > component > role > variant > target > state (prompt); say "use <order>" to change it.` The order is not a separate stop. Write a prompt-given or inferred order into `## Naming Order` in the same write as the first tokens.
+
+### Record format
+
+```md
+## Naming Order
+
+Order: prefix > category > component > role > variant > target > state
+Source: prompt
+Default state: default
+CSS name: path segments joined with `-` (`shop/comp/button/color/primary/container/hovered` → `--shop-comp-button-color-primary-container-hovered`)
+
+| Slot | Layers | Values |
+|---|---|---|
+| prefix | ref, sys, comp | shop |
+| category | ref, sys, comp | ref, sys, comp |
+| component | comp | button, chip, card, input, modal, alert |
+| role | ref, sys, comp | color, font, size, spacing, shadow, elevation, motion |
+| variant | ref, sys, comp | primary, on-primary, secondary, neutral, light, dark, error |
+| target | sys, comp | container, corner, padding, border, heading, label |
+| state | ref, sys, comp | 50, sm, md, bold, default, hovered, disabled, selected, slower |
+
+Examples:
+
+- `--shop-ref-color-neutral-5`
+- `--shop-sys-color-primary`
+- `--shop-comp-button-color-primary-container-hovered`
+```
+
+- `Order:` lists the slots separated by `>` (`→`, `->`, and `/` are also read). An empty `Order:` line or `default` means no order is recorded.
+- `Source:` is `prompt`, `recorded`, or `inferred`. `Default state:` is the word for the default state (`default` unless the team chose another).
+- `Values` are comma-separated. A value that contains `-` (`on-primary`) is one segment. A slot that lists a number (the tone `50` above) takes every number. `Layers` limits a slot to some layers; an empty cell means every layer.
+- Unused slots are left out of a name: `--shop-sys-color-primary` has no component, target, or state.
+
+### Building names with the order
+
+Fill the slots of the recorded order from what the value is and where it is used. With the example order above:
+
+| Slot | Filled from | Example |
+|---|---|---|
+| prefix | the package prefix | `shop` |
+| category | the layer | `ref`, `sys`, `comp` |
+| component | the component or region (comp only) | `button` |
+| role | the kind of value | `color`, `size`, `spacing`, `font`, `shadow` |
+| variant | the color family (ref), the shared role (sys), or the component's emphasis or style (comp) | `neutral`, `primary`, `on-primary` |
+| target | the part the value is applied to | `container`, `label`, `border`, `corner`, `padding` |
+| state | the tone or scale step (ref, sys), or the interaction state (comp) | `5`, `md`, `hovered` |
+
+A value no vocabulary covers is named with the closest slot and added to that slot's `Values` in the same write.
+
+### Default state under an order that puts `state` last
+
+When a token has state variants, write the default state as its own segment: `--shop-comp-button-color-primary-container-default` next to `--shop-comp-button-color-primary-container-hovered`, never a bare `--shop-comp-button-color-primary-container` next to its hovered state. The same applies to sys tokens: `--shop-sys-color-primary` next to `--shop-sys-color-primary-hovered` becomes `--shop-sys-color-primary-default`.
+
+The limit comes from slash paths: a Figma Variable name or a DTCG token path cannot be a token and a group at once (`shop/comp/button/color/primary/container` would also be the group of `…/container/hovered`). CSS custom properties are flat, so CSS itself is unaffected. CSS names still carry `-default`, because they stay equal to the path with `/` replaced by `-`, which lets the tokens move to Figma Variables or DTCG without renames.
+
+`audit_tokens.mjs` reports a name whose segments go back to an earlier slot as an issue, and warns (never an issue) about `--x` next to `--x-<state>`; see `references/audits.md`.
 
 ## Reference Color Scale
 
@@ -218,7 +291,7 @@ Forbidden:
 
 Component tokens describe slots for a specific component or composed region. They reference system tokens only.
 
-Naming pattern:
+Default naming pattern, used when `TOKEN_ARCHITECTURE.md` records no naming order:
 
 ```txt
 --md-comp-<component>-<part>-<property>
@@ -259,4 +332,6 @@ At minimum, extract:
 - Off-grid length values reported by the scale fit are warnings only.
 - Run `node <skill-root>/scripts/extract_check.mjs <target-root> --locale <ui-locale>` after extraction (strict audits); use `--starter` only for an empty starter package. `audit_tokens.mjs <target-root>` without `--strict` lists clusters and undocumented members as warnings and is the mechanical way to enumerate them before applying the `auto` tier and asking once for the `proposal` tier.
 - Background-like system colors need matching `on-*` foreground tokens.
+- When `TOKEN_ARCHITECTURE.md` records a naming order, every token name follows it; a name whose segments go back to an earlier slot is an issue in every mode.
+- A token `--x` next to `--x-<state>` is a warning in every mode, never an issue: name the default state explicitly (`--x-default`) so the names also work as Figma Variable or DTCG paths.
 - Component docs and component CSS tokens should stay in sync.

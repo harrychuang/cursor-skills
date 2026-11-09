@@ -1043,6 +1043,7 @@
               <li><div><strong>先檢查再寫入</strong><span>每次寫入前，先以唯讀的 <code>use_figma</code> 確認目前狀態。</span></div></li>
               <li><div><strong>一次一個呼叫</strong><span><code>use_figma</code> 不可平行執行。寫入腳本要依 ID 重新取得節點與 variables、檢查型別是否相符，並回傳所有受影響的 variable、style 與 node ID。</span></div></li>
               <li><div><strong>先從檔案推斷慣例</strong><span>prefix、collection 結構、文字與陰影的綁定模式、階梯、狀態命名與 Ref 色彩分類都先從檔案推斷；檔案沒有線索才詢問，確認後整個 session 固定。</span></div></li>
+              <li><div><strong>命名順序</strong><span>名稱的段落順序依序取自 prompt、Figma 檔案或專案已記錄的順序、檔案既有的名稱，最後才用 M3 順序；只有這些來源互相矛盾時才詢問一次。每份計畫與稽核報告都會寫出 <code>Naming order: …（來源）</code>，回覆另一個順序即可修改；確認後記錄在 Figma 檔案裡，下次沿用。</span></div></li>
               <li><div><strong>三層方向</strong><span>Ref 只存原始值（scope 為空）；Sys 只 alias Ref；Comp 只 alias Sys；composed 色彩也遵守相同方向。節點不可綁定 Ref。</span></div></li>
               <li><div><strong>綁定目標</strong><span>單一值屬性綁 Comp token（沒有元件的頁面層級用法才綁 Sys）。文字與陰影綁定到 Styles，Styles 的欄位再綁 Sys tokens（Styles 模式，預設）；或改為在文字節點綁 Comp typography tokens（Variables 模式）。</span></div></li>
               <li><div><strong>Scope 與 code syntax</strong><span>Sys 與 Comp 一律設定明確的 scope，禁止 <code>ALL_SCOPES</code>；每個 variable 都要有 WEB code syntax。</span></div></li>
@@ -1145,6 +1146,16 @@
                 <li><code>comp/button/filled/hovered/state-layer/opacity</code> → <code>sys/state/hover/state-layer-opacity</code></li>
               </ul>
             </div>
+            <div class="bento-card wide">
+              <h4>團隊命名順序</h4>
+              <p>上面是 M3 的預設順序。團隊可以自己決定名稱的段落順序，定案後所有新名稱都照同一個順序，例如 <code>prefix &gt; category &gt; component &gt; role &gt; variant &gt; target &gt; state</code>：</p>
+              <ul>
+                <li><code>shop/comp/button/color/primary/container/hovered</code> → <code>var(--shop-comp-button-color-primary-container-hovered)</code></li>
+                <li>M3 概念對應到團隊的段落：屬性種類 → role、樣式 → variant、結構與屬性 → target、互動狀態 → state（token-spec §14）</li>
+                <li>狀態放在最後、而且 token 有不同狀態時，預設狀態也要寫成一段：<code>…/container/default</code> 與 <code>…/container/hovered</code></li>
+                <li>稽核規則 17 依團隊順序檢查，不再把「狀態在最後」當成舊寫法</li>
+              </ul>
+            </div>
           </div>
 
           <div class="panel" style="margin-top: 16px">
@@ -1198,7 +1209,7 @@
                   <tr><td>帶 alpha 的色彩加 <code>-a{百分比}</code></td><td>#000000 15% → <code>ref/color/neutral/0-a15</code></td></tr>
                   <tr><td>全圓圓角</td><td><code>ref/radius/9999</code></td></tr>
                   <tr><td>兩個不同的值撞名：使用次數多的保留原名，其他加 <code>-b</code>、<code>-c</code></td><td><code>ref/color/blue/50-b</code></td></tr>
-                  <tr><td>一個名稱不可同時是另一個 variable 的群組前綴</td><td>避免 <code>…/background-color</code> 與 <code>…/background-color/hovered</code> 並存</td></tr>
+                  <tr><td>一個名稱不可同時是另一個 variable 的群組前綴：這是 Figma 名稱與 DTCG 路徑的限制，CSS 名稱沒有群組、不受影響。狀態放在最後的團隊順序，要把預設狀態寫成 <code>default</code>（稽核規則 19）</td><td>避免 <code>…/background-color</code> 與 <code>…/background-color/hovered</code> 並存；狀態放在最後時用 <code>…/container/default</code> 與 <code>…/container/hovered</code></td></tr>
                 </tbody>
               </table>
             </div>
@@ -1767,7 +1778,7 @@ effect = <span class="fn">figma.variables.setBoundVariableForEffect</span>(effec
         <section id="states">
           <div class="section-head">
             <h3>變體與互動狀態</h3>
-            <p>Comp 名稱依 M3 目前的順序：元件 → variant → 選取狀態 → 互動狀態 → 結構 → 屬性。</p>
+            <p>Comp 名稱預設依 M3 目前的順序：元件 → variant → 選取狀態 → 互動狀態 → 結構 → 屬性。團隊有自己的順序時，改用團隊順序（見命名哲學）。</p>
           </div>
 
           <div class="bento">
@@ -1805,7 +1816,7 @@ effect = <span class="fn">figma.variables.setBoundVariableForEffect</span>(effec
           </div>
 
           <div class="note note-warn" style="margin-top: 16px">
-            <p>Disabled 狀態必須建立專用 token，不可重用預設 token：容器用 <code>on-surface</code> 搭配 disabled 容器透明度，內容用 <code>on-surface</code> 搭配 38%。透明度以 composed 色彩或圖層透明度表達，不要另外做一個不透明的新色。檔案若已使用 <code>hover</code>、<code>focus</code> 或把狀態放在屬性之後的舊順序，在使用者遷移前沿用原寫法（稽核規則 17 提供改名遷移，綁定不受影響）。</p>
+            <p>Disabled 狀態必須建立專用 token，不可重用預設 token：容器用 <code>on-surface</code> 搭配 disabled 容器透明度，內容用 <code>on-surface</code> 搭配 38%。透明度以 composed 色彩或圖層透明度表達，不要另外做一個不透明的新色。檔案若已使用 <code>hover</code>、<code>focus</code> 或把狀態放在屬性之後的舊順序，在使用者遷移前沿用原寫法（稽核規則 17 提供改名遷移，綁定不受影響）。使用團隊順序時，狀態放在最後是團隊的寫法，不是舊順序。</p>
           </div>
 
           <div class="panel" style="margin-top: 16px">
@@ -1823,8 +1834,8 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId, figma.variables.<
         <!-- Audit -->
         <section id="audit">
           <div class="section-head">
-            <h3>稽核規則 — 十八種規則</h3>
-            <p>Workflow C 使用的完整規則。修正前一定先詢問，每個修正依變動分級確認；沒有發現問題時回報「checked rules 1–18」。</p>
+            <h3>稽核規則 — 十九種規則</h3>
+            <p>Workflow C 使用的完整規則。報告開頭會寫出這次檢查用的命名順序；修正前一定先詢問，每個修正依變動分級確認；沒有發現問題時回報「checked rules 1–19」。</p>
           </div>
 
           <div class="violation-list">
@@ -1844,8 +1855,9 @@ sysPrimary.<span class="fn">setValueForMode</span>(darkModeId, figma.variables.<
             <div class="violation-item"><div class="violation-num">14</div><div><h4>間距標籤不一致<span class="sev sev-warning">warning</span></h4><p>例如 <code>inset-vertical-sm</code> = 12、<code>gap-inline-sm</code> = 8。修正：改名讓每個標籤只代表一個值。</p></div></div>
             <div class="violation-item"><div class="violation-num">15</div><div><h4>元件 token 覆蓋率<span class="sev sev-warning">warning</span></h4><p>元件中寫死的填色、描邊、圓角、padding、gap、描邊寬度、文字與陰影；例如 14 個屬性綁了 10 個，覆蓋率 71%。修正：對該元件執行 Workflow F。</p></div></div>
             <div class="violation-item"><div class="violation-num">16</div><div><h4>Styles 未綁定 variables<span class="sev sev-warning">warning</span></h4><p>Text Style 或 Effect Style 的欄位仍是原始值。修正：綁定數值相同的 Sys tokens。</p></div></div>
-            <div class="violation-item"><div class="violation-num">17</div><div><h4>舊式狀態順序<span class="sev sev-warning">warning</span></h4><p><code>…/container/background-color/disabled</code> → <code>…/disabled/container/background-color</code>。修正：原地改名，綁定與 alias 都不受影響。</p></div></div>
+            <div class="violation-item"><div class="violation-num">17</div><div><h4>命名順序<span class="sev sev-warning">warning</span></h4><p>依這次使用的命名順序檢查。M3 順序：<code>…/container/background-color/disabled</code> → <code>…/disabled/container/background-color</code>。團隊順序：段落不可回到前面的位置，例如 <code>shop/comp/color/button/…</code> → <code>shop/comp/button/color/…</code>。修正：原地改名，綁定與 alias 都不受影響。</p></div></div>
             <div class="violation-item"><div class="violation-num">18</div><div><h4>名稱格式<span class="sev sev-warning">warning</span></h4><p>大寫、空白或不允許的字元，例如 <code>sys/color/Primary</code>。修正：改名並更新 code syntax。</p></div></div>
+            <div class="violation-item"><div class="violation-num">19</div><div><h4>變數同時是群組<span class="sev sev-warning">warning</span></h4><p>例如 <code>…/container</code> 與 <code>…/container/hovered</code> 並存；DTCG 不允許一個名稱同時是 token 又是群組，CSS 名稱不受影響。修正：狀態放在最後的團隊順序改名為 <code>…/container/default</code>（CSS 名稱會變成 <code>-default</code>，程式碼要跟著改）；M3 順序用規則 17 的改名；其他情況詢問要改哪個名稱。</p></div></div>
           </div>
         </section>
 

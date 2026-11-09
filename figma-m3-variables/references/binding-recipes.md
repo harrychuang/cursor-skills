@@ -118,9 +118,26 @@ const groups = {};
 for (const v of vars) { const k = v.name.split('/').slice(0, 3).join('/'); groups[k] = (groups[k] ?? 0) + 1; }
 const textStyles = await figma.getLocalTextStylesAsync();
 const effectStyles = await figma.getLocalEffectStylesAsync();
+// Naming order (token-spec.md §14-2): the recorded order and the shape of the existing Comp names
+let recorded = null;
+try { const raw = figma.root.getSharedPluginData('m3_variables', 'naming_order'); recorded = raw ? JSON.parse(raw) : null; }
+catch (e) { recorded = { error: String(e) }; }
+const STATE_WORDS = ['hovered', 'focused', 'pressed', 'dragged', 'disabled', 'selected', 'unselected', 'hover', 'focus', 'default', 'error'];
+const M3_PROPERTIES = ['background-color', 'color', 'shape', 'height', 'width', 'size', 'padding', 'padding-horizontal', 'padding-vertical', 'gap', 'opacity', 'font', 'weight', 'line-height', 'tracking'];
+const ROLE_WORDS = ['color', 'size', 'spacing', 'font', 'shadow', 'elevation', 'motion', 'opacity', 'radius', 'typography'];
+const shapes = { m3: [], legacy: [], roleFirst: [] };
+for (const v of vars) {
+  const s = v.name.split('/'), ci = s.indexOf('comp');
+  if (ci < 0 || s.length - ci < 3) continue;
+  if (ROLE_WORDS.includes(s[ci + 2])) shapes.roleFirst.push(v.name);
+  else if (STATE_WORDS.includes(s[s.length - 1]) && M3_PROPERTIES.includes(s[s.length - 2])) shapes.legacy.push(v.name);
+  else if (M3_PROPERTIES.includes(s[s.length - 1])) shapes.m3.push(v.name);
+}
+const evidence = Object.fromEntries(Object.entries(shapes).map(([k, list]) => [k, { count: list.length, example: list[0] ?? null }]));
 return {
   collections: cols.map(c => ({ id: c.id, name: c.name, modes: c.modes.map(x => x.name), count: c.variableIds.length })),
   prefixes: [...new Set(vars.map(v => v.name.split('/')[0]))],
+  namingOrder: { recorded, evidence },
   groups,
   variables: vars.length > 300 ? `${vars.length} variables: request one group at a time` : vars.map(v => ({
     id: v.id, name: v.name, type: v.resolvedType, collection: colName.get(v.variableCollectionId), scopes: v.scopes,
@@ -143,10 +160,28 @@ For a large file, fetch one group per call by filtering `vars` with `v.name.star
 | Composite mode | Text Styles with bound fields; text nodes with bound typography (P3) | Styles mode |
 | Spacing ladder | `sys/spacing/*` names and resolved values | Default ladder (token-spec.md §4-2) |
 | Shape scale | `sys/shape/*` names and values | Default scale (token-spec.md §4-3) |
-| State order and words | Comp names containing state words | M3 order with `hovered`, `focused` |
+| Naming order | The prompt; `namingOrder.recorded`; `## Naming Order` in the workspace's `design-system/TOKEN_ARCHITECTURE.md`; `namingOrder.evidence` counts (token-spec.md §14-2) | M3 order; ask once only when the sources disagree or the Comp names follow more than one order |
+| State order and words | Comp names containing state words | M3 order with `hovered`, `focused`; under a team order, its state slot (token-spec.md §14) |
 | Ref color category | `ref/palette/…` or `ref/color/…` | `ref/color/{hue}/{tone}` |
 | Library tokens | `remote: true` variables, or bindings to remote variables (§8) | Local tokens |
 
+
+**Naming order record** — after the user confirms a plan, run this at the start of the first approved write call (token-spec.md §14-6). It records the confirmed order in the file so later sessions reuse it:
+
+```js
+const NAMING_RECORD = {
+  order: ['prefix', 'category', 'component', 'role', 'variant', 'target', 'state'], // or 'm3'
+  values: { component: ['button'], role: ['color', 'size', 'spacing'], state: ['default', 'hovered'] },
+  defaultState: 'default',
+  source: 'prompt', // prompt | recorded | inferred | default
+  updated: '2026-11-09',
+};
+let namingRecorded = true;
+try { figma.root.setSharedPluginData('m3_variables', 'naming_order', JSON.stringify(NAMING_RECORD)); }
+catch (e) { namingRecorded = String(e); } // report the failure and continue with the approved writes
+```
+
+Return `namingRecorded` with the other results of the call.
 ---
 
 ## 3. P1 — Design guideline discovery

@@ -10,7 +10,7 @@ Contents
 2. Rule summary
 3. Variable and style rules script
 4. Node rules script
-5. Rules 1–18
+5. Rules 1–19
 6. Fix snippets
 7. Report format
 
@@ -18,7 +18,7 @@ Contents
 
 ## 1. Audit process
 
-1. Run P2 (binding-recipes.md §2) to read collections, variables, and styles.
+1. Run P2 (binding-recipes.md §2) to read collections, variables, and styles, and resolve the naming order (token-spec.md §14-2). Rule 17 checks names against that order, and the report header states it.
 2. Run the variable and style rules script (§3) once.
 3. Run the node rules script (§4) once per page in scope, one call after another, and merge the results. For a node or section scope, pass its IDs instead of the whole page.
 4. Report every finding by severity (§7).
@@ -47,16 +47,18 @@ Contents
 | 14 | Same spacing label resolving to different values | warning | variables | 2 (rename) |
 | 15 | Hardcoded values inside components (token coverage) | warning | nodes | Workflow F plan (Tier 2 or higher) |
 | 16 | Text Style or Effect Style fields not backed by variables | warning | styles | 2 |
-| 17 | Legacy state token order | warning | variables | 2 (rename in place) |
+| 17 | Name does not follow the naming order in force (M3: legacy state order) | warning | variables | 2 (rename in place) |
 | 18 | Name segment format violation | warning | variables | 2 (rename) |
+| 19 | Variable is also a group | warning | variables | 2 (rename in place) |
 
 ---
 
 ## 3. Variable and style rules script
 
-Checks rules 1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14, 16, 17, and 18. Read-only.
+Checks rules 1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14, 16, 17, 18, and 19. Read-only. Set `NAMING_ORDER` to the order resolved in P2 (token-spec.md §14-2): `null` for M3, or the team order with its vocabularies.
 
 ```js
+const NAMING_ORDER = null; // or { slots: ['prefix', 'category', 'component', 'role', 'variant', 'target', 'state'], values: { component: ['button'], role: ['color', 'size', 'spacing'], variant: ['primary', 'on-primary', 'neutral'], target: ['container', 'label', 'corner', 'padding'], state: ['default', 'hovered', 'disabled'] }, layers: { component: ['comp'] }, defaultState: 'default' }
 const cols = await figma.variables.getLocalVariableCollectionsAsync();
 const vars = await figma.variables.getLocalVariablesAsync();
 const byId = new Map(vars.map(v => [v.id, v]));
@@ -200,15 +202,45 @@ for (const s of await figma.getLocalEffectStylesAsync()) s.effects.forEach((e, i
 ```
 
 ```js
-// Rule 17 — legacy state order (state after the property)
+// Rule 17 — naming order in force (token-spec.md §14-2); NAMING_ORDER is defined at the top of the script
 const STATES = ['hovered', 'focused', 'pressed', 'dragged', 'disabled', 'hover', 'focus', 'selected', 'unselected', 'error', 'success'];
-for (const v of vars) {
-  const s = v.name.split('/'), ci = s.indexOf('comp');
-  if (ci < 0 || s.length - ci < 5 || !STATES.includes(s[s.length - 1])) continue;
-  const state = s[s.length - 1], rest = s.slice(ci + 2, -1);
-  const proposal = [...s.slice(0, ci + 2), ...rest.slice(0, -2), state, ...rest.slice(-2)].join('/');
-  const taken = vars.some(x => x.name === proposal);
-  add(17, 'warning', v.name, `state "${state}" comes after the property`, taken ? `${proposal} already exists; merge manually` : `Rename in place to ${proposal}`);
+if (!NAMING_ORDER) {
+  // M3 order: a state after the property is the legacy order
+  for (const v of vars) {
+    const s = v.name.split('/'), ci = s.indexOf('comp');
+    if (ci < 0 || s.length - ci < 5 || !STATES.includes(s[s.length - 1])) continue;
+    const state = s[s.length - 1], rest = s.slice(ci + 2, -1);
+    const proposal = [...s.slice(0, ci + 2), ...rest.slice(0, -2), state, ...rest.slice(-2)].join('/');
+    const taken = vars.some(x => x.name === proposal);
+    add(17, 'warning', v.name, `state "${state}" comes after the property (M3 order)`, taken ? `${proposal} already exists; merge manually` : `Rename in place to ${proposal}`);
+  }
+} else {
+  // Team order: classified segments never go back to an earlier slot; unknown segments are skipped
+  const { slots } = NAMING_ORDER;
+  const vocab = slot => (NAMING_ORDER.values?.[slot]?.length ? NAMING_ORDER.values[slot] : slot === 'category' ? ['ref', 'sys', 'comp'] : []);
+  const isNum = x => /^\d+(_\d+)?$/.test(x);
+  const allowed = (slot, layer) => !NAMING_ORDER.layers?.[slot]?.length || NAMING_ORDER.layers[slot].includes(layer);
+  for (const v of vars) {
+    const layer = layerOf(v.name);
+    const segs = v.name.split('/').map((seg, i) => {
+      const hits = slots.map((slot, k) => ((i === 0 && slot === 'prefix') || (i > 0 && slot !== 'prefix' && (vocab(slot).includes(seg) || (isNum(seg) && vocab(slot).some(isNum)))) ? k : -1)).filter(k => k >= 0);
+      return { seg, slots: hits.filter(k => allowed(slots[k], layer)) };
+    });
+    let cur = -1, prev = null, bad = null;
+    for (const x of segs) {
+      if (!x.slots.length) continue;
+      const ok = x.slots.filter(k => k >= cur);
+      if (!ok.length) { bad = x; break; }
+      cur = Math.min(...ok); prev = x;
+    }
+    if (!bad) continue;
+    const proposal = segs.every(x => x.slots.length)
+      ? segs.map((x, i) => ({ x, i, r: Math.min(...x.slots) })).sort((a, b) => a.r - b.r || a.i - b.i).map(y => y.x.seg).join('/')
+      : null;
+    const taken = proposal && vars.some(x => x.name === proposal);
+    add(17, 'warning', v.name, `"${bad.seg}" (${slots[bad.slots[0]]}) comes after "${prev.seg}" (${slots[cur]})`,
+      !proposal ? 'Ask the user for the intended name' : taken ? `${proposal} already exists; merge manually` : `Rename in place to ${proposal}`);
+  }
 }
 // Rule 18 — name format
 const fixName = name => name.split('/').map(seg => seg.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '_').replace(/[^a-z0-9_-]/g, '')).join('/');
@@ -216,7 +248,30 @@ for (const v of vars) {
   const bad = v.name.split('/').filter(seg => !/^[a-z0-9_-]+$/.test(seg));
   if (bad.length) add(18, 'warning', v.name, `segments: ${bad.join(', ')}`, `Rename to ${fixName(v.name)}`);
 }
-return { checked: [1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14, 16, 17, 18], findings: F };
+// Rule 19 — a variable that is also a group (Figma names and DTCG paths cannot be both)
+const childrenOf = new Map();
+for (const v of vars) {
+  const s = v.name.split('/');
+  for (let i = 1; i < s.length; i++) {
+    const group = s.slice(0, i).join('/');
+    if (!childrenOf.has(group)) childrenOf.set(group, []);
+    childrenOf.get(group).push(v.name);
+  }
+}
+const defaultState = NAMING_ORDER?.defaultState ?? 'default';
+const stateWords = NAMING_ORDER?.values?.state?.length ? [...NAMING_ORDER.values.state, defaultState] : [...STATES, 'default'];
+const stateLast = !!NAMING_ORDER && NAMING_ORDER.slots[NAMING_ORDER.slots.length - 1] === 'state';
+for (const v of vars) {
+  const children = childrenOf.get(v.name);
+  if (!children) continue;
+  const allStates = children.every(c => stateWords.includes(c.slice(v.name.length + 1).split('/')[0]));
+  const target = `${v.name}/${defaultState}`;
+  const fix = stateLast && allStates
+    ? (vars.some(x => x.name === target) ? `${target} already exists; merge manually` : `Rename in place to ${target}; code syntax becomes ${webSyntax(target)}, so code using ${webSyntax(v.name)} must change`)
+    : !NAMING_ORDER && allStates && layerOf(v.name) === 'comp' ? 'Apply the rule 17 rename to the children (M3 puts the state before the anatomy)' : 'Ask the user which name to change';
+  add(19, 'warning', v.name, `also the group of ${children.slice(0, 3).join(', ')}${children.length > 3 ? ` (+${children.length - 3} more)` : ''}`, fix);
+}
+return { checked: [1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14, 16, 17, 18, 19], namingOrder: NAMING_ORDER ? NAMING_ORDER.slots.join(' > ') : 'M3', findings: F };
 ```
 
 The script is split into blocks for reading; run them as one script, in order.
@@ -321,7 +376,7 @@ return { page: page.name, checked: [5, 10, 11, 15], findings: F };
 
 ---
 
-## 5. Rules 1–18
+## 5. Rules 1–19
 
 ### Rule 1 — Comp aliases Ref directly · error
 
@@ -414,17 +469,44 @@ return { page: page.name, checked: [5, 10, 11, 15], findings: F };
 - **Definition**: a local Text Style whose font family, weight or style, size, line height (unless `AUTO`), or letter spacing is not bound; a local Effect Style whose shadow color, offsets, blur, or spread is not bound.
 - **Fix**: bind the fields to Sys typescale or elevation tokens with the same values (create them with Workflow F when missing). Tier 2.
 
-### Rule 17 — Legacy state token order · warning
+### Rule 17 — Naming order · warning
 
-- **Definition**: a Comp variable whose last segment is a state word placed after the property (`…/container/background-color/disabled`).
-- **Fix**: rename the same variable in place to the M3 order (token-spec.md §5) and update its code syntax; bindings and aliases follow the variable ID, so nothing else changes. Keep the file's state words (`hover` stays `hover`). Tier 2. Until the file is migrated, new state tokens follow the legacy order.
-- **Example**: `md/comp/filled-button/container/background-color/disabled` → `md/comp/filled-button/disabled/container/background-color`, code syntax `var(--md-comp-filled-button-disabled-container-background-color)`.
+- **Definition**: a name that does not follow the naming order in force (token-spec.md §14-2).
+  - **M3 order** (the default): a Comp variable whose last segment is a state word placed after the property (`…/container/background-color/disabled`), which is the legacy order.
+  - **Team order**: a name whose segments go back to an earlier slot. Each segment is classified with the team's vocabularies: segment 0 is the prefix, numbers belong to a slot that lists numbers, and segments in no vocabulary, or in a slot limited to other layers, are skipped. A state at the end is correct when the order ends with `state`, so the legacy check does not run.
+- **Fix**: rename the same variable in place and update its code syntax; bindings and aliases follow the variable ID, so nothing else changes. Tier 2.
+  - M3 order: move the state before the anatomy (token-spec.md §5) and keep the file's state words (`hover` stays `hover`). Until the file is migrated, new state tokens follow the legacy order.
+  - Team order: sort the segments by slot order. When a segment is in no vocabulary, ask the user for the intended name.
+- **Examples**:
+
+| Variable | Order in force | Result |
+|----------|----------------|--------|
+| `md/comp/filled-button/container/background-color/disabled` | M3 | rename to `md/comp/filled-button/disabled/container/background-color`, code syntax `var(--md-comp-filled-button-disabled-container-background-color)` |
+| `shop/comp/color/button/primary/container/default` | `prefix > category > component > role > variant > target > state` | "button" (component) comes after "color" (role); rename to `shop/comp/button/color/primary/container/default` |
+| `shop/comp/button/color/primary/container/hovered` | same team order | pass |
 
 ### Rule 18 — Name format · warning
 
 - **Definition**: a name segment with uppercase letters, spaces, or characters other than `a–z`, `0–9`, `-`, `_`.
 - **Example**: `md/sys/color/Primary` → `md/sys/color/primary`.
 - **Fix**: rename and update code syntax. Tier 2.
+
+### Rule 19 — Variable is also a group · warning
+
+- **Definition**: a variable whose full name followed by `/` starts another variable's name, for example `…/container` next to `…/container/hovered`. Figma displays it, but a DTCG export cannot hold a token that is also a group (token-spec.md §2). The rule is about Figma names and DTCG paths; CSS names are flat and unaffected.
+- **Fix**: rename in place and update the code syntax (Tier 2).
+  - The order in force ends with `state` and every child continues with a state value: rename the shorter variable to `{name}/default`, or to the recorded default-state word (token-spec.md §14-4). Its CSS name changes too (`--…-container` → `--…-container-default`), so the plan flags code that uses the old name.
+  - M3 order and Comp names: the children are legacy state names; the rule 17 rename moves the state before the anatomy and removes the conflict.
+  - Otherwise: ask the user which name to change.
+- **Examples**:
+
+| Variables in the file | Order in force | Result |
+|-----------------------|----------------|--------|
+| `shop/comp/button/color/primary/container`, `…/container/hovered` | team, `state` last | warning; rename to `…/container/default` |
+| `shop/comp/button/color/primary/container/default`, `…/container/hovered` | team, `state` last | pass |
+| `shop/sys/color/primary`, `shop/sys/color/primary/hovered` | team, `state` last | warning; rename to `shop/sys/color/primary/default`; code using `--shop-sys-color-primary` switches to `--shop-sys-color-primary-default` |
+| `md/comp/filled-button/container/background-color`, `…/background-color/hovered` | M3 | warning; fix with the rule 17 rename |
+| `shop/sys/color/primary`, `shop/sys/color/primary/container` | team, `state` last | warning; ask which name to change |
 
 ---
 
@@ -434,7 +516,7 @@ Run fixes only after the user approved them, in chunks, re-fetching every variab
 
 ```js
 const v = await figma.variables.getVariableByIdAsync(VARIABLE_ID);
-// Rules 7, 12, 14, 17, 18 — rename in place (bindings and aliases follow the ID)
+// Rules 7, 12, 14, 17, 18, 19 — rename in place (bindings and aliases follow the ID)
 v.name = NEW_NAME;
 v.setVariableCodeSyntax('WEB', webSyntax(NEW_NAME));
 // Rule 2 — scopes
@@ -452,7 +534,8 @@ Before a rename, check that the new name is not taken in the same collection.
 
 ```
 ## Variables audit — {file or scope}
-Checked rules 1–18 · {N} findings (error {e} · warning {w} · info {i})
+Naming order: {M3, or the team order} ({source}) — rule 17 checked names against it
+Checked rules 1–19 · {N} findings (error {e} · warning {w} · info {i})
 
 ### Errors
 | # | Rule | Variable / style / node | Finding | Suggested fix | Fix tier |
@@ -470,5 +553,5 @@ Tier 3 fixes are confirmed group by group with before/after evidence.
 When nothing is found:
 
 ```
-✓ All Variables and Styles comply — checked rules 1–18.
+✓ All Variables and Styles comply — checked rules 1–19 against the {M3 or team} naming order.
 ```

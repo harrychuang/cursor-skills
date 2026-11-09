@@ -1,0 +1,8 @@
+/* System tokens map semantic roles to reference tokens only. */
+:root {
+  --shop-sys-color-primary: var(--shop-ref-color-neutral-5);
+  --shop-sys-color-primary-hovered: var(--shop-ref-color-neutral-25);
+  --shop-sys-color-on-primary: var(--shop-ref-color-neutral-100);
+  --shop-sys-size-corner-md: var(--shop-ref-size-12);
+  --shop-sys-spacing-padding-md: var(--shop-ref-spacing-16);
+}

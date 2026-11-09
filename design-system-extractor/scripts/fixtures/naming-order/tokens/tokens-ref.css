@@ -1,0 +1,8 @@
+/* Reference tokens hold raw values only. */
+:root {
+  --shop-ref-color-neutral-5: #111111;
+  --shop-ref-color-neutral-25: #3b3b3b;
+  --shop-ref-color-neutral-100: #ffffff;
+  --shop-ref-size-12: 12px;
+  --shop-ref-spacing-16: 16px;
+}

@@ -10,6 +10,20 @@ Document the token layers, prefixes, naming model, and audit rules for this pack
 | System | `--md-sys-*` | Shared semantic roles |
 | Component | `--md-comp-*` | Component and region slots |
 
+## Naming Order
+
+Record the team's slot order here once it is decided: every new token follows it, and `audit_tokens.mjs` checks every name against it. Leave `Order:` empty to keep the default naming in `references/token-architecture.md` (`--<prefix>-comp-<component>-<part>-<property>`).
+
+Order:
+Source:
+Default state: default
+CSS name: path segments joined with `-` (`<prefix>/comp/<component>/…` → `--<prefix>-comp-<component>-…`)
+
+Fill `Order:` with slots separated by `>` (for example `prefix > category > component > role > variant > target > state`) and `Source:` with `prompt`, `recorded`, or `inferred`. List each slot's values in the table, comma-separated; `Layers` limits a slot to some layers (for example `component` → `comp`). Unused slots are left out of a name. When the order puts `state` last and a token has state variants, write the default state as its own segment (`…-container-default` next to `…-container-hovered`): a Figma Variable name or DTCG path cannot be a token and a group at once. CSS names are unaffected by that limit, but they stay equal to the path with `/` replaced by `-`. Add one example per layer below the table.
+
+| Slot | Layers | Values |
+|---|---|---|
+
 ## Inheritance
 
 ```txt
@@ -69,4 +83,6 @@ Use this table when a higher-tier authoritative source (for example production F
 - Every non-canonical member of a near-token cluster (close reference colors or numbers) has a documented merge or keep-distinct decision against the canonical that records both provenances; `authored` vs `authored` members are never merged without an explicit developer decision.
 - Accessibility remaps keep the authored value as a `ref` token and carry an `a11y-remap` record; the shipped `sys` mapping points at the accessible value.
 - Every background-like system color has a matching `on-*` foreground pair.
+- When `## Naming Order` records an order, every token name follows it (`audit_tokens.mjs` reports out-of-order names as issues).
+- Under an order that puts `state` last, a token with state variants names its default state explicitly (`…-default`), so no name is both a token and a group once exported as Figma Variables or DTCG paths.
 - Values found only in unused code, demo-only components, blocked captures, or unverified resources are not promoted to tokens unless a keep decision is recorded in `DESIGN_EVIDENCE_MAP.md`.

@@ -1,6 +1,6 @@
 # Token Spec — M3 Three-Tier Naming and Vocabulary
 
-> Used by the `figma-m3-variables` skill. Defines naming, encoding, the default Sys vocabularies, component state naming, composite styles, translucent colors, collections, scopes, the bindable property map, and a complete example.
+> Used by the `figma-m3-variables` skill. Defines naming, encoding, the default Sys vocabularies, component state naming, composite styles, translucent colors, collections, scopes, the bindable property map, a complete example, and team naming orders.
 > **Scales and names that already exist in the file always take precedence over the defaults in this document.**
 
 Contents
@@ -18,6 +18,7 @@ Contents
 11. Bindable property map
 12. Filled Button — full example
 13. Component binding patterns
+14. Team naming orders
 
 ---
 
@@ -34,6 +35,8 @@ Contents
 {prefix}/sys/{category}/{role}
 {prefix}/comp/{component}[/{variant}][/{size}][/{condition}][/{state}]/{anatomy}/{property}
 ```
+
+These are the default (M3) patterns. When a team has decided its own order of name segments, every new name follows that order instead (§14).
 
 Rules:
 
@@ -63,7 +66,7 @@ Rules:
 | Color with alpha → `-a{percentage}` suffix | #000000 at 15% → `ref/color/neutral/0-a15` |
 | Pill radius → `9999` | `ref/radius/9999` |
 | Name collision between two kept values → the value with more uses keeps the name; the others get `-b`, `-c`, … (confirmed in the token plan) | `ref/color/blue/50`, `ref/color/blue/50-b` |
-| Do not let a variable name also be the group prefix of another variable | Avoid `…/background-color` plus `…/background-color/hovered` (DTCG treats a token that is also a group as invalid) |
+| Do not let a variable name also be the group prefix of another variable. This limits Figma names and DTCG paths; CSS names are flat and unaffected. Under a team order that ends with `state`, write the default state as its own segment (§14-4); audit rule 19 detects the conflict | Avoid `…/background-color` plus `…/background-color/hovered` (DTCG treats a token that is also a group as invalid); with state last, use `…/container/default` plus `…/container/hovered` |
 
 | Raw value | Ref name |
 |-----------|----------|
@@ -292,6 +295,8 @@ A segment is included only when the token's value differs along that axis: a but
 
 **File conventions win**: a file that already uses M3's older words (`hover`, `focus`) keeps them. A file that uses the legacy order with the state after the property (`…/container/background-color/hovered`) keeps that order until the user migrates it with audit rule 17; never mix the two orders in one file.
 
+This section is the default order. When a team order is in force (§14), Comp names follow it instead: a state after the target is then the team's order, not the legacy one, and audit rule 17 checks names against the team's order.
+
 **State layers**: in hovered, focused, pressed, and dragged states the container color usually stays the same; a state-layer node on top uses the `on-{container}` color with the Sys state opacity:
 
 | Comp token | Aliases |
@@ -416,6 +421,7 @@ md/ref/type/tracking/neg-0_25                            → var(--md-ref-type-t
 md/sys/color/primary                                     → var(--md-sys-color-primary)
 md/sys/spacing/inset-horizontal-md                       → var(--md-sys-spacing-inset-horizontal-md)
 md/comp/filled-button/disabled/container/background-color → var(--md-comp-filled-button-disabled-container-background-color)
+shop/comp/button/color/primary/container/default         → var(--shop-comp-button-color-primary-container-default)   (team order, §14)
 ```
 
 `ANDROID` and `iOS` code syntax are added only when the user asks.
@@ -625,3 +631,107 @@ Extension process for components not listed:
 3. Reuse or add Sys tokens with shared semantics from §4.
 4. Add Comp tokens named by component, variant, state, and anatomy (§5), aliasing Sys.
 5. Bind with Workflow A (one target), E (many targets), or F (hardcoded values).
+
+---
+
+## 14. Team naming orders
+
+The M3 patterns of §1 and §5 are the default. A team can decide its own order of name segments ("slots"); once it is decided, every new Ref, Sys, and Comp name follows it.
+
+### 14-1 Order and vocabularies
+
+An order is a list of slots, for example:
+
+```
+prefix > category > component > role > variant > target > state
+```
+
+Each slot can carry a vocabulary of allowed values. Unused slots are left out of a name. One path segment holds one slot value; a value may contain `-` (`on-primary`). The CSS name is the path with `/` replaced by `-` (§9).
+
+| Slot | Layers | Example values |
+|------|--------|----------------|
+| prefix | ref, sys, comp | `shop` |
+| category | ref, sys, comp | `ref`, `sys`, `comp` |
+| component | comp | `button`, `chip`, `card`, `input`, `modal`, `alert` |
+| role | ref, sys, comp | `color`, `font`, `size`, `spacing`, `shadow`, `elevation`, `motion` |
+| variant | ref, sys, comp | `primary`, `on-primary`, `secondary`, `neutral`, `light`, `dark`, `error` |
+| target | sys, comp | `container`, `corner`, `padding`, `border`, `heading`, `label` |
+| state | ref, sys, comp | `5`, `50`, `sm`, `md`, `bold`, `default`, `hovered`, `disabled`, `selected`, `slower` |
+
+When the user gives an order without vocabularies, slots with these names start from the example values above (plus `opacity` for role and the §5 interaction states for state). Every other value a plan needs is shown as an `inferred` naming item, so the user can correct it in the plan.
+
+### 14-2 Where the order comes from
+
+Resolve the order once per file, before any name is created, renamed, or audited. Use the first source that applies:
+
+1. **The user's prompt**: a slot list, or example names that show one.
+2. **A recorded order**: the file's shared plugin data (`m3_variables` / `naming_order`, §14-6), or the `## Naming Order` section of `design-system/TOKEN_ARCHITECTURE.md` in the workspace. design-system-extractor writes that file; this skill reads it and never writes it.
+3. **The file's existing names** (counted by binding-recipes.md §2): Comp names in M3 order → M3; Comp names with M3 words and the state after the property → M3 in the legacy order (rule 17 migrates it); Comp names whose segment after the component is a role word (`color`, `size`, `spacing`, `font`, …) → a team order with that shape, written out in full in the plan.
+4. **The M3 order** (default).
+
+Ask once only when the recorded sources disagree, or the existing Comp names follow more than one order: show each order with its variable count and one example name. When the prompt's order differs from the file's names, new names use the prompt's order, the plan says so, and existing names stay as they are until the user approves the rule 17 renames.
+
+### 14-3 Mapping M3 concepts to team slots
+
+Workflows B, D, and F find the same concepts as in §5; under a team order they are written into the team's slots:
+
+| Team slot | Filled from | Examples |
+|-----------|-------------|----------|
+| prefix | The file prefix | `shop` |
+| category | The layer | `ref`, `sys`, `comp` |
+| component | `{component}` (§5) | `button` |
+| role | The kind of value: fills and strokes → `color`; padding and gaps → `spacing`; width, height, radius, and stroke width → `size` when the vocabulary has no `radius` or `stroke` role (shown as `inferred` in the plan); typography → `font`; shadows → `shadow` or `elevation`; opacity → `opacity` | `color`, `size` |
+| variant | Ref: the hue family (§3). Sys: the color role of §4-1 as one value (`on-primary`). Comp: the style-like `{variant}`, translated when the team maps it (for example Style=Filled → `primary`) | `neutral`, `primary`, `on-primary` |
+| target | The anatomy and property: container fill → `container`; `label-text` → `label`; `outline` → `border`; radius → `corner`; padding → `padding` (or `padding-horizontal`); `headline` → `heading` | `container`, `corner` |
+| state | Ref: the tone or value. Sys: the scale label. Comp: `{state}` or `{condition}`, and `default` when the token has state variants (§14-4) | `5`, `md`, `hovered` |
+
+A mapping that needs a value outside the vocabulary is `inferred` and is listed in the plan.
+
+Examples with `prefix > category > component > role > variant > target > state`, prefix `shop`, Style=Filled mapped to `primary`, and a button whose hover is its own container color:
+
+| M3 order (default) | Team order | WEB code syntax |
+|--------------------|------------|-----------------|
+| `shop/ref/color/neutral/5` | `shop/ref/color/neutral/5` | `var(--shop-ref-color-neutral-5)` |
+| `shop/ref/radius/10` | `shop/ref/size/10` | `var(--shop-ref-size-10)` |
+| `shop/sys/color/primary` | `shop/sys/color/primary` | `var(--shop-sys-color-primary)` |
+| `shop/sys/shape/corner-medium` | `shop/sys/size/corner/md` | `var(--shop-sys-size-corner-md)` |
+| `shop/comp/button/filled/container/background-color` | `shop/comp/button/color/primary/container/default` | `var(--shop-comp-button-color-primary-container-default)` |
+| `shop/comp/button/filled/hovered/container/background-color` | `shop/comp/button/color/primary/container/hovered` | `var(--shop-comp-button-color-primary-container-hovered)` |
+| `shop/comp/button/filled/label-text/color` | `shop/comp/button/color/primary/label` | `var(--shop-comp-button-color-primary-label)` |
+| `shop/comp/button/container/shape` | `shop/comp/button/size/corner` | `var(--shop-comp-button-size-corner)` |
+| `shop/comp/button/container/padding-horizontal` | `shop/comp/button/spacing/padding-horizontal` | `var(--shop-comp-button-spacing-padding-horizontal)` |
+
+### 14-4 Default state when `state` comes last
+
+When the order ends with `state` and a token has state variants, the default state is its own segment: `default`, or the default-state word recorded with the order. `…/container/default` sits next to `…/container/hovered`; a bare `…/container` never does. Sys works the same way: `shop/sys/color/primary/default` next to `shop/sys/color/primary/hovered`. Tokens without state variants get no state segment (`shop/comp/button/color/primary/label`).
+
+The limit belongs to Figma variable names and DTCG paths: a name cannot be a token and a group at once (§2). CSS custom properties are flat and have no groups, so the CSS name itself has no conflict. The CSS name still ends in `-default`, because it stays equal to the path with `/` replaced by `-` (§9); code and Figma keep one name per token.
+
+The M3 order does not need this: the state comes before the anatomy, and the default state has no segment (§5). Audit rule 19 finds names that break the limit in any order.
+
+### 14-5 Stating the order
+
+Every plan this skill shows before a write (the Workflow F token plan, the Workflow B and D plans) and every audit report states the order, where it came from, and how to switch:
+
+```
+Naming order: prefix > category > component > role > variant > target > state (recorded) — reply with another order to rename the plan
+Naming order: M3 (default: no order in the prompt, the file, or the project) — reply with your team's order to use it instead
+```
+
+A reply with another order revises the plan, which is confirmed again like any plan edit; there is no separate naming question.
+
+### 14-6 Record in the file
+
+After the user confirms a plan, the first write call records the order in the file (binding-recipes.md §2), so later sessions reuse it:
+
+```json
+{
+  "order": ["prefix", "category", "component", "role", "variant", "target", "state"],
+  "values": { "component": ["button", "chip"], "role": ["color", "size", "spacing"], "state": ["default", "hovered"] },
+  "defaultState": "default",
+  "source": "prompt",
+  "updated": "2026-11-09"
+}
+```
+
+`order` is `"m3"` for the default order. The record is shared plugin data on the document (namespace `m3_variables`, key `naming_order`): it is invisible on the canvas and stays with the file. When the write fails, report it and continue the approved writes; the next session infers the order from the names.

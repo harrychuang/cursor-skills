@@ -11,6 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { checkNameOrder, findStateGroups, parseNamingOrder } from "./lib/naming_order.mjs";
 
 const scriptsDir = path.dirname(fileURLToPath(import.meta.url));
 const fixturesDir = path.join(scriptsDir, "fixtures");
@@ -410,7 +411,8 @@ test("near-token-clusters: clusters, tiers, canonical, scale fit", () => {
   const json = run("audit_tokens.mjs", [root, "--json"]);
   assert.equal(json.code, 0, json.out);
   const payload = JSON.parse(json.stdout);
-  assert.deepEqual(Object.keys(payload).sort(), ["clusters", "counts", "issues", "scaleFit", "warnings"]);
+  assert.deepEqual(Object.keys(payload).sort(), ["clusters", "counts", "issues", "namingOrder", "scaleFit", "warnings"]);
+  assert.equal(payload.namingOrder, null, "no naming order recorded in this fixture");
   assert.equal(payload.clusters.length, 5);
   assert.equal(payload.scaleFit.base, 4);
   assert.deepEqual(payload.scaleFit.outliers.map((entry) => entry.name), ["--md-ref-size-14", "--md-ref-size-18"]);
@@ -551,4 +553,135 @@ test("component similarity clusters are counted by the audit and grouped by the 
   assert.equal(review.clusters.components.length, 1);
   assert.deepEqual([...review.clusters.components[0].components].sort(), ["Primary Button", "Secondary Button"]);
   assert.equal(review.clusters.components[0].status, "needs-review");
+});
+
+const TEAM_ORDER = ["prefix", "category", "component", "role", "variant", "target", "state"];
+
+test("naming-order: the recorded order is printed, out-of-order names are issues, state groups are warnings", () => {
+  const root = copyFixture("naming-order");
+  const result = run("audit_tokens.mjs", [root]);
+  assert.equal(result.code, 1, result.out);
+  assert.match(
+    result.stdout,
+    /^Naming order: prefix > category > component > role > variant > target > state \(TOKEN_ARCHITECTURE\.md\)$/m,
+  );
+
+  const orderIssues = lines(result.stdout, "Issues:").filter((issue) =>
+    issue.startsWith("Token name does not follow the recorded naming order"),
+  );
+  assert.equal(orderIssues.length, 1, orderIssues.join("\n"));
+  assert.match(
+    orderIssues[0],
+    /--shop-comp-color-button-primary-border — "button" \(component\) comes after "color" \(role\); expected --shop-comp-button-color-primary-border$/,
+  );
+  for (const valid of [
+    "--shop-ref-color-neutral-5",
+    "--shop-sys-color-on-primary",
+    "--shop-sys-size-corner-md",
+    "--shop-comp-button-color-primary-container-hovered",
+  ]) {
+    assert.ok(!orderIssues.some((issue) => issue.includes(`${valid} `)), `${valid} follows the recorded order`);
+  }
+
+  const groups = lines(result.stdout, "Warnings:").filter((warning) =>
+    warning.startsWith("Token is also a group once names become slash paths (Figma Variables, DTCG)"),
+  );
+  assert.equal(groups.length, 2, groups.join("\n"));
+  assert.ok(
+    groups.some(
+      (warning) =>
+        warning.includes("--shop-comp-button-color-primary-container next to --shop-comp-button-color-primary-container-hovered") &&
+        warning.includes("CSS is unaffected") &&
+        warning.endsWith("Name the default state explicitly: --shop-comp-button-color-primary-container-default"),
+    ),
+    "comp container and its hovered state",
+  );
+  assert.ok(
+    groups.some(
+      (warning) =>
+        warning.includes("--shop-sys-color-primary next to --shop-sys-color-primary-hovered") &&
+        warning.endsWith("Name the default state explicitly: --shop-sys-color-primary-default"),
+    ),
+    "sys color and its hovered state",
+  );
+});
+
+test("naming-order: explicit default state and the fixed order pass strict; the sys state group stays a warning", () => {
+  const root = copyFixture("naming-order");
+  const compFile = path.join(root, "tokens", "tokens-comp.css");
+  const css = fs
+    .readFileSync(compFile, "utf8")
+    .replace("--shop-comp-button-color-primary-container:", "--shop-comp-button-color-primary-container-default:")
+    .replace("--shop-comp-color-button-primary-border:", "--shop-comp-button-color-primary-border:");
+  fs.writeFileSync(compFile, css);
+
+  const result = run("audit_tokens.mjs", [root, "--strict"]);
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.stdout, /Token audit passed\./);
+  const groups = lines(result.stdout, "Warnings:").filter((warning) => warning.startsWith("Token is also a group"));
+  assert.equal(groups.length, 1, groups.join("\n"));
+  assert.match(groups[0], /--shop-sys-color-primary next to --shop-sys-color-primary-hovered/);
+});
+
+test("naming-order: --json carries namingOrder; null and the default line without a recorded order", () => {
+  const json = run("audit_tokens.mjs", [copyFixture("naming-order"), "--json"]);
+  const payload = JSON.parse(json.stdout);
+  assert.deepEqual(payload.namingOrder.slots, TEAM_ORDER);
+  assert.equal(payload.namingOrder.source, "prompt");
+  assert.equal(payload.namingOrder.defaultState, "default");
+  assert.deepEqual(payload.namingOrder.layers.component, ["comp"]);
+  assert.deepEqual(payload.namingOrder.layers.state, ["ref", "sys", "comp"]);
+  assert.deepEqual(payload.namingOrder.values.role, ["color", "font", "size", "spacing", "shadow", "elevation", "motion"]);
+
+  const minimal = copyFixture("minimal-pass");
+  assert.match(run("audit_tokens.mjs", [minimal]).stdout, /^Naming order: default \(none recorded\)$/m);
+  assert.equal(JSON.parse(run("audit_tokens.mjs", [minimal, "--json"]).stdout).namingOrder, null);
+});
+
+test("naming_order module: shipped template records no order; parsing, segments and state groups", () => {
+  const templateFile = path.join(scriptsDir, "..", "assets", "design-system-template", "design-system", "TOKEN_ARCHITECTURE.md");
+  const template = fs.readFileSync(templateFile, "utf8");
+  assert.match(template, /^## Naming Order$/m, "the template has the section");
+  assert.equal(parseNamingOrder(template), null, "the shipped template records no order");
+
+  assert.equal(parseNamingOrder("## Naming Order\n\nOrder: default\n"), null);
+  assert.equal(parseNamingOrder("# Token Architecture\n"), null);
+  const annotated = parseNamingOrder("## Naming Order（命名順序）\n\n- Order: `prefix → category -> role / state`\n");
+  assert.deepEqual(annotated.slots, ["prefix", "category", "role", "state"]);
+  assert.deepEqual(annotated.values.category, ["ref", "sys", "comp"], "category defaults to ref, sys, comp");
+
+  const order = parseNamingOrder(
+    fs.readFileSync(path.join(fixturesDir, "naming-order", "design-system", "TOKEN_ARCHITECTURE.md"), "utf8"),
+  );
+  assert.deepEqual(order.slots, TEAM_ORDER);
+  assert.equal(checkNameOrder("--shop-sys-color-on-primary", order, "sys").ok, true, "a value with - is one segment");
+  const ref = checkNameOrder("--shop-ref-color-neutral-5", order, "ref");
+  assert.equal(ref.ok, true);
+  assert.deepEqual(
+    ref.segments.map((segment) => segment.text),
+    ["shop", "ref", "color", "neutral", "5"],
+  );
+  assert.deepEqual(ref.segments.at(-1).slots, [TEAM_ORDER.indexOf("state")], "numbers go to the slot that lists numbers");
+  assert.equal(
+    checkNameOrder("--shop-comp-button-color-brand-container-default", order, "comp").ok,
+    true,
+    "segments outside the vocabulary are skipped",
+  );
+  assert.equal(
+    checkNameOrder("--shop-ref-spacing-card-padding", order, "ref").ok,
+    true,
+    "slots restricted to other layers are left to the layer vocabulary checks",
+  );
+  const partial = checkNameOrder("--shop-comp-color-button-brand", order, "comp");
+  assert.equal(partial.ok, false);
+  assert.equal(partial.expected, null, "no expected name when a segment is unclassified");
+
+  assert.deepEqual(findStateGroups(["--a-sys-color-primary-default", "--a-sys-color-primary-hovered"], order), []);
+  assert.deepEqual(findStateGroups(["--md-comp-chip-container", "--md-comp-chip-container-selected"], null), [
+    {
+      token: "--md-comp-chip-container",
+      children: ["--md-comp-chip-container-selected"],
+      suggestion: "--md-comp-chip-container-default",
+    },
+  ]);
 });

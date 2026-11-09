@@ -11,6 +11,7 @@ import {
   scaleFitOutlierLine,
   scaleFitSummaryLine,
 } from "./lib/token_review.mjs";
+import { checkNameOrder, findStateGroups, formatNamingOrder, parseNamingOrder } from "./lib/naming_order.mjs";
 
 const USAGE = `Usage: node <skill-root>/scripts/audit_tokens.mjs <target-root> [--strict] [--json]
 
@@ -28,11 +29,18 @@ Audits tokens/tokens-ref.css, tokens-sys.css, tokens-comp.css and tokens.css:
   the token's comment ("provenance: authored | measured; usage: <n>; sources: <ids>");
   apply_token_decisions.mjs writes the auto tier mechanically
 - length reference values are fitted to a 4px or 8px grid; off-grid values are warnings only
+- naming order: when design-system/TOKEN_ARCHITECTURE.md records an "## Naming Order"
+  (Order: prefix > category > ... plus a Slot | Layers | Values table), every token name must
+  follow it; a name whose segments are out of order is an issue in every mode
+- a token --x next to --x-<state> is a warning in every mode: CSS is unaffected, but once the
+  names become slash paths (Figma Variables, DTCG) --x is both a token and a group; name the
+  default state explicitly (--x-default)
 
 Options:
   --strict    Also require all four token files, at least one token per layer and the
               ref -> sys -> comp import order in tokens.css; undocumented near tokens become issues.
-  --json      Print one JSON object (clusters, scaleFit, counts, issues, warnings) and nothing else.
+  --json      Print one JSON object (clusters, counts, issues, namingOrder, scaleFit, warnings)
+              and nothing else.
   --help, -h  Print this message and exit 0.
 
 Output ends with "Token audit passed." or an "Issues:" list (exit 1).`;
@@ -422,6 +430,7 @@ if (indexCss === null) {
 }
 
 const tokenArchitectureDoc = await readOptional(tokenArchitectureFile);
+const namingOrder = parseNamingOrder(tokenArchitectureDoc);
 
 const props = {
   ref: parseProps(css.ref || ""),
@@ -507,6 +516,31 @@ for (const [name, value] of props.comp) {
       `Component token appears to use a raw value instead of a system token: ${name}: ${value}. Reference a system token with var(); a new raw value belongs in tokens-ref.css first (TOKEN_ARCHITECTURE.md layer rules).`,
     );
   }
+}
+
+// Naming order recorded in TOKEN_ARCHITECTURE.md: segments must not go back to an earlier slot.
+if (namingOrder) {
+  for (const [layer, tokens] of Object.entries(props)) {
+    for (const [name] of tokens) {
+      const result = checkNameOrder(name, namingOrder, layer);
+      if (result.ok) continue;
+      const { segment, slot, previous, previousSlot } = result.violation;
+      issues.push(
+        `Token name does not follow the recorded naming order (${formatNamingOrder(namingOrder)}): ${name} — "${segment}" (${slot}) comes after "${previous}" (${previousSlot})` +
+          (result.expected ? `; expected ${result.expected}` : "; reorder the segments to follow the recorded order"),
+      );
+    }
+  }
+}
+
+// --x next to --x-<state>: fine in CSS, but a slash path cannot be a token and a group at once.
+for (const group of findStateGroups([...props.ref.keys(), ...props.sys.keys(), ...props.comp.keys()], namingOrder)) {
+  warnings.push(
+    `Token is also a group once names become slash paths (Figma Variables, DTCG): ${group.token} next to ${group.children.join(", ")}; CSS is unaffected. ` +
+      (group.suggestion
+        ? `Name the default state explicitly: ${group.suggestion}`
+        : `Rename or remove ${group.token}; the explicit default state already exists`),
+  );
 }
 
 for (const [name] of props.sys) {
@@ -642,6 +676,7 @@ log(`Token audit target: ${relRoot}`);
 log(`Reference tokens: ${props.ref.size}`);
 log(`System tokens: ${props.sys.size}`);
 log(`Component tokens: ${props.comp.size}`);
+log(`Naming order: ${namingOrder ? `${formatNamingOrder(namingOrder)} (TOKEN_ARCHITECTURE.md)` : "default (none recorded)"}`);
 log(`Strict mode: ${strict ? "on" : "off"}`);
 log(
   `Near token clusters: ${clusterCounts.clusters} (auto ${clusterCounts.tiers.auto}, proposal ${clusterCounts.tiers.proposal}, must-ask ${clusterCounts.tiers["must-ask"]})`,
@@ -678,6 +713,7 @@ if (jsonMode) {
           strict,
         },
         issues,
+        namingOrder,
         warnings,
       },
       null,

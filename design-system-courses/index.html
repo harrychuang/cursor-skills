@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI × 設計系統驅動產品開發｜課程講義</title>
+<meta name="description" content="從 Design Token 到 Storybook 元件庫的互動課程講義：課程大綱、每堂重點、互動練習與小測驗。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234945FF'/%3E%3Cpath d='M13 9l-6 7 6 7M19 9l6 7-6 7' stroke='%2320FDA4' stroke-width='3.5' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/handout.css">
+<link rel="stylesheet" href="assets/widgets.css">
+<link rel="stylesheet" href="assets/anim.css">
+<link rel="stylesheet" href="assets/anim-intro.css">
+<link rel="stylesheet" href="assets/anim-token.css">
+<link rel="stylesheet" href="assets/anim-figma.css">
+<link rel="stylesheet" href="assets/anim-doc.css">
+<link rel="stylesheet" href="assets/anim-sb.css">
+<link rel="stylesheet" href="assets/anim-p5.css">
+</head>
+<body>
+<a class="skip-link" href="#main">跳到內容</a>
+
+<!-- 頂部導覽列：課程名稱、區塊連結、課程目錄、搜尋、進度、繼續上課 -->
+<header class="gnav" id="gnav">
+  <div class="gnav__bar">
+    <a class="gnav__brand" href="#top" aria-label="AI × 設計系統驅動產品開發">AI × 設計系統<span class="gnav__brand-more">驅動產品開發</span></a>
+    <nav class="gnav__links" aria-label="講義區塊">
+      <a href="#how-to" data-nav="how-to">怎麼用</a>
+      <a href="#course-map" data-nav="route">路線</a>
+      <button type="button" data-act="course" data-nav="course" aria-expanded="false" aria-controls="flyout">課程目錄</button>
+      <a href="#skills" data-nav="skills">Skill 速查</a>
+      <a href="#glossary" data-nav="glossary">名詞小卡</a>
+    </nav>
+    <div class="gnav__tools">
+      <button class="gnav__icon" type="button" data-act="search" aria-label="搜尋講義" aria-expanded="false" aria-controls="search-panel"></button>
+      <div class="ring" id="top-progress" role="status">
+        <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="ring__bg" cx="18" cy="18" r="14" fill="none" stroke-width="5"/><circle class="ring__fg" id="ring-fg" cx="18" cy="18" r="14" fill="none" stroke-width="5" stroke-linecap="round"/></svg>
+        <span class="ring__txt" id="ring-txt">0/16</span>
+      </div>
+      <button class="btn btn--primary gnav__cta" type="button" data-act="continue">開始上課</button>
+      <button class="gnav__icon gnav__toggle" type="button" data-act="course" aria-label="打開目錄" aria-expanded="false" aria-controls="flyout"></button>
+    </div>
+  </div>
+  <div class="flyout" id="flyout" hidden><div class="flyout__in" id="flyout-in"></div></div>
+  <div class="search-panel" id="search-panel" role="search" hidden>
+    <div class="search-panel__in">
+      <label class="search-field"><span class="sr-only">搜尋講義</span><span class="search-field__ic"></span><input type="search" id="search-input" placeholder="搜尋章節、名詞、skill" autocomplete="off" aria-controls="search-results"></label>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜尋結果"></div>
+    </div>
+  </div>
+</header>
+<div class="scrim" id="scrim" hidden></div>
+
+<main id="main">
+  <!-- 封面 -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <!-- 左邊文字、右邊插圖，數字放在下面一排，第一個畫面就看得到 -->
+      <div class="hero__row">
+        <div class="hero__copy">
+          <p class="hero__eyebrow rv">課程講義</p>
+          <h1 class="hero__title rv">AI × 設計系統<br>驅動產品開發</h1>
+          <p class="hero__sub rv">從 <strong>Design Token</strong> 到 <strong>Storybook</strong> 元件庫，<br class="br-lg">用 AI skill 建好設計系統，再讓元件驅動產品開發。</p>
+          <div class="hero__cta rv">
+            <button class="btn btn--primary btn--lg" type="button" data-act="continue">開始上課</button>
+            <!-- 下載講義（data-download）：zip 由 tools/build-download.sh 產生；打包時會拿掉這兩行，因為下載的那一份裡沒有 zip -->
+            <a class="btn btn--secondary btn--lg" href="downloads/ai-design-system-handout.zip" download data-download>下載講義</a>
+            <button class="link-more" type="button" data-act="watch">先看 45 秒動畫</button>
+          </div>
+        </div>
+        <div class="hero__art rv">
+          <img class="hero__main" src="images/web/builders-people.webp" width="757" height="900" alt="兩個人一起看著筆電和手機">
+          <img class="hero__stars" src="images/web/stars.webp" width="900" height="886" alt="">
+        </div>
+      </div>
+      <ul class="hero__stats rv">
+        <li><b data-meta="parts">6</b><span>個部分</span></li>
+        <li><b data-meta="chapters">16</b><span>堂課</span></li>
+        <li><b data-meta="mins">78</b><span>分鐘</span></li>
+        <li><b data-meta="skills">7</b><span>個 skill</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 怎麼用（白底；下一區「路線」是灰底，後面每一部再一白一灰交替） -->
+  <section class="section" id="how-to" aria-labelledby="how-to-title">
+    <div class="wrap">
+      <div class="sec-intro rv">
+        <h2 class="headline" id="how-to-title">四個動作，<wbr>就會用這份講義。</h2>
+        <p class="lede">想要有人帶你走一次，按「30 秒導覽」。</p>
+        <div class="sec-intro__aside"><button class="link-more" type="button" data-act="tour">30 秒導覽</button></div>
+      </div>
+      <div class="rail" data-rail>
+        <ol class="howto rail__track">
+          <li class="howto__card rv"><span class="howto__step">第 1 步</span><h3>選你的角色</h3><p>設計師、PM 或工程師。講義會標出你的必看章節，算出要花多久。</p><span class="howto__art"><img src="images/web/intro.webp" width="900" height="773" alt="" loading="lazy"></span></li>
+          <li class="howto__card rv" style="--rv-d:.08s"><span class="howto__step">第 2 步</span><h3>打開一堂課</h3><p>每一堂都是一張大卡片。按右下角的 <b class="plus-inline" aria-label="加號">+</b>，看重點、練習和提示詞。</p><span class="howto__art"><img src="images/web/read-book.webp" width="900" height="869" alt="" loading="lazy"></span></li>
+          <li class="howto__card rv" style="--rv-d:.16s"><span class="howto__step">第 3 步</span><h3>動手玩、做測驗</h3><p>互動練習邊玩邊學。每堂最後一題小測驗，選完馬上看解說。</p><span class="howto__art"><img src="images/web/play.webp" width="900" height="839" alt="" loading="lazy"></span></li>
+          <li class="howto__card rv" style="--rv-d:.24s"><span class="howto__step">第 4 步</span><h3>按「看完了」</h3><p>進度和筆記會自動存在這台電腦的瀏覽器，下次打開還在。</p><span class="howto__art"><img src="images/web/like.webp" width="900" height="698" alt="" loading="lazy"></span></li>
+        </ol>
+        <div class="rail__nav" hidden><button class="paddle" type="button" data-rail-prev aria-label="上一張"></button><button class="paddle" type="button" data-rail-next aria-label="下一張"></button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 路線與課程地圖：角色選擇就在地圖正上方。選了之後，標題的分鐘數和堂數、地圖上的必看格子、
+       每一部的必看分鐘、下面的章節卡，都會馬上跟著變 -->
+  <section class="section section--gray" id="course-map" aria-labelledby="map-title">
+    <div class="wrap">
+      <div class="sec-intro rv">
+        <p class="eyebrow" id="route-name">全部都看</p>
+        <h2 class="headline" id="map-title"><span class="route-num" data-route="mins">78</span> 分鐘，<span class="route-num" data-route="count">16</span> 堂<span data-route="unit">課</span>。</h2>
+        <p class="lede">選一個角色，地圖會馬上標出你的必看章節，時間也跟著重算。點任何一格，直接打開那一堂。</p>
+        <img class="sec-intro__aside sec-intro__art" src="images/web/whiteboard-with-people.webp" width="900" height="845" alt="" loading="lazy">
+      </div>
+      <div class="map-card rv">
+        <div class="roles" id="roles" role="group" aria-label="選擇你的路線"></div>
+        <div class="map" id="map"></div>
+        <div class="map__legend"><span><i class="map__key map__key--must"></i>必看</span><span><i class="map__key"></i>選看</span><span><i class="map__key map__key--done"></i>已看完</span></div>
+        <div class="route" id="route" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 六個部分：每一堂是一張大卡片 -->
+  <div id="parts"></div>
+
+  <!-- Skill 速查 -->
+  <section class="section" id="skills" aria-labelledby="skills-title">
+    <div class="wrap">
+      <div class="sec-intro rv">
+        <h2 class="headline" id="skills-title">現在該叫哪一個 skill？</h2>
+        <p class="lede">不用背名字。點一個最像你現在的情況，看該用哪個 skill、可以怎麼說。</p>
+      </div>
+      <div class="picker">
+        <ul class="sit-list" id="picker"></ul>
+        <div class="sit-visual" id="picker-visual" aria-hidden="true"></div>
+      </div>
+      <p class="tip">提示詞裡的 <code>$skill-name</code> 是指定要用哪個 skill。不寫也可以：用一句話描述你想做的事，agent 會自己找到對的 skill。</p>
+    </div>
+  </section>
+
+  <!-- 名詞小卡 -->
+  <section class="section section--gray" id="glossary" aria-labelledby="gl-title">
+    <div class="wrap">
+      <div class="sec-intro rv">
+        <h2 class="headline" id="gl-title">卡住的時候，翻翻名詞小卡。</h2>
+        <p class="lede">點卡片右下角的 <b class="plus-inline" aria-label="加號">+</b>，看解釋和例子。</p>
+        <img class="sec-intro__aside sec-intro__art" src="images/web/read-news.webp" width="587" height="900" alt="" loading="lazy">
+      </div>
+      <div class="gl-tools">
+        <label class="gl-filter"><span class="sr-only">篩選名詞</span><span class="gl-filter__ic"></span><input id="gl-filter" type="search" placeholder="篩選名詞，例如 token、Storybook" autocomplete="off"></label>
+        <span class="gl-count" id="gl-count" aria-live="polite"></span>
+      </div>
+      <div class="gl" id="gl"></div>
+      <div class="gl-more"><button class="btn btn--secondary" type="button" data-act="gl-more" id="gl-more"></button></div>
+    </div>
+  </section>
+
+  <!-- 結業 -->
+  <section class="section" id="finish" aria-labelledby="finish-title">
+    <div class="wrap">
+      <div class="sec-intro rv">
+        <h2 class="headline" id="finish-title">看看你走到哪了。</h2>
+        <p class="lede">下面每一項都做得到，這門課就真的學會了。</p>
+        <img class="sec-intro__aside sec-intro__art" src="images/web/like-close.webp" width="692" height="900" alt="" loading="lazy">
+      </div>
+      <div class="stats">
+        <div class="stat rv"><b data-stat="done">0</b><span>堂看完了，共 <span data-meta="chapters">16</span> 堂</span></div>
+        <div class="stat rv" style="--rv-d:.08s"><b data-stat="quiz">0</b><span>題答對，共 <span data-meta="chapters">16</span> 題</span></div>
+        <div class="stat rv" style="--rv-d:.16s"><b data-stat="notes">0</b><span>則筆記</span></div>
+      </div>
+      <div class="finish-checks rv">
+        <h3>我能做到⋯</h3>
+        <div id="final-checks"></div>
+      </div>
+      <div class="complete" id="complete">
+        <img src="images/web/jump.webp" width="877" height="900" alt="" loading="lazy">
+        <div><h3>恭喜你走完五站！</h3><p>從 Design Token、Figma 整理、設計系統文件，一路做到 Storybook 元件庫和產品界面。把筆記複製下來，帶回你的團隊吧。</p></div>
+      </div>
+      <div class="finish__actions">
+        <button class="btn btn--secondary" type="button" data-act="copy-notes">複製我的全部筆記</button>
+        <button class="btn btn--quiet" type="button" data-act="reset">清除進度，重新開始</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <!-- 插圖在左、文字在右；這一排最寬 600px，置中，不撐滿版面 -->
+      <div class="footer__hello">
+        <img src="images/web/heart.webp" width="611" height="900" alt="" loading="lazy">
+        <div>
+          <p class="footer__title">願設計系統與你同在</p>
+          <p class="footer__note">這份講義的顏色和圓角也是用三層 token 寫的，名字也照課程的命名順序。打開 <code>assets/site.css</code>，找找 <code>--dsc-ref-</code>、<code>--dsc-sys-</code>、<code>--dsc-comp-</code>。</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer__meta"><span>AI × 設計系統驅動產品開發｜課程講義</span><span>進度和筆記只存在這台電腦的瀏覽器</span></div>
+  </div>
+</footer>
+
+<!-- 一堂課的大卡片 -->
+<dialog class="sheet" id="sheet" aria-labelledby="sheet-title">
+  <div class="sheet__panel">
+    <div class="sheet__bar"><button class="sheet__close" type="button" data-act="sheet-close" aria-label="關閉這一堂"></button></div>
+    <div class="sheet__body" id="sheet-body"></div>
+  </div>
+</dialog>
+
+<!-- 小視窗：歡迎、名詞解釋 -->
+<dialog class="sheet sheet--compact" id="modal">
+  <div class="sheet__panel">
+    <div class="sheet__bar"><button class="sheet__close" type="button" data-act="modal-close" aria-label="關閉"></button></div>
+    <div class="sheet__body" id="modal-body"></div>
+  </div>
+</dialog>
+
+<template id="tpl-welcome">
+  <div class="welcome">
+    <div class="welcome__art"><img src="images/web/suprise.webp" width="834" height="900" alt=""></div>
+    <h2 class="welcome__title" id="modal-title">歡迎！這份講義可以邊看邊玩。</h2>
+    <ul class="welcome__list">
+      <li>先選你的角色，講義會標出<strong>必看</strong>章節。</li>
+      <li>每一堂是一張大卡片，按 <b class="plus-inline" aria-label="加號">+</b> 打開，裡面有互動練習和一題小測驗。</li>
+      <li>按「看完了」，進度會自動存在這台電腦。</li>
+    </ul>
+    <div class="welcome__btns">
+      <button class="btn btn--primary btn--lg" type="button" data-act="welcome-tour">帶我走一次（30 秒）</button>
+      <button class="btn btn--quiet" type="button" data-act="modal-close">我自己逛逛</button>
+    </div>
+  </div>
+</template>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<noscript><p style="max-width:720px;margin:24px auto;padding:0 16px">這份講義需要開啟 JavaScript 才能顯示章節與互動練習。</p></noscript>
+
+<script src="assets/core.js"></script>
+<script src="assets/course-data.js"></script>
+<script src="assets/extra-data.js"></script>
+<script src="assets/widgets-basic.js"></script>
+<script src="assets/widgets-rich.js"></script>
+<script src="assets/anim.js"></script>
+<script src="assets/anim-intro.js"></script>
+<script src="assets/anim-token.js"></script>
+<script src="assets/anim-figma.js"></script>
+<script src="assets/anim-doc.js"></script>
+<script src="assets/anim-sb.js"></script>
+<script src="assets/anim-p5.js"></script>
+<script src="assets/sheet.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

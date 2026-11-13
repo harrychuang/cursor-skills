@@ -1,3 +1,5 @@
+> **已被取代（2026-11-13）**：design-system-extractor 以 上游 skills repo 的 c7a999b（change add-extractor-designer-review-flow）整包覆蓋（commit ebe24ab），本 change 的實作已不在 repo 中：auto / proposal / must-ask 分級、`lib/token_review.mjs`、`apply_token_decisions.mjs`、`Confirmed by: auto-tier`、scale fit 與 cluster 卡片都被移除。上游改成「AI 的建議經設計師確認才算決定」，與 auto 層由機器寫入決定的做法互相衝突。因此本 change 以 `--skip-specs` 封存，specs 沒有併入 `openspec/specs/`；原始實作見 commit 9f35043。
+
 ## Why
 
 在設計稿混亂的專案（多份日期分頁、PM 用 AI 複製修改、元件被 detach）跑 design-system-extractor 時，近似 token 稽核會列出幾十到上百對「太接近」的 reference token，近似元件審查也一列列堆疊。目前的稽核是兩兩比對、以 pair 為決策單位、沒有使用次數訊號，開發者必須逐對人工判斷，審查成本高到流程會被跳過。這個 change 把近似 token 與近似元件的審查從「逐對判斷」變成「例外處理」：機器分群、自動選 canonical、依 provenance 分層，人只看真正需要設計判斷的那幾群。

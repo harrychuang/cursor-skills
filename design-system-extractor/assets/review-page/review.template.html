@@ -1,0 +1,1493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design System Review</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0e1116;
+    --rail: #0b0e12;
+    --surface: #151a21;
+    --surface-2: #1c232d;
+    --surface-3: #27313d;
+    --text: #e8ecf1;
+    --muted: #a0aab6;
+    --faint: #77828f;
+    --rose: #ff7a97;
+    --rose-solid: #cf3a68;
+    --rose-solid-hover: #dd4b78;
+    --rose-soft: #35141f;
+    --ok: #4ade80;
+    --ok-soft: #12291b;
+    --warn: #f0b35f;
+    --warn-soft: #2d2214;
+    --focus: #7cc4ff;
+    --mk-a: #d81b60;
+    --mk-b: #1565c0;
+    --stage: #0e1116;
+    --stage-ink: #e8ecf1;
+    --stage-ink-soft: #3a4552;
+    --rail-w: 268px;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  }
+  body[data-stage="gray"] { --stage: #8b9097; --stage-ink: #0e1116; --stage-ink-soft: #62686f; }
+  body[data-stage="light"] { --stage: #f5f6f8; --stage-ink: #141414; --stage-ink-soft: #c5cbd3; }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 var(--sans); }
+  code { font-family: var(--mono); font-size: 13px; }
+  button, select, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  ::selection { background: var(--rose-solid); color: #ffffff; }
+
+  .app { display: grid; grid-template-columns: var(--rail-w) minmax(0, 1fr); min-height: 100vh; }
+
+  /* ---------- rail ---------- */
+  .rail { position: sticky; top: 0; height: 100vh; overflow: auto; background: var(--rail); padding: 24px 20px; display: flex; flex-direction: column; gap: 26px; }
+  .brand { font-size: 17px; font-weight: 700; margin: 0; }
+  .brand-sub { margin: 4px 0 0; color: var(--muted); font-size: 14.5px; }
+  .meter-num { font-size: 30px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .meter-num small { font-size: 17px; font-weight: 600; color: var(--muted); }
+  .meter-cap { color: var(--muted); font-size: 14.5px; margin-top: 2px; }
+  .bar { height: 6px; border-radius: 999px; background: var(--surface-3); margin-top: 12px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--ok); border-radius: 999px; }
+  .rail h2 { margin: 0 0 8px; font-size: 13px; font-weight: 650; color: var(--faint); }
+  .nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin: 0 -10px; border-radius: 10px; color: var(--text); text-decoration: none; font-size: 15px; }
+  .nav a:hover { background: var(--surface); }
+  .nav .cnt { margin-left: auto; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); }
+  .nav .cnt.todo { color: var(--rose); font-weight: 650; }
+  .steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 22px 1fr; gap: 8px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+  .steps li::before { content: counter(s); width: 22px; height: 22px; border-radius: 999px; background: var(--surface-2); color: var(--text); font-size: 12.5px; font-weight: 650; display: grid; place-items: center; }
+  .seg { display: inline-flex; background: var(--surface); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 8px; color: var(--muted); font-size: 14px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--surface-3); color: var(--text); font-weight: 600; }
+  .setting { display: grid; justify-items: start; gap: 6px; margin-bottom: 12px; font-size: 14.5px; color: var(--muted); }
+  .rail-foot { margin-top: auto; }
+
+  /* ---------- main ---------- */
+  .main { padding: 0 36px 150px; min-width: 0; }
+  .topbar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 22px 0 14px; display: flex; align-items: baseline; gap: 14px; }
+  .topbar h1 { margin: 0; font-size: 22px; font-weight: 700; }
+  .topbar .meta { color: var(--muted); font-size: 14.5px; }
+  .content { max-width: 1000px; }
+  .intro { margin: 0 0 26px; color: var(--muted); font-size: 15px; max-width: 760px; }
+  .section { margin: 0 0 34px; }
+  .section-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 4px; }
+  .section-head h2 { margin: 0; font-size: 18px; font-weight: 700; }
+  .section-head .cnt { color: var(--muted); font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  .section-lead { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; max-width: 780px; }
+
+  /* ---------- card ---------- */
+  .card { background: var(--surface); border-radius: 14px; padding: 22px 24px 20px; margin: 12px 0; }
+  .card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .card-head h3 { margin: 0; font-size: 17px; font-weight: 650; }
+  .kind { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .count { font-size: 14.5px; color: var(--muted); }
+  .grow { flex: 1; }
+  .tag { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12.5px; font-weight: 650; white-space: nowrap; background: var(--surface-3); color: var(--text); }
+  .tag.todo { background: var(--rose-soft); color: var(--rose); }
+  .tag.ok { background: var(--ok-soft); color: var(--ok); }
+  .tag.warn { background: var(--warn-soft); color: var(--warn); }
+
+  .stage { background: var(--stage); border-radius: 12px; padding: 16px; margin: 16px 0 4px; }
+  .strip { display: flex; height: 116px; border-radius: 10px; overflow: hidden; }
+  .strip.after { height: 40px; }
+  .strip-cap { margin: 12px 0 6px; font-size: 13px; color: var(--stage-ink); font-weight: 600; }
+  .sw { position: relative; flex: 1; min-width: 0; }
+  .sw-lab { position: absolute; left: 10px; bottom: 26px; font: 650 15px var(--mono); }
+  .sw-hex { position: absolute; left: 10px; bottom: 8px; font: 500 12.5px var(--mono); }
+  .strip.after .sw-lab { bottom: 9px; font-size: 13px; }
+  .seam { position: absolute; right: 0; top: 10px; transform: translateX(50%); z-index: 2; background: #0b0e12; color: #e8ecf1; font: 600 12px var(--mono); padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .seam.far { background: #27313d; color: #a0aab6; }
+
+  .specimens { display: flex; gap: 40px; align-items: flex-end; flex-wrap: wrap; color: var(--stage-ink); padding: 8px 4px; }
+  .spec-text { line-height: 1.5; white-space: nowrap; }
+  .spec-cap { margin-top: 8px; font: 600 12.5px var(--mono); color: var(--stage-ink); display: flex; align-items: center; gap: 6px; }
+  .spec.off .spec-text { text-decoration: line-through; }
+  .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+  .radius-row { display: flex; gap: 36px; align-items: flex-end; flex-wrap: wrap; padding: 4px; }
+  .rbox { width: 132px; height: 48px; background: var(--stage-ink-soft); }
+  .bars { display: grid; gap: 10px; color: var(--stage-ink); padding: 6px 4px; }
+  .bars .b { display: flex; align-items: center; gap: 12px; font: 600 12.5px var(--mono); }
+  .bars .b i { display: block; height: 14px; background: var(--stage-ink-soft); border-radius: 3px; }
+  .nums { display: flex; gap: 40px; padding: 8px 4px; color: var(--stage-ink); font: 650 28px var(--mono); }
+
+  .members { margin-top: 12px; }
+  .m { display: grid; grid-template-columns: 44px 26px minmax(170px, 1.1fr) 88px minmax(0, 2.4fr); align-items: center; column-gap: 12px; padding: 9px 10px; border-radius: 10px; }
+  .m + .m { margin-top: 1px; }
+  .m:not(.m-head):hover { background: var(--surface-2); }
+  .m-head { font-size: 13px; color: var(--faint); font-weight: 600; padding-top: 2px; padding-bottom: 4px; }
+  .m input[type="checkbox"] { width: 19px; height: 19px; margin: 0; accent-color: var(--ok); cursor: pointer; }
+  .m input[type="checkbox"]:disabled { cursor: not-allowed; }
+  .chip-sw { width: 22px; height: 22px; border-radius: 6px; display: block; box-shadow: 0 0 0 1px #3b4551; }
+  .chip-n { width: 22px; height: 22px; display: block; }
+  .m-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+  .m-name label { cursor: pointer; }
+  .m-name code { font-size: 14px; color: var(--text); }
+  .m-val { font: 500 13.5px var(--mono); color: var(--muted); }
+  .m-use { min-width: 0; font-size: 14.5px; color: var(--muted); }
+  .roles { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .role { background: var(--surface-3); color: var(--text); padding: 2px 8px; border-radius: 6px; font-size: 12.5px; }
+  .more { font-size: 13px; color: var(--muted); }
+  .comps { display: block; margin-top: 3px; font-size: 13.5px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .unused { color: var(--warn); font-weight: 600; }
+  .m.off .m-name code, .m.off .m-val { color: var(--faint); text-decoration: line-through; }
+  .into { display: inline-flex; align-items: center; gap: 8px; color: var(--warn); font-weight: 600; flex-wrap: wrap; }
+  .into select { background: var(--surface-3); border: 0; border-radius: 8px; padding: 5px 8px; color: var(--text); font: 500 13.5px var(--mono); max-width: 100%; }
+
+  .facts { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; color: var(--muted); font-size: 14.5px; }
+  .facts .flag { color: var(--warn); }
+  .ai { margin: 16px 0 0; padding: 2px 0 2px 14px; border-left: 3px solid var(--surface-3); }
+  .ai-k { font-size: 13px; color: var(--faint); font-weight: 650; }
+  .ai-v { font-size: 16px; font-weight: 650; margin-top: 2px; }
+  .ai-r { margin: 6px 0 0; color: var(--text); font-size: 15px; max-width: 780px; }
+  .ai-b { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; max-width: 780px; }
+  .ai.none { border-left-color: var(--rose-solid); }
+  .ai.none .ai-k { color: var(--rose); font-size: 15px; }
+
+  .note { width: 100%; margin-top: 14px; background: var(--surface-2); border: 0; border-radius: 10px; padding: 10px 12px; font-size: 15px; color: var(--text); }
+  .note::placeholder { color: var(--faint); }
+  .actions { display: flex; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .btn { border: 0; border-radius: 10px; padding: 9px 16px; font-size: 15px; font-weight: 650; cursor: pointer; background: var(--surface-3); color: var(--text); }
+  .btn:hover { background: #313c4a; }
+  .btn.primary { background: var(--rose-solid); color: #ffffff; }
+  .btn.primary:hover { background: var(--rose-solid-hover); }
+  .btn.ghost { background: transparent; color: var(--muted); }
+  .btn.ghost:hover { background: var(--surface-2); color: var(--text); }
+  .btn.text { background: transparent; color: var(--muted); font-weight: 600; padding: 9px 8px; }
+  .btn.text:hover { color: var(--text); background: transparent; text-decoration: underline; }
+  .btn:disabled { background: var(--surface-2); color: var(--faint); cursor: not-allowed; }
+
+  .card.done { display: flex; align-items: center; gap: 12px; padding: 13px 24px; flex-wrap: wrap; }
+  .tick { width: 22px; height: 22px; border-radius: 999px; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; font-size: 13px; font-weight: 700; flex: none; }
+  .card.skipped .tick { background: var(--surface-3); color: var(--muted); }
+  .mini { display: inline-flex; height: 18px; width: 84px; border-radius: 5px; overflow: hidden; flex: none; box-shadow: 0 0 0 1px #3b4551; }
+  .mini i { flex: 1; }
+  .done-title { font-weight: 650; }
+  .done-sum { color: var(--muted); font-size: 14.5px; }
+
+  /* ---------- choice cards ---------- */
+  /* Two screenshots side by side, each framed around the part being compared
+     and boxed with its letter, so "A vs B" can be read off the picture. */
+  .sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 16px; align-items: start; }
+  .side-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; min-width: 0; }
+  .side-name { font-size: 15px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .side-cap { margin-top: 6px; font-size: 13.5px; color: var(--faint); display: flex; justify-content: space-between; gap: 12px; }
+  .mk-tag { display: inline-grid; place-items: center; flex: none; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px; font-size: 13px; font-weight: 700; color: #ffffff; }
+  .mk-tag.a { background: var(--mk-a); }
+  .mk-tag.b { background: var(--mk-b); }
+  .shot { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #ffffff; cursor: zoom-in; }
+  .shot img { position: absolute; max-width: none; display: block; }
+  .shot.plain img { position: static; width: 100%; }
+  .noshot { border-radius: 10px; background: var(--surface-2); color: var(--faint); font-size: 14.5px; display: grid; place-items: center; min-height: 120px; padding: 12px; text-align: center; }
+  /* Outline only: nothing is tinted over the screenshot, so the marked part stays fully visible. */
+  .mark { position: absolute; border: 2.5px solid; border-radius: 6px; box-shadow: 0 0 0 1.5px #ffffff; pointer-events: none; }
+  .mark.a { border-color: var(--mk-a); }
+  .mark.b { border-color: var(--mk-b); }
+  .mark i { position: absolute; left: -2.5px; bottom: 100%; margin-bottom: 4px; font: 700 12.5px/1 var(--sans); color: #ffffff; padding: 4px 7px; border-radius: 5px; box-shadow: 0 0 0 1.5px #ffffff; }
+  .mark.a i { background: var(--mk-a); }
+  .mark.b i { background: var(--mk-b); }
+  .mark.below i { bottom: auto; top: 100%; margin: 4px 0 0; }
+  .mark.in i { bottom: auto; top: 4px; left: 4px; margin: 0; }
+  .why-block { margin-top: 16px; }
+  .why-k { font-size: 13px; color: var(--faint); font-weight: 650; }
+  .why { margin: 2px 0 0; font-size: 15px; max-width: 780px; }
+  .srcs { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 14.5px; color: var(--muted); }
+  .srcs code { color: var(--text); }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-top: 16px; }
+  .opt { text-align: left; border: 0; border-radius: 12px; padding: 11px 14px; background: var(--surface-2); cursor: pointer; display: grid; gap: 2px; box-shadow: inset 0 0 0 2px transparent; }
+  .opt:hover { background: var(--surface-3); }
+  .opt[aria-pressed="true"] { background: var(--surface-3); box-shadow: inset 0 0 0 2px var(--ok); }
+  .opt-l { font-size: 15px; font-weight: 650; display: flex; align-items: center; gap: 8px; }
+  .opt-d { font-size: 13.5px; color: var(--muted); }
+  .ai-tag { font-style: normal; font-size: 12px; font-weight: 650; background: var(--bg); color: var(--muted); padding: 1px 7px; border-radius: 999px; }
+
+  /* A dense scale in its compact form: every value on a few wrapped lines. */
+  .dense-lead { margin: 14px 0 8px; color: var(--muted); font-size: 14.5px; max-width: 780px; }
+  .dense-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .dv { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 8px; background: var(--surface-2); color: var(--text); font: 500 13px var(--mono); }
+  .dv .chip-sw { width: 14px; height: 14px; border-radius: 4px; }
+  .dv.idle { background: var(--warn-soft); color: var(--warn); }
+  .dv.odd { box-shadow: inset 0 0 0 2px var(--rose); }
+  .dv.off { color: var(--faint); text-decoration: line-through; }
+  .dense-legend { margin: 8px 0 0; font-size: 13.5px; color: var(--faint); }
+  .dense-more { margin-top: 14px; }
+  .scale-names { display: grid; grid-template-columns: 1fr 1fr; margin: 8px 0 0; font-size: 14.5px; color: var(--muted); }
+
+  /* ---------- action bar / drawer / toast ---------- */
+  .actionbar { position: fixed; left: var(--rail-w); right: 0; bottom: 0; z-index: 8; background: var(--surface-2); padding: 14px 36px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 -10px 28px rgb(0 0 0 / 38%); }
+  .ab-progress { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .ab-left { color: var(--muted); font-size: 14.5px; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 12; width: min(560px, 94vw); background: var(--surface-2); box-shadow: -14px 0 36px rgb(0 0 0 / 45%); padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .drawer[hidden] { display: none; }
+  .drawer h2 { margin: 0; font-size: 17px; }
+  .drawer textarea { flex: 1; width: 100%; resize: none; background: var(--bg); color: var(--text); border: 0; border-radius: 12px; padding: 14px; font: 13.5px/1.65 var(--mono); }
+  .drawer-foot { display: flex; gap: 10px; align-items: center; }
+  /* In-page image viewer: a solid full-window panel, so a screenshot is enlarged
+     where the designer is working instead of in a separate tab. */
+  .viewer { position: fixed; inset: 0; z-index: 30; background: var(--rail); display: flex; flex-direction: column; }
+  .viewer[hidden] { display: none; }
+  .viewer-bar { display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: var(--surface-2); flex-wrap: wrap; }
+  .viewer-tip { font-size: 13.5px; color: var(--faint); }
+  .viewer-bar .seg { background: var(--bg); }
+  .viewer-side { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 14.5px; color: var(--muted); }
+  .viewer-side b { color: var(--text); font-weight: 650; }
+  .viewer-stage { flex: 1; min-height: 0; overflow: auto; display: flex; padding: 24px; cursor: zoom-out; }
+  /* margin:auto centers a small image and still lets a large one scroll from its top-left corner.
+     The canvas is sized in script so the marks, placed in percent, always sit on the same pixels. */
+  .viewer-canvas { position: relative; margin: auto; flex: none; cursor: zoom-in; }
+  .viewer-canvas img { display: block; width: 100%; background: #ffffff; border-radius: 8px; }
+  .viewer[data-level="200"] .viewer-canvas { cursor: zoom-out; }
+  .viewer-canvas.nomarks .mark { display: none; }
+  .btn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--ok); }
+
+  .toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 20; background: var(--text); color: #0e1116; padding: 11px 18px; border-radius: 12px; font-size: 15px; font-weight: 600; max-width: min(640px, 90vw); box-shadow: 0 10px 28px rgb(0 0 0 / 45%); }
+  .toast[hidden] { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+  @media (max-width: 920px) {
+    .app { grid-template-columns: 1fr; }
+    .rail { position: static; height: auto; }
+    .main { padding: 0 18px 170px; }
+    .actionbar { left: 0; padding: 12px 18px; }
+    .m { grid-template-columns: 34px 26px minmax(0, 1fr) 76px; }
+    .m .m-use { grid-column: 3 / -1; margin-top: 4px; }
+    .m-head span:last-child { display: none; }
+    .sides { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <main class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="actionbar" id="actionbar"></div>
+<aside class="drawer" id="drawer" hidden></aside>
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+// Review data, injected by generate_review_html.mjs: the review items built by
+// review_core.mjs plus the package name, a storage key and the default locale.
+const DATA = /*__REVIEW_DATA__*/null;
+
+// ---------------------------------------------------------------- copy
+// Every locale defines the same keys; a test compares the key sets.
+const COPY = {
+  "zh-Hant": {
+    htmlLang: "zh-Hant",
+    langName: "繁中",
+    appTitle: "設計系統 Review",
+    generated: (d) => `產生於 ${d}`,
+    intro: "AI 已經替每一件給了建議。你只要挑出不同意的，最後把提示詞貼給 AI，它會照你的決定更新 token 與文件。",
+    introNothing: "目前沒有需要審查的事項。",
+    introDone: "這裡每一件都已經有記錄在案的決定。想改的話，按卡片上的「修改」，確定後再把提示詞貼給 AI。",
+    meterCap: "已確認",
+    left: (n) => (n ? `還有 ${n} 件待確認` : "全部處理完了"),
+    navTitle: "要看的項目",
+    howTitle: "怎麼用",
+    how: ["看每張卡的 AI 建議", "同意就按「同意」，不同意就改勾選", "按「複製提示詞」，貼給 AI 更新"],
+    settings: "顯示",
+    langLabel: "語言",
+    stageLabel: "色塊背景",
+    stage: { dark: "深", gray: "灰", light: "淺" },
+    resetAll: "清除我在這一頁的選擇",
+    sections: { tokens: "相近 Token", components: "相似元件", sources: "重複來源" },
+    leads: {
+      tokens: (pairs, groups, merged, scales) => [
+        pairs ? `數值很接近的 token。成對比較要看 ${pairs} 對，這裡併成 ${groups} 組一次決定。打勾代表保留，沒打勾的會併入最接近的那一個。` : "",
+        merged ? `先前已經合併的 ${merged} 筆也列在這裡，需要時可以把被合併的值拆回成獨立 token。` : "",
+        scales ? `有 ${scales} 處色階的明暗順序不對，可以請 AI 修正。` : "",
+      ].filter(Boolean).join(""),
+      components: () => "看起來或用起來很像的元件。決定要合併、做成變體，還是分開。",
+      sources: () => "重複或互相衝突的參考來源。決定哪一份算數。",
+    },
+    kinds: { color: "相近顏色", type: "相近字級", radius: "相近圓角", length: "相近尺寸", number: "相近數值", "color-scale": "色階順序", components: "相似元件", sources: "重複來源" },
+    countOf: (n, kind) => (kind === "color" ? `${n} 個顏色` : `${n} 個值`),
+    mergedTag: "已合併的值",
+    stPending: "待確認",
+    stEditing: "修改中",
+    col: { keep: "保留", token: "Token", value: "值", usage: "用在哪裡" },
+    unused: "沒有任何角色使用",
+    compsLine: (names, n) => (n <= 2 ? `元件：${names.join("、")}` : `元件：${names.slice(0, 2).join("、")} 等 ${n} 個`),
+    noComps: "還沒有元件用到",
+    compTokensOnly: (n) => `${n} 個元件 token 用到`,
+    mergeInto: "併入",
+    staysMerged: "維持併入",
+    mergedAway: "已被併掉",
+    willRestore: "會拆回成獨立 token",
+    afterMerge: "合併後",
+    aiSuggests: "AI 建議",
+    recordedAs: "目前的紀錄",
+    confirmedBy: (who) => `確認者：${who}`,
+    provenance: (text) => `來源：${text}`,
+    aiNone: "AI 沒有建議，這一件需要你決定",
+    keepAll: (n) => (n === 2 ? "兩個都保留" : `${n} 個都保留`),
+    mergeSum: (list) => `合併 ${list.join("；")}`,
+    keepMergedSum: (vals, into) => `維持合併（${vals} 併入 ${into}）`,
+    restoreSum: (vals) => `拆回 ${vals}，還原成獨立 token`,
+    noChoice: "尚未選擇",
+    fixScale: "請 AI 修正色階順序",
+    closest: (a, b, txt) => `最接近的一對是 ${a} 與 ${b}：${txt}`,
+    unusedCount: (k, n) => `${n} 個裡面有 ${k} 個目前沒有任何角色使用`,
+    oddCount: (k, list) => `${k} 個不是整數：${list}`,
+    deltaColor: (d) => (d < 1 ? `肉眼分不出來（ΔE ${d}）` : d < 2 ? `並排仔細看才分得出來（ΔE ${d}）` : `並排看得出些微差異（ΔE ${d}）`),
+    deltaNum: (d, unit) => `差 ${d}${unit}`,
+    sample: "技術面訊號 Signal 123.45",
+    zoomCorner: (s) => `圓角放大 ${s} 倍疊在一起`,
+    barsEnlarged: (k) => `長度放大 ${k} 倍顯示`,
+    barsReduced: "長度已等比例縮小以便顯示",
+    denseLead: (n) => `這一組有 ${n} 個值彼此相鄰，像是一段連續的階梯。下面依序列出全部的值。`,
+    denseLegend: "標色的值沒有任何角色使用；加框的值不是整數。",
+    expand: "展開逐一決定",
+    collapse: "收合成精簡檢視",
+    scaleLead: (hi, lo) => `${hi} 的階數比較高，應該比 ${lo} 亮，但實際上比較暗。`,
+    agree: "同意 AI 建議",
+    agreeMerged: "同意，維持合併",
+    confirmMine: "確認我的調整",
+    confirm: "確認",
+    askFix: "請 AI 修正",
+    skip: "先跳過",
+    cancelEdit: "不改了",
+    resetAi: "還原成 AI 建議",
+    resetRecorded: "還原成目前的紀錄",
+    copyOne: "只複製這一筆",
+    edit: "修改",
+    notePh: "補充說明（選填，會寫進決定紀錄）",
+    agreed: "同意 AI",
+    yours: "你的調整",
+    decided: "你的決定",
+    recorded: "已記錄",
+    skipped: "已跳過",
+    acceptAll: (n) => `全部同意 AI 建議（${n}）`,
+    preview: "預覽提示詞",
+    copyAll: (n) => (n ? `複製提示詞（${n}）` : "複製提示詞"),
+    progress: (c, n) => `已確認 ${c} / ${n}`,
+    copied: (n) => `已複製 ${n} 筆決定。貼到 Claude Code／Cursor／Codex 的對話框，AI 就會照著更新。`,
+    copyFail: "無法自動複製，請在預覽裡手動全選複製。",
+    mustKeepOne: "至少要保留一個",
+    drawerTitle: "要貼給 AI 的提示詞",
+    drawerEmpty: "還沒有新的決定。確認幾張卡之後，這裡會出現要貼給 AI 的內容。",
+    close: "關閉",
+    copy: "複製",
+    zoomIn: "放大",
+    zoomHint: "點圖放大",
+    fit: "符合視窗",
+    viewerTip: "點圖片切換大小，按 Esc 或點空白處關閉",
+    marksToggle: "標示",
+    noShot: "這一邊沒有截圖",
+    aiTag: "AI 建議",
+    whyLabel: { components: "相似的地方", sources: "重複的原因" },
+    opt: {
+      merge: ["合併", "當成同一個元件"],
+      "make variant": ["做成變體", "同一個元件的不同版本"],
+      "keep distinct": ["保留區分", "兩個獨立的元件"],
+      blocked: ["先擋著", "證據不足，暫不決定"],
+      "reuse existing source": ["沿用既有來源", "只算一份證據，以原本那份為準"],
+      "ignore duplicate": ["忽略重複", "這一份不納入"],
+    },
+    optSourceDistinct: "兩份都算獨立的證據",
+    p: {
+      head: (n) => `請使用 design-system-extractor 的「套用審查決定」流程，套用下列設計師 review 決定（共 ${n} 筆）。`,
+      pkg: (p) => `套件：${p}`,
+      src: (d) => `來源：docs/design-system/review.html（產生於 ${d}）`,
+      by: (d) => `確認人：設計師，透過 review 頁（${d}）`,
+      sep: "：",
+      tagAgree: "[同意 AI]",
+      tagMine: "[設計師調整]",
+      tagNoAi: "[設計師決定]",
+      aiWas: (ai) => `（AI 原建議：${ai}）`,
+      recordWas: (text) => `（原紀錄：${text}）`,
+      keep: "保留",
+      merge: "合併",
+      stay: "維持合併",
+      restore: "拆回",
+      restoreTail: (into) => `還原成獨立的 ref token（目前併入 ${into}）`,
+      scale: (hi, lo) => `修正色階順序：${hi} 應該比 ${lo} 亮`,
+      note: "設計師說明",
+      applyTitle: "請這樣套用",
+      applyMerge: "合併：把被合併 token 的所有 sys 參照改指向保留的 token，再移除被合併的 ref token。",
+      applyRestore: "拆回：依來源證據把該值還原成獨立的 ref token，並修正應該使用它的 sys／comp 對應。",
+      applyScale: "色階順序：調整 ref token 的階數或數值，讓同一色系的 100 最亮、0 最暗，並同步更新引用它的 sys token。",
+      applyTokens: (d) => `Token 決定寫進 design-system/TOKEN_ARCHITECTURE.md 的 Near Token Decisions：Decision 欄填 merge into 加存活 token，或 keep distinct；Confirmed by 欄填「designer via review.html ${d}」；合併的列要保留被合併 token 的值。`,
+      applyComponents: "元件決定寫進 design-system/COMPONENT_INVENTORY.md 的 Component Similarity Review（Developer decision 欄）。",
+      applySources: "來源決定寫進 design-system/DESIGN_EVIDENCE_MAP.md 的 Source Duplicate Review（Developer decision 欄）。",
+      applyVerify: "完成後重跑三個 strict audit，重新產生 index.html 與 review.html，回報結果與任何無法套用的項目。",
+    },
+  },
+  en: {
+    htmlLang: "en",
+    langName: "EN",
+    appTitle: "Design System Review",
+    generated: (d) => `Generated ${d}`,
+    intro: "The AI has already suggested a decision for every item. Flag only the ones you disagree with, then paste the prompt to the AI — it updates the tokens and docs to match your decisions.",
+    introNothing: "Nothing needs review right now.",
+    introDone: "Every item here already has a recorded decision. To change one, choose Edit on its card, confirm it, then paste the prompt to the AI.",
+    meterCap: "confirmed",
+    left: (n) => (n ? `${n} still waiting for you` : "Everything is handled"),
+    navTitle: "What to review",
+    howTitle: "How it works",
+    how: ["Read the AI suggestion on each card", "Agree, or change the checkboxes if you disagree", "Copy the prompt and paste it to the AI"],
+    settings: "Display",
+    langLabel: "Language",
+    stageLabel: "Swatch background",
+    stage: { dark: "Dark", gray: "Gray", light: "Light" },
+    resetAll: "Clear my choices on this page",
+    sections: { tokens: "Near tokens", components: "Similar components", sources: "Duplicate sources" },
+    leads: {
+      tokens: (pairs, groups, merged, scales) => [
+        pairs ? `Tokens whose values are very close. Compared pair by pair that is ${pairs} ${pairs === 1 ? "question" : "questions"}; here they are grouped into ${groups} ${groups === 1 ? "decision" : "decisions"}. Checked means keep; unchecked values merge into the closest kept one.` : "",
+        merged ? `${merged === 1 ? "1 earlier merge stays" : `${merged} earlier merges stay`} listed, so a merged value can be brought back as its own token.` : "",
+        scales ? `${scales === 1 ? "1 pair of color steps is" : `${scales} pairs of color steps are`} in the wrong order; the AI can fix ${scales === 1 ? "it" : "them"}.` : "",
+      ].filter(Boolean).join(" "),
+      components: () => "Components that look or behave alike. Decide whether to merge them, make one a variant, or keep them apart.",
+      sources: () => "Reference sources that repeat or contradict each other. Decide which one counts.",
+    },
+    kinds: { color: "Near colors", type: "Near type sizes", radius: "Near radii", length: "Near sizes", number: "Near values", "color-scale": "Scale order", components: "Similar components", sources: "Duplicate sources" },
+    countOf: (n, kind) => (kind === "color" ? `${n} colors` : `${n} values`),
+    mergedTag: "Merged value",
+    stPending: "Needs you",
+    stEditing: "Editing",
+    col: { keep: "Keep", token: "Token", value: "Value", usage: "Where it is used" },
+    unused: "Not used by any role",
+    compsLine: (names, n) => (n <= 2 ? `Components: ${names.join(", ")}` : `Components: ${names.slice(0, 2).join(", ")} and ${n - 2} more`),
+    noComps: "No component uses it yet",
+    compTokensOnly: (n) => `Used by ${n} component tokens`,
+    mergeInto: "Merge into",
+    staysMerged: "Stays merged into",
+    mergedAway: "Already merged",
+    willRestore: "Will be restored as its own token",
+    afterMerge: "After merging",
+    aiSuggests: "AI suggests",
+    recordedAs: "Current record",
+    confirmedBy: (who) => `Confirmed by: ${who}`,
+    provenance: (text) => `Provenance: ${text}`,
+    aiNone: "The AI has no suggestion — this one needs your decision",
+    keepAll: (n) => (n === 2 ? "Keep both" : `Keep all ${n}`),
+    mergeSum: (list) => `Merge ${list.join("; ")}`,
+    keepMergedSum: (vals, into) => `Keep merged (${vals} into ${into})`,
+    restoreSum: (vals) => `Restore ${vals} as its own token`,
+    noChoice: "Not chosen yet",
+    fixScale: "Ask the AI to fix the scale order",
+    closest: (a, b, txt) => `Closest pair is ${a} and ${b}: ${txt}`,
+    unusedCount: (k, n) => `${k} of these ${n} are not used by any role right now`,
+    oddCount: (k, list) => `${k} not a whole number: ${list}`,
+    deltaColor: (d) => (d < 1 ? `indistinguishable by eye (ΔE ${d})` : d < 2 ? `only visible side by side, with effort (ΔE ${d})` : `slightly different side by side (ΔE ${d})`),
+    deltaNum: (d, unit) => `${d}${unit} apart`,
+    sample: "Technical signal 123.45",
+    zoomCorner: (s) => `Corners overlaid at ${s}× zoom`,
+    barsEnlarged: (k) => `Lengths drawn at ${k}× size`,
+    barsReduced: "Lengths scaled down to fit",
+    denseLead: (n) => `These ${n} values sit next to each other, like one continuous scale. Every value is listed below in order.`,
+    denseLegend: "Tinted values are not used by any role; outlined values are not whole numbers.",
+    expand: "Expand to decide each value",
+    collapse: "Back to the compact view",
+    scaleLead: (hi, lo) => `${hi} has the higher step, so it should be lighter than ${lo}, but it is darker.`,
+    agree: "Agree with AI",
+    agreeMerged: "Agree, keep merged",
+    confirmMine: "Confirm my change",
+    confirm: "Confirm",
+    askFix: "Ask the AI to fix it",
+    skip: "Skip for now",
+    cancelEdit: "Leave as is",
+    resetAi: "Back to AI suggestion",
+    resetRecorded: "Back to the current record",
+    copyOne: "Copy only this one",
+    edit: "Edit",
+    notePh: "Add a note (optional — it goes into the decision record)",
+    agreed: "Agreed with AI",
+    yours: "Your change",
+    decided: "Your decision",
+    recorded: "Recorded",
+    skipped: "Skipped",
+    acceptAll: (n) => `Agree with all AI suggestions (${n})`,
+    preview: "Preview prompt",
+    copyAll: (n) => (n ? `Copy prompt (${n})` : "Copy prompt"),
+    progress: (c, n) => `${c} / ${n} confirmed`,
+    copied: (n) => `Copied ${n} decisions. Paste into Claude Code, Cursor or Codex and the AI applies them.`,
+    copyFail: "Could not copy automatically — select the text in the preview and copy it.",
+    mustKeepOne: "Keep at least one",
+    drawerTitle: "Prompt to paste to the AI",
+    drawerEmpty: "No new decisions yet. Confirm a few cards and the prompt appears here.",
+    close: "Close",
+    copy: "Copy",
+    zoomIn: "Enlarge",
+    zoomHint: "Click to enlarge",
+    fit: "Fit",
+    viewerTip: "Click the image to change size; Esc or the empty area closes",
+    marksToggle: "Marks",
+    noShot: "No screenshot for this side",
+    aiTag: "AI",
+    whyLabel: { components: "What is similar", sources: "Why it is a duplicate" },
+    opt: {
+      merge: ["Merge", "Treat as one component"],
+      "make variant": ["Make variant", "Same component, different version"],
+      "keep distinct": ["Keep distinct", "Two separate components"],
+      blocked: ["Block", "Not enough evidence yet"],
+      "reuse existing source": ["Reuse existing source", "Counts once; the original wins"],
+      "ignore duplicate": ["Ignore duplicate", "Leave this one out"],
+    },
+    optSourceDistinct: "Both count as separate evidence",
+    p: {
+      head: (n) => `Use the design-system-extractor Review Decision Apply Pass to apply the designer review decisions below (${n} total).`,
+      pkg: (p) => `Package: ${p}`,
+      src: (d) => `Source: docs/design-system/review.html (generated ${d})`,
+      by: (d) => `Confirmed by: designer, through the review page (${d})`,
+      sep: ": ",
+      tagAgree: "[agrees with AI]",
+      tagMine: "[designer change]",
+      tagNoAi: "[designer decision]",
+      aiWas: (ai) => ` (AI suggested: ${ai})`,
+      recordWas: (text) => ` (recorded before: ${text})`,
+      keep: "keep",
+      merge: "merge",
+      stay: "stays merged",
+      restore: "restore",
+      restoreTail: (into) => `as its own ref token (currently merged into ${into})`,
+      scale: (hi, lo) => `fix the scale order: ${hi} must be lighter than ${lo}`,
+      note: "Designer note",
+      applyTitle: "How to apply",
+      applyMerge: "Merge: repoint every sys reference of the merged token to the kept token, then remove the merged ref token.",
+      applyRestore: "Restore: bring the value back as its own ref token from the source evidence and fix the sys/comp mappings that should use it.",
+      applyScale: "Scale order: change the step or the value of the ref tokens so that 100 is the lightest and 0 the darkest in the family, and update the sys tokens that reference them.",
+      applyTokens: (d) => `Record token decisions in design-system/TOKEN_ARCHITECTURE.md under Near Token Decisions: Decision is "merge into" plus the surviving token, or "keep distinct"; Confirmed by is "designer via review.html ${d}"; a merge row keeps the merged token's value.`,
+      applyComponents: "Record component decisions in design-system/COMPONENT_INVENTORY.md under Component Similarity Review (Developer decision column).",
+      applySources: "Record source decisions in design-system/DESIGN_EVIDENCE_MAP.md under Source Duplicate Review (Developer decision column).",
+      applyVerify: "Then re-run the three strict audits, regenerate index.html and review.html, and report the result plus anything that could not be applied.",
+    },
+  },
+  ja: {
+    htmlLang: "ja",
+    langName: "日本語",
+    appTitle: "デザインシステム レビュー",
+    generated: (d) => `${d} に生成`,
+    intro: "AI がすべての項目に提案を付けています。同意できないものだけ直し、最後にプロンプトを AI に貼り付けると、決定どおりに token とドキュメントが更新されます。",
+    introNothing: "いまレビューが必要な項目はありません。",
+    introDone: "ここにある項目はすべて決定が記録済みです。変更したい場合はカードの「編集」を押して確定し、プロンプトを AI に貼り付けてください。",
+    meterCap: "確認済み",
+    left: (n) => (n ? `残り ${n} 件が確認待ち` : "すべて対応済み"),
+    navTitle: "レビュー項目",
+    howTitle: "使い方",
+    how: ["各カードの AI 提案を読む", "同意なら「同意」、違うならチェックを変える", "「プロンプトをコピー」して AI に貼り付ける"],
+    settings: "表示",
+    langLabel: "言語",
+    stageLabel: "色見本の背景",
+    stage: { dark: "暗", gray: "灰", light: "明" },
+    resetAll: "このページでの選択を消去",
+    sections: { tokens: "近い Token", components: "似たコンポーネント", sources: "重複ソース" },
+    leads: {
+      tokens: (pairs, groups, merged, scales) => [
+        pairs ? `値がとても近い token です。ペアごとに比べると ${pairs} 組ですが、ここでは ${groups} グループにまとめて一度に決めます。チェックは「残す」、外した値は最も近い残す値に統合されます。` : "",
+        merged ? `以前に統合した ${merged} 件もここに残しているので、統合された値を独立した token に戻せます。` : "",
+        scales ? `色階の順序が逆になっている箇所が ${scales} 件あります。AI に修正を依頼できます。` : "",
+      ].filter(Boolean).join(""),
+      components: () => "見た目や振る舞いが似ているコンポーネントです。統合するか、バリアントにするか、別々にするかを決めます。",
+      sources: () => "重複している、または食い違っている参照ソースです。どれを採用するかを決めます。",
+    },
+    kinds: { color: "近い色", type: "近い文字サイズ", radius: "近い角丸", length: "近いサイズ", number: "近い数値", "color-scale": "色階の順序", components: "似たコンポーネント", sources: "重複ソース" },
+    countOf: (n, kind) => (kind === "color" ? `${n} 色` : `${n} 個の値`),
+    mergedTag: "統合済みの値",
+    stPending: "確認待ち",
+    stEditing: "編集中",
+    col: { keep: "残す", token: "Token", value: "値", usage: "使われている場所" },
+    unused: "どのロールからも使われていません",
+    compsLine: (names, n) => (n <= 2 ? `コンポーネント：${names.join("、")}` : `コンポーネント：${names.slice(0, 2).join("、")} ほか ${n - 2} 件`),
+    noComps: "まだどのコンポーネントも使っていません",
+    compTokensOnly: (n) => `${n} 個の component token が使用`,
+    mergeInto: "統合先",
+    staysMerged: "統合のまま",
+    mergedAway: "統合済み",
+    willRestore: "独立した token に戻します",
+    afterMerge: "統合後",
+    aiSuggests: "AI の提案",
+    recordedAs: "現在の記録",
+    confirmedBy: (who) => `確認者：${who}`,
+    provenance: (text) => `出どころ：${text}`,
+    aiNone: "AI の提案はありません。この項目はあなたが決めてください",
+    keepAll: (n) => (n === 2 ? "両方残す" : `${n} 個すべて残す`),
+    mergeSum: (list) => `統合 ${list.join("；")}`,
+    keepMergedSum: (vals, into) => `統合のまま（${vals} を ${into} に統合）`,
+    restoreSum: (vals) => `${vals} を独立した token に戻す`,
+    noChoice: "未選択",
+    fixScale: "AI に色階の順序を直してもらう",
+    closest: (a, b, txt) => `最も近いのは ${a} と ${b}：${txt}`,
+    unusedCount: (k, n) => `${n} 個のうち ${k} 個はどのロールからも使われていません`,
+    oddCount: (k, list) => `${k} 個が整数ではありません：${list}`,
+    deltaColor: (d) => (d < 1 ? `目では見分けられません（ΔE ${d}）` : d < 2 ? `並べてよく見ると分かる程度です（ΔE ${d}）` : `並べるとわずかな違いが分かります（ΔE ${d}）`),
+    deltaNum: (d, unit) => `差 ${d}${unit}`,
+    sample: "テクニカル シグナル Signal 123.45",
+    zoomCorner: (s) => `角丸を ${s} 倍に拡大して重ねた図`,
+    barsEnlarged: (k) => `長さを ${k} 倍に拡大して表示`,
+    barsReduced: "長さは収まるように等比で縮小しています",
+    denseLead: (n) => `この ${n} 個の値は隣り合っていて、ひと続きのスケールのようです。すべての値を順に並べています。`,
+    denseLegend: "色付きの値はどのロールからも使われていません。枠付きの値は整数ではありません。",
+    expand: "展開して一つずつ決める",
+    collapse: "コンパクト表示に戻す",
+    scaleLead: (hi, lo) => `${hi} のほうが段階が上なので ${lo} より明るいはずですが、実際は暗くなっています。`,
+    agree: "AI の提案に同意",
+    agreeMerged: "同意して統合のままにする",
+    confirmMine: "自分の変更を確定",
+    confirm: "確定",
+    askFix: "AI に修正を依頼",
+    skip: "あとで",
+    cancelEdit: "変更しない",
+    resetAi: "AI の提案に戻す",
+    resetRecorded: "現在の記録に戻す",
+    copyOne: "この 1 件だけコピー",
+    edit: "編集",
+    notePh: "補足（任意。決定の記録に書き込まれます）",
+    agreed: "AI に同意",
+    yours: "あなたの変更",
+    decided: "あなたの決定",
+    recorded: "記録済み",
+    skipped: "スキップ",
+    acceptAll: (n) => `AI の提案すべてに同意（${n}）`,
+    preview: "プロンプトをプレビュー",
+    copyAll: (n) => (n ? `プロンプトをコピー（${n}）` : "プロンプトをコピー"),
+    progress: (c, n) => `確認済み ${c} / ${n}`,
+    copied: (n) => `${n} 件の決定をコピーしました。Claude Code／Cursor／Codex のチャットに貼り付けると AI が反映します。`,
+    copyFail: "自動でコピーできませんでした。プレビューの文字を選択してコピーしてください。",
+    mustKeepOne: "少なくとも 1 つは残してください",
+    drawerTitle: "AI に貼り付けるプロンプト",
+    drawerEmpty: "新しい決定はまだありません。カードを確定すると、ここに AI へ貼り付ける内容が表示されます。",
+    close: "閉じる",
+    copy: "コピー",
+    zoomIn: "拡大",
+    zoomHint: "クリックで拡大",
+    fit: "ウィンドウに合わせる",
+    viewerTip: "画像をクリックでサイズ切替、Esc または余白クリックで閉じる",
+    marksToggle: "マーク",
+    noShot: "こちら側のスクリーンショットはありません",
+    aiTag: "AI の提案",
+    whyLabel: { components: "似ている点", sources: "重複の理由" },
+    opt: {
+      merge: ["統合", "同じコンポーネントとして扱う"],
+      "make variant": ["バリアントにする", "同じコンポーネントの別バージョン"],
+      "keep distinct": ["別々にする", "2 つの独立したコンポーネント"],
+      blocked: ["保留", "根拠が足りないため決めない"],
+      "reuse existing source": ["既存ソースを使う", "証拠は 1 件として数え、元のソースを基準にする"],
+      "ignore duplicate": ["重複を無視", "このソースは数に入れない"],
+    },
+    optSourceDistinct: "どちらも独立した証拠として数える",
+    p: {
+      head: (n) => `design-system-extractor の「レビュー決定の適用」フロー（Review Decision Apply Pass）で、次のデザイナーのレビュー決定（全 ${n} 件）を適用してください。`,
+      pkg: (p) => `パッケージ：${p}`,
+      src: (d) => `出典：docs/design-system/review.html（${d} 生成）`,
+      by: (d) => `確認者：デザイナー、レビューページ経由（${d}）`,
+      sep: "：",
+      tagAgree: "[AI に同意]",
+      tagMine: "[デザイナーの変更]",
+      tagNoAi: "[デザイナーの決定]",
+      aiWas: (ai) => `（AI の提案：${ai}）`,
+      recordWas: (text) => `（元の記録：${text}）`,
+      keep: "残す",
+      merge: "統合",
+      stay: "統合のまま",
+      restore: "戻す",
+      restoreTail: (into) => `を独立した ref token に戻す（現在は ${into} に統合）`,
+      scale: (hi, lo) => `色階の順序を修正：${hi} は ${lo} より明るくする`,
+      note: "デザイナーの補足",
+      applyTitle: "適用方法",
+      applyMerge: "統合：統合される token を参照している sys をすべて残す token に付け替え、統合される ref token を削除する。",
+      applyRestore: "戻す：ソースの証拠に基づいてその値を独立した ref token として復元し、それを使うべき sys／comp の対応を直す。",
+      applyScale: "色階の順序：同じ色系で 100 が最も明るく 0 が最も暗くなるように ref token の段階か値を直し、参照している sys token も更新する。",
+      applyTokens: (d) => `Token の決定は design-system/TOKEN_ARCHITECTURE.md の Near Token Decisions に記録する：Decision 欄は merge into と残す token、または keep distinct。Confirmed by 欄は「designer via review.html ${d}」。統合の行には統合された token の値を残す。`,
+      applyComponents: "コンポーネントの決定は design-system/COMPONENT_INVENTORY.md の Component Similarity Review（Developer decision 欄）に記録する。",
+      applySources: "ソースの決定は design-system/DESIGN_EVIDENCE_MAP.md の Source Duplicate Review（Developer decision 欄）に記録する。",
+      applyVerify: "完了後、3 つの strict audit を再実行し、index.html と review.html を再生成して、結果と適用できなかった項目を報告する。",
+    },
+  },
+};
+
+// ---------------------------------------------------------------- helpers
+const TODAY = new Date().toISOString().slice(0, 10);
+const SECTIONS = ["tokens", "components", "sources"];
+const esc = (v) => String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const fmt = (n) => (Number.isInteger(n) ? String(n) : String(Number(Number(n).toFixed(2))));
+const clone = (v) => JSON.parse(JSON.stringify(v));
+const byId = (id) => DATA.items.find((it) => it.id === id);
+const member = (item, key) => item.members.find((m) => m.key === key);
+const domId = (id) => "c-" + id.replace(/[^a-zA-Z0-9]+/g, "-");
+const isToken = (item) => item.section === "tokens" && item.kind !== "color-scale";
+
+// ---------------------------------------------------------------- state
+// What an item looks like before the designer touches it: the recorded
+// outcome when one exists, otherwise the AI's suggestion, otherwise "keep
+// everything" (or no choice).
+function outcomeFrom(item, source) {
+  if (item.kind === "color-scale") return {};
+  if (item.kind === "choice") return { choice: source ? source.choice : null };
+  const keep = {};
+  const target = {};
+  for (const m of item.members) keep[m.key] = true;
+  if (source) {
+    for (const [key, into] of Object.entries(source.merge || {})) {
+      if (key in keep) { keep[key] = false; target[key] = into; }
+    }
+  }
+  return { keep, target };
+}
+const baseOf = (item) => outcomeFrom(item, item.status === "confirmed" && item.recorded ? item.recorded : item.suggestion);
+const aiOf = (item) => (item.suggestion ? outcomeFrom(item, item.suggestion) : null);
+
+function sameOutcome(item, a, b) {
+  if (!a || !b) return false;
+  if (item.kind === "color-scale") return true;
+  if (item.kind === "choice") return a.choice === b.choice;
+  return item.members.every((m) => a.keep[m.key] === b.keep[m.key] && (a.keep[m.key] || a.target[m.key] === b.target[m.key]));
+}
+
+// Local statuses: open (needs the designer), recorded (already decided in the
+// package), editing (a recorded item reopened), confirmed (decided on this
+// page, waiting to be exported), skipped.
+const LS_KEY = "ds-review:" + DATA.projectKey;
+function readStorage() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+    if (raw && raw.v === 1 && raw.items) return raw;
+  } catch (_error) { /* storage unavailable or unreadable: start fresh */ }
+  return { v: 1, items: {} };
+}
+const stored = readStorage();
+let locale = COPY[stored.locale] ? stored.locale : DATA.defaultLocale;
+let stageTone = ["dark", "gray", "light"].includes(stored.stage) ? stored.stage : "dark";
+let t = COPY[locale] || COPY.en;
+
+function validStored(item, entry) {
+  if (!entry || !["open", "confirmed", "skipped", "editing"].includes(entry.status)) return false;
+  if (item.kind === "color-scale") return true;
+  if (item.kind === "choice") return entry.choice === null || item.options.includes(entry.choice);
+  if (!entry.keep || !entry.target) return false;
+  if (!item.members.every((m) => typeof entry.keep[m.key] === "boolean")) return false;
+  if (!item.members.some((m) => entry.keep[m.key])) return false;
+  return item.members.every((m) => entry.keep[m.key] || (entry.target[m.key] && entry.keep[entry.target[m.key]]));
+}
+
+const state = new Map();
+let staleStored = Object.keys(stored.items).some((id) => !DATA.items.some((item) => item.id === id));
+for (const item of DATA.items) {
+  const base = baseOf(item);
+  const recorded = item.status === "confirmed";
+  let entry = stored.items[item.id];
+  // Drop what no longer applies: an entry that no longer fits the item, or a
+  // choice the package has since recorded exactly as the designer made it.
+  if (entry && (!validStored(item, entry) || (recorded && entry.status === "confirmed" && sameOutcome(item, entry, base)))) {
+    entry = null;
+    staleStored = true;
+  }
+  state.set(item.id, entry
+    ? { note: "", ...clone(entry), touched: true }
+    : { status: recorded ? "recorded" : "open", note: "", ...clone(base), touched: false });
+}
+const st = (item) => state.get(item.id);
+const expanded = new Set();
+
+function save() {
+  const items = {};
+  for (const [id, s] of state) {
+    if (!s.touched) continue;
+    const { touched, ...rest } = s;
+    items[id] = rest;
+  }
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ v: 1, locale, stage: stageTone, items })); } catch (_error) { /* nothing persists; the page still works */ }
+}
+function touch(item) {
+  const s = st(item);
+  s.touched = true;
+  return s;
+}
+function resetItem(item) {
+  state.set(item.id, { status: item.status === "confirmed" ? "recorded" : "open", note: "", ...clone(baseOf(item)), touched: false });
+}
+
+const isChanged = (item, s = st(item)) => !sameOutcome(item, s, baseOf(item));
+const differsFromAi = (item, s = st(item)) => (item.suggestion ? !sameOutcome(item, s, aiOf(item)) : false);
+// Worth sending to the AI: confirmed here and not already what the package records.
+const exportable = (item) => {
+  const s = st(item);
+  return s.status === "confirmed" && (item.status !== "confirmed" || isChanged(item, s));
+};
+const exportList = () => DATA.items.filter(exportable);
+const isOpen = (item) => st(item).status === "open";
+const isShown = (item) => ["open", "editing"].includes(st(item).status);
+const canAgree = (item) => isOpen(item) && Boolean(item.suggestion) && !isChanged(item) && item.kind !== "color-scale";
+
+function nearestKept(item, m, s) {
+  const i = item.members.indexOf(m);
+  let best = null;
+  item.members.forEach((other, j) => {
+    if (!s.keep[other.key] || item.dist[i][j] === null) return;
+    // Strictly smaller keeps the first of two equally close values.
+    if (best === null || item.dist[i][j] < item.dist[i][best]) best = j;
+  });
+  if (best === null) best = item.members.findIndex((other) => s.keep[other.key]);
+  return best === -1 ? null : item.members[best].key;
+}
+function retarget(item, s) {
+  for (const m of item.members) {
+    if (s.keep[m.key]) delete s.target[m.key];
+    else if (!s.target[m.key] || !s.keep[s.target[m.key]]) s.target[m.key] = nearestKept(item, m, s);
+  }
+}
+
+// ---------------------------------------------------------------- wording
+function title(item) {
+  if (item.kind === "choice") return `${item.left} ↔ ${item.right}`;
+  if (item.kind === "color-scale") return `${item.family}`;
+  const steps = item.members.map((m) => m.step);
+  if (item.kind === "color" && steps.every(Boolean)) return `${item.family} ${steps[0]} → ${steps.at(-1)}`;
+  if (item.members.length > 3) return `${item.family} ${item.members[0].value} → ${item.members.at(-1).value}`;
+  return `${item.family} ${item.members.map((m) => m.value).join(" / ")}`;
+}
+const optLabel = (item, o) => (t.opt[o] ? t.opt[o][0] : o);
+const optDesc = (item, o) => (item.section === "sources" && o === "keep distinct" ? t.optSourceDistinct : t.opt[o] ? t.opt[o][1] : "");
+function summary(item, s) {
+  if (item.kind === "color-scale") return t.fixScale;
+  if (item.kind === "choice") return s.choice ? optLabel(item, s.choice) : (item.recorded && item.recorded.text) || t.noChoice;
+  const dropped = item.members.filter((m) => !s.keep[m.key]);
+  if (item.origin === "merged") {
+    const restored = item.members.filter((m) => !m.exists && s.keep[m.key]);
+    if (restored.length) return t.restoreSum(restored.map((m) => m.value).join(" / "));
+    return t.keepMergedSum(dropped.map((m) => m.value).join(" / "), member(item, s.target[dropped[0].key]).value);
+  }
+  if (!dropped.length) return t.keepAll(item.members.length);
+  return t.mergeSum(dropped.map((m) => `${m.short} → ${member(item, s.target[m.key]).short}`));
+}
+const deltaText = (item, d, unit) => (item.kind === "color" ? t.deltaColor(fmt(d)) : t.deltaNum(fmt(d), unit || ""));
+
+// ---------------------------------------------------------------- visuals
+function colorStage(item, s) {
+  const labelled = item.members.length <= 12;
+  const cells = item.members.map((m, i) => {
+    const seam = labelled && i < item.members.length - 1 && item.seams[i].delta !== null
+      ? `<span class="seam ${item.seams[i].near ? "" : "far"}" title="${esc(t.deltaColor(fmt(item.seams[i].delta)))}">ΔE ${fmt(item.seams[i].delta)}</span>` : "";
+    const text = labelled ? `<span class="sw-lab">${esc(m.step ?? m.short)}</span><span class="sw-hex">${esc(m.value)}</span>` : "";
+    return `<div class="sw" style="background:${esc(m.value)};color:${m.ink || "#ffffff"}" title="${esc(m.short)} ${esc(m.value)}">${text}${seam}</div>`;
+  }).join("");
+  let after = "";
+  if (item.members.some((m) => !s.keep[m.key])) {
+    const cells2 = item.members.map((m) => {
+      const shown = s.keep[m.key] ? m : member(item, s.target[m.key]);
+      const lab = s.keep[m.key] || !labelled ? "" : `<span class="sw-lab">→ ${esc(shown.step ?? shown.short)}</span>`;
+      return `<div class="sw" style="background:${esc(shown.value)};color:${shown.ink || "#ffffff"}">${lab}</div>`;
+    }).join("");
+    after = `<div class="strip-cap">${esc(t.afterMerge)}</div><div class="strip after">${cells2}</div>`;
+  }
+  return `<div class="stage"><div class="strip">${cells}</div>${after}</div>`;
+}
+function typeStage(item, s) {
+  return `<div class="stage"><div class="specimens">${item.members.map((m) => `
+    <div class="spec ${s.keep[m.key] ? "" : "off"}"><div class="spec-text" style="font-size:${m.num}px">${esc(t.sample)}</div><div class="spec-cap">${esc(m.value)}</div></div>`).join("")}</div></div>`;
+}
+const STROKES = ["var(--stage-ink)", "#ff5c85", "#3aa0ff", "#f0b35f"];
+function radiusStage(item) {
+  const maxR = Math.max(...item.members.map((m) => m.num), 1);
+  const scale = Math.max(1, Math.min(8, Math.floor(100 / maxR)));
+  const paths = item.members.map((m, i) => {
+    const R = m.num * scale;
+    return `<path d="M 12 132 L 12 ${12 + R} A ${R} ${R} 0 0 1 ${12 + R} 12 L 132 12" fill="none" stroke="${STROKES[i % 4]}" stroke-width="2.5"/>`;
+  }).join("");
+  const samples = item.members.map((m, i) => `
+    <div><div class="rbox" style="border-radius:${m.num}px"></div><div class="spec-cap"><i class="dot" style="background:${STROKES[i % 4]}"></i>${esc(m.value)}</div></div>`).join("");
+  return `<div class="stage"><div class="radius-row"><div><svg viewBox="0 0 144 144" width="144" height="144" role="img" aria-label="${esc(t.zoomCorner(scale))}">${paths}</svg><div class="spec-cap">${esc(t.zoomCorner(scale))}</div></div>${samples}</div></div>`;
+}
+function lengthStage(item) {
+  const max = Math.max(...item.members.map((m) => m.num), 1);
+  const k = max > 520 ? 520 / max : max < 240 ? Math.floor(240 / max) : 1;
+  const note = k === 1 ? "" : `<div class="spec-cap">${esc(k > 1 ? t.barsEnlarged(k) : t.barsReduced)}</div>`;
+  return `<div class="stage"><div class="bars">${item.members.map((m) => `<div class="b"><i style="width:${Math.max(2, m.num * k)}px"></i>${esc(m.value)}</div>`).join("")}${note}</div></div>`;
+}
+function numberStage(item) {
+  return `<div class="stage"><div class="nums">${item.members.map((m) => `<span>${esc(m.value)}</span>`).join("")}</div></div>`;
+}
+function stage(item, s) {
+  if (item.kind === "color") return colorStage(item, s);
+  // The specimen, corner and bar drawings need a number for every value.
+  if (item.members.some((m) => typeof m.num !== "number")) return numberStage(item);
+  if (item.kind === "type") return typeStage(item, s);
+  if (item.kind === "radius") return radiusStage(item);
+  if (item.kind === "length") return lengthStage(item);
+  return numberStage(item);
+}
+
+// ---------------------------------------------------------------- token cards
+function usageHtml(m) {
+  if (!m.roles.length) return `<span class="unused">${esc(t.unused)}</span>`;
+  const roles = m.roles.slice(0, 4).map((r) => `<code class="role">${esc(r)}</code>`).join("")
+    + (m.roles.length > 4 ? `<span class="more">+${m.roles.length - 4}</span>` : "");
+  const comps = m.components.length ? t.compsLine(m.components, m.components.length) : m.componentTokenCount ? t.compTokensOnly(m.componentTokenCount) : t.noComps;
+  return `<span class="roles">${roles}</span><span class="comps" title="${esc(m.components.join(", "))}">${esc(comps)}</span>`;
+}
+function membersTable(item, s) {
+  const keptCount = item.members.filter((m) => s.keep[m.key]).length;
+  const rows = item.members.map((m, i) => {
+    const kept = s.keep[m.key];
+    const cid = `${domId(item.id)}-k${i}`;
+    const lock = kept && keptCount === 1;
+    const chip = item.kind === "color" ? `<i class="chip-sw" style="background:${esc(m.value)}"></i>` : `<i class="chip-n"></i>`;
+    let use;
+    if (kept) {
+      use = m.exists ? usageHtml(m) : "";
+    } else {
+      const options = item.members.filter((x) => s.keep[x.key]).map((x) =>
+        `<option value="${esc(x.key)}" ${s.target[m.key] === x.key ? "selected" : ""}>${esc(x.short)} (${esc(x.value)})</option>`).join("");
+      use = `<span class="into">${esc(m.exists ? t.mergeInto : t.staysMerged)} → <select data-act="target" data-id="${esc(item.id)}" data-key="${esc(m.key)}" aria-label="${esc(t.mergeInto)}">${options}</select></span>`;
+    }
+    const tag = m.exists ? "" : `<span class="tag warn">${esc(kept ? t.willRestore : t.mergedAway)}</span>`;
+    return `<div class="m ${kept ? "" : "off"}">
+      <input type="checkbox" id="${cid}" data-act="keep" data-id="${esc(item.id)}" data-key="${esc(m.key)}" ${kept ? "checked" : ""} ${lock ? `disabled title="${esc(t.mustKeepOne)}"` : ""}>
+      ${chip}
+      <span class="m-name"><label for="${cid}"><code>${esc(m.short)}</code></label>${tag}</span>
+      <span class="m-val">${esc(m.value)}</span>
+      <span class="m-use">${use}</span>
+    </div>`;
+  }).join("");
+  return `<div class="members"><div class="m m-head"><span>${esc(t.col.keep)}</span><span></span><span>${esc(t.col.token)}</span><span>${esc(t.col.value)}</span><span>${esc(t.col.usage)}</span></div>${rows}</div>`;
+}
+const isWhole = (m) => m.unit !== "px" || typeof m.num !== "number" || Number.isInteger(m.num);
+function facts(item) {
+  const out = [];
+  if (item.closest) out.push(`<li>${esc(t.closest(item.closest.a, item.closest.b, deltaText(item, item.closest.delta, item.members[0].unit)))}</li>`);
+  const live = item.members.filter((m) => m.exists);
+  const idle = live.filter((m) => !m.roles.length).length;
+  if (idle) out.push(`<li class="flag">${esc(t.unusedCount(idle, live.length))}</li>`);
+  const odd = item.members.filter((m) => !isWhole(m));
+  if (odd.length) out.push(`<li class="flag">${esc(t.oddCount(odd.length, odd.map((m) => m.value).join(", ")))}</li>`);
+  return out.length ? `<ul class="facts">${out.join("")}</ul>` : "";
+}
+// A dense scale in its compact form: every value, in order, on a few lines.
+function denseList(item, s) {
+  const values = item.members.map((m) => {
+    const classes = ["dv", m.exists && !m.roles.length ? "idle" : "", isWhole(m) ? "" : "odd", s.keep[m.key] ? "" : "off"].filter(Boolean).join(" ");
+    const chip = item.kind === "color" ? `<i class="chip-sw" style="background:${esc(m.value)}"></i>` : "";
+    return `<span class="${classes}" title="${esc(m.short)}">${chip}${esc(item.kind === "color" ? m.step ?? m.short : m.value)}</span>`;
+  }).join("");
+  return `<p class="dense-lead">${esc(t.denseLead(item.members.length))}</p><div class="dense-list">${values}</div><p class="dense-legend">${esc(t.denseLegend)}</p>`;
+}
+function suggestionBlock(item) {
+  const recorded = item.status === "confirmed" && item.recorded;
+  if (!item.suggestion && !recorded) return `<div class="ai none"><div class="ai-k">${esc(t.aiNone)}</div></div>`;
+  const source = recorded ? item.recorded : item.suggestion;
+  const lines = [];
+  if (source.reason) lines.push(`<p class="ai-r">${esc(source.reason)}</p>`);
+  if (source.provenance) lines.push(`<p class="ai-b">${esc(t.provenance(source.provenance))}</p>`);
+  if (recorded && item.recorded.confirmedBy) lines.push(`<p class="ai-b">${esc(t.confirmedBy(item.recorded.confirmedBy))}</p>`);
+  return `<div class="ai"><div class="ai-k">${esc(recorded ? t.recordedAs : t.aiSuggests)}</div><div class="ai-v">${esc(summary(item, outcomeFrom(item, source)))}</div>${lines.join("")}</div>`;
+}
+function actions(item, s) {
+  const editing = s.status === "editing";
+  const changed = isChanged(item, s);
+  const ready = item.kind !== "choice" || Boolean(s.choice);
+  let label;
+  if (item.kind === "color-scale") label = t.askFix;
+  else if (editing || (item.suggestion && changed)) label = t.confirmMine;
+  else if (!item.suggestion) label = t.confirm;
+  else label = item.origin === "merged" ? t.agreeMerged : t.agree;
+  const primaryOff = !ready || (editing && !changed);
+  const note = item.kind !== "color-scale" && (changed || s.note)
+    ? `<input class="note" type="text" data-act="note" data-id="${esc(item.id)}" value="${esc(s.note)}" placeholder="${esc(t.notePh)}">` : "";
+  const reset = changed && (editing || item.suggestion)
+    ? `<button class="btn text" data-act="reset" data-id="${esc(item.id)}">${esc(editing ? t.resetRecorded : t.resetAi)}</button>` : "";
+  return `${note}<div class="actions">
+    <button class="btn primary" data-act="confirm" data-id="${esc(item.id)}" ${primaryOff ? "disabled" : ""}>${esc(label)}</button>
+    <button class="btn ghost" data-act="${editing ? "cancel" : "skip"}" data-id="${esc(item.id)}">${esc(editing ? t.cancelEdit : t.skip)}</button>
+    ${reset}
+    <span class="grow"></span>
+    <button class="btn text" data-act="copy-one" data-id="${esc(item.id)}" ${ready ? "" : "disabled"}>${esc(t.copyOne)}</button>
+  </div>`;
+}
+function doneRow(item, s) {
+  const mini = item.kind === "color"
+    ? `<span class="mini">${item.members.map((m) => `<i style="background:${esc((s.keep[m.key] ? m : member(item, s.target[m.key])).value)}"></i>`).join("")}</span>` : "";
+  let tag = "";
+  if (s.status === "recorded") tag = `<span class="tag">${esc(t.recorded)}</span>`;
+  else if (s.status === "confirmed") {
+    const mine = item.status === "confirmed" || differsFromAi(item, s);
+    tag = `<span class="tag ${mine ? "warn" : "ok"}">${esc(mine ? t.yours : item.suggestion ? t.agreed : t.decided)}</span>`;
+  }
+  const skipped = s.status === "skipped";
+  return `<article class="card done ${skipped ? "skipped" : ""}" id="${domId(item.id)}">
+    <span class="tick">${skipped ? "–" : "✓"}</span>${mini}
+    <span class="done-title">${esc(title(item))}</span>
+    <span class="done-sum">${esc(skipped ? t.skipped : summary(item, s))}</span>${tag}
+    <span class="grow"></span>
+    <button class="btn text" data-act="edit" data-id="${esc(item.id)}">${esc(t.edit)}</button>
+  </article>`;
+}
+function stateTag(s) {
+  return s.status === "editing" ? `<span class="tag warn">${esc(t.stEditing)}</span>` : `<span class="tag todo">${esc(t.stPending)}</span>`;
+}
+function tokenCard(item) {
+  const s = st(item);
+  if (!isShown(item)) return doneRow(item, s);
+  const merged = item.origin === "merged" ? `<span class="tag warn">${esc(t.mergedTag)}</span>` : "";
+  const compact = item.dense && !expanded.has(item.id);
+  const body = compact
+    ? `${denseList(item, s)}${facts(item)}<div class="dense-more"><button class="btn" data-act="expand" data-id="${esc(item.id)}">${esc(t.expand)}</button></div>`
+    : `${item.dense ? `<div class="dense-more"><button class="btn" data-act="expand" data-id="${esc(item.id)}">${esc(t.collapse)}</button></div>` : stage(item, s)}${membersTable(item, s)}${facts(item)}`;
+  return `<article class="card" id="${domId(item.id)}">
+    <div class="card-head"><span class="kind">${esc(t.kinds[item.kind])}</span><h3>${esc(title(item))}</h3><span class="count">${esc(t.countOf(item.members.length, item.kind))}</span>${merged}<span class="grow"></span>${stateTag(s)}</div>
+    ${body}
+    ${suggestionBlock(item)}
+    ${actions(item, s)}
+  </article>`;
+}
+function scaleCard(item) {
+  const s = st(item);
+  if (!isShown(item)) return doneRow(item, s);
+  const short = (name) => name.replace(/^.*-ref-color-/i, "");
+  const swatch = (entry) => `<div class="sw" style="background:${esc(entry.value)}" title="${esc(entry.name)} ${esc(entry.value)}"></div>`;
+  const named = (entry) => `<span><code>${esc(short(entry.name))}</code> ${esc(entry.value)}</span>`;
+  return `<article class="card" id="${domId(item.id)}">
+    <div class="card-head"><span class="kind">${esc(t.kinds["color-scale"])}</span><h3>${esc(title(item))}</h3><span class="grow"></span>${stateTag(s)}</div>
+    <div class="stage"><div class="strip">${swatch(item.higher)}${swatch(item.lower)}</div><div class="scale-names">${named(item.higher)}${named(item.lower)}</div></div>
+    <ul class="facts"><li class="flag">${esc(t.scaleLead(short(item.higher.name), short(item.lower.name)))}</li></ul>
+    ${actions(item, s)}
+  </article>`;
+}
+
+// ---------------------------------------------------------------- screenshots with marks
+// Frame a screenshot around its marked part: the part fills most of the
+// thumbnail but keeps some surroundings, so "where is this" stays answerable.
+function sideFrame(side) {
+  const img = side.image;
+  if (!img.w || !img.h || !side.marks.length) return null;
+  const W = img.w, H = img.h;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const m of side.marks) {
+    const [x, y, w, h] = m.rect;
+    x0 = Math.min(x0, x * W); y0 = Math.min(y0, y * H);
+    x1 = Math.max(x1, (x + w) * W); y1 = Math.max(y1, (y + h) * H);
+  }
+  const mw = x1 - x0, mh = y1 - y0;
+  const pad = Math.max(28, 0.18 * Math.min(mw, mh));
+  let fw = Math.max(mw + pad * 2, 380), fh = mh + pad * 2;
+  if (fw / fh > 2.4) fh = fw / 2.4;   // a thin strip tells nothing about its surroundings
+  if (fw / fh < 0.8) fw = fh * 0.8;
+  fw = Math.min(fw, W); fh = Math.min(fh, H);
+  const fx = Math.min(Math.max((x0 + x1) / 2 - fw / 2, 0), W - fw);
+  const fy = Math.min(Math.max((y0 + y1) / 2 - fh / 2, 0), H - fh);
+  return { fx, fy, fw, fh };
+}
+function markHtml(rect, key, img, frame) {
+  const [x, y, w, h] = rect;
+  const W = img.w || 1, H = img.h || 1;
+  const f = frame || { fx: 0, fy: 0, fw: W, fh: H };
+  const pct = (v) => (v * 100).toFixed(3) + "%";
+  // The letter goes above the box, else below it, and inside only when the box
+  // fills the frame — so it covers the screenshot as rarely as possible.
+  // Room is judged at a ~450px-wide thumbnail.
+  const roomAbove = (y * H - f.fy) * (450 / f.fw);
+  const roomBelow = (f.fy + f.fh - (y + h) * H) * (450 / f.fw);
+  const place = roomAbove >= 28 ? "" : roomBelow >= 28 ? " below" : " in";
+  return `<span class="mark ${key === "A" ? "a" : "b"}${place}" style="left:${pct((x * W - f.fx) / f.fw)};top:${pct((y * H - f.fy) / f.fh)};width:${pct((w * W) / f.fw)};height:${pct((h * H) / f.fh)}"><i>${esc(key)}</i></span>`;
+}
+function sideShot(item, side, index) {
+  if (!side.image) return `<div class="noshot">${esc(t.noShot)}</div>`;
+  const img = side.image;
+  const frame = sideFrame(side);
+  const attrs = `data-act="zoom" data-id="${esc(item.id)}" data-side="${index}" aria-label="${esc(`${t.zoomIn}: ${side.key} ${side.name}`)}"`;
+  const marks = side.marks.map((m) => markHtml(m.rect, side.key, img, frame)).join("");
+  if (!frame) return `<button class="shot plain" ${attrs}><img src="${esc(img.src)}" alt="${esc(img.alt)}">${marks}</button>`;
+  const pct = (v) => (v * 100).toFixed(3) + "%";
+  return `<button class="shot" style="aspect-ratio:${frame.fw} / ${frame.fh}" ${attrs}><img src="${esc(img.src)}" alt="${esc(img.alt)}" style="width:${pct(img.w / frame.fw)};left:${pct(-frame.fx / frame.fw)};top:${pct(-frame.fy / frame.fh)}">${marks}</button>`;
+}
+
+// ---------------------------------------------------------------- choice cards
+function sourceList(list) {
+  return (list || []).filter((x) => x.path).map((x) => `<li><code>${esc(x.id)}</code> ${esc(x.path)}${x.state ? ` — ${esc(x.state)}` : ""}</li>`).join("");
+}
+function choiceCard(item) {
+  const s = st(item);
+  if (!isShown(item)) return doneRow(item, s);
+  const sides = item.sides ? `<div class="sides">${item.sides.map((side, i) => `<div class="side"><div class="side-head"><span class="mk-tag ${side.key === "A" ? "a" : "b"}">${esc(side.key)}</span><span class="side-name" title="${esc(side.name)}">${esc(side.name)}</span></div>${sideShot(item, side, i)}${side.image ? `<div class="side-cap"><span>${esc(side.image.alt)}</span><span aria-hidden="true">${esc(t.zoomHint)}</span></div>` : ""}</div>`).join("")}</div>` : "";
+  const srcs = item.section === "sources" ? `<ul class="srcs">${sourceList(item.leftSources)}${sourceList(item.rightSources)}</ul>` : "";
+  const suggested = item.suggestion ? item.suggestion.choice : null;
+  const opts = item.options.map((o) => `
+    <button class="opt" data-act="choose" data-id="${esc(item.id)}" data-opt="${esc(o)}" aria-pressed="${s.choice === o}">
+      <span class="opt-l">${esc(optLabel(item, o))}${suggested === o ? `<i class="ai-tag">${esc(t.aiTag)}</i>` : ""}</span>
+      <span class="opt-d">${esc(optDesc(item, o))}</span>
+    </button>`).join("");
+  return `<article class="card" id="${domId(item.id)}">
+    <div class="card-head"><span class="kind">${esc(t.kinds[item.section])}</span><h3>${esc(title(item))}</h3><span class="grow"></span>${stateTag(s)}</div>
+    ${sides}
+    <div class="why-block"><div class="why-k">${esc(t.whyLabel[item.section])}</div><p class="why">${esc(item.why)}</p>${srcs}</div>
+    <div class="opts" role="group">${opts}</div>
+    ${suggestionBlock(item)}
+    ${actions(item, s)}
+  </article>`;
+}
+const card = (item) => (item.kind === "choice" ? choiceCard(item) : item.kind === "color-scale" ? scaleCard(item) : tokenCard(item));
+
+// ---------------------------------------------------------------- prompt
+function promptLines(item, n) {
+  const s = st(item);
+  // The marker leads each line so the AI (and a human skimming the prompt)
+  // sees at once which decisions deviate from what was suggested or recorded.
+  let tag = t.p.tagNoAi;
+  let was = "";
+  if (item.status === "confirmed" && item.recorded) {
+    tag = t.p.tagMine;
+    was = t.p.recordWas(summary(item, baseOf(item)));
+  } else if (item.suggestion) {
+    const changed = differsFromAi(item, s);
+    tag = changed ? t.p.tagMine : t.p.tagAgree;
+    was = changed ? t.p.aiWas(summary(item, aiOf(item))) : "";
+  }
+  const named = (x) => (x.name ? `${x.name} (${x.value})` : x.value);
+  const lines = [];
+  if (item.kind === "color-scale") {
+    lines.push(`${n}. ${t.p.tagNoAi} ${title(item)}${t.p.sep}${t.p.scale(`${item.higher.name} (${item.higher.value})`, `${item.lower.name} (${item.lower.value})`)}`);
+  } else if (item.kind === "choice") {
+    // Decision keywords stay in their English canonical form; the audits match on them.
+    const label = locale === "en" ? s.choice : `${s.choice}（${optLabel(item, s.choice)}）`;
+    lines.push(`${n}. ${tag} ${title(item)}${t.p.sep}${label}${was}`);
+  } else {
+    lines.push(`${n}. ${tag} ${title(item)}${t.p.sep}${summary(item, s)}${was}`);
+    for (const m of item.members) {
+      const kept = s.keep[m.key];
+      const into = kept ? null : member(item, s.target[m.key]);
+      if (m.exists && kept) lines.push(`   - ${t.p.keep}${t.p.sep}${named(m)}`);
+      else if (m.exists) lines.push(`   - ${t.p.merge}${t.p.sep}${named(m)} → ${named(into)}`);
+      else if (kept) lines.push(`   - ${t.p.restore}${t.p.sep}${m.value} ${t.p.restoreTail(baseOf(item).target[m.key] || "")}`);
+      else lines.push(`   - ${t.p.stay}${t.p.sep}${m.value} → ${named(into)}`);
+    }
+  }
+  if (s.note && s.note.trim()) lines.push(`   - ${t.p.note}${t.p.sep}${s.note.trim()}`);
+  return lines;
+}
+function buildPrompt(list) {
+  if (!list.length) return "";
+  const out = [t.p.head(list.length), t.p.pkg(DATA.project), t.p.src(DATA.generatedAt), t.p.by(TODAY)];
+  let n = 0;
+  for (const section of SECTIONS) {
+    const part = list.filter((it) => it.section === section);
+    if (!part.length) continue;
+    out.push("", `## ${t.sections[section]}`);
+    for (const item of part) out.push(...promptLines(item, (n += 1)));
+  }
+  const tokenItems = list.filter(isToken);
+  const anyMerge = tokenItems.some((it) => it.members.some((m) => m.exists && !st(it).keep[m.key]));
+  const anyRestore = tokenItems.some((it) => it.members.some((m) => !m.exists && st(it).keep[m.key]));
+  out.push("", `## ${t.p.applyTitle}`);
+  const apply = [];
+  if (anyMerge) apply.push(t.p.applyMerge);
+  if (anyRestore) apply.push(t.p.applyRestore);
+  if (list.some((it) => it.kind === "color-scale")) apply.push(t.p.applyScale);
+  if (tokenItems.length) apply.push(t.p.applyTokens(TODAY));
+  if (list.some((it) => it.section === "components")) apply.push(t.p.applyComponents);
+  if (list.some((it) => it.section === "sources")) apply.push(t.p.applySources);
+  apply.push(t.p.applyVerify);
+  apply.forEach((line, i) => out.push(`${i + 1}. ${line}`));
+  return out.join("\n");
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (_error) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;left:-9999px;top:0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (_e) { ok = false; }
+    ta.remove();
+    return ok;
+  }
+}
+let toastTimer = null;
+function toast(message) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.hidden = true; }, 4200);
+}
+
+// ---------------------------------------------------------------- render
+let drawerOpen = false;
+function seg(act, attr, current, entries) {
+  return `<span class="seg">${entries.map(([value, label]) => `<button data-act="${act}" data-${attr}="${value}" aria-pressed="${current === value}">${esc(label)}</button>`).join("")}</span>`;
+}
+const LOCALES = Object.keys(COPY);
+function render() {
+  t = COPY[locale] || COPY.en;
+  document.documentElement.lang = t.htmlLang;
+  document.title = `${t.appTitle} · ${DATA.project}`;
+  document.body.dataset.stage = stageTone;
+
+  const total = DATA.items.length;
+  // An item reopened for editing still has its recorded decision until a change is confirmed.
+  const confirmed = DATA.items.filter((it) => ["recorded", "editing", "confirmed"].includes(st(it).status)).length;
+  const pending = DATA.items.filter(isOpen).length;
+  const acceptable = DATA.items.filter(canAgree).length;
+  const toExport = exportList().length;
+
+  document.getElementById("rail").innerHTML = `
+    <div><p class="brand">${esc(t.appTitle)}</p><p class="brand-sub">${esc(DATA.project)}</p></div>
+    <div><div class="meter-num">${confirmed}<small> / ${total}</small></div><div class="meter-cap">${esc(t.meterCap)} · <span id="awaiting">${esc(t.left(pending))}</span></div><div class="bar"><i style="width:${total ? (confirmed / total) * 100 : 0}%"></i></div></div>
+    <nav class="nav"><h2>${esc(t.navTitle)}</h2>${SECTIONS.map((sec) => {
+      const list = DATA.items.filter((it) => it.section === sec);
+      if (!list.length) return "";
+      const todo = list.filter(isOpen).length;
+      return `<a href="#sec-${sec}">${esc(t.sections[sec])}<span class="cnt ${todo ? "todo" : ""}">${todo ? todo : "✓"}</span></a>`;
+    }).join("")}</nav>
+    <div><h2>${esc(t.howTitle)}</h2><ol class="steps">${t.how.map((x) => `<li>${esc(x)}</li>`).join("")}</ol></div>
+    <div class="rail-foot"><h2>${esc(t.settings)}</h2>
+      <div class="setting">${esc(t.langLabel)}${seg("lang", "lang", locale, LOCALES.map((code) => [code, COPY[code].langName]))}</div>
+      <div class="setting">${esc(t.stageLabel)}${seg("stage", "stage", stageTone, [["dark", t.stage.dark], ["gray", t.stage.gray], ["light", t.stage.light]])}</div>
+      <button class="btn text" data-act="reset-all" style="padding-left:0">${esc(t.resetAll)}</button>
+    </div>`;
+
+  document.getElementById("topbar").innerHTML = `<h1>${esc(DATA.project)}</h1><span class="meta">${esc(t.generated(DATA.generatedAt))}</span>`;
+
+  const groups = DATA.items.filter((it) => isToken(it) && it.origin === "near").length;
+  const mergedCount = DATA.items.filter((it) => isToken(it) && it.origin === "merged").length;
+  const scaleCount = DATA.items.filter((it) => it.kind === "color-scale").length;
+  const pairTotal = DATA.counts.nearColors + DATA.counts.nearNumbers;
+  // Nothing waits on this page: every item is already decided in the package.
+  const allRecorded = total > 0 && DATA.items.every((it) => ["recorded", "editing"].includes(st(it).status));
+  // Within a section, what still needs the designer comes first.
+  const order = (list) => [...list].sort((a, b) => Number(!isShown(a)) - Number(!isShown(b)));
+  document.getElementById("content").innerHTML = `<p class="intro">${esc(!total ? t.introNothing : allRecorded ? t.introDone : t.intro)}</p>` + SECTIONS.map((sec) => {
+    const list = DATA.items.filter((it) => it.section === sec);
+    if (!list.length) return "";
+    return `<section class="section" id="sec-${sec}">
+      <div class="section-head"><h2>${esc(t.sections[sec])}</h2><span class="cnt">${list.length}</span></div>
+      <p class="section-lead">${esc(t.leads[sec](pairTotal, groups, mergedCount, scaleCount))}</p>
+      ${order(list).map(card).join("")}
+    </section>`;
+  }).join("");
+
+  document.getElementById("actionbar").innerHTML = `
+    <span class="ab-progress">${esc(t.progress(confirmed, total))}</span><span class="ab-left">${esc(t.left(pending))}</span>
+    <span class="grow"></span>
+    <button class="btn" data-act="accept-all" ${acceptable ? "" : "disabled"}>${esc(t.acceptAll(acceptable))}</button>
+    <button class="btn" data-act="preview">${esc(t.preview)}</button>
+    <button class="btn primary" data-act="copy-all" ${toExport ? "" : "disabled"}>${esc(t.copyAll(toExport))}</button>`;
+
+  renderDrawer();
+}
+function renderDrawer() {
+  const el = document.getElementById("drawer");
+  el.hidden = !drawerOpen;
+  if (!drawerOpen) return;
+  const list = exportList();
+  const text = buildPrompt(list);
+  el.innerHTML = `<h2>${esc(t.drawerTitle)}</h2>
+    <textarea readonly spellcheck="false" aria-label="${esc(t.drawerTitle)}">${esc(text || t.drawerEmpty)}</textarea>
+    <div class="drawer-foot"><button class="btn primary" data-act="copy-all" ${list.length ? "" : "disabled"}>${esc(t.copy)}</button><button class="btn ghost" data-act="close-drawer">${esc(t.close)}</button></div>`;
+}
+
+// ---------------------------------------------------------------- image viewer
+let viewer = null; // { item, side, level: "fit" | "100" | "200", marks, opener }
+const ZOOM_LEVELS = ["fit", "100", "200"];
+const viewerSide = () => viewer.item.sides[viewer.side];
+function setBackgroundInert(on) {
+  for (const el of [document.querySelector(".app"), document.getElementById("actionbar"), document.getElementById("drawer")]) el.inert = on;
+  document.body.style.overflow = on ? "hidden" : "";
+}
+// The canvas gets an explicit pixel width; the image fills it and the marks,
+// positioned in percent, therefore land on the same pixels at every zoom level.
+function sizeViewer() {
+  if (!viewer) return;
+  const img = document.getElementById("viewer-img");
+  const stageEl = document.getElementById("viewer-stage");
+  const W = img.naturalWidth || viewerSide().image.w;
+  const H = img.naturalHeight || viewerSide().image.h;
+  if (!W || !H) { img.addEventListener("load", sizeViewer, { once: true }); return; }
+  const availW = stageEl.clientWidth - 48, availH = stageEl.clientHeight - 48;
+  const width = viewer.level === "fit" ? Math.min(W, availW, (availH * W) / H) : (W * Number(viewer.level)) / 100;
+  document.getElementById("viewer-canvas").style.width = Math.max(1, Math.round(width)) + "px";
+  const root = document.getElementById("viewer");
+  root.dataset.level = viewer.level;
+  root.querySelectorAll('[data-act="viewer-zoom"]').forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.level === viewer.level)));
+}
+function renderViewer() {
+  const root = document.getElementById("viewer");
+  const item = viewer.item;
+  const side = viewerSide();
+  const withImage = item.sides.map((s, i) => ({ s, i })).filter((x) => x.s.image);
+  // Every mark that lives on this screenshot is drawn, so when both parts sit
+  // in one picture the designer sees A and B together.
+  const marks = item.sides.filter((s) => s.image && s.image.src === side.image.src)
+    .flatMap((s) => s.marks.map((m) => markHtml(m.rect, s.key, s.image, null))).join("");
+  root.setAttribute("aria-label", title(item));
+  root.innerHTML = `<div class="viewer-bar">
+      ${withImage.length > 1 ? seg("viewer-side", "side", String(viewer.side), withImage.map((x) => [String(x.i), x.s.key])) : ""}
+      <span class="viewer-side"><span class="mk-tag ${side.key === "A" ? "a" : "b"}">${esc(side.key)}</span><b>${esc(side.name)}</b><span>${esc(side.image.alt)}</span></span>
+      <span class="grow"></span><span class="viewer-tip">${esc(t.viewerTip)}</span>
+      ${marks ? `<button class="btn" data-act="viewer-marks" aria-pressed="${viewer.marks}">${esc(t.marksToggle)}</button>` : ""}
+      ${seg("viewer-zoom", "level", viewer.level, [["fit", t.fit], ["100", "100%"], ["200", "200%"]])}
+      <button class="btn" data-act="viewer-close">${esc(t.close)}</button>
+    </div>
+    <div class="viewer-stage" id="viewer-stage"><div class="viewer-canvas ${viewer.marks ? "" : "nomarks"}" id="viewer-canvas"><img id="viewer-img" src="${esc(side.image.src)}" alt="${esc(side.image.alt)}">${marks}</div></div>`;
+  sizeViewer();
+}
+function openViewer(item, sideIndex, opener) {
+  viewer = { item, side: sideIndex, level: "fit", marks: true, opener };
+  document.getElementById("viewer").hidden = false;
+  setBackgroundInert(true);
+  renderViewer();
+  document.querySelector('#viewer [data-act="viewer-close"]').focus();
+}
+function switchViewerSide(index) {
+  const next = viewer.item.sides[index];
+  if (!next || !next.image || index === viewer.side) return;
+  viewer.side = index;
+  viewer.level = "fit";
+  renderViewer();
+  document.querySelector('#viewer [data-act="viewer-side"][data-side="' + index + '"]')?.focus();
+}
+function closeViewer() {
+  if (!viewer) return;
+  const opener = viewer.opener;
+  viewer = null;
+  const root = document.getElementById("viewer");
+  root.hidden = true;
+  root.innerHTML = "";
+  setBackgroundInert(false);
+  if (opener && document.contains(opener)) opener.focus();
+}
+document.getElementById("viewer").addEventListener("click", (event) => {
+  if (!viewer) return;
+  if (event.target.id === "viewer-stage") { closeViewer(); return; }
+  if (event.target.closest("#viewer-canvas")) {
+    // Step through the sizes that actually differ from what is on screen.
+    const shown = document.getElementById("viewer-canvas").clientWidth;
+    let next = ZOOM_LEVELS[(ZOOM_LEVELS.indexOf(viewer.level) + 1) % ZOOM_LEVELS.length];
+    if (viewer.level === "fit" && shown >= document.getElementById("viewer-img").naturalWidth) next = "200";
+    viewer.level = next;
+    sizeViewer();
+  }
+});
+window.addEventListener("resize", sizeViewer);
+
+// ---------------------------------------------------------------- events
+function nextOpen(afterId) {
+  const start = DATA.items.findIndex((it) => it.id === afterId);
+  for (let k = 1; k <= DATA.items.length; k += 1) {
+    const it = DATA.items[(start + k) % DATA.items.length];
+    if (isOpen(it)) return it;
+  }
+  return null;
+}
+document.addEventListener("click", async (event) => {
+  const el = event.target.closest("[data-act]");
+  if (!el || el.tagName === "SELECT" || el.tagName === "INPUT") return;
+  const act = el.dataset.act;
+  const item = el.dataset.id ? byId(el.dataset.id) : null;
+  if (act === "zoom") { openViewer(item, Number(el.dataset.side || 0), el); return; }
+  if (act === "viewer-close") { closeViewer(); return; }
+  if (act === "viewer-zoom") { viewer.level = el.dataset.level; sizeViewer(); return; }
+  if (act === "viewer-side") { switchViewerSide(Number(el.dataset.side)); return; }
+  if (act === "viewer-marks") {
+    viewer.marks = !viewer.marks;
+    el.setAttribute("aria-pressed", String(viewer.marks));
+    document.getElementById("viewer-canvas").classList.toggle("nomarks", !viewer.marks);
+    return;
+  }
+  if (act === "choose") { touch(item).choice = el.dataset.opt; }
+  else if (act === "expand") {
+    if (expanded.has(item.id)) expanded.delete(item.id); else expanded.add(item.id);
+    render();
+    return;
+  }
+  else if (act === "confirm" || act === "skip") {
+    const s = touch(item);
+    // Confirming a recorded item without changing it just closes it again.
+    if (act === "confirm" && item.status === "confirmed" && !isChanged(item, s)) resetItem(item);
+    else s.status = act === "confirm" ? "confirmed" : "skipped";
+    save(); render();
+    const next = nextOpen(item.id);
+    if (next) document.getElementById(domId(next.id))?.scrollIntoView({ block: "start" });
+    return;
+  }
+  else if (act === "cancel") { resetItem(item); }
+  else if (act === "edit") {
+    const s = touch(item);
+    s.status = item.status === "confirmed" ? "editing" : "open";
+  }
+  else if (act === "reset") {
+    const s = touch(item);
+    Object.assign(s, clone(baseOf(item)), { note: "" });
+  }
+  else if (act === "copy-one") {
+    // Copy this item as it stands on screen, whether or not it is confirmed yet.
+    const before = st(item).status;
+    st(item).status = "confirmed";
+    const text = buildPrompt([item]);
+    st(item).status = before;
+    const ok = await copyText(text);
+    toast(ok ? t.copied(1) : t.copyFail);
+    return;
+  }
+  else if (act === "accept-all") {
+    for (const it of DATA.items) if (canAgree(it)) touch(it).status = "confirmed";
+  }
+  else if (act === "copy-all") {
+    const list = exportList();
+    const ok = await copyText(buildPrompt(list));
+    toast(ok ? t.copied(list.length) : t.copyFail);
+    if (!ok) { drawerOpen = true; renderDrawer(); }
+    return;
+  }
+  else if (act === "preview") { drawerOpen = !drawerOpen; renderDrawer(); return; }
+  else if (act === "close-drawer") { drawerOpen = false; renderDrawer(); return; }
+  else if (act === "lang") { locale = el.dataset.lang; }
+  else if (act === "stage") { stageTone = el.dataset.stage; }
+  else if (act === "reset-all") { for (const it of DATA.items) resetItem(it); expanded.clear(); }
+  else return;
+  save(); render();
+});
+document.addEventListener("change", (event) => {
+  const el = event.target;
+  const item = el.dataset && el.dataset.id ? byId(el.dataset.id) : null;
+  if (!item) return;
+  if (el.dataset.act === "keep") {
+    const s = st(item);
+    const kept = item.members.filter((m) => s.keep[m.key]).length;
+    if (!el.checked && kept <= 1) { el.checked = true; toast(t.mustKeepOne); return; }
+    touch(item).keep[el.dataset.key] = el.checked;
+    retarget(item, s);
+  } else if (el.dataset.act === "target") {
+    touch(item).target[el.dataset.key] = el.value;
+  } else return;
+  save(); render();
+});
+document.addEventListener("input", (event) => {
+  const el = event.target;
+  if (el.dataset && el.dataset.act === "note") { touch(byId(el.dataset.id)).note = el.value; save(); if (drawerOpen) renderDrawer(); }
+});
+document.addEventListener("keydown", (event) => {
+  if (viewer && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+    // Flip between the two screenshots being compared.
+    const withImage = viewer.item.sides.map((x, i) => (x.image ? i : -1)).filter((i) => i >= 0);
+    const at = withImage.indexOf(viewer.side);
+    switchViewerSide(withImage[(at + (event.key === "ArrowRight" ? 1 : withImage.length - 1)) % withImage.length]);
+    return;
+  }
+  if (event.key !== "Escape") return;
+  if (viewer) closeViewer();
+  else if (drawerOpen) { drawerOpen = false; renderDrawer(); }
+});
+
+if (staleStored) save();
+render();
+</script>
+</body>
+</html>

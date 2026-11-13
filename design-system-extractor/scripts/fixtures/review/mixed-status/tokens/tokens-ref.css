@@ -1,0 +1,21 @@
+/* Seven review items in three states:
+   suggested  size 10/11, duration 150/180
+   undecided  opacity 0.10/0.12
+   confirmed  size 30/31 (review flow), type 13/14 (token-review comment),
+              one similar-component row and one duplicate-source row */
+:root {
+  --md-ref-size-10: 10px;
+  --md-ref-size-11: 11px;
+  --md-ref-size-30: 30px;
+  --md-ref-size-31: 31px;
+
+  --md-ref-duration-150: 150ms;
+  --md-ref-duration-180: 180ms;
+
+  --md-ref-opacity-10: 0.10;
+  --md-ref-opacity-12: 0.12;
+
+  /* token-review: keep-distinct; 13px is the disclaimer floor and 14px is the label minimum. */
+  --md-ref-type-13: 13px;
+  --md-ref-type-14: 14px;
+}

@@ -1,0 +1,4 @@
+:root {
+  --md-sys-spacing-sm: var(--md-ref-size-12);
+  --md-sys-spacing-md: var(--md-ref-size-14);
+}

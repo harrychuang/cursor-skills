@@ -1,0 +1,4 @@
+:root {
+  --md-comp-list-row-label-text-size: var(--md-sys-typescale-body-size);
+  --md-comp-list-row-min-height: var(--md-sys-size-row-min);
+}

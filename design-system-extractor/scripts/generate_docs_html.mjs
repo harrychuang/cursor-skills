@@ -3,7 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const SUPPORTED_LOCALES = ["zh-Hant", "en", "ja"];
+import { resolveLocale } from "./review_core.mjs";
 
 const rawArgs = process.argv.slice(2);
 let localeArg = null;
@@ -30,16 +30,15 @@ const componentDocsDir = path.join(designSystemDir, "components");
 const tokensDir = path.join(targetRoot, "tokens");
 const designSystemAssetsDir = path.join(designSystemDir, "assets");
 
-let DEFAULT_LOCALE = "zh-Hant";
-if (localeArg !== null) {
-  if (SUPPORTED_LOCALES.includes(localeArg)) {
-    DEFAULT_LOCALE = localeArg;
-  } else {
-    console.warn(
-      `Unsupported --locale value "${localeArg}". Supported values: ${SUPPORTED_LOCALES.join(", ")}. Falling back to "zh-Hant".`,
-    );
-  }
-}
+// The default interface locale: a supported --locale value, else the report
+// language recorded in SESSION_STATE.md, else English. Shared with the review
+// page generator so both pages of a package open in the same language.
+const resolvedLocale = resolveLocale({
+  flag: localeArg,
+  sessionStateDoc: await readOptional(path.join(designSystemDir, "SESSION_STATE.md")),
+});
+if (resolvedLocale.warning) console.warn(resolvedLocale.warning);
+const DEFAULT_LOCALE = resolvedLocale.locale;
 
 const coreDocumentFiles = [
   ["docKickstart", "DESIGN_SYSTEM_KICKSTART.md"],
@@ -914,9 +913,9 @@ const html = `<!doctype html>
       <p class="brand" data-i18n="brand">${escapeHtml(t(DEFAULT_LOCALE, "brand"))}</p>
       <p class="subtitle" data-i18n="subtitle">${escapeHtml(t(DEFAULT_LOCALE, "subtitle"))}</p>
       <div class="language-nav" role="tablist" aria-label="${escapeAttr(t(DEFAULT_LOCALE, "langSelectorLabel"))}">
-        <button type="button" role="tab" data-language-button="zh-Hant" aria-selected="true">繁中</button>
-        <button type="button" role="tab" data-language-button="en" aria-selected="false">EN</button>
-        <button type="button" role="tab" data-language-button="ja" aria-selected="false">日本語</button>
+        ${[["zh-Hant", "繁中"], ["en", "EN"], ["ja", "日本語"]]
+          .map(([code, label]) => `<button type="button" role="tab" data-language-button="${code}" aria-selected="${code === DEFAULT_LOCALE}">${label}</button>`)
+          .join("\n        ")}
       </div>
       <nav>
         ${navItems.join("")}

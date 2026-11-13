@@ -1,0 +1,14 @@
+/* A package written with the previous template: its decision table has a
+   "Confirmed by" column and no "Suggested action" column. The extraction pass
+   filled the confirmer in itself, or left it empty, and no audit read it. Its
+   decisions were recorded in the decision column and must keep counting. */
+:root {
+  --md-ref-size-4: 4px;
+  --md-ref-size-6: 6px;
+  --md-ref-size-12: 12px;
+  --md-ref-size-14: 14px;
+  --md-ref-size-24: 24px;
+  --md-ref-size-26: 26px;
+  --md-ref-size-40: 40px;
+  --md-ref-size-42: 42px;
+}

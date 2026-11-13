@@ -2,56 +2,25 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+
+// Near-token detection and "is this pair decided?" live in review_core.mjs,
+// shared with generate_review_html.mjs, so the audit and the review page can
+// never disagree about what still needs a decision.
 import {
-  buildTokenClusters,
-  clusterSummaryLine,
-  countVarReferences,
-  fitLengthScale,
-  formatDistance,
-  scaleFitOutlierLine,
-  scaleFitSummaryLine,
-} from "./lib/token_review.mjs";
-import { checkNameOrder, findStateGroups, formatNamingOrder, parseNamingOrder } from "./lib/naming_order.mjs";
-
-const USAGE = `Usage: node <skill-root>/scripts/audit_tokens.mjs <target-root> [--strict] [--json]
-
-Audits tokens/tokens-ref.css, tokens-sys.css, tokens-comp.css and tokens.css:
-- layer rules: --<prefix>-ref-* holds raw values only (no semantic or component words in the
-  name); --<prefix>-sys-* references ref tokens only; --<prefix>-comp-* references sys tokens only
-- reference colors are --<prefix>-ref-color-<family>-<step> with step 0-100, 100 lightest -> 0 darkest
-- background-like system colors need an on-<role> foreground pair
-- near reference colors (deltaE2000 <= 3) and near numbers in one family are grouped into
-  clusters with one canonical token; every other member needs a documented decision against
-  the canonical: a CSS comment "token-review: keep | keep-distinct | merge | merge-with |
-  approved | separate | split" or "a11y-remap" on the token, or a design-system/
-  TOKEN_ARCHITECTURE.md line naming both tokens (Near Token Decisions / Accessibility Remap
-  Decisions). Members are tiered auto / proposal / must-ask from the provenance markers in
-  the token's comment ("provenance: authored | measured; usage: <n>; sources: <ids>");
-  apply_token_decisions.mjs writes the auto tier mechanically
-- length reference values are fitted to a 4px or 8px grid; off-grid values are warnings only
-- naming order: when design-system/TOKEN_ARCHITECTURE.md records an "## Naming Order"
-  (Order: prefix > category > ... plus a Slot | Layers | Values table), every token name must
-  follow it; a name whose segments are out of order is an issue in every mode
-- a token --x next to --x-<state> is a warning in every mode: CSS is unaffected, but once the
-  names become slash paths (Figma Variables, DTCG) --x is both a token and a group; name the
-  default state explicitly (--x-default)
-
-Options:
-  --strict    Also require all four token files, at least one token per layer and the
-              ref -> sys -> comp import order in tokens.css; undocumented near tokens become issues.
-  --json      Print one JSON object (clusters, counts, issues, namingOrder, scaleFit, warnings)
-              and nothing else.
-  --help, -h  Print this message and exit 0.
-
-Output ends with "Token audit passed." or an "Issues:" list (exit 1).`;
+  LIGHTNESS_TOLERANCE,
+  collectDecisionRecords,
+  findNearPairs,
+  normalizeTokenName,
+  parseColor,
+  parseProps,
+  parseReferenceColorName,
+  parseTokens,
+  relativeLuminance,
+  resolvePair,
+} from "./review_core.mjs";
 
 const args = process.argv.slice(2);
-if (args.includes("--help") || args.includes("-h")) {
-  console.log(USAGE);
-  process.exit(0);
-}
 const strict = args.includes("--strict");
-const jsonMode = args.includes("--json");
 const targetArg = args.find((arg) => !arg.startsWith("--"));
 const targetRoot = path.resolve(targetArg || process.cwd());
 const tokenDir = path.join(targetRoot, "tokens");
@@ -113,52 +82,11 @@ const rawValuePattern =
 
 const COLOR_SCALE_MIN = 0;
 const COLOR_SCALE_MAX = 100;
-const LIGHTNESS_TOLERANCE = 0.01;
-
-function normalizeTokenName(name) {
-  return name.replace(/^--/, "").toLowerCase();
-}
 
 function hasSegment(name, word) {
   const normalized = normalizeTokenName(name);
   const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`(^|-)${escaped}(-|$)`).test(normalized);
-}
-
-function stripCssComments(css) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, "");
-}
-
-function stripInlineComments(value) {
-  return value.replace(/\/\*[\s\S]*?\*\//g, "").trim();
-}
-
-function parseDeclarations(css) {
-  const declarations = new Map();
-  // The trailing comment may only sit on the same line as the declaration;
-  // letting it cross newlines would steal the next declaration's leading comment.
-  const pattern = /(?:\/\*([\s\S]*?)\*\/\s*)?(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([\s\S]*?)\*\/)?/g;
-  let match;
-  while ((match = pattern.exec(css))) {
-    declarations.set(match[2], {
-      name: match[2],
-      value: stripInlineComments(match[3]),
-      leadingComment: (match[1] || "").trim(),
-      trailingComment: (match[4] || "").trim(),
-    });
-  }
-  return declarations;
-}
-
-function parseProps(css) {
-  const props = new Map();
-  const withoutComments = stripCssComments(css);
-  const pattern = /(--[A-Za-z0-9_-]+)\s*:\s*([^;]+);/g;
-  let match;
-  while ((match = pattern.exec(withoutComments))) {
-    props.set(match[1], match[2].trim());
-  }
-  return props;
 }
 
 async function readOptional(file) {
@@ -195,222 +123,8 @@ function backgroundRoleName(name) {
   return null;
 }
 
-function clamp01(value) {
-  return Math.min(1, Math.max(0, value));
-}
-
-function parseHexColor(value) {
-  const match = String(value).trim().match(/^#([0-9a-fA-F]{3,8})$/);
-  if (!match) return null;
-  let hex = match[1];
-  if (hex.length === 3 || hex.length === 4) {
-    hex = hex
-      .split("")
-      .map((char) => char + char)
-      .join("");
-  }
-  if (hex.length !== 6 && hex.length !== 8) return null;
-  const r = parseInt(hex.slice(0, 2), 16);
-  const g = parseInt(hex.slice(2, 4), 16);
-  const b = parseInt(hex.slice(4, 6), 16);
-  const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
-  return { r, g, b, a };
-}
-
-function parseCssNumberOrPercent(raw, maxValue) {
-  const value = String(raw).trim();
-  if (value.endsWith("%")) {
-    return clamp01(Number(value.slice(0, -1)) / 100) * maxValue;
-  }
-  return Number(value);
-}
-
-function parseRgbColor(value) {
-  const match = String(value)
-    .trim()
-    .match(/^rgba?\((.+)\)$/i);
-  if (!match) return null;
-  const [colorPart, alphaPart] = match[1].split("/").map((part) => part.trim());
-  const parts = colorPart.includes(",")
-    ? colorPart.split(",").map((part) => part.trim())
-    : colorPart.split(/\s+/).map((part) => part.trim());
-  if (alphaPart !== undefined) parts.push(alphaPart);
-  if (parts.length < 3) return null;
-  const r = parseCssNumberOrPercent(parts[0], 255);
-  const g = parseCssNumberOrPercent(parts[1], 255);
-  const b = parseCssNumberOrPercent(parts[2], 255);
-  const a = parts[3] === undefined ? 1 : parseCssNumberOrPercent(parts[3], 1);
-  if (![r, g, b, a].every(Number.isFinite)) return null;
-  return {
-    r: clamp01(r / 255) * 255,
-    g: clamp01(g / 255) * 255,
-    b: clamp01(b / 255) * 255,
-    a: clamp01(a),
-  };
-}
-
-function hueToRgb(p, q, t) {
-  let adjusted = t;
-  if (adjusted < 0) adjusted += 1;
-  if (adjusted > 1) adjusted -= 1;
-  if (adjusted < 1 / 6) return p + (q - p) * 6 * adjusted;
-  if (adjusted < 1 / 2) return q;
-  if (adjusted < 2 / 3) return p + (q - p) * (2 / 3 - adjusted) * 6;
-  return p;
-}
-
-function hslToRgb(h, s, l) {
-  const hue = (((h % 360) + 360) % 360) / 360;
-  const saturation = clamp01(s);
-  const lightness = clamp01(l);
-  if (saturation === 0) {
-    const channel = lightness * 255;
-    return { r: channel, g: channel, b: channel };
-  }
-  const q =
-    lightness < 0.5
-      ? lightness * (1 + saturation)
-      : lightness + saturation - lightness * saturation;
-  const p = 2 * lightness - q;
-  return {
-    r: hueToRgb(p, q, hue + 1 / 3) * 255,
-    g: hueToRgb(p, q, hue) * 255,
-    b: hueToRgb(p, q, hue - 1 / 3) * 255,
-  };
-}
-
-function parseHslColor(value) {
-  const match = String(value)
-    .trim()
-    .match(/^hsla?\((.+)\)$/i);
-  if (!match) return null;
-  const [colorPart, alphaPart] = match[1].split("/").map((part) => part.trim());
-  const parts = colorPart.includes(",")
-    ? colorPart.split(",").map((part) => part.trim())
-    : colorPart.split(/\s+/).map((part) => part.trim());
-  if (alphaPart !== undefined) parts.push(alphaPart);
-  if (parts.length < 3 || !parts[1].endsWith("%") || !parts[2].endsWith("%")) return null;
-  const h = Number(parts[0].replace(/deg$/i, ""));
-  const s = Number(parts[1].slice(0, -1)) / 100;
-  const l = Number(parts[2].slice(0, -1)) / 100;
-  const a = parts[3] === undefined ? 1 : parseCssNumberOrPercent(parts[3], 1);
-  if (![h, s, l, a].every(Number.isFinite)) return null;
-  return { ...hslToRgb(h, s, l), a: clamp01(a) };
-}
-
-function parseColor(value) {
-  return parseHexColor(value) || parseRgbColor(value) || parseHslColor(value);
-}
-
-function srgbToLinear(channel) {
-  const normalized = channel / 255;
-  return normalized <= 0.04045
-    ? normalized / 12.92
-    : ((normalized + 0.055) / 1.055) ** 2.4;
-}
-
-function relativeLuminance(color) {
-  return (
-    0.2126 * srgbToLinear(color.r) +
-    0.7152 * srgbToLinear(color.g) +
-    0.0722 * srgbToLinear(color.b)
-  );
-}
-
-function parseReferenceColorName(name) {
-  const normalized = normalizeTokenName(name);
-  const marker = "-ref-color-";
-  const markerIndex = normalized.indexOf(marker);
-  if (markerIndex === -1) return null;
-  const suffix = normalized.slice(markerIndex + marker.length);
-  const segments = suffix.split("-").filter(Boolean);
-  const stepSegment = segments.at(-1);
-  const hasStep = /^\d+$/.test(stepSegment || "");
-  return {
-    family: hasStep ? segments.slice(0, -1).join("-") : segments.join("-"),
-    step: hasStep ? Number(stepSegment) : null,
-  };
-}
-
-function parseReferenceFamily(name) {
-  const normalized = normalizeTokenName(name);
-  const marker = "-ref-";
-  const markerIndex = normalized.indexOf(marker);
-  if (markerIndex === -1) return "unknown";
-  return normalized
-    .slice(markerIndex + marker.length)
-    .split("-")
-    .filter(Boolean)[0] || "unknown";
-}
-
-function parseNumericValue(value) {
-  const cleanValue = stripInlineComments(value);
-  if (/^(?:#|rgb|hsl)/i.test(cleanValue) || cleanValue.includes("var(") || cleanValue.includes("calc(")) {
-    return null;
-  }
-  const match = cleanValue.match(/^(-?(?:\d+|\d*\.\d+))(px|rem|em|%|ms|s|deg)?$/);
-  if (!match) return null;
-  const amount = Number(match[1]);
-  const unit = match[2] || "";
-  if (!Number.isFinite(amount)) return null;
-  if (unit === "rem" || unit === "em") {
-    return { amount, unit, normalized: amount * 16, unitGroup: "length" };
-  }
-  if (unit === "px") {
-    return { amount, unit, normalized: amount, unitGroup: "length" };
-  }
-  if (unit === "s") {
-    return { amount, unit, normalized: amount * 1000, unitGroup: "time" };
-  }
-  if (unit === "ms") {
-    return { amount, unit, normalized: amount, unitGroup: "time" };
-  }
-  if (unit === "%") {
-    return { amount, unit, normalized: amount, unitGroup: "percent" };
-  }
-  if (unit === "deg") {
-    return { amount, unit, normalized: amount, unitGroup: "angle" };
-  }
-  return { amount, unit, normalized: amount, unitGroup: "number" };
-}
-
-function reviewTextForDeclaration(declaration) {
-  if (!declaration) return "";
-  return `${declaration.leadingComment}\n${declaration.trailingComment}`;
-}
-
-function hasCssReviewDecision(declarationA, declarationB) {
-  const text = `${reviewTextForDeclaration(declarationA)}\n${reviewTextForDeclaration(declarationB)}`;
-  return (
-    /token-review\s*:\s*(?:keep|keep-distinct|merge|merge-with|approved|separate|split)/i.test(
-      text,
-    ) || /a11y-remap/i.test(text)
-  );
-}
-
-function hasArchitectureReviewDecision(architectureDoc, tokenA, tokenB) {
-  if (!architectureDoc) return false;
-  const first = tokenA.toLowerCase();
-  const second = tokenB.toLowerCase();
-  const lines = architectureDoc.toLowerCase().split(/\r?\n/);
-  let inRemapSection = false;
-  return lines.some((line) => {
-    if (/^#{1,6}\s/.test(line)) {
-      inRemapSection = /accessibility remap/.test(line);
-    }
-    if (!line.includes(first) || !line.includes(second)) return false;
-    if (inRemapSection || line.includes("a11y-remap")) return true;
-    return /merge|merged|keep|distinct|separate|split|approved|合併|保留|拆開|分開|確認/.test(
-      line,
-    );
-  });
-}
-
-function hasReviewDecision(architectureDoc, declarations, tokenA, tokenB) {
-  return (
-    hasCssReviewDecision(declarations.get(tokenA), declarations.get(tokenB)) ||
-    hasArchitectureReviewDecision(architectureDoc, tokenA, tokenB)
-  );
+function formatNumber(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2);
 }
 
 const issues = [];
@@ -430,7 +144,6 @@ if (indexCss === null) {
 }
 
 const tokenArchitectureDoc = await readOptional(tokenArchitectureFile);
-const namingOrder = parseNamingOrder(tokenArchitectureDoc);
 
 const props = {
   ref: parseProps(css.ref || ""),
@@ -438,11 +151,9 @@ const props = {
   comp: parseProps(css.comp || ""),
 };
 
-const declarations = {
-  ref: parseDeclarations(css.ref || ""),
-  sys: parseDeclarations(css.sys || ""),
-  comp: parseDeclarations(css.comp || ""),
-};
+// Reference tokens with the comments attached to them; the comments can carry
+// token-review and a11y-remap decisions.
+const refTokens = parseTokens(css.ref || "");
 
 if (strict) {
   for (const [layer, file] of Object.entries(files)) {
@@ -498,9 +209,7 @@ for (const [name, value] of props.sys) {
     issues.push(`System token references component token: ${name}: ${value}`);
   }
   if (!/var\(--[A-Za-z0-9_-]*-ref-/.test(value) && rawValuePattern.test(value)) {
-    issues.push(
-      `System token appears to use a raw value instead of a reference token: ${name}: ${value}. Move the literal into tokens-ref.css as a reference token and reference it with var() (TOKEN_ARCHITECTURE.md layer rules).`,
-    );
+    issues.push(`System token appears to use a raw value instead of a reference token: ${name}: ${value}`);
   }
 }
 
@@ -512,35 +221,8 @@ for (const [name, value] of props.comp) {
     issues.push(`Component token references another component token: ${name}: ${value}`);
   }
   if (!/var\(--[A-Za-z0-9_-]*-sys-/.test(value) && rawValuePattern.test(value)) {
-    issues.push(
-      `Component token appears to use a raw value instead of a system token: ${name}: ${value}. Reference a system token with var(); a new raw value belongs in tokens-ref.css first (TOKEN_ARCHITECTURE.md layer rules).`,
-    );
+    issues.push(`Component token appears to use a raw value instead of a system token: ${name}: ${value}`);
   }
-}
-
-// Naming order recorded in TOKEN_ARCHITECTURE.md: segments must not go back to an earlier slot.
-if (namingOrder) {
-  for (const [layer, tokens] of Object.entries(props)) {
-    for (const [name] of tokens) {
-      const result = checkNameOrder(name, namingOrder, layer);
-      if (result.ok) continue;
-      const { segment, slot, previous, previousSlot } = result.violation;
-      issues.push(
-        `Token name does not follow the recorded naming order (${formatNamingOrder(namingOrder)}): ${name} — "${segment}" (${slot}) comes after "${previous}" (${previousSlot})` +
-          (result.expected ? `; expected ${result.expected}` : "; reorder the segments to follow the recorded order"),
-      );
-    }
-  }
-}
-
-// --x next to --x-<state>: fine in CSS, but a slash path cannot be a token and a group at once.
-for (const group of findStateGroups([...props.ref.keys(), ...props.sys.keys(), ...props.comp.keys()], namingOrder)) {
-  warnings.push(
-    `Token is also a group once names become slash paths (Figma Variables, DTCG): ${group.token} next to ${group.children.join(", ")}; CSS is unaffected. ` +
-      (group.suggestion
-        ? `Name the default state explicitly: ${group.suggestion}`
-        : `Rename or remove ${group.token}; the explicit default state already exists`),
-  );
 }
 
 for (const [name] of props.sys) {
@@ -620,108 +302,55 @@ for (const [family, familyTokens] of colorsByFamily) {
   }
 }
 
-const referenceNumbers = [];
-for (const [name, value] of props.ref) {
-  if (parseColor(value)) continue;
-  const numeric = parseNumericValue(value);
-  if (!numeric) continue;
-  referenceNumbers.push({
-    name,
-    value,
-    family: parseReferenceFamily(name),
-    numeric,
-  });
-}
+// Near-token review. A pair is confirmed, suggested (the AI proposed an action
+// that no designer has confirmed yet) or undecided. Only confirmed pairs pass.
+const decisionRecords = collectDecisionRecords({ architectureDoc: tokenArchitectureDoc, refTokens });
+let unresolvedReviewCandidates = 0;
+let awaitingConfirmation = 0;
+let documentedReviewCandidates = 0;
 
-// Near tokens are reviewed per cluster: one canonical token, every other member
-// tiered auto / proposal / must-ask against it (scripts/lib/token_review.mjs). A
-// member counts as documented when a decision names it together with the canonical.
-const varCounts = countVarReferences([css.sys || "", css.comp || ""]);
-const { clusters, counts: clusterCounts } = buildTokenClusters({
-  colors: referenceColors,
-  numbers: referenceNumbers,
-  declarations: declarations.ref,
-  varCounts,
-  hasDecision: (member, canonical) =>
-    hasReviewDecision(tokenArchitectureDoc, declarations.ref, member, canonical),
-});
-
-for (const cluster of clusters) {
-  const canonical = cluster.canonical;
-  for (const member of cluster.members) {
-    if (member.documented) continue;
-    const comparison =
-      cluster.kind === "color"
-        ? `Near reference colors need review: ${canonical.name} (${canonical.value}) and ${member.name} (${member.value}) have ${member.distanceLabel}`
-        : `Near reference numbers need review: ${canonical.name} (${canonical.value}) and ${member.name} (${member.value}) differ by ${formatDistance(member.distance)} ${cluster.unitGroup}`;
-    const proposal = member.proposed ? `proposed ${member.proposed}` : "no default, the developer decides";
-    const message = `${comparison} [${cluster.id}, tier ${member.tier}, ${proposal}]. Record the decision against the canonical in design-system/TOKEN_ARCHITECTURE.md (Near Token Decisions) or with a token-review CSS comment; apply_token_decisions.mjs --tier ${member.tier} writes it.`;
-    if (strict) issues.push(message);
-    else warnings.push(message);
+for (const pair of findNearPairs(refTokens).pairs) {
+  const result = resolvePair(decisionRecords, pair.a, pair.b);
+  if (result.status === "confirmed") {
+    documentedReviewCandidates += 1;
+    continue;
   }
+  unresolvedReviewCandidates += 1;
+  const subject =
+    pair.type === "color"
+      ? `${pair.a} (${pair.valueA}) and ${pair.b} (${pair.valueB}) have deltaE ${formatNumber(pair.delta)}`
+      : `${pair.a} (${pair.valueA}) and ${pair.b} (${pair.valueB}) differ by ${formatNumber(pair.delta)} ${pair.unitGroup}`;
+  const noun = pair.type === "color" ? "colors" : "numbers";
+  let message;
+  if (result.status === "suggested") {
+    awaitingConfirmation += 1;
+    message = `Near reference ${noun} await designer confirmation: ${subject}. The AI suggested "${result.record.suggestion.text}". Confirm it on the review page or in the conversation, then record Decision and Confirmed by in design-system/TOKEN_ARCHITECTURE.md.`;
+  } else {
+    message = `Near reference ${noun} need review: ${subject}. Ask the developer whether to merge them or keep them distinct, then document the decision in design-system/TOKEN_ARCHITECTURE.md or with a token-review CSS comment.`;
+  }
+  if (strict) issues.push(message);
+  else warnings.push(message);
 }
-const unresolvedReviewCandidates = clusterCounts.candidates;
-const documentedReviewCandidates = clusterCounts.documented;
-
-// Scale fitting is advisory in every mode: an off-grid value is a question for the
-// developer, not a layer violation.
-const scaleFit = fitLengthScale(referenceNumbers);
-const scaleOutlierLine = scaleFitOutlierLine(scaleFit);
-if (scaleOutlierLine) warnings.push(scaleOutlierLine);
 
 const relRoot = path.relative(process.cwd(), targetRoot) || ".";
-const output = [];
-const log = (line) => output.push(line);
-log(`Token audit target: ${relRoot}`);
-log(`Reference tokens: ${props.ref.size}`);
-log(`System tokens: ${props.sys.size}`);
-log(`Component tokens: ${props.comp.size}`);
-log(`Naming order: ${namingOrder ? `${formatNamingOrder(namingOrder)} (TOKEN_ARCHITECTURE.md)` : "default (none recorded)"}`);
-log(`Strict mode: ${strict ? "on" : "off"}`);
-log(
-  `Near token clusters: ${clusterCounts.clusters} (auto ${clusterCounts.tiers.auto}, proposal ${clusterCounts.tiers.proposal}, must-ask ${clusterCounts.tiers["must-ask"]})`,
-);
-for (const cluster of clusters) log(`- ${clusterSummaryLine(cluster)}`);
-log(`Token review candidates: ${unresolvedReviewCandidates}`);
-log(`Documented review decisions: ${documentedReviewCandidates}`);
-const scaleSummary = scaleFitSummaryLine(scaleFit);
-if (scaleSummary) log(scaleSummary);
+console.log(`Token audit target: ${relRoot}`);
+console.log(`Reference tokens: ${props.ref.size}`);
+console.log(`System tokens: ${props.sys.size}`);
+console.log(`Component tokens: ${props.comp.size}`);
+console.log(`Strict mode: ${strict ? "on" : "off"}`);
+console.log(`Token review candidates: ${unresolvedReviewCandidates}`);
+console.log(`Awaiting designer confirmation: ${awaitingConfirmation}`);
+console.log(`Documented review decisions: ${documentedReviewCandidates}`);
 
 if (warnings.length) {
-  log("\nWarnings:");
-  for (const warning of warnings) log(`- ${warning}`);
+  console.log("\nWarnings:");
+  for (const warning of warnings) console.log(`- ${warning}`);
 }
 
 if (issues.length) {
-  log("\nIssues:");
-  for (const issue of issues) log(`- ${issue}`);
-} else {
-  log("\nToken audit passed.");
+  console.log("\nIssues:");
+  for (const issue of issues) console.log(`- ${issue}`);
+  process.exit(1);
 }
 
-if (jsonMode) {
-  console.log(
-    JSON.stringify(
-      {
-        clusters,
-        scaleFit,
-        counts: {
-          ...clusterCounts,
-          referenceTokens: props.ref.size,
-          systemTokens: props.sys.size,
-          componentTokens: props.comp.size,
-          strict,
-        },
-        issues,
-        namingOrder,
-        warnings,
-      },
-      null,
-      2,
-    ),
-  );
-} else {
-  console.log(output.join("\n"));
-}
-
-if (issues.length) process.exit(1);
+console.log("\nToken audit passed.");

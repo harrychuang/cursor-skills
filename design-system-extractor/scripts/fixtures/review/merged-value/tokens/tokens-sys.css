@@ -1,0 +1,5 @@
+:root {
+  --sl-sys-shape-corner-sm: var(--sl-ref-radius-8);
+  --sl-sys-shape-corner-md: var(--sl-ref-radius-12);
+  --sl-sys-shape-corner-lg: var(--sl-ref-radius-16);
+}

@@ -1,0 +1,29 @@
+/* A package in the middle of the review flow: the AI has written a suggestion
+   for every near group, similar component and duplicate source — eleven items —
+   and nobody has confirmed anything yet. */
+:root {
+  --sl-ref-color-neutral-warm-100: #ffffff;
+  --sl-ref-color-neutral-warm-96: #faf7f2;
+  --sl-ref-color-neutral-warm-92: #f5f0e8;
+  --sl-ref-color-neutral-warm-88: #ede8df;
+  --sl-ref-color-neutral-warm-18: #1c1a17;
+  --sl-ref-color-neutral-warm-15: #1a1714;
+  --sl-ref-color-neutral-warm-12: #141210;
+  --sl-ref-color-neutral-warm-8: #0f0d0b;
+  --sl-ref-color-neutral-warm-5: #0b0a09;
+  --sl-ref-color-neutral-warm-0: #000000;
+  --sl-ref-color-gold-36: #8b6000;
+
+  --sl-ref-type-13: 13px;
+  --sl-ref-type-14: 14px;
+  --sl-ref-type-17: 17px;
+
+  --sl-ref-radius-8: 8px;
+  --sl-ref-radius-12: 12px;
+
+  --sl-ref-duration-150: 150ms;
+  --sl-ref-duration-180: 180ms;
+
+  --sl-ref-opacity-10: 0.10;
+  --sl-ref-opacity-12: 0.12;
+}

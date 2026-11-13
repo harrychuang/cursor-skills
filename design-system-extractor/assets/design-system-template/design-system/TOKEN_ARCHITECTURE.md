@@ -10,20 +10,6 @@ Document the token layers, prefixes, naming model, and audit rules for this pack
 | System | `--md-sys-*` | Shared semantic roles |
 | Component | `--md-comp-*` | Component and region slots |
 
-## Naming Order
-
-Record the team's slot order here once it is decided: every new token follows it, and `audit_tokens.mjs` checks every name against it. Leave `Order:` empty to keep the default naming in `references/token-architecture.md` (`--<prefix>-comp-<component>-<part>-<property>`).
-
-Order:
-Source:
-Default state: default
-CSS name: path segments joined with `-` (`<prefix>/comp/<component>/…` → `--<prefix>-comp-<component>-…`)
-
-Fill `Order:` with slots separated by `>` (for example `prefix > category > component > role > variant > target > state`) and `Source:` with `prompt`, `recorded`, or `inferred`. List each slot's values in the table, comma-separated; `Layers` limits a slot to some layers (for example `component` → `comp`). Unused slots are left out of a name. When the order puts `state` last and a token has state variants, write the default state as its own segment (`…-container-default` next to `…-container-hovered`): a Figma Variable name or DTCG path cannot be a token and a group at once. CSS names are unaffected by that limit, but they stay equal to the path with `/` replaced by `-`. Add one example per layer below the table.
-
-| Slot | Layers | Values |
-|---|---|---|
-
 ## Inheritance
 
 ```txt
@@ -48,17 +34,20 @@ Use numeric palette steps from light to dark:
 | Layer | Allowed | Forbidden |
 |---|---|---|
 | Reference | raw color steps, sizes, weights, radius, opacity | semantic roles, component names |
-| System | shared roles, foreground/background pairs, spacing roles | component anatomy, raw values |
+| System | shared roles, foreground/background pairs, spacing roles | component anatomy |
 | Component | component slots and states | raw values, direct reference values |
 
 ## Near Token Decisions
 
-Use this table when candidate reference tokens are visually or numerically close. The token audit groups close tokens into clusters around one canonical token; write one row per non-canonical cluster member against its canonical: Candidate A is the member, Candidate B is the canonical, Difference is the distance with the member's tier (for example `deltaE2000 0.6 (auto)`), Rationale is the rule name with the cluster id (for example `measured snaps into authored (C1)`), and Confirmed by is `auto-tier` for rows that `apply_token_decisions.mjs` wrote or the developer's name.
+Use this table when reference tokens are visually or numerically close. Write one row per group of close values, and one row per outcome when a group mixes keeps and merges.
 
-Provenance is `authored` (Figma Variable/style, design-system export, source-code token — no measurement error) or `measured` (screenshot sampling, pixel measurement), read from the `provenance:` marker in each ref token's CSS comment; a token without a marker is `unknown`. The audit tiers every member from those markers: `auto` (measured below the just-noticeable difference, or measured snapping into an authored value) rows may be written mechanically; `proposal` rows (measured beyond the snap threshold, or any `unknown` side) are written after one batched confirmation; `must-ask` rows (`authored` vs `authored`) are written only after an explicit developer decision. Never round an authored value away, and never write a proposal here before confirmation — a proposal written here reads as a decision to the audit.
+- **Candidates**: two or more backtick-quoted reference tokens. For a value that is not a token, write the raw value instead. When the row's action is a merge, put each token's value in parentheses after it, so the merged value stays on record once its token is removed.
+- **Provenance**: `authored` (Figma Variable/style, design-system export, source-code token — no measurement error) or `measured` (screenshot sampling, pixel measurement), for each candidate.
+- **Suggested action**: written during extraction. Either `keep distinct`, or `merge into` followed by the surviving token. `measured` vs `measured` may suggest a merge; when either side is `authored`, suggest `keep distinct` and never suggest rounding the authored value away; `authored` vs `authored` always suggests `keep distinct`.
+- **Decision** and **Confirmed by**: left empty during extraction. A suggestion is not a decision. Fill both only after a designer confirms — on the review page (`docs/design-system/review.html`) or in the conversation — using the wording of the suggested action for the decision, and who confirmed it, how, and when (for example `designer via review.html 2026-11-13`). Until then the close values stay separate tokens and the strict token audit reports the row as awaiting confirmation.
 
-| Candidate A | Provenance A | Candidate B | Provenance B | Difference | Decision (`merge` / `keep distinct`) | Rationale | Confirmed by |
-|---|---|---|---|---|---|---|---|
+| Candidates | Provenance | Difference | Suggested action | Decision | Rationale | Confirmed by |
+|---|---|---|---|---|---|---|
 
 ## Accessibility Remap Decisions
 
@@ -74,15 +63,21 @@ Use this table when a higher-tier authoritative source (for example production F
 | Token | Current value (provenance) | Authoritative value (source) | Delta | Recommendation | Developer decision | Follow-up |
 |---|---|---|---|---|---|---|
 
+## Native Unit And Source Mapping
+
+Use this table for native iOS/Android projects when source values use platform units or platform token/resource files.
+
+| Canonical token | Native source token/resource | Platform/unit | Source file | Evidence screen/capture | Mapping or conversion note |
+|---|---|---|---|---|---|
+
 ## Required Audit
 
 - No component token references a reference token directly.
 - No system token name includes component anatomy.
 - No reference token name includes semantic roles.
 - Reference color steps follow `100` lightest to `0` darkest.
-- Every non-canonical member of a near-token cluster (close reference colors or numbers) has a documented merge or keep-distinct decision against the canonical that records both provenances; `authored` vs `authored` members are never merged without an explicit developer decision.
+- Near reference colors and numbers have a designer-confirmed merge or keep-distinct decision (`Decision` and `Confirmed by` filled) that records the provenances; a suggested action alone does not pass, and pairs involving an `authored` value default to keep distinct.
 - Accessibility remaps keep the authored value as a `ref` token and carry an `a11y-remap` record; the shipped `sys` mapping points at the accessible value.
-- Every background-like system color has a matching `on-*` foreground pair.
-- When `## Naming Order` records an order, every token name follows it (`audit_tokens.mjs` reports out-of-order names as issues).
-- Under an order that puts `state` last, a token with state variants names its default state explicitly (`…-default`), so no name is both a token and a group once exported as Figma Variables or DTCG paths.
-- Values found only in unused code, demo-only components, blocked captures, or unverified resources are not promoted to tokens unless a keep decision is recorded in `DESIGN_EVIDENCE_MAP.md`.
+- Every background-like system color has a matching foreground pair.
+- For vibe-coded projects, values found only in unused CSS, demo-only components, dead code, or blocked captures are not promoted to tokens unless a keep decision is recorded in `DESIGN_EVIDENCE_MAP.md`.
+- For native app projects, values found only in source-only views, unused previews, blocked captures, or unverified resources are not promoted to tokens unless a keep decision is recorded in `DESIGN_EVIDENCE_MAP.md`.

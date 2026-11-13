@@ -1,0 +1,21 @@
+:root {
+  --sl-sys-color-background: var(--sl-ref-color-neutral-warm-92);
+  --sl-sys-color-on-background: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface: var(--sl-ref-color-neutral-warm-100);
+  --sl-sys-color-on-surface: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface-high: var(--sl-ref-color-neutral-warm-96);
+  --sl-sys-color-on-surface-high: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface-sunken: var(--sl-ref-color-neutral-warm-88);
+  --sl-sys-color-on-surface-sunken: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface-inverse: var(--sl-ref-color-neutral-warm-8);
+  --sl-sys-color-on-surface-inverse: var(--sl-ref-color-neutral-warm-92);
+  --sl-sys-color-primary: var(--sl-ref-color-gold-36);
+  --sl-sys-color-on-primary: var(--sl-ref-color-neutral-warm-100);
+  --sl-sys-typescale-disclaimer-size: var(--sl-ref-type-13);
+  --sl-sys-typescale-label-size: var(--sl-ref-type-14);
+  --sl-sys-typescale-body-size: var(--sl-ref-type-17);
+  --sl-sys-shape-corner-sm: var(--sl-ref-radius-8);
+  --sl-sys-shape-corner-md: var(--sl-ref-radius-12);
+  --sl-sys-motion-duration-fast: var(--sl-ref-duration-150);
+  --sl-sys-state-opacity-muted: var(--sl-ref-opacity-12);
+}

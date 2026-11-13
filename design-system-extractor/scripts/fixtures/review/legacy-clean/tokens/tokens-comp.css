@@ -1,0 +1,6 @@
+:root {
+  --md-comp-notice-container-color: var(--md-sys-color-surface);
+  --md-comp-notice-label-text-color: var(--md-sys-color-on-surface);
+  --md-comp-notice-label-text-size: var(--md-sys-typescale-label-size);
+  --md-comp-notice-container-shape: var(--md-sys-shape-corner-sm);
+}

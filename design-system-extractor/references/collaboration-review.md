@@ -21,7 +21,7 @@ Before merging, inspect:
 - `design-system/COMPONENT_INVENTORY.md`.
 - Relevant `design-system/components/*.md`.
 - `tokens/tokens-ref.css`, `tokens/tokens-sys.css`, and `tokens/tokens-comp.css`.
-- Generated `docs/design-system/review.html` when present.
+- Generated `docs/design-system/review.html` when present, and the number of review items still waiting for the designer (`generate_review_html.mjs --json`, `counts.needsReview`).
 
 ## Branch Review Checklist
 
@@ -31,9 +31,9 @@ For each branch or PR:
 2. Verify new Figma sources have normalized source keys or fingerprints in `DESIGN_EVIDENCE_MAP.md`.
 3. Verify duplicate source decisions are recorded before duplicate evidence is counted.
 4. Verify new or changed tokens preserve `ref -> sys -> comp` inheritance.
-5. Verify near token candidates have `merge` or `keep distinct` decisions in `TOKEN_ARCHITECTURE.md`.
+5. Verify near token candidates have designer-confirmed `merge into` or `keep distinct` decisions in `TOKEN_ARCHITECTURE.md` (`Decision` and `Confirmed by` filled). A suggested action alone is not a decision; note how many the branch leaves waiting.
 6. Verify new components were compared against `COMPONENT_INVENTORY.md` and existing component specs.
-7. Verify similar components have `merge`, `make variant`, `keep distinct`, or `blocked` decisions.
+7. Verify similar components have `merge`, `make variant`, `keep distinct`, or `blocked` in `Developer decision`, not only in `Suggested action`, and that the row shows a screenshot with the compared region for both sides.
 8. Verify component specs include source evidence and a component fingerprint.
 9. Verify generated docs were not treated as hand-authored source.
 10. Record reviewer decision and follow-up in `INTEGRATION_REVIEW.md`.
@@ -53,7 +53,7 @@ Merge one branch at a time into an integration branch. Run audits after resolvin
 ## Conflict Policy
 
 - Evidence conflicts: prefer the source with the clearer fingerprint and more specific observed region; record duplicate decisions before counting both.
-- Reference token conflicts: compare raw values and palette position; record near-token decisions before choosing.
+- Reference token conflicts: compare raw values and palette position; keep both values, record a suggested action, and merge only after the designer confirms it.
 - System token conflicts: choose the reusable semantic role; do not encode component anatomy in system token names.
 - Component token conflicts: keep component slots in `tokens-comp.css`, and reference system tokens only.
 - Component spec conflicts: merge anatomy, variants, states, and accessibility only when the component fingerprint still describes one component.

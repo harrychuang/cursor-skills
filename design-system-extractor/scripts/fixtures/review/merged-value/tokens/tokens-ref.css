@@ -1,0 +1,7 @@
+/* 6px used to be its own radius. A confirmed decision merged it into radius-8
+   and the merge was applied, so 6px now exists only in its decision row. */
+:root {
+  --sl-ref-radius-8: 8px;
+  --sl-ref-radius-12: 12px;
+  --sl-ref-radius-16: 16px;
+}

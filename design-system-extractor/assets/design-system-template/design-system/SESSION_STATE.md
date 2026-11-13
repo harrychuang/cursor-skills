@@ -41,6 +41,7 @@ Update this file at every checkpoint.
 ## Source Duplicate Review
 
 - Duplicate source candidates found:
+- Suggested actions waiting for the designer:
 - Developer decisions recorded in `DESIGN_EVIDENCE_MAP.md`:
 - Source fingerprints recorded:
 
@@ -82,11 +83,13 @@ Update this file at every checkpoint.
 ## Token Review
 
 - Near token candidates found:
-- Developer decisions recorded in `TOKEN_ARCHITECTURE.md`:
+- Suggested actions waiting for the designer:
+- Designer-confirmed decisions recorded in `TOKEN_ARCHITECTURE.md`:
 
 ## Component Similarity Review
 
 - Similar component candidates found:
+- Suggested actions waiting for the designer:
 - Developer decisions recorded in `COMPONENT_INVENTORY.md`:
 - Visual comparison assets:
 
@@ -113,6 +116,7 @@ Update this file at every checkpoint.
 
 - HTML docs:
 - HTML docs UI locale:
-- Review queue:
+- Review page:
+- Review items waiting for the designer:
 
 ## Recommended Next Prompt

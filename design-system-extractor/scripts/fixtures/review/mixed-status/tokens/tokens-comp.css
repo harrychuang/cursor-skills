@@ -1,0 +1,4 @@
+:root {
+  --md-comp-notice-label-text-size: var(--md-sys-typescale-label-size);
+  --md-comp-notice-motion-duration: var(--md-sys-motion-duration-fast);
+}

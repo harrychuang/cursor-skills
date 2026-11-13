@@ -973,7 +973,7 @@
           </div>
           <p data-i18n="stageText">
             先把來源整理成 evidence，再把 evidence 變成規範；遇到重複來源、
-            近似 token 或相似 component 時，進入 review queue，而不是直接新增。
+            近似 token 或相似 component 時，先寫下建議、等設計師確認，而不是直接新增或合併。
           </p>
         </div>
         <div class="stage-grid">
@@ -1009,7 +1009,7 @@
             <span class="stage-index">05</span>
             <h3 data-i18n="stageHandoffTitle">Docs and audit</h3>
             <p data-i18n="stageHandoffText">
-              產出 HTML 文件、review queue 與 audit 結果，再進入 checkpoint。
+              產出 HTML 文件、審查頁與 audit 結果，再進入 checkpoint。
             </p>
           </article>
         </div>
@@ -1127,9 +1127,11 @@
                   <p>
                     Convert raw values into reference tokens, semantic roles
                     into system tokens, and component slots into component
-                    tokens. Order color scales as 100 lightest to 0 darkest,
-                    and pause for merge/keep-distinct review when values are
-                    very close.
+                    tokens. Order color scales as 100 lightest to 0 darkest.
+                    When values are very close, keep them as separate tokens
+                    and record a suggested merge or keep-distinct action; a
+                    designer confirms it on the review page before anything
+                    is merged.
                   </p>
                 </div>
               </li>
@@ -1181,9 +1183,10 @@
                   <h4>Generate developer HTML</h4>
                   <p>
                     Render Markdown specs and token tables into
-                    <code>docs/design-system/index.html</code> and render
-                    review candidates into <code>docs/design-system/review.html</code>
-                    so developers can scan both the system and open review items.
+                    <code>docs/design-system/index.html</code>, and build
+                    <code>docs/design-system/review.html</code>: the page where a
+                    designer confirms or adjusts each suggestion and copies a
+                    prompt of the decisions for the AI to apply.
                   </p>
                 </div>
               </li>
@@ -1292,9 +1295,10 @@
                 <h4>Reading layer</h4>
                 <p>
                   <code>docs/design-system/index.html</code> is generated from
-                  the source files for developer review, and
-                  <code>docs/design-system/review.html</code> summarizes near
-                  duplicate sources, near tokens, and similar components.
+                  the source files for reading, and
+                  <code>docs/design-system/review.html</code> is where the
+                  designer decides duplicate sources, near tokens, and similar
+                  components.
                 </p>
               </article>
               <article class="output-item">
@@ -1381,8 +1385,9 @@
                   <p>
                     生の値は reference token、意味を持つ役割は system token、
                     component の slot は component token に分けます。色階は
-                    100 を最も明るく、0 を最も暗くし、近い値は merge または
-                    keep-distinct の確認を取ります。
+                    100 を最も明るく、0 を最も暗くします。近い値は別々の token
+                    のまま残し、merge か keep-distinct の提案を記録します。
+                    統合するのは、デザイナーがレビューページで確定してからです。
                   </p>
                 </div>
               </li>
@@ -1431,8 +1436,9 @@
                   <p>
                     Markdown と token table を
                     <code>docs/design-system/index.html</code> にまとめ、
-                    review 候補を <code>docs/design-system/review.html</code>
-                    にまとめます。
+                    レビューページ <code>docs/design-system/review.html</code>
+                    を生成します。デザイナーはそこで提案を確定・修正し、決定を
+                    プロンプトとしてコピーして AI に適用させます。
                   </p>
                 </div>
               </li>
@@ -1537,7 +1543,7 @@
                 <p>
                   <code>docs/design-system/index.html</code> は原本から生成される
                   開発者向けの閲覧ページです。<code>docs/design-system/review.html</code>
-                  は重複 source、近い token、類似 component をまとめます。
+                  は重複 source、近い token、類似 component をデザイナーが決めるページです。
                 </p>
               </article>
               <article class="output-item">
@@ -1623,7 +1629,8 @@
                   <p>
                     把原始值放在 reference token，把語意角色放在 system token，
                     把 component slot 放在 component token。色階以 100
-                    作為最亮、0 作為最暗；遇到很接近的值時，先確認要合併或保留拆開。
+                    作為最亮、0 作為最暗；遇到很接近的值時，先各自保留成獨立的 token
+                    並寫下合併或保留的建議，等設計師在審查頁確認後才合併。
                   </p>
                 </div>
               </li>
@@ -1670,8 +1677,9 @@
                   <h4>產生開發者 HTML</h4>
                   <p>
                     將 Markdown 規範與 token tables 產生成
-                    <code>docs/design-system/index.html</code>，並將 review
-                    候選項目產生成 <code>docs/design-system/review.html</code>。
+                    <code>docs/design-system/index.html</code>，並產生審查頁
+                    <code>docs/design-system/review.html</code>：設計師在上面確認或調整
+                    每一筆建議，再把決定複製成提示詞交給 AI 套用。
                   </p>
                 </div>
               </li>
@@ -1777,7 +1785,7 @@
                 <p>
                   <code>docs/design-system/index.html</code> 是由原始檔產生的
                   開發者閱讀頁面；<code>docs/design-system/review.html</code>
-                  則彙整重複 source、近似 token 與相似 component。
+                  則是設計師決定重複 source、近似 token 與相似 component 的地方。
                 </p>
               </article>
               <article class="output-item">
@@ -1844,7 +1852,7 @@
             stageEyebrow: "Decision points",
             stageTitle: "Five stages from source material to checkpoint",
             stageText:
-              "Sources become evidence before they become rules. Duplicate sources, near tokens, and similar components move into the review queue instead of being added silently.",
+              "Sources become evidence before they become rules. Duplicate sources, near tokens, and similar components get a suggested action and wait for the designer's confirmation instead of being added or merged silently.",
             stageEvidenceTitle: "Evidence first",
             stageEvidenceText:
               "Turn images, Figma context, rendered browser captures, and code references into traceable design evidence, with duplicate sources checked first.",
@@ -1859,7 +1867,7 @@
               "Use inventory, fingerprints, and preview evidence to find likely duplicate components.",
             stageHandoffTitle: "Docs and audit",
             stageHandoffText:
-              "Generate HTML docs, the review queue, and audit results before checkpointing.",
+              "Generate the HTML docs, the review page, and audit results before checkpointing.",
             teamEyebrow: "Team workflow",
             teamTitle: "Developers send PRs; the integrator lands one final PR",
             teamLead:
@@ -1913,7 +1921,7 @@
             stageEyebrow: "判断ポイント",
             stageTitle: "素材から checkpoint までの 5 段階",
             stageText:
-              "source をまず evidence にし、その後でルールに変換します。重複 source、近い token、似た component は黙って追加せず、review queue に残します。",
+              "source をまず evidence にし、その後でルールに変換します。重複 source、近い token、似た component は黙って追加・統合せず、提案を付けてデザイナーの確定を待ちます。",
             stageEvidenceTitle: "Evidence first",
             stageEvidenceText:
               "画像、Figma、rendered browser captures、コード参照を追跡可能な design evidence に整理し、重複 source を先に確認します。",
@@ -1928,7 +1936,7 @@
               "inventory、fingerprint、preview evidence で重複しそうな component を確認します。",
             stageHandoffTitle: "Docs and audit",
             stageHandoffText:
-              "HTML docs、review queue、audit results を生成して checkpoint します。",
+              "HTML docs、レビューページ、audit results を生成して checkpoint します。",
             teamEyebrow: "チームワークフロー",
             teamTitle: "開発者が PR を出し、integrator が最後の PR を main に戻します",
             teamLead:
@@ -1982,7 +1990,7 @@
             stageEyebrow: "流程判斷點",
             stageTitle: "從來源到 checkpoint 的五個階段",
             stageText:
-              "先把來源變成 evidence，再把 evidence 變成規範；遇到重複來源、近似 token 或相似 component 時，進入 review queue，而不是直接新增。",
+              "先把來源變成 evidence，再把 evidence 變成規範；遇到重複來源、近似 token 或相似 component 時，先寫下建議、等設計師確認，而不是直接新增或合併。",
             stageEvidenceTitle: "Evidence first",
             stageEvidenceText:
               "將圖片、Figma、rendered browser captures 與程式線索整理成可追溯的設計證據，並先檢查重複來源。",
@@ -1997,7 +2005,7 @@
               "用 inventory、fingerprint 與預覽證據找出可能重複的元件。",
             stageHandoffTitle: "Docs and audit",
             stageHandoffText:
-              "產出 HTML 文件、review queue 與 audit 結果，再進入 checkpoint。",
+              "產出 HTML 文件、審查頁與 audit 結果，再進入 checkpoint。",
             teamEyebrow: "多人協作流程",
             teamTitle: "開發者先送 PR，整合者再集中整併",
             teamLead:

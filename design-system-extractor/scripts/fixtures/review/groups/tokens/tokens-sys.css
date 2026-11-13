@@ -1,0 +1,15 @@
+:root {
+  --sl-sys-color-background: var(--sl-ref-color-neutral-warm-92);
+  --sl-sys-color-on-background: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface: var(--sl-ref-color-neutral-warm-100);
+  --sl-sys-color-on-surface: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface-high: var(--sl-ref-color-neutral-warm-96);
+  --sl-sys-color-on-surface-high: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface-sunken: var(--sl-ref-color-neutral-warm-88);
+  --sl-sys-color-on-surface-sunken: var(--sl-ref-color-neutral-warm-18);
+  --sl-sys-color-surface-inverse: var(--sl-ref-color-neutral-warm-8);
+  --sl-sys-color-on-surface-inverse: var(--sl-ref-color-neutral-warm-92);
+  --sl-sys-typescale-disclaimer-size: var(--sl-ref-type-13);
+  --sl-sys-typescale-label-size: var(--sl-ref-type-14);
+  --sl-sys-typescale-body-size: var(--sl-ref-type-17);
+}

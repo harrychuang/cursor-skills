@@ -1,0 +1,8 @@
+:root {
+  --md-sys-typescale-micro-size: var(--md-ref-size-10);
+  --md-sys-typescale-caption-size: var(--md-ref-size-11);
+  --md-sys-typescale-body-size: var(--md-ref-size-16);
+  --md-sys-typescale-title-size: var(--md-ref-size-20);
+  --md-sys-size-row-min: var(--md-ref-size-40);
+  --md-sys-size-touch-target: var(--md-ref-size-42);
+}

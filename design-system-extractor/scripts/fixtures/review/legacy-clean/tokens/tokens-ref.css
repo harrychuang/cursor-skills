@@ -1,0 +1,16 @@
+/* A package written before the review flow existed. Its three near pairs are
+   each documented the way such packages documented them. */
+:root {
+  --md-ref-color-neutral-96: #faf7f2;
+  --md-ref-color-neutral-92: #f5f0e8;
+  --md-ref-color-neutral-20: #2c2a26;
+
+  --md-ref-size-12: 12px;
+  --md-ref-size-14: 14px;
+
+  /* token-review: keep-distinct; 13px is the disclaimer floor and 14px is the label minimum. */
+  --md-ref-type-13: 13px;
+  --md-ref-type-14: 14px;
+
+  --md-ref-radius-8: 8px;
+}

@@ -1,0 +1,23 @@
+/* One near group per state a review-flow row can be in. */
+:root {
+  /* A: the AI suggested an action, nobody confirmed it. */
+  --md-ref-size-10: 10px;
+  --md-ref-size-11: 11px;
+
+  /* B: a decision is written but no one is named as confirming it. */
+  --md-ref-size-20: 20px;
+  --md-ref-size-21: 21px;
+
+  /* C: a confirmed keep. */
+  --md-ref-size-30: 30px;
+  --md-ref-size-31: 31px;
+
+  /* D: a confirmed merge that has been applied; 15px is gone and lives on only in its row. */
+  --md-ref-size-16: 16px;
+
+  /* E: four near values with mixed outcomes, confirmed but not applied yet. */
+  --md-ref-size-40: 40px;
+  --md-ref-size-41: 41px;
+  --md-ref-size-42: 42px;
+  --md-ref-size-43: 43px;
+}

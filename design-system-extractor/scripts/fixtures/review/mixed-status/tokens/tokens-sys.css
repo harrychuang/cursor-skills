@@ -1,0 +1,9 @@
+:root {
+  --md-sys-typescale-micro-size: var(--md-ref-size-10);
+  --md-sys-typescale-caption-size: var(--md-ref-size-11);
+  --md-sys-size-control-height: var(--md-ref-size-30);
+  --md-sys-motion-duration-fast: var(--md-ref-duration-150);
+  --md-sys-state-opacity-muted: var(--md-ref-opacity-12);
+  --md-sys-typescale-disclaimer-size: var(--md-ref-type-13);
+  --md-sys-typescale-label-size: var(--md-ref-type-14);
+}

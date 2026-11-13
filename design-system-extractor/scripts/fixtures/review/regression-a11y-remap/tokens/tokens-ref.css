@@ -1,0 +1,6 @@
+:root {
+  /* a11y-remap: authored #13895f fails AA as text; the accessible value is green-44. */
+  --md-ref-color-green-45: #13895f;
+  --md-ref-color-green-44: #12845b;
+  --md-ref-size-16: 16px;
+}

@@ -1,0 +1,6 @@
+:root {
+  --md-sys-spacing-hairline: var(--md-ref-size-1);
+  --md-sys-spacing-xs: var(--md-ref-size-2);
+  --md-sys-typescale-body-size: var(--md-ref-size-18);
+  --md-sys-typescale-title-size: var(--md-ref-size-20);
+}

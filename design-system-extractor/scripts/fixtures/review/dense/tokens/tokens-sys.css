@@ -1,0 +1,8 @@
+:root {
+  --md-sys-spacing-xs: var(--md-ref-space-4);
+  --md-sys-spacing-sm: var(--md-ref-space-8);
+  --md-sys-spacing-md: var(--md-ref-space-12);
+  --md-sys-size-row-min: var(--md-ref-dimension-56);
+  --md-sys-size-touch-target: var(--md-ref-dimension-44);
+  --md-sys-typescale-body-size: var(--md-ref-size-20);
+}

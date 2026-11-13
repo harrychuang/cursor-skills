@@ -1,0 +1,5 @@
+:root {
+  --md-sys-typescale-caption-size: var(--md-ref-size-15);
+  --md-sys-typescale-body-size: var(--md-ref-size-16);
+  --md-sys-typescale-title-size: var(--md-ref-size-24);
+}

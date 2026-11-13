@@ -1,0 +1,10 @@
+:root {
+  --md-sys-spacing-xs: var(--md-ref-size-4);
+  --md-sys-spacing-sm: var(--md-ref-size-6);
+  --md-sys-spacing-md: var(--md-ref-size-12);
+  --md-sys-typescale-body-size: var(--md-ref-size-14);
+  --md-sys-typescale-title-size: var(--md-ref-size-24);
+  --md-sys-typescale-display-size: var(--md-ref-size-26);
+  --md-sys-size-row: var(--md-ref-size-40);
+  --md-sys-size-touch-target: var(--md-ref-size-42);
+}

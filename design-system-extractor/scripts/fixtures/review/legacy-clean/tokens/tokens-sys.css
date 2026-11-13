@@ -1,0 +1,11 @@
+:root {
+  --md-sys-color-surface: var(--md-ref-color-neutral-96);
+  --md-sys-color-on-surface: var(--md-ref-color-neutral-20);
+  --md-sys-color-background: var(--md-ref-color-neutral-92);
+  --md-sys-color-on-background: var(--md-ref-color-neutral-20);
+  --md-sys-spacing-sm: var(--md-ref-size-12);
+  --md-sys-spacing-md: var(--md-ref-size-14);
+  --md-sys-typescale-disclaimer-size: var(--md-ref-type-13);
+  --md-sys-typescale-label-size: var(--md-ref-type-14);
+  --md-sys-shape-corner-sm: var(--md-ref-radius-8);
+}

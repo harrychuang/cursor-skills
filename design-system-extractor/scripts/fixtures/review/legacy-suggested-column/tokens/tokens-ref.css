@@ -1,0 +1,12 @@
+/* A package written before the review flow whose decision table already had a
+   "Suggested action" column next to "Developer decision", and no "Confirmed
+   by" column. Its decisions were recorded in the decision column and must keep
+   counting. */
+:root {
+  --md-ref-size-4: 4px;
+  --md-ref-size-6: 6px;
+  --md-ref-size-12: 12px;
+  --md-ref-size-14: 14px;
+  --md-ref-size-24: 24px;
+  --md-ref-size-26: 26px;
+}

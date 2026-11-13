@@ -1,0 +1,4 @@
+:root {
+  --md-sys-color-success-text: var(--md-ref-color-green-44);
+  --md-sys-typescale-body-size: var(--md-ref-size-16);
+}

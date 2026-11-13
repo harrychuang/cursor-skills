@@ -1,0 +1,8 @@
+:root {
+  --sl-comp-app-shell-container-color: var(--sl-sys-color-surface-high);
+  --sl-comp-app-shell-label-text-color: var(--sl-sys-color-on-surface);
+  --sl-comp-signal-light-card-container-color: var(--sl-sys-color-surface);
+  --sl-comp-signal-light-card-label-text-size: var(--sl-sys-typescale-label-size);
+  /* Not listed in any component specification: counts as usage, has no component to show. */
+  --sl-comp-chart-panel-control-container-color: var(--sl-sys-color-surface-sunken);
+}

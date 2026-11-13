@@ -18,6 +18,8 @@ import {
   relativeLuminance,
   resolvePair,
 } from "./review_core.mjs";
+// The team naming order recorded in TOKEN_ARCHITECTURE.md > "## Naming Order".
+import { checkNameOrder, findStateGroups, formatNamingOrder, parseNamingOrder } from "./naming_order.mjs";
 
 const args = process.argv.slice(2);
 const strict = args.includes("--strict");
@@ -144,6 +146,7 @@ if (indexCss === null) {
 }
 
 const tokenArchitectureDoc = await readOptional(tokenArchitectureFile);
+const namingOrder = parseNamingOrder(tokenArchitectureDoc);
 
 const props = {
   ref: parseProps(css.ref || ""),
@@ -223,6 +226,31 @@ for (const [name, value] of props.comp) {
   if (!/var\(--[A-Za-z0-9_-]*-sys-/.test(value) && rawValuePattern.test(value)) {
     issues.push(`Component token appears to use a raw value instead of a system token: ${name}: ${value}`);
   }
+}
+
+// Naming order recorded in TOKEN_ARCHITECTURE.md: segments must not go back to an earlier slot.
+if (namingOrder) {
+  for (const [layer, tokens] of Object.entries(props)) {
+    for (const [name] of tokens) {
+      const result = checkNameOrder(name, namingOrder, layer);
+      if (result.ok) continue;
+      const { segment, slot, previous, previousSlot } = result.violation;
+      issues.push(
+        `Token name does not follow the recorded naming order (${formatNamingOrder(namingOrder)}): ${name} — "${segment}" (${slot}) comes after "${previous}" (${previousSlot})` +
+          (result.expected ? `; expected ${result.expected}` : "; reorder the segments to follow the recorded order"),
+      );
+    }
+  }
+}
+
+// --x next to --x-<state>: fine in CSS, but a slash path cannot be a token and a group at once.
+for (const group of findStateGroups([...props.ref.keys(), ...props.sys.keys(), ...props.comp.keys()], namingOrder)) {
+  warnings.push(
+    `Token is also a group once names become slash paths (Figma Variables, DTCG): ${group.token} next to ${group.children.join(", ")}; CSS is unaffected. ` +
+      (group.suggestion
+        ? `Name the default state explicitly: ${group.suggestion}`
+        : `Rename or remove ${group.token}; the explicit default state already exists`),
+  );
 }
 
 for (const [name] of props.sys) {
@@ -337,6 +365,7 @@ console.log(`Token audit target: ${relRoot}`);
 console.log(`Reference tokens: ${props.ref.size}`);
 console.log(`System tokens: ${props.sys.size}`);
 console.log(`Component tokens: ${props.comp.size}`);
+console.log(`Naming order: ${namingOrder ? `${formatNamingOrder(namingOrder)} (TOKEN_ARCHITECTURE.md)` : "default (none recorded)"}`);
 console.log(`Strict mode: ${strict ? "on" : "off"}`);
 console.log(`Token review candidates: ${unresolvedReviewCandidates}`);
 console.log(`Awaiting designer confirmation: ${awaitingConfirmation}`);

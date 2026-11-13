@@ -168,6 +168,8 @@ Default to strict `ref -> sys -> comp` inheritance when the project has no stron
 
 Use `references/token-architecture.md` before creating or changing token layers.
 
+Before the first token write, resolve the naming order (`references/token-architecture.md` > Naming Order): take it from the user's prompt, else from `TOKEN_ARCHITECTURE.md` > `## Naming Order`, else from the authored source names (ask once only when they follow more than one order), else the default naming. State it in one non-blocking sentence, like the report language (`Naming order: prefix > category > component > role > variant > target > state (prompt); say "use <order>" to change it`); it is not a stop. Record a prompt-given or inferred order in `## Naming Order` in the same write, and name every token with it. When the order puts `state` last and a token has state variants, write the default state as its own segment (`…-container-default` next to `…-container-hovered`), so the names also work as Figma Variable and DTCG paths. `audit_tokens.mjs` reports out-of-order names as issues and `--x` next to `--x-<state>` as warnings.
+
 Before finalizing token files, run a token candidate review:
 
 1. Collect raw color, spacing, radius, typography, opacity, shadow, and motion values from evidence. For vibe-coded projects, do not promote values found only in unused CSS, demo-only components, or dead code unless the user marks them intentional. For native app projects, collect values from asset catalogs, theme files, resource XML, Swift/Kotlin token wrappers, and component code only after connecting them to screenshots, previews, captures, reachable screens, or explicit user confirmation.
@@ -361,7 +363,7 @@ Do not count duplicate screenshots, duplicate Figma nodes, or duplicate rendered
 
 ### Token Gate
 
-If a component needs a semantic or component token that does not exist, create or propose the token at the correct layer. Never use hardcoded fallback values in implementation guidance.
+If a component needs a semantic or component token that does not exist, create or propose the token at the correct layer, named in the order recorded in `TOKEN_ARCHITECTURE.md` > `## Naming Order` (the default naming when none is recorded). Never name a token outside the recorded order, and never use hardcoded fallback values in implementation guidance.
 
 Do not silently merge or split close token values. When near duplicate colors or numbers are found, keep them as separate tokens and record a suggested merge/keep-distinct action with each side's provenance. A suggestion is never a decision: do not fill `Decision` or `Confirmed by`, and do not merge anything, until a designer confirms it on the review page or in the conversation. When either side is `authored`, suggest keep distinct and never suggest rounding the authored value away; `authored` vs `authored` pairs must never be merged without an explicit confirmation.
 
@@ -397,7 +399,7 @@ If the user wants to use the extraction package with Claude Code, Cursor, or Cod
 
 - `references/visual-analysis-rubric.md`: how to analyze images, Figma, native captures/previews, and rendered UI.
 - `references/native-mobile-projects.md`: how to inspect iOS/Android app projects, native tokens/resources, previews, screenshot tests, and simulator/emulator captures.
-- `references/token-architecture.md`: token naming and inheritance rules.
+- `references/token-architecture.md`: token layers, naming order and default naming, and inheritance rules.
 - `references/component-spec-rules.md`: component anatomy, state, accessibility, and token spec rules.
 - `references/page-composition-rules.md`: layout, density, page shell, and composition rules.
 - `references/anti-ai-style-rules.md`: constraints that prevent generic AI-looking UI.
@@ -411,4 +413,5 @@ If the user wants to use the extraction package with Claude Code, Cursor, or Cod
 - `scripts/generate_docs_html.mjs`: generated developer-facing HTML docs, including `design-system/components/*.md`.
 - `scripts/generate_review_html.mjs`: generated review page where the designer confirms or adjusts suggested decisions for duplicate sources, near tokens, color scale issues, and similar components, and copies a prompt of the decisions; `--json` prints the same review items and counts.
 - `scripts/review_core.mjs`: the shared rules for what needs review and whether it is decided, used by the token audit and the review page.
+- `scripts/naming_order.mjs`: reads `TOKEN_ARCHITECTURE.md` > `## Naming Order`, splits token names into slots for the order check, and finds `--x` next to `--x-<state>` for the token audit; tested by `scripts/test_naming_order.test.mjs`.
 - `assets/review-page/review.template.html`: the review page template.

@@ -10,7 +10,7 @@
 - 定案的順序會被記錄，下次沿用：design-system-extractor 寫進 `TOKEN_ARCHITECTURE.md` 的 `## Naming Order`（順序、各 slot 詞彙、範例、CSS 對應）；figma-m3-variables 寫進 Figma 檔案的 shared plugin data。
 - figma-m3-variables 稽核規則 17 改為「命名順序」：使用 M3 順序時維持原本的舊狀態順序檢查；使用團隊順序時，改為依團隊順序檢查並提出照團隊順序的改名，不再建議 M3 順序。
 - 新增 figma-m3-variables 稽核規則 19「變數同時是群組」：偵測任何一個 variable 名稱同時是另一個 variable 的群組；狀態放在最後的順序下，建議把預設狀態明確寫成 `default`（`…/container/default`），改名走既有的 Tier 2 確認。稽核規則由 18 條變成 19 條。
-- design-system-extractor 的 `audit_tokens.mjs` 讀取已記錄的順序：名稱不照順序是 issue；`--x` 與 `--x-<狀態>` 並存時給 warning，建議 `--x-default`（CSS 本身沒有衝突，只影響匯出成 Figma Variables 或 DTCG）；`--json` 新增 `namingOrder` 欄位。新增共用模組、fixture 與回歸測試。
+- design-system-extractor 的 `audit_tokens.mjs` 讀取已記錄的順序：名稱不照順序是 issue；`--x` 與 `--x-<狀態>` 並存時給 warning，建議 `--x-default`（CSS 本身沒有衝突，只影響匯出成 Figma Variables 或 DTCG）。新增共用模組、fixture 與回歸測試。
 - 更新兩個 skill 的 SKILL.md、references、範本與說明頁。
 
 ## Capabilities
@@ -18,7 +18,7 @@
 ### New Capabilities
 
 - `figma-variables-naming-order`：figma-m3-variables 解析、說明、記錄並套用團隊命名順序；稽核規則 17 依使用中的順序檢查；新增規則 19 偵測變數同時是群組並建議明確的 `default` 狀態。
-- `extractor-naming-order`：design-system-extractor 的 `## Naming Order` 記錄格式、順序的決定與說明、產生名稱時照順序，以及 `audit_tokens.mjs` 的順序檢查、狀態群組 warning、`namingOrder` JSON 欄位與回歸測試。
+- `extractor-naming-order`：design-system-extractor 的 `## Naming Order` 記錄格式、順序的決定與說明、產生名稱時照順序，以及 `audit_tokens.mjs` 的順序檢查、狀態群組 warning 與回歸測試。
 
 ### Modified Capabilities
 
@@ -29,7 +29,8 @@
 - Affected specs: figma-variables-naming-order、extractor-naming-order（皆為新增）
 - Affected code:
   - New:
-    - design-system-extractor/scripts/lib/naming_order.mjs
+    - design-system-extractor/scripts/naming_order.mjs
+    - design-system-extractor/scripts/test_naming_order.test.mjs
     - design-system-extractor/scripts/fixtures/naming-order/design-system/TOKEN_ARCHITECTURE.md
     - design-system-extractor/scripts/fixtures/naming-order/tokens/tokens-ref.css
     - design-system-extractor/scripts/fixtures/naming-order/tokens/tokens-sys.css
@@ -44,11 +45,10 @@
     - figma-m3-variables/docs/index.html
     - design-system-extractor/SKILL.md
     - design-system-extractor/references/token-architecture.md
-    - design-system-extractor/references/audits.md
     - design-system-extractor/references/agent-integration.md
     - design-system-extractor/assets/design-system-template/design-system/TOKEN_ARCHITECTURE.md
     - design-system-extractor/scripts/audit_tokens.mjs
-    - design-system-extractor/scripts/test_audits.mjs
+    - design-system-extractor/README.md
     - design-system-extractor/docs/extract-flow.html
   - Removed: (none)
 - 不修改 `.cursor/skills/`、`.agents/skills/` 底下的巢狀副本，也不修改 `~/.claude/skills/` 的安裝副本。

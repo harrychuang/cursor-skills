@@ -12,6 +12,7 @@ All agents should follow the same rules:
 - Record source fingerprints in `DESIGN_EVIDENCE_MAP.md` and document reuse/ignore/keep-distinct decisions before counting duplicate sources as separate evidence.
 - Use `tokens/tokens.css` import order: ref, sys, comp.
 - Keep reference color scales ordered as `100` lightest to `0` darkest.
+- Name new tokens in the order recorded in `design-system/TOKEN_ARCHITECTURE.md` > `## Naming Order` (default naming when none is recorded); when the order puts `state` last and a token has state variants, write the default state as `-default`.
 - Keep near duplicate reference colors or numbers as separate tokens and record a suggested merge/keep-distinct action in `TOKEN_ARCHITECTURE.md`. Merge only after a designer confirms it on `docs/design-system/review.html` or in the conversation; a suggested action is not a decision.
 - Review similar component candidates before adding new component specs; record a suggested merge/variant/keep-distinct/blocked action in `COMPONENT_INVENTORY.md` and write the spec after the designer confirms it.
 - When the user pastes the prompt exported by the review page, apply it with the Review Decision Apply Pass in `SKILL.md`.
@@ -37,6 +38,7 @@ Use `design-system/` and `tokens/` as the source of truth before editing product
 For native iOS/Android projects, read `skills/design-system-extractor/references/native-mobile-projects.md`, record native screen/state coverage, and verify source-only components through screenshots, previews, screenshot tests, captures, navigation reachability, or user confirmation.
 Maintain token inheritance: ref -> sys -> comp.
 Keep color steps ordered 100 lightest to 0 darkest.
+Name new tokens in the order recorded in `design-system/TOKEN_ARCHITECTURE.md` > `## Naming Order`; with `state` last, a token that has state variants writes its default state as `-default`.
 Document duplicate source reuse/ignore/keep-distinct decisions in DESIGN_EVIDENCE_MAP.md.
 Record suggested near-token merge/keep-distinct actions in TOKEN_ARCHITECTURE.md; merge only after a designer confirms on docs/design-system/review.html or in the conversation.
 Record suggested similar-component merge/variant/keep-distinct/blocked actions in COMPONENT_INVENTORY.md; create new component specs after the designer confirms.
@@ -68,6 +70,7 @@ For native iOS/Android projects, read `skills/design-system-extractor/references
 No hardcoded visual values when tokens exist.
 Component tokens may reference only system tokens.
 Reference color steps run 100 lightest to 0 darkest.
+Token names follow the order recorded in `design-system/TOKEN_ARCHITECTURE.md` > `## Naming Order`; with `state` last, the default state is written as `-default`.
 Duplicate source candidates require documented reuse/ignore/keep-distinct decisions.
 Near token candidates require designer-confirmed merge/keep-distinct decisions; a suggested action is not a decision, and nothing is merged before confirmation.
 Similar component candidates require designer-confirmed merge/variant/keep-distinct/blocked decisions.
@@ -93,6 +96,7 @@ For native iOS/Android projects, read `skills/design-system-extractor/references
 Start with `design-system/SESSION_STATE.md`.
 Keep token inheritance strict: ref -> sys -> comp.
 Use 100 lightest to 0 darkest for reference color scales.
+Name new tokens in the order recorded in `design-system/TOKEN_ARCHITECTURE.md` > `## Naming Order`; with `state` last, write the default state as `-default`.
 Document duplicate source reuse/ignore/keep-distinct decisions before counting repeated sources as separate evidence.
 Record suggested near-token merge/keep-distinct actions and merge only after a designer confirms them on docs/design-system/review.html or in the conversation.
 Record suggested similar-component merge/variant/keep-distinct/blocked actions and finalize component specs after the designer confirms them.

@@ -22,3 +22,9 @@
 ## 4. 驗證與收尾
 
 - [x] 4.1 跨檔一致性與安全檢查：兩個 skill 內規則數、規則名稱、優先序、`default` 規則與範例一致；`node design-system-extractor/scripts/test_audits.mjs` 與 `node ds-to-storybook/scripts/test_trace_and_plan_contract.mjs` 通過；本 change 新增與修改的檔案（含 `.openspec.yaml`）不含使用者的電子郵件或公司、產品名稱；記錄 `.cursor/skills/`、`.agents/skills/` 巢狀副本與 `~/.claude/skills/` 的狀態（symlink 或分歧副本）。驗收：上述指令與 grep 的輸出。
+
+## 5. 同步上游後重新套用（2026-11-13）
+
+- [x] 5.1 extractor 以 上游 skills repo c7a999b 整包覆蓋（commit ebe24ab）後，重新套用命名順序的稽核：模組放在 `design-system-extractor/scripts/naming_order.mjs`（與 `review_core.mjs` 同層），`audit_tokens.mjs` 加回 `Naming order:` 行、順序 issue 與狀態群組 warning。上游的 audit 沒有 `--json`，因此不輸出 `namingOrder`，spec 拿掉該 requirement。驗收：naming-order fixture 印出 1 個順序 issue 與 2 個狀態群組 warning，結束碼 1。
+- [x] 5.2 恢復 `design-system-extractor/scripts/fixtures/naming-order/`，測試改寫為 `design-system-extractor/scripts/test_naming_order.test.mjs`（`node --test`，5 個測試）。驗收：`node --test` 跑 test_naming_order、test_review_core、test_review_page 共 63 個全數通過。
+- [x] 5.3 文件重新套用：範本 `TOKEN_ARCHITECTURE.md` 的 `## Naming Order` 與 Required Audit 兩條；`references/token-architecture.md` 的 Naming Order 章節、預設命名、Audit Rules 兩條與 Naming order audit 小節（取代上游沒有的 `references/audits.md`）；`SKILL.md` 步驟 4、Token Gate 與 Resource Map；`references/agent-integration.md` 的 Shared Contract 與三個 snippet；`docs/extract-flow.html` 英、日、繁中三段；`README.md` 的測試指令。驗收：內容檢查；figma-m3-variables 讀取的 `## Naming Order` 格式與 extractor 範本一致；`python3` html.parser 解析 extract-flow.html 無錯誤。

@@ -378,6 +378,7 @@ The review logic has its own tests:
 ```sh
 node --test skills/design-system-extractor/scripts/test_review_core.test.mjs
 node --test skills/design-system-extractor/scripts/test_review_page.test.mjs
+node --test skills/design-system-extractor/scripts/test_naming_order.test.mjs
 ```
 
 ## Cross-Agent Use

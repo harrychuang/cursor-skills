@@ -75,20 +75,11 @@ When an order is recorded, every token the extractor writes SHALL place its segm
 - **WHEN** the tokens are `--shop-comp-button-color-primary-container-default` and `--shop-comp-button-color-primary-container-hovered`
 - **THEN** no state group warning is printed for them
 
-### Requirement: JSON output carries the naming order
-
-`audit_tokens.mjs --json` SHALL print exactly the keys `clusters`, `counts`, `issues`, `namingOrder`, `scaleFit`, and `warnings`. `namingOrder` SHALL be `null` when no order is recorded, and otherwise an object with `slots` (array of slot names), `values` (slot name to array of values), `layers` (slot name to array of layers, empty when unrestricted), `source`, and `defaultState`.
-
-#### Scenario: Recorded order in JSON
-
-- **WHEN** the naming-order fixture is audited with `--json`
-- **THEN** `namingOrder.slots` equals `["prefix","category","component","role","variant","target","state"]` and `namingOrder.source` equals `prompt`
-
 ### Requirement: Regression coverage
 
-`scripts/test_audits.mjs` SHALL include a `naming-order` fixture and tests for: the recorded order line; the out-of-order issue with its expected name; valid names passing; the comp and sys state group warnings; strict mode passing once the comp default state is explicit and the out-of-order name is fixed; the JSON `namingOrder` value; and the shipped template recording no order. The existing 22 tests SHALL keep passing, with the JSON key assertion updated to include `namingOrder`.
+`scripts/test_naming_order.test.mjs`, run with `node --test`, SHALL use a `naming-order` fixture and test: the recorded order line; the out-of-order issue with its expected name; valid names passing; the comp and sys state group warnings; strict mode passing once the comp default state is explicit and the out-of-order name is fixed; the default line and no order issue when no order is recorded; and the shipped template recording no order. The existing `test_review_core.test.mjs` and `test_review_page.test.mjs` suites SHALL keep passing.
 
 #### Scenario: Test suite
 
-- **WHEN** `node design-system-extractor/scripts/test_audits.mjs` runs after the change
-- **THEN** every test passes, including the new naming-order tests
+- **WHEN** `node --test design-system-extractor/scripts/test_naming_order.test.mjs` runs after the change
+- **THEN** every test passes

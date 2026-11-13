@@ -1,0 +1,11 @@
+/* Component tokens map component slots to system tokens only. */
+:root {
+  /* Bare container next to its hovered state: a token and a group once exported as slash paths. */
+  --shop-comp-button-color-primary-container: var(--shop-sys-color-primary);
+  --shop-comp-button-color-primary-container-hovered: var(--shop-sys-color-primary-hovered);
+  --shop-comp-button-color-primary-label: var(--shop-sys-color-on-primary);
+  --shop-comp-button-size-corner: var(--shop-sys-size-corner-md);
+  --shop-comp-button-spacing-padding: var(--shop-sys-spacing-padding-md);
+  /* Out of order: role before component. */
+  --shop-comp-color-button-primary-border: var(--shop-sys-color-primary);
+}

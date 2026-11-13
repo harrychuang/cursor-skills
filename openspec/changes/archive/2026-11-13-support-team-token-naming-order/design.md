@@ -55,7 +55,7 @@ extractor 寫入 `TOKEN_ARCHITECTURE.md` 的 `## Naming Order`：`Order:`、`Sou
 
 ### extractor 稽核的命名順序檢查與狀態群組警告
 
-新增共用模組 `scripts/lib/naming_order.mjs`：解析 `## Naming Order`、切段與分類、順序檢查、狀態群組配對。`audit_tokens.mjs` 輸出 `Naming order:` 一行；名稱不照順序是 issue（所有模式，與既有的層級用字規則一致）；`--x` 與 `--x-<狀態>` 並存是 warning（所有模式，CSS 能正常運作，只影響匯出）；`--json` 新增 `namingOrder`。屬於只限某些層的 slot（Layers 欄），出現在其他層時略過，因為既有的「sys/ref 用了元件名稱」檢查已會回報，避免重複且錯誤的改名建議。
+新增共用模組 `scripts/naming_order.mjs`：解析 `## Naming Order`、切段與分類、順序檢查、狀態群組配對。`audit_tokens.mjs` 輸出 `Naming order:` 一行；名稱不照順序是 issue（所有模式，與既有的層級用字規則一致）；`--x` 與 `--x-<狀態>` 並存是 warning（所有模式，CSS 能正常運作，只影響匯出）。屬於只限某些層的 slot（Layers 欄），出現在其他層時略過，因為既有的「sys/ref 用了元件名稱」檢查已會回報，避免重複且錯誤的改名建議。
 
 ### 數字與無法分類的段
 
@@ -74,12 +74,16 @@ extractor 寫入 `TOKEN_ARCHITECTURE.md` 的 `## Naming Order`：`Order:`、`Sou
 **design-system-extractor（腳本與文件）**
 
 - `TOKEN_ARCHITECTURE.md` `## Naming Order` 格式：`Order:`（slot 以 `>`、`→`、`->` 或 `/` 分隔；空白或 `default` 代表沒有記錄）、`Source:`、`Default state:`、`CSS name:`、`| Slot | Layers | Values |` 表（值以逗號分隔，反引號忽略）。
-- `scripts/lib/naming_order.mjs` 匯出：`parseNamingOrder(markdown)` → `null` 或 `{ slots, values, layers, source, defaultState }`；`checkNameOrder(name, order, layer)` → `{ ok, segments, violation, expected }`；`findStateGroups(names, order)` → `[{ token, children, suggestion }]`。
-- `audit_tokens.mjs`：stdout 在 `Component tokens:` 之後印 `Naming order: … (TOKEN_ARCHITECTURE.md)` 或 `Naming order: default (none recorded)`；順序違規 issue 文字以 `Token name does not follow the recorded naming order` 開頭；狀態群組 warning 以 `Token is also a group once names become slash paths` 開頭並提出 `--x-default`；`--json` 的鍵為 `clusters`、`counts`、`issues`、`namingOrder`、`scaleFit`、`warnings`。
+- `scripts/naming_order.mjs` 匯出：`parseNamingOrder(markdown)` → `null` 或 `{ slots, values, layers, source, defaultState }`；`checkNameOrder(name, order, layer)` → `{ ok, segments, violation, expected }`；`findStateGroups(names, order)` → `[{ token, children, suggestion }]`。
+- `audit_tokens.mjs`：stdout 在 `Component tokens:` 之後印 `Naming order: … (TOKEN_ARCHITECTURE.md)` 或 `Naming order: default (none recorded)`；順序違規 issue 文字以 `Token name does not follow the recorded naming order` 開頭；狀態群組 warning 以 `Token is also a group once names become slash paths` 開頭並提出 `--x-default`。
 - 失敗模式：`TOKEN_ARCHITECTURE.md` 不存在或沒有區段 → 預設命名、不報順序 issue；表格缺值 → 該 slot 沒有詞彙，該 slot 的段無法分類而略過。
-- 驗收：`node design-system-extractor/scripts/test_audits.mjs` 全數通過（原 22 個加新測試）；`node ds-to-storybook/scripts/test_trace_and_plan_contract.mjs` 仍通過（範本改動）。
+- 驗收：`node --test design-system-extractor/scripts/test_naming_order.test.mjs` 通過，`test_review_core.test.mjs` 與 `test_review_page.test.mjs` 仍通過。
 
 **範圍外**：巢狀副本與安裝副本、其他 skill、既有檔案的自動遷移、CSS 名稱上非狀態的群組衝突。
+
+### 同步上游後重新套用（2026-11-13）
+
+extractor 以 上游 skills repo 的 c7a999b（change add-extractor-designer-review-flow）整包覆蓋後，本 change 的 extractor 部分隨之消失，figma-m3-variables 讀的 `## Naming Order` 也就沒有人寫。重新套用在上游版本上：模組放在 `scripts/naming_order.mjs`，與上游的 `review_core.mjs` 同層；測試改成上游慣用的 `node --test` 檔案 `scripts/test_naming_order.test.mjs`；稽核輸出細節寫進 `references/token-architecture.md` 的 Audit Rules（上游沒有 `references/audits.md`）。上游的 `audit_tokens.mjs` 沒有 `--json`，所以拿掉 `namingOrder` JSON 欄位的 requirement。
 
 ## Risks / Trade-offs
 
@@ -87,7 +91,7 @@ extractor 寫入 `TOKEN_ARCHITECTURE.md` 的 `## Naming Order`：`Order:`、`Sou
 - [詞彙不完整時順序檢查覆蓋率低] → 無法分類的段略過不報錯；計畫列出不在詞彙裡的值供使用者補充。
 - [CSS 名稱的段落邊界有歧義（`primary-container` 是一段還是兩段）] → CSS 端只檢查狀態後綴的群組衝突；完整的群組衝突只在 Figma 路徑（規則 19）檢查。
 - [把 `primary` 改成 `primary/default` 會改變 CSS 名稱，影響程式碼] → 規則 19 的修正明確提醒程式碼要跟著改，且走 Tier 2 確認。
-- [新增 JSON 鍵可能影響下游讀取] → 只新增鍵、不改既有鍵的形狀；更新 audits.md 與測試。
+- [上游版本的 `audit_tokens.mjs` 沒有 `--json`] → 命名順序只出現在 stdout；需要機器可讀的輸出時另開 change。
 
 ## Migration Plan
 

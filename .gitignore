@@ -36,3 +36,10 @@ dist/
 !ds-to-storybook/assets/figma-export-addon/dist/**
 .turbo/
 .vercel/
+
+# Course material (kept local, not published)
+docs/course/
+.superdesign
+
+# Company-specific skill (kept local, not published)
+/ios-foldable-adaptation/
